@@ -1,12 +1,30 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
 import firebase from 'firebase';
-import { Button, Card, CardSection, Input, Spinner } from './common';
+import { Button, Card, CardSection, Input, Spinner } from '../commons';
 
 
-class LoginForm extends Component {
-    state = { email: '', password: '', error: '', loading: false };
+class LoginScreen extends Component {
+    state = { email: '', password: '', error: '', loading: false, loggedIn: false };
     
+    componentWillMount() {
+        firebase.initializeApp({
+          apiKey: 'AIzaSyDY7vk5tEGQ3ZeI8iaEn2iAaD6DAhOHyb0',
+          authDomain: 'auth-8722c.firebaseapp.com',
+          databaseURL: 'https://auth-8722c.firebaseio.com',
+          projectId: 'auth-8722c',
+          storageBucket: 'auth-8722c.appspot.com',
+          messagingSenderId: '452038208493'
+        });
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              this.setState({ loggedIn: true });
+            } else {
+              this.setState({ loggedIn: false });
+            }
+          });
+    }
+
     onButtonPress() {
         const { email, password } = this.state;
         this.setState({ error: '', loading: true });
@@ -79,4 +97,4 @@ const styles = {
     }
 };
 
-export default LoginForm;
+export default LoginScreen;
