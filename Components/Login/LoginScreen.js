@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
 import firebase from 'firebase';
-import { Button, Card, CardSection, Input, Spinner } from '../commons';
+import { FLButton, Card, CardSection, Input, Spinner } from '../commons';
 
 
 class LoginScreen extends Component {
@@ -55,9 +55,9 @@ class LoginScreen extends Component {
             return <Spinner />;
         }
         return (
-        <Button onPress={this.onButtonPress.bind(this)}>
+        <FLButton onPress={this.onButtonPress.bind(this)}>
             C'est parti !!
-        </Button>
+        </FLButton>
         );
     }
 

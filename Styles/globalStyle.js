@@ -6,6 +6,10 @@ const globalStyle = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    defaultText: {
+      fontSize: 20,
+      paddingBottom: 10
     }
   })
 

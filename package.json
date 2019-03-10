@@ -12,6 +12,8 @@
     "firebase": "^5.8.6",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-alert-async": "git+https://github.com/slorber/react-native-alert-async.git",
+    "react-native-vector-icons": "^6.3.0",
     "react-navigation": "^3.3.2",
     "yarn": "^1.13.0"
   },

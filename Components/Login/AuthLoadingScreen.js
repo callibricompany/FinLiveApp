@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, ActivityIndicator, StatusBar, AsyncStorage} from 'react-native'
 
+
 //import globalStyle from '../../Styles/globalStyle'
 
 class AuthLoadingScreen extends React.Component {
@@ -9,13 +10,13 @@ class AuthLoadingScreen extends React.Component {
       this._bootstrapAsync();
     }
   
-    // Fetch the token from storage then navigate to our appropriate place
+    // recupere le token user et en fonction redirige vers l'ecran d'autentification
     _bootstrapAsync = async () => {
       const userToken = await AsyncStorage.getItem('userToken');
   
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
+      //en fonction de l'existence du token redirige vers le bon ecran
       //this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+      console.log("User token : " + userToken)
       this.props.navigation.navigate('App');
     };
   
