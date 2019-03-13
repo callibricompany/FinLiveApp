@@ -35,6 +35,7 @@ class NewsDetail extends React.Component {
     
         <View style={globalStyle.container}>
           <Text>bla bla bla</Text>
+          <Text>{text}</Text>
         </View>
       );
       }

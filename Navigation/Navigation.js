@@ -80,9 +80,9 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
 const HomeScreenStack = createStackNavigator({
   Home: {
     screen: HomeScreen,
-    navigationOptions: {
-      title: 'FinLive'
-    }
+ //   navigationOptions: {
+ //     title: 'FinLive'
+ //   }
   },
   NewsList: {
     screen: NewsList
@@ -97,7 +97,7 @@ const PricerScreenStack = createStackNavigator({
 Pricer: {
   screen: PricerScreen,
   navigationOptions: {
-    title: 'Pricer'
+    title: 'Evaluer'
   }
 }
 })
@@ -126,7 +126,7 @@ Profil: {
 })
 const AppFinLive = createBottomTabNavigator(
   {
-    Home: {
+    Accueil: {
       screen: HomeScreenStack,
       navigationOptions: {
         tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
@@ -134,11 +134,13 @@ const AppFinLive = createBottomTabNavigator(
         }
       }
     },
-    Pricer: {
+    Evaluer: {
       screen: PricerScreenStack,
       navigationOptions: {
         tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-          return <FontAwesomeI name='euro' size={30} style={styles.icon}/> // On applique un style pour les redimensionner comme il faut
+          return (
+            <FontAwesomeI name='euro' size={30} style={styles.icon}/>
+          );
         }
       }
     },
@@ -170,7 +172,7 @@ const AppFinLive = createBottomTabNavigator(
 
   },
 
-  
+
   {
     tabBarOptions: {
       activeBackgroundColor: '#DDDDDD', // Couleur d'arrière-plan de l'onglet sélectionné
@@ -199,7 +201,7 @@ const AuthStack = createStackNavigator(
 
 const styles = StyleSheet.create({
   icon: {
-     color: '#229295',
+     color: '#229298',
   }
 })  
 
