@@ -11,6 +11,7 @@ import React, { createContext, Component } from "react"; // on importe createCon
  */
 export const UserContext = createContext({
   name: "",
+  searchInputText: "",
   setName: () => {}
 });
 
@@ -23,7 +24,9 @@ export const UserContext = createContext({
 class UserProvider extends Component {
   state = {
     name: "Bonjour FinLive", // une valeur de départ
-    setName: name => this.setState({ name: name })
+    searchInputText: "",
+    setName: name => this.setState({ name: name }),
+    setSearchInputText: inputedText => this.setState({ searchInputText: inputedText })
   };
 
   render() {

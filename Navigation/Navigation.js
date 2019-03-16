@@ -20,6 +20,9 @@ import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunity
 
 //import { Ionicons } from 'react-native-vector-icons';
 
+
+
+
 /*class IconWithBadge extends React.Component {
   render() {
     const { name, badgeCount, color, size } = this.props;
@@ -124,6 +127,25 @@ Profil: {
   }
 }
 })
+
+
+
+const AppFinLive2 = createBottomTabNavigator(
+  {
+
+    Evaluer: {
+      screen: PricerScreenStack,
+      navigationOptions: {
+        tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+            <FontAwesomeI name='euro' size={30} style={styles.icon}/>
+          );
+        }
+      }
+    }
+  }
+)
+
 const AppFinLive = createBottomTabNavigator(
   {
     Accueil: {
