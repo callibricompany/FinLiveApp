@@ -3,6 +3,7 @@ import { Thumbnail, ListItem, Icon, Root, Content, Button, Text, ActionSheet, He
 import { FlatList } from "react-native";
 import { getOpenTickets } from '../API/APIAWS'
 
+
   
 
 
@@ -27,13 +28,14 @@ class BroadcastingScreen extends React.Component {
       )*/
       getOpenTickets().then(data => {
         //response.json({ message: 'Request received!', data })
-        console.log(data);
+        //console.log(data);
         this.setState( { result: data});
       })
      
     };
 
     renderItem = ({ item }) => {
+      console.log(item)
         return (
           
           <ListItem avatar>

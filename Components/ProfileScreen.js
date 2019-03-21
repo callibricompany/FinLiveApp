@@ -18,7 +18,7 @@ class ProfileScreen extends React.Component {
 
   _signOutAsync = async () => {
     await AsyncStorage.clear();
-    this.props.navigation.navigate('Auth');
+    this.props.navigation.navigate('Login');
   };
 
   _signOutAlert = async () => {
@@ -26,7 +26,7 @@ class ProfileScreen extends React.Component {
       'Se déconnecter',
       'Confirmez-vous votre déconnexion ?',
       [
-        {text: 'Confirmer', onPress: () => 'yes'},
+        {text: 'Confirmer', onPress: () => this._signOutAsync()},
         {text: 'Annuler', onPress: () => 'non et non'},
       ],
       {

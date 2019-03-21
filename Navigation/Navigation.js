@@ -4,7 +4,9 @@ import { StyleSheet, Text, View } from 'react-native'
 import { createStackNavigator, createSwitchNavigator, createAppContainer, createBottomTabNavigator } from 'react-navigation'
 
 import AuthLoadingScreen from '../Components/Login/AuthLoadingScreen'
-import LoginScreen from '../Components/Login/LoginScreen'
+import SplashScreen from '../Components/Login/SplashScreen'
+import Login from '../Components/Login/Login'
+import Register from '../Components/Login/Register'
 
 import HomeScreen from '../Components/HomeScreen'
 import NewsList from '../Components/NewsList'
@@ -200,7 +202,9 @@ const AppFinLive = createBottomTabNavigator(
       activeBackgroundColor: '#DDDDDD', // Couleur d'arrière-plan de l'onglet sélectionné
       inactiveBackgroundColor: '#FFFFFF', // Couleur d'arrière-plan des onglets non sélectionnés
       showLabel: true, // On masque les titres
-      showIcon: true // On informe le TabNavigator qu'on souhaite afficher les icônes définis
+      showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
+      activeTintColor: 'darkgray',
+      inactiveTintColor: 'gray',
     },
     /*defaultNavigationOptions: ({ navigation }) => ({
         tabBarIcon: ({ focused, tintColor }) =>
@@ -214,16 +218,11 @@ const AppFinLive = createBottomTabNavigator(
 )
 
 
-const AuthStack = createStackNavigator(
-  { 
-    SignIn: LoginScreen 
-  }
-  );
 
 
 const styles = StyleSheet.create({
   icon: {
-     color: '#229298',
+     color: 'lightblue',
   }
 })  
 
@@ -231,10 +230,12 @@ export default createAppContainer(createSwitchNavigator(
   {
     AuthLoading: AuthLoadingScreen,
     App: AppFinLive,
-    Auth: AuthStack,
+    Login: Login,
+    Register: Register,
+    Splash: SplashScreen
   },
   {
-    initialRouteName: 'AuthLoading',
+    initialRouteName: 'Splash',
   }
 ));
 

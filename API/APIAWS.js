@@ -1,6 +1,7 @@
 // API/TMDBApi.js
 import axios from 'axios'
-const API_TOKEN = "VOTRE_TOKEN_ICI";
+const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
+const URL_FAKE_JSON ="";
 
 export function getFilmsFromApiWithSearchedText (text) {
   const url = 'http://34.245.143.173:8080'
@@ -11,7 +12,7 @@ export function getFilmsFromApiWithSearchedText (text) {
 
 export function getOpenTickets () {
     let payload = {
-    token: "9kWuAz8WSP2ClCzzmsFJjg",
+    token: API_TOKEN_FAKEJSON,
     data: {
       name: "nameFirst",
       email: "internetEmail",
@@ -20,7 +21,7 @@ export function getOpenTickets () {
       resume: "stringShort",
       header: "numberInt|0,1",
       date: "date",
-      _repeat: 20
+      _repeat: 2
     }
   };
 
