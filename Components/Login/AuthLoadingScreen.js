@@ -2,6 +2,7 @@ import React from 'react'
 import { View, ActivityIndicator, StatusBar, AsyncStorage} from 'react-native'
 import firebase from 'firebase'
 
+
 //import globalStyle from '../../Styles/globalStyle'
 
 class AuthLoadingScreen extends React.Component {
@@ -19,12 +20,20 @@ class AuthLoadingScreen extends React.Component {
         storageBucket: 'auth-8722c.appspot.com',
         messagingSenderId: '452038208493'
       });
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user);
+        } else {
+          console.log("Pas de user");
+        }
+      });
       
     }
 
     // recupere le token user et en fonction redirige vers l'ecran d'autentification
     _bootstrapAsync = async () => {
       const userToken = await AsyncStorage.getItem('userToken');
+      const userEmail = await AsyncStorage.getItem('userEmail');
   
       //en fonction de l'existence du token redirige vers le bon ecran
       //this.props.navigation.navigate(userToken ? 'App' : 'Auth');
@@ -34,7 +43,8 @@ class AuthLoadingScreen extends React.Component {
         this.props.navigation.navigate('Login');
       }
       else {
-        console.log("User token : " + JSON.stringify(userToken));
+        console.log("User token : " + (userToken));
+        console.log("User email : " + userEmail);
         this.props.navigation.navigate('App');
         //this.props.navigation.navigate('Login');
       }

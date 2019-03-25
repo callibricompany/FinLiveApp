@@ -14,6 +14,8 @@ import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import Dimensions from 'Dimensions';
 import firebase from 'firebase'
+import bgSrc from '../../assets/icon_1024.png';
+import LogoComponent  from '../LogoComponent'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -30,20 +32,23 @@ class Register extends Component {
     // We have the same props as in our signup.js file and they serve the same purposes.
    
     this.state = {
-      loading: false,
+      loading: true,
       name:'',
       firstname:'',
       phone:'',
       email: '',
       passwordVerif:'',
       password: '',
-      loggedIn: false
+      organisme: '',
+      loggedIn: false,
+      isIndependant: true
+
     }
   }
   
   //connection a firebase
   componentWillMount () {
-    this.setState({loading: true});
+   /* this.setState({loading: true});
       firebase.auth().onAuthStateChanged((user) => {
           if (user) {
             this.setState({ loggedIn: true });
@@ -54,7 +59,7 @@ class Register extends Component {
          
           console.log("LoggedIn : " + this.state.loggedIn) 
         });
-        
+        */
   }
 
   componentDidMount () {
@@ -79,15 +84,17 @@ class Register extends Component {
   checkEmailValidity = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     
-    //if (reg.test(this.state.email) === true){
+    if (reg.test(this.state.email) === true){
         return true;
-    //}
+    }
     return false;
   }
 
-  //login a la base firebase
-  login = () => {
-    console.log("LOGIN : " + this.state.loading) 
+  //creation nouvel utilisateur
+  register = () => {
+    console.log("REGISTER : " + this.state.loading) 
+    this.props.navigation.navigate('App');
+    return false;
     this.setState({
       loading: true
     });
@@ -98,8 +105,35 @@ class Register extends Component {
               this.props.navigation.navigate('App');
   }
 
+    //coche s'il est independant
+    checkIfIsIndependant = () => {
+      this.setState({
+        isIndependant: !this.state.isIndependant
+      });
+    }
 
+    //selon independance, ou pas renseigner organisme de rattachement
+    renderIsIndepenadant() {
+      if (this.state.isIndependant) {
+          return <Text />;
+      }
+      return (
+        <InputGroup>
+        <Item style={{width: 0.9*DEVICE_WIDTH}} >
+        <Icon name="ios-people"  style={{color : '#9A9A9A'}}/>
+        <Input
+        onChangeText={e => {this.typingInputText('organisme',e)}}
+        clearButtonMode="always"
+        placeholder={"Organisme de rattachement"} />
+       </Item>
+       </InputGroup>
+      );
+  }
 
+  //login a l ecran de login
+  backToLogin = () => {
+    this.props.navigation.navigate('Login');
+  }
 
   //rajoute un bouton pour effacer l'input
     eraseInputText = (whichInput) => {
@@ -127,6 +161,9 @@ class Register extends Component {
             case 'phone':
                 this.setState({phone: text});
                 break;
+            case 'organisme':
+                this.setState({organisme: text});
+                break;   
             default:
               console.log('Ne trouve pas le bon input');
           }
@@ -140,13 +177,6 @@ class Register extends Component {
     }
   render() {
     
-    // A simple UI with a toolbar, and content below it.
-    let eraseInputEmail = (this.state.email === '') ?  <Text /> : this.renderEraseOnButton('email') ;
-    let eraseInputPassword = (this.state.password === '') ?  <Text /> : this.renderEraseOnButton('password') ;
-    let eraseInputName = (this.state.name === '') ?  <Text /> : this.renderEraseOnButton('name') ;
-    let eraseInputFirstName = (this.state.firstname === '') ?  <Text /> : this.renderEraseOnButton('firstname') ;
-    let eraseInputPhone = (this.state.phone === '') ?  <Text /> : this.renderEraseOnButton('phone') ;
-    let eraseInputPasswordVerif = (this.state.passwordVerif === '') ?  <Text /> : this.renderEraseOnButton('passwordVerif') ;
 
 
     // The content of the screen should be inputs for a username, password and submit button.
@@ -158,17 +188,17 @@ class Register extends Component {
         <View style={{flex: 1}}>
             <ImageBackground
                 style={styles.picture} 
-                source={{uri: 'https://picsum.photos/g/400/600?random'}}
-            >
+                //source={{uri: 'https://picsum.photos/g/400/600?random'}}
+                source={bgSrc}
+                resizeMode="center"
+            />
             
-            </ImageBackground>
+   
          
-           <Header style={{backgroundColor: 'transparent', borderBottomWidth: 0, height:170}}>
+           <Header style={{backgroundColor: 'transparent', borderBottomWidth: 0, height:200}}>
               <View style={[styles.container, {paddingTop:10} ]}>
                  
-                  <Button  style={{height:100, width:DEVICE_WIDTH-50, alignItems:'center',justifyContent:'center'}} dark>
-                    <Text style={{color: 'aquamarine',fontWeight: 'bold',fontSize: 50,}}>FinLive</Text>
-                  </Button>
+               <LogoComponent />
                   
               </View>
               </Header>
@@ -178,34 +208,27 @@ class Register extends Component {
                 <View style={[styles.container, {paddingTop:5}]}>
                 <Text style={styles.text2}>Créer votre compte</Text>
                   <InputGroup>
-                    <Item >
-                        <Icon name="ios-person" style={{color : 'black'}}/>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                        <Icon name="ios-person" style={{color : '#9A9A9A'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('name',e)}}
-                        value={this.state.name}
-                        placeholder={"Nom"} />
-                        {eraseInputName}
+                       // value={this.state.name}
+                        clearButtonMode="always"
+                        placeholder={"Prénom / Nom"} />
+                       
                     </Item>
                   </InputGroup>  
+                  
                   <InputGroup>
-                    <Item >
-                    <Icon name="ios-arrow-forward" style={{color : 'black'}}/>
-                        <Input
-                        onChangeText={e => {this.typingInputText('firstname',e)}}
-                        value={this.state.firstname}
-                        placeholder={"Prénom"} />
-                        {eraseInputFirstName}
-                    </Item>
-                  </InputGroup>  
-                  <InputGroup>
-                    <Item >
-                    <Icon name="ios-phone-portrait" style={{color : 'black'}}/>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                    <Icon name="ios-phone-portrait" style={{color : '#9A9A9A'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('phone',e)}}
                         value={this.state.phone}
                         keyboardType='phone-pad'
+                        clearButtonMode="always"
                         placeholder={"Téléphone"} />
-                        {eraseInputPhone}
+                      
                     </Item>
                   </InputGroup>  
                   <InputGroup>
@@ -214,34 +237,38 @@ class Register extends Component {
                     </Item>
                   </InputGroup>              
                   <InputGroup>
-                    <Item >
-                        <Icon name="ios-mail" style={{color : 'black'}}/>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}} >
+                        <Icon name="ios-mail" style={{color : '#9A9A9A'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('email',e)}}
                         value={this.state.email.toLowerCase()}
                         keyboardType='email-address'
+                        clearButtonMode="always"
                         placeholder={"Adresse mail"} />
-                        {eraseInputEmail}
                     </Item>
                   </InputGroup>
                 
                   <InputGroup>
-                        <Icon name="ios-unlock"  style={{color : 'black'}}/>
+                  <Item style={{width: 0.9*DEVICE_WIDTH}} >
+                        <Icon name="ios-unlock"  style={{color : '#9A9A9A'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('password',e)}}
-                        value={this.state.password}
+                       // value={this.state.password}
                         secureTextEntry={true}
+                        clearButtonMode="always"
                         placeholder={"Mot de passe"} />
-                        {eraseInputPassword}
+                    </Item>
                   </InputGroup>
                   <InputGroup>
-                        <Icon name="ios-unlock"  style={{color : 'black'}}/>
+                  <Item style={{width: 0.9*DEVICE_WIDTH}} >
+                        <Icon name="ios-unlock"  style={{color : '#9A9A9A'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('passwordVerif',e)}}
                         value={this.state.passwordVerif}
                         secureTextEntry={true}
+                        clearButtonMode="always"
                         placeholder={"Confirmez votre mot de passe"} />
-                        {eraseInputPasswordVerif}
+                  </Item>
                   </InputGroup>
                   <InputGroup>
                     <Item>
@@ -249,17 +276,38 @@ class Register extends Component {
                     </Item>
                   </InputGroup> 
                      <InputGroup>
-                     
-                        <Text>CGPI Indépendant</Text>
+                     <ListItem style={{width: 0.9*DEVICE_WIDTH}} >
+                        <Text style={{ color: 'black',}}>CGPI Indépendant  </Text>
+                        <CheckBox 
+                            checked={this.state.isIndependant} 
+                            color="#9A9A9A"
+                           onPress={this.checkIfIsIndependant.bind(this)}
+                            />
+                        </ListItem>
                       
-                      <CheckBox checked={false} />
               
                     </InputGroup>
-                    <InputGroup style={{paddingTop: 35}}>
-                    <ButtonSubmit onPress={this.login.bind(this)} onCheckEmail={this.checkEmailValidity.bind(this)}/>
-                    </InputGroup>
-                </View>
+                    {this.renderIsIndepenadant()}
+                    <View style={styles.container_buttons}>
+                      <ButtonSubmit 
+                          onPress={this.register.bind(this)} 
+                          onCheckEmail={this.checkEmailValidity.bind(this)}
+                          text={'CREER SON COMPTE'}
+                        />
+                    </View>
                
+                <View style={styles.container_buttons}>
+                    
+                    <Button light rounded 
+                        style={{ justifyContent:'center'}}
+                        onPress={this.backToLogin.bind(this)}
+                        >
+                        <Icon name="md-arrow-dropleft" style={{color : "#9A9A9A"}}/>                      
+                            <Text style={styles.text_button}>Retour Connexion</Text>
+                    </Button>
+                    
+                  </View>
+            </View>               
 
             
                 </ScrollView>
@@ -293,7 +341,7 @@ const styles = StyleSheet.create({
   container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+    //   justifyContent: 'center',
     },
     style_activityIndicator: {
       flex: 9,
@@ -303,34 +351,40 @@ const styles = StyleSheet.create({
       backgroundColor: '#F5FCFF',
     },
     text2: {
-        color: 'black',
+        color: '#9A9A9A',
         backgroundColor: 'transparent',
-        marginTop: 10,
+        marginTop: 30,
+        marginBottom: 30,
         fontSize: 25,
       },
     picture: {
           flex: 1,
           top: 0, left: 0, right: 0, bottom: 0,
-          opacity: 0.15,
+          opacity: 0.05,
           position: "absolute",
           width: null,
           height: null,
           resizeMode: 'cover',
         },
-    container_buttons: {
-            flex: 1,
-            top: 0,
-             width: DEVICE_WIDTH,
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          },
+
     text_button: {
-            color: 'black',
+            color: '#9A9A9A',
             backgroundColor: 'transparent',
-            alignItems:'center',
-            justifyContent:'center',
+         //   alignItems:'center',
+          //  justifyContent:'center',
             fontSize: 14,
           },
+    container_buttons: {
+           //flex: 1,
+           paddingTop:30,
+           // top: -95,
+             width: 0.9*DEVICE_WIDTH,
+            flexDirection: 'column',
+           
+           // justifyContent: 'center',
+           // alignItems: 'flex-start', 
+          },
+
   });
 
 

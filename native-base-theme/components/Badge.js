@@ -21,18 +21,18 @@ export default (variables /*: * */ = variable) => {
     },
     "NativeBase.Text": {
       color: variables.badgeColor,
-      fontSize: variables.fontSizeBase,
-      lineHeight: variables.lineHeight - 1,
+      fontSize: 9,
+      //lineHeight: variables.lineHeight - 1,
       textAlign: "center",
-      paddingHorizontal: 3
+     // paddingHorizontal: 3
     },
     backgroundColor: variables.badgeBg,
     padding: variables.badgePadding,
-    paddingHorizontal: 6,
+  //  paddingHorizontal: 6,
     alignSelf: "flex-start",
     justifyContent: variables.platform === "ios" ? "center" : undefined,
-    borderRadius: 13.5,
-    height: 27
+    borderRadius: 20,
+    height: 15
   };
   return badgeTheme;
 };

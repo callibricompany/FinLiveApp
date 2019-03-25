@@ -15,8 +15,11 @@ import {
 
 import spinner from '../../assets/loading.gif';
 
+
+
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
+//const MARGIN = 0.2*DEVICE_WIDTH;
 const MARGIN = 40;
 
 export default class ButtonSubmit extends Component {
@@ -33,30 +36,35 @@ export default class ButtonSubmit extends Component {
   }
 
   _onPress() {
-    if (this.state.isLoading) return;
-    if (!this.props.onCheckEmail()) {
-        Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
-        return;
-    } 
+      if (this.state.isLoading) return;
+      if (!this.props.onCheckEmail()) {
+          Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
+          return;
+      } 
 
-    this.setState({isLoading: true});
-    Animated.timing(this.buttonAnimated, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.linear,
-    }).start();
+      this.setState({isLoading: true});
+      Animated.timing(this.buttonAnimated, {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.linear,
+      }).start();
 
-    setTimeout(() => {
-      this._onGrow();
-    }, 2000);
+      //setTimeout(() => {
+      //  this._onGrow();
+      //}, 2000);
 
-    setTimeout(() => {
-        this.props.onPress();
-      //Actions.secondScreen();
-     // this.setState({isLoading: false});
-      this.buttonAnimated.setValue(0);
-      this.growAnimated.setValue(0);
-    }, 2000);
+      setTimeout(() => {
+          
+          result = this.props.onPress();
+          console.log("RETOUR BUTTON : " + result)
+          if (result === false){
+            this.buttonAnimated.setValue(0);
+            this.growAnimated.setValue(0);
+          }
+        //Actions.secondScreen();
+      // this.setState({isLoading: false});
+
+      }, 2000);
   }
 
   _onGrow() {
@@ -70,7 +78,7 @@ export default class ButtonSubmit extends Component {
   render() {
     const changeWidth = this.buttonAnimated.interpolate({
       inputRange: [0, 1],
-      outputRange: [DEVICE_WIDTH - 10, MARGIN],
+      outputRange: [0.9*DEVICE_WIDTH , MARGIN],
     });
     const changeScale = this.growAnimated.interpolate({
       inputRange: [0, 1],
@@ -87,7 +95,7 @@ export default class ButtonSubmit extends Component {
             {this.state.isLoading ? (
               <Image source={spinner} style={styles.image} />
             ) : (
-              <Text style={styles.text}>SE CONNECTER</Text>
+              <Text style={styles.text}>{this.props.text}</Text>
             )}
           </TouchableOpacity>
           <Animated.View
@@ -109,7 +117,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'aquamarine',
+    backgroundColor: '#9A9A9A',
     height: MARGIN,
     borderRadius: 20,
     zIndex: 100,
@@ -119,16 +127,16 @@ const styles = StyleSheet.create({
     width: MARGIN,
     marginTop: -MARGIN,
     borderWidth: 1,
-    borderColor: 'aquamarine',
+    borderColor: '#9A9A9A',
     borderRadius: 100,
     alignSelf: 'center',
     zIndex: 99,
-    backgroundColor: 'aquamarine',
+    backgroundColor: '#9A9A9A',
   },
   text: {
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
-    backgroundColor: 'transparent',
+    backgroundColor: '#9A9A9A',
   },
   image: {
     width: 24,

@@ -3,6 +3,7 @@ import axios from 'axios'
 const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
 const URL_FAKE_JSON ="";
 
+
 export function getFilmsFromApiWithSearchedText (text) {
   const url = 'http://34.245.143.173:8080'
   return fetch(url)

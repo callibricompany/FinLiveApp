@@ -1,6 +1,6 @@
 //carte de l'application
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 import { createStackNavigator, createSwitchNavigator, createAppContainer, createBottomTabNavigator } from 'react-navigation'
 
 import AuthLoadingScreen from '../Components/Login/AuthLoadingScreen'
@@ -19,6 +19,7 @@ import BroadcastingScreen from '../Components/BroadcastinScreen'
 
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
+import { TabBarItem } from 'react-native-vector-icons/AntDesign';
 
 //import { Ionicons } from 'react-native-vector-icons';
 
@@ -132,64 +133,170 @@ Profil: {
 
 
 
-const AppFinLive2 = createBottomTabNavigator(
-  {
-
-    Evaluer: {
-      screen: PricerScreenStack,
-      navigationOptions: {
-        tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-          return (
-            <FontAwesomeI name='euro' size={30} style={styles.icon}/>
-          );
-        }
-      }
-    }
-  }
-)
-
 const AppFinLive = createBottomTabNavigator(
   {
     Accueil: {
       screen: HomeScreenStack,
       navigationOptions: {
-        tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-          return <FontAwesomeI name='home' size={30} style={styles.icon}/> // On applique un style pour les redimensionner comme il faut
-        }
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View  style={{
+                      borderWidth:0,
+                      //borderColor:'rgba(0,0,0,0.2)',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      width:40,
+                      height:40,
+                      backgroundColor:tintColor,
+                      borderRadius:50,
+                    }}
+                >
+                <FontAwesomeI
+                name='home'
+                size={30}
+                style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+            />
+            </View>
+          );
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <Text style={labelStyle(focused,tintColor)}>Accueil</Text>
+          );
+          }
       }
     },
-    Evaluer: {
+    Pricer: {
       screen: PricerScreenStack,
       navigationOptions: {
-        tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
           return (
-            <FontAwesomeI name='euro' size={30} style={styles.icon}/>
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View  style={{
+                      borderWidth:0,
+                      //borderColor:'rgba(0,0,0,0.2)',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      width:40,
+                      height:40,
+                      backgroundColor:tintColor,
+                      borderRadius:50,
+                    }}
+                >
+                <FontAwesomeI
+                name='euro'
+                size={30}
+                style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+            />
+            </View>
           );
-        }
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <Text style={labelStyle(focused,tintColor)}>Evaluer</Text>
+          );
+          }
       }
     },
     Tickets: {
       screen: TicketScreenStack,
       navigationOptions: {
-        tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-          return <FontAwesomeI name='ticket' size={30} style={styles.icon}/> // On applique un style pour les redimensionner comme il faut
+      
+      tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+        return (
+        //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+        <View  style={{
+                    borderWidth:0,
+                    //borderColor:'rgba(0,0,0,0.2)',
+                    alignItems:'center',
+                    justifyContent:'center',
+                    width:40,
+                    height:40,
+                    backgroundColor:tintColor,
+                    borderRadius:50,
+                  }}
+              >
+              <FontAwesomeI
+              name='ticket'
+              size={30}
+              style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+          />
+          </View>
+        );
+      },
+      tabBarLabel: ({ focused, tintColor }) => {
+        return (
+          <Text style={labelStyle(focused,tintColor)}>Tickets</Text>
+        );
         }
       }
     },
     Broadcasting: {
       screen: BroadcastingScreen,
       navigationOptions: {
-        tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-          return <MaterialCommunityIconsI name='radio-tower' size={30} style={styles.icon}/> // On applique un style pour les redimensionner comme il faut
-        }
+  
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View
+          style={{
+              borderWidth:0,
+              //borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              width:40,
+              height:40,
+              backgroundColor:tintColor,
+              borderRadius:50,
+            }}
+        >
+                <MaterialCommunityIconsI
+                name='radio-tower'
+                size={30}
+                style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+            />
+            </View>
+          );
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <Text style={labelStyle(focused,tintColor)}>Diffusion</Text>
+          );
+          }
       }
     },
     Profil: {
       screen: ProfilScreenStack,
       navigationOptions: {
-        tabBarIcon: () => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-          return <FontAwesomeI name='user-o' size={30} style={styles.icon}/> // On applique un style pour les redimensionner comme il faut
-        }
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View
+          style={{
+              borderWidth:0,
+              //borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              width:40,
+              height:40,
+              backgroundColor:tintColor,
+              borderRadius:50,
+            }}
+        >
+                <FontAwesomeI
+                name='user'
+                size={30}
+                style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+            />
+            </View>
+          );
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <Text style={labelStyle(focused,tintColor)}>Profil</Text>
+          );
+          }
       }
 
     }
@@ -199,12 +306,28 @@ const AppFinLive = createBottomTabNavigator(
 
   {
     tabBarOptions: {
-      activeBackgroundColor: '#DDDDDD', // Couleur d'arrière-plan de l'onglet sélectionné
-      inactiveBackgroundColor: '#FFFFFF', // Couleur d'arrière-plan des onglets non sélectionnés
+      activeBackgroundColor: '#C8D1DB', // Couleur d'arrière-plan de l'onglet sélectionné
+      inactiveBackgroundColor: '#C8D1DB', // Couleur d'arrière-plan des onglets non sélectionnés
       showLabel: true, // On masque les titres
       showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
-      activeTintColor: 'darkgray',
-      inactiveTintColor: 'gray',
+      activeTintColor: '#85B3D3',
+      inactiveTintColor: '#9A9A9A',
+      style: {
+        backgroundColor: '#C8D1DB',
+        borderTopColor: '#C8D1DB',
+        borderTopWidth: 15,
+        height: 65
+        },
+ 
+      labelStyle:{
+   //       labelSize: 30,
+          marginTop: 10
+        },
+      iconStyle: {
+          flexGrow: 1,
+          marginTop: 0,
+          marginBottom: 10
+        },
     },
     /*defaultNavigationOptions: ({ navigation }) => ({
         tabBarIcon: ({ focused, tintColor }) =>
@@ -214,15 +337,28 @@ const AppFinLive = createBottomTabNavigator(
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
       },*/
+
     }
 )
 
 
+function labelStyle (focused, tintColor) {
+  if (focused) {
+    couleur = tintColor }
+  else {
+     couleur = '#9A9A9A' }
+  return {
+    marginTop:10,  
+    fontSize: 14 ,
+    fontWeight: 'bold',
+    color: couleur
+  }
+}
 
 
 const styles = StyleSheet.create({
   icon: {
-     color: 'lightblue',
+     color: '#9A9A9A',
   }
 })  
 
