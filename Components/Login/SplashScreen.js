@@ -1,16 +1,18 @@
 import React from 'react';
-import { StyleSheet, View, Text, Dimensions, ImageBackground, StatusBar} from 'react-native';
+import { StyleSheet, View, Text, Dimensions, ImageBackground, Image, StatusBar} from 'react-native';
 import { Button } from 'native-base';
+import { Svg } from "expo";
 
-import bgSrc from '../../assets/splash.jpg';
+import bgSrc from '../../assets/icon_1024.png';
 const DEVICE_WIDTH = Dimensions.get('window').width;
+const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 class SplashScreen extends React.Component {
   performTimeConsumingTask = async() => {
     return new Promise((resolve) =>
       setTimeout(
         () => { resolve('result') },
-        3000
+        3500
       )
     )
   }
@@ -30,81 +32,53 @@ class SplashScreen extends React.Component {
     console.log ("HAUTEUR" + height);
     console.log ("LARGEUR" + width);
     return (
+ 
           <View style={styles.container}>
           <StatusBar hidden />
+          
+          <Svg width={DEVICE_WIDTH} height={DEVICE_HEIGHT} viewBox="0 0 100 100">
+             <Svg.Circle cx="100" cy="0" r="50" fill="#479ac8" opacity="0.2"/>
+             <Svg.Circle cx="0" cy="100" r="50" fill="#479ac8" opacity="0.2"/>
+          </Svg>
             <ImageBackground
-              source={{uri: 'https://picsum.photos/400/600?random'}}
+            //source={{uri: 'https://picsum.photos/200/300?image=1062'}}
+              //source={{uri: 'https://picsum.photos/400/600?random'}}
               //source={{uri: 'https://picsum.photos/' + width + '/' + '/' + height + '?random'}}
               //</View>source={{uri: 'https://images.unsplash.com/photo-1424819827928-55f0c8497861?fit=crop&w=600&h=600'}}
-              //source={bgSrc}
-              style={styles.image}
-            >
-   <View style={styles.main_view}>
-                  <Button  style={{height:100, width:DEVICE_WIDTH-50, alignItems:'center',justifyContent:'center'}} dark>
-                    <Text style={{color: 'aquamarine',fontWeight: 'bold',fontSize: 50,}}>FinLive</Text>
-                  </Button>
-                  </View>
-            </ImageBackground>
+              source={bgSrc}
+              style={styles.picture}
+              resizeMode="center"
+            />
+
           </View >
     );
   }
 }
 const styles = StyleSheet.create({
-main_view: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-},
+
   container: {
     flex: 1,
-    alignItems: 'stretch',
-    justifyContent: 'center',
+   // alignItems: 'stretch',
+   // justifyContent: 'center',
   },
   image: {
-    flexGrow:1,
-    height:null,
+    //flexGrow:1,
+    flex:1,
     width:null,
+    height:null,
     alignItems: 'center',
     justifyContent:'center',
   },
-  paragraph: {
-    textAlign: 'center',
-    color: 'aquamarine',
-    fontSize: 60,
-    fontWeight: 'bold'
+  picture: {
+    flex: 1,
+    top: 0, left: 0, right: 0, bottom: 0,
+    //opacity: 0.15,
+    position: "absolute",
+    width: null,
+    height: null,
+    resizeMode: 'cover',
   },
 });
 
-
-
-/*      <View style={styles.main_container}>
-        <Image style={styles.imageStyle} source={bgSrc} />
-        <Text style={styles.textStyles}>
-          FinLive
-        </Text>
-      </View>
-    );
-  }
-}
-
-const styles = {
-  main_container: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'aquamarine'
-  },
-  imageStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textStyles: {
-    color: 'white',
-    fontSize: 40,
-    fontWeight: 'bold'
-  }
-}*/
 
 export default SplashScreen;

@@ -1,176 +1,191 @@
 import React from 'react'
-import { View, AsyncStorage, Alert} from 'react-native'
-import { Form, Item, Label, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content,Text, Card, CardItem }  from "native-base";
+import { View, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView} from 'react-native'
+import { Thumbnail, ListItem, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { globalStyle } from '../Styles/globalStyle'
+import { getNews } from '../API/APINews'
+import Dimensions from 'Dimensions';
 import { UserContext } from '../Context/UserProvider';
 import FLInput from '../Components/commons/FLInput'
 
 
-
 //import Icon from 'react-native-vector-icons/FontAwesome'
+
+const DEVICE_WIDTH = Dimensions.get('window').width;
 
 class HomeScreen extends React.Component {
 
   constructor(props) {
       super(props)
-      this.textePourPierre =''
-      this.state = { 
-
-        reponseDePierre :'La réponse ici',
-
+      this.state = {
+        isLoading: true,
+        news: []
       }
-      //this._signOutAsync = this._signOutAsync.bind(this)
+
     }
 
+
+
+    
     static navigationOptions = {
       header: (
-        <Header>
-        <Left>
-        </Left>
-        <Body center>
-          <Title>FinLive</Title>
-        </Body>
-        <Right >
-        <Button transparent>
-                  <Icon name='more' />
-                </Button>
-          </Right>
-      </Header>
+        <SafeAreaView style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: '#C8D1DB',
+          height: 100
+        }}>
+          <View style={{
+            marginLeft: 0.05*DEVICE_WIDTH, 
+            width: 50, 
+            height: 50,  
+            //backgroundColor: 'powderblue'
+            backgroundColor: 'transparent'
+            }} 
+            />
+        <View style={{  backgroundColor: 'transparent'}} >
+          <Title style={{color: '#9A9A9A', fontSize:36}}>FinLive</Title>
+        </View>
+        <View style={{
+              marginRight: 0.05*DEVICE_WIDTH, 
+              height: 40, 
+              width: 40,  
+              //borderRadius: 20,
+              justifyContent: 'center',
+              alignItems: 'center',
+              //backgroundColor: 'steelblue'
+              backgroundColor: 'transparent'
+              }} 
+          >
+          <Icon name='ios-notifications' style={{
+                      backgroundColor:'transparent',
+                      color: '#9A9A9A'
+                    }}
+          />
+          <View 
+                    style={{
+                      position: 'absolute',
+                      width :18,
+                      height : 18,
+                      borderRadius: 9,
+                      backgroundColor:'red',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      top: 0,
+                      left: 40 - 18
+                    }}
+                    >
+                      <Text style={{backgroundColor:'transparent',fontSize: 15, color: 'white'}}>4</Text>
+            </View>
+
+        </View>
+    
+       
+  
+               
+       </SafeAreaView>
+   
       )
     }
 
+    componentWillMount(){
+      this._getNewsList();
 
+    }
     _NavToNewsList = () => {
       this.props.navigation.navigate('NewsList');
     };
 
-    _alert =  () => {
-      Alert.alert(
-        'Coucou',
-        'Test')
-    };
-    _getInfoFromPierre = () => {
-      const url = 'http://34.245.143.173:8080'
-      return fetch(url)
-         .then((response) => console.log(response))
-   //     .then((response) => response.json())
-       .catch((error) => console.error(error))
-    };
+   
+    _getNewsList = () => {
+       getNews().then(data => {
+        //this.setState( {isLoading : false})
+         //response.json({ message: 'Request received!', data })
+         
+         
+         //console.log(data);
+         
+         this.setState( {news: data, isLoading: false});
+         //this.setState( {isLoading : false})
+       }) 
+       
+       //console.log(this.state.news)   
+     };
 
-    _postInfoToPierre = () => {
-          console.log(this.state)
-          const url = 'http://34.245.143.173:8080'
-          var details = {
-              'idToken': this.textePourPierre,
-          };
-          
-          var formBody = [];
-          for (var property in details) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(details[property]);
-            formBody.push(encodedKey + "=" + encodedValue);
-          }
-          formBody = formBody.join("&");
-          console.log(formBody)
-          fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: formBody
-          })
-          .then((response) => {
-            console.log('Reponse POST : ' + JSON.stringify(response));
-            //this.setState( { reponseDePierre : response.toString() } )
-            this.setState( { reponseDePierre : JSON.stringify(response) } )
-            }
-            )
-          .catch((error) => {
-              console.error('Erreur requete POST : ' + error);
-              this.setState( { reponseDePierre : 'La requete a foirée' } )
-          });
-        };
+     _displayLoading() {
+      if (this.state.isLoading) {
+        return (
+          <View style={globalStyle.loading_container}>
+              <ActivityIndicator size='large' />
+            </View>
+        )
+      }
+    }
 
+    _displayNews = ({ item }) => {
+    
+      //console.log(item);
+        return (
+            
+
+       
+        <Card style={{
+              width: DEVICE_WIDTH*0.65,
+              marginRight: DEVICE_WIDTH*0.01,
+              marginLeft:DEVICE_WIDTH*0.05,
+   
+              }}
+              
+              >
+        <TouchableOpacity onPress={this._NavToNewsList.bind(this)}>
+        <CardItem > 
+          <Left>
+            <Thumbnail source={{uri: item.urlToImage}} />
+            <Body>
+            <Text>{item.title}</Text>
+              
+              <Text>{item.author} - {item.publishedAt}</Text>
+            </Body>
+          </Left>
+        </CardItem>
+        </TouchableOpacity>
+        </Card>
+        
+        )
+    }
 
     render() {
       //console.log(this.props);
       return(
-            <Container>
-              <Content padder>
-                <Card>
-                  <CardItem>
-                    <Body>
-                      <Text>bla bla bla ...</Text>
-                    </Body>
-                  </CardItem>
-                </Card>
-                <Button full rounded dark
-                  style={{ marginTop: 10 }}
-                  onPress={this._alert}>
-                  <Text>Alerte test</Text>
-                </Button>
-                <Button full rounded info
-                  style={{ marginTop: 10 }}
-                  onPress={this._getInfoFromPierre}>
-                  <Text>Get de Pierre</Text>
-                </Button>
-                <Item regular>
-                    <Input placeholder='A envoyer à Pierre' onChangeText={(text) => this.textePourPierre=text }/>
-                </Item>
-                <Button full rounded danger
-                  style={{ marginTop: 10 }}
-                  onPress={this._postInfoToPierre}>
-                  <Text>Post vers Pierre</Text>
-                </Button>
-                <Button full rounded primary
-                  style={{ marginTop: 10 }}
-                  //onPress={() => this.props.navigation.navigate("Profile")}
-                  onPress={this._NavToNewsList}
-                  >
-                  <Text>Actualités</Text>
-                </Button>
-               
-                  
-                  <UserContext.Consumer>
-                  {value => <Text>Hello {value.name}</Text>}
-                  </UserContext.Consumer> 
-                  <FLInput></FLInput>
-                  
-                    <Button full rounded primary
-                        style={{ marginTop: 10 }}
-                        onPress={this._NavToNewsList}
-                    >
-                       <UserContext.Consumer>
-                          {value => <Text>{value.name}</Text>}
-                      </UserContext.Consumer> 
-                    </Button>
+        <Container>
+        
+          <Content>
+            <Text style={{
+              marginLeft: DEVICE_WIDTH*0.05,
+              marginTop: 20,
+              marginBottom: 5,
+              fontSize:26,
+              color: '#707070'
+
+            }}>Actualités</Text>
+            <FlatList
+              data={this.state.news}
+              renderItem={this._displayNews}
+              keyExtractor={item => item.title}
+              horizontal={true}
+              //stickyHeaderIndices={this.state.stickyHeaderIndices}
+           />
+
+   
 
 
-                    <Card>
-                      <CardItem header>
-                        <Text>TESTAGE DE POST</Text>
-                      </CardItem>
-                      <CardItem>
-                        <Body>
-                          <Text>
-                            {this.state.reponseDePierre._bodyText}
-                          </Text>
-                        </Body>
-                      </CardItem>
-                      <CardItem footer>
-                        <Text>Vincent</Text>
-                      </CardItem>
-                    </Card>
-                  
-              </Content>
-            </Container>
-           
-        /*<View style={globalStyle.container}>
-          <Text style={globalStyle.defaultText}>Bienvenue dans l'application</Text>
-          <Button title="Les denières actualités" onPress={this._NavToNewsList} />
-        </View>*/
+          </Content>
+          {this._displayLoading()}
+         
+        </Container>
       );
-      }
+    }
 }
 
 

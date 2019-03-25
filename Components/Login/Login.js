@@ -4,13 +4,14 @@ import {
   KeyboardAvoidingView,
   AsyncStorage,
   View,
-  SafeAreaView,
+  ScrollView,
   ActivityIndicator,
   StyleSheet
 } from 'react-native';
-import { Thumbnail, Item,Container,Title, Content, List, ListItem, InputGroup, Input, Icon, Text, Picker, Button } from 'native-base';
+import { Thumbnail, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Text, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
+import LogoComponent  from '../LogoComponent'
 import Dimensions from 'Dimensions';
 import firebase from 'firebase'
 
@@ -37,7 +38,7 @@ class Login extends Component {
   //connection a firebase
   componentWillMount () {
 
-      firebase.auth().onAuthStateChanged((user) => {
+    /*  firebase.auth().onAuthStateChanged((user) => {
           if (user) {
             this.setState({ loggedIn: true });
             console.log("USER FIREBASE : " + JSON.stringify(user.uid)) 
@@ -47,7 +48,7 @@ class Login extends Component {
           
           console.log("LoggedIn : " + this.state.loggedIn) 
         });
-        
+      */  
   }
 
   //verif si email correct
@@ -74,16 +75,23 @@ class Login extends Component {
         this.setState({
                 loading: false
               });
-        AsyncStorage.setItem('userToken', JSON.stringify(userData));
+        console.log(userData.user.uid);
+        console.log(userData.user.email);
+
+        AsyncStorage.setItem('userToken', userData.user.uid);
+        AsyncStorage.setItem('userEmail', userData.user.email);
         //this.props.navigator.push({ component: Account });
+        
         this.props.navigation.navigate('App');
+        return true;
       }
     ).catch((error) =>
         {
               this.setState({
                 loading: false
               });
-        alert('Erreur de connexion : '+error);
+        alert(error);
+        return false;
     });
   }
 
@@ -100,37 +108,10 @@ class Login extends Component {
   }
 
 
-  //rajoute un bouton pour effacer l'input
-    eraseInputText = (whichInput) => {
-        this.typingInputText(whichInput, "");
-    }
 
-
-    typingInputText = (whichInput, text) =>{
-        switch (whichInput) {
-            case 'email':
-                this.setState({email: text});
-                break;
-            case 'password':
-                this.setState({password: text});
-                break;            
-            default:
-              console.log('Ne trouve pas le bon input');
-          }
-    }
-
-  //button premettant d'eefacer l'input
-  renderEraseOnButton = (whichInput) => {
-    return(
-            <Icon name="close-circle" style={{color : 'black'}} onPress={() =>this.eraseInputText(whichInput)} />
-         );
-    }
   render() {
-    console.log("RENDER" + this.state.loading)
-    // A simple UI with a toolbar, and content below it.
-    let eraseInputEmail = (this.state.email === '') ?  <Text /> : this.renderEraseOnButton('email') ;
-    let eraseInputPassword = (this.state.password === '') ?  <Text /> : this.renderEraseOnButton('password') ;
-
+    console.log("RENDER LOGIN : " + this.state.loading)
+ 
 
     // The content of the screen should be inputs for a username, password and submit button.
     // If we are loading then we display an ActivityIndicator.
@@ -141,58 +122,71 @@ class Login extends Component {
         <View style={{flex: 1}}>
             <ImageBackground
                 style={styles.picture} 
-                source={{uri: 'https://picsum.photos/g/400/600?random'}}
-            >
+                //source={{uri: 'https://picsum.photos/g/400/600?random'}}
+                backgroundColor="#F9FAFC"
+            />
             
-            </ImageBackground>
-            <View style={styles.container}>
-                <Thumbnail large source={{uri: 'https://picsum.photos/80/120?random'}} />
-                <View style={styles.container}>
-                    <Button  style={{height:100, width:DEVICE_WIDTH-50, alignItems:'center',justifyContent:'center'}} dark>
-                    <Text style={{color: 'aquamarine',fontWeight: 'bold',fontSize: 50,}}>FinLive</Text>
-                    </Button>
+     
+            <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
+            <ScrollView keyboardShouldPersistTaps="always">
+             <View style={styles.container}>
+                <LogoComponent />
                 </View>
-                <KeyboardAvoidingView behavior="padding" style={styles.container}>
+                <View style={styles.container}>
                     <InputGroup>
-                    <Item >
-                        <Icon name="ios-mail" style={{color : 'black'}}/>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                        <Icon name="ios-mail" style={{color : "#9A9A9A"}}/>
                         <Input
                         //onChangeText={(text) => this.setState({email: text})}
-                        onChangeText={e => {this.typingInputText('email',e)}}
-                        value={this.state.email.toLowerCase()}
+                        onChangeText={e => {this.setState({ email: e.toLowerCase() })}}
+                        value={this.state.email}
                         keyboardType='email-address'
+                        clearButtonMode="always"
                         placeholder={"Adresse mail"} />
-                        {eraseInputEmail}
+                        
                     </Item>
                     </InputGroup>
                 
                     <InputGroup>
-                        <Icon name="ios-unlock"  style={{color : 'black'}}/>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                        <Icon name="ios-unlock"  style={{color : "#9A9A9A"}}/>
                         <Input
-                        onChangeText={e => {this.typingInputText('password',e)}}
-                        value={this.state.password}
+                        onChangeText={e => {this.setState({ password: e })}}
+                        //value={this.state.password}
                         secureTextEntry={true}
-                        placeholder={"Mot de passe"} />
-                        {eraseInputPassword}
+                        clearButtonMode="always"
+                        placeholder={"Mot de passe"} 
+                        onSubmitEditing={() => this.login()}
+                        />
+                    </Item>
                     </InputGroup>
-                </KeyboardAvoidingView>
-            {/*content*/}
-            <ButtonSubmit onPress={this.login.bind(this)} onCheckEmail={this.checkEmailValidity.bind(this)}/>
+                    
+             
+            </View>
+            <View style={styles.container}>
+                <ButtonSubmit 
+                    onPress={this.login.bind(this)} 
+                    onCheckEmail={this.checkEmailValidity.bind(this)}
+                    text={'SE CONNECTER'}
+                />
+            </View>
             <View style={styles.container_buttons}>
                 <Button light rounded 
-                    style={{width: DEVICE_WIDTH/2 - 8, justifyContent:'center'}}
+                    style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center'}}
                     onPress={this.goToRegister}
                     >
                         <Text style={styles.text_button}>Créer un compte</Text>
                 </Button>
                 <Button light rounded
-                    style={{width: DEVICE_WIDTH/2 -8,  justifyContent:'center'}}
+                    style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center'}}
                     onPress={this.goToPasswordRecovery}
                 >
-                        <Text style={styles.text_button}>Retrouver ses identifiants</Text>
+                        <Text style={styles.text_button}>Identifiants</Text>
                 </Button>
             </View>
-            </View>
+           
+            </ScrollView>
+            </KeyboardAvoidingView>
         </View>
         ;
 
@@ -213,9 +207,10 @@ class Login extends Component {
 const styles = StyleSheet.create({
     container: {
         paddingTop: 100,
-        flex: 3,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        
     },
     style_activityIndicator: {
       flex: 9,
@@ -241,11 +236,12 @@ const styles = StyleSheet.create({
           resizeMode: 'cover',
         },
     container_buttons: {
-            flex: 2,
+            flex: 1,
+            paddingTop:30,
            // top: -95,
-             width: DEVICE_WIDTH,
+            // width: 0.2*DEVICE_WIDTH,
             flexDirection: 'row',
-            justifyContent: 'space-around',
+            justifyContent: 'center',
           },
     text_button: {
             color: 'black',
