@@ -7,7 +7,9 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
-  StyleSheet
+  StyleSheet,
+  StatusBar,
+  Platform
 } from 'react-native';
 import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Text, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
@@ -20,10 +22,12 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
+
 // import Signup from './Signup';
 //import Account from './Main'
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
 class Register extends Component {
 
@@ -317,13 +321,24 @@ class Register extends Component {
       
         ;
 
-    
+        //console.log('statusBarHeight: ', StatusBar.currentHeight);
         return (
-            //<SafeAreaView style={{flex: 1}}>
+            <SafeAreaView style={{flex: 1,paddingTop : STATUSBAR_HEIGHT}}>
+                   <StatusBar
+                        barStyle="dark-content"
+                        // dark-content, light-content and default
+                        hidden={false}
+                        //To hide statusBar
+                        backgroundColor="#00BCD4"
+                        //Background color of statusBar
+                        translucent={true}
+                        //allowing light, but not detailed shapes
+                        networkActivityIndicatorVisible={true}
+                      />
             <View style={{flex: 1}}>
                 {content}
                 </View>
-            //</SafeAreaView>
+            </SafeAreaView>
         );
   }
 
@@ -376,7 +391,8 @@ const styles = StyleSheet.create({
           },
     container_buttons: {
            //flex: 1,
-           paddingTop:30,
+           paddingTop: 30,
+           paddingBottom: 60,
            // top: -95,
              width: 0.9*DEVICE_WIDTH,
             flexDirection: 'column',

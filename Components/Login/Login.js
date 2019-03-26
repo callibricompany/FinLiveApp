@@ -6,7 +6,9 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
-  StyleSheet
+  StyleSheet,
+  StatusBar,
+  Platform
 } from 'react-native';
 import { Thumbnail, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Text, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
@@ -20,6 +22,8 @@ import firebase from 'firebase'
 //import Account from './Main'
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
+const DEVICE_HEIGHT = Dimensions.get('window').height;
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
 class Login extends Component {
 
@@ -138,8 +142,8 @@ class Login extends Component {
                         <Icon name="ios-mail" style={{color : "#9A9A9A"}}/>
                         <Input
                         //onChangeText={(text) => this.setState({email: text})}
-                        onChangeText={e => {this.setState({ email: e.toLowerCase() })}}
-                        value={this.state.email}
+                        onChangeText={e => {this.setState({ email: e })}}
+                        value={this.state.email.toLowerCase()}
                         keyboardType='email-address'
                         clearButtonMode="always"
                         placeholder={"Adresse mail"} />
@@ -172,13 +176,13 @@ class Login extends Component {
             </View>
             <View style={styles.container_buttons}>
                 <Button light rounded 
-                    style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center'}}
+                    style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center',marginRight: 5}}
                     onPress={this.goToRegister}
                     >
                         <Text style={styles.text_button}>Créer un compte</Text>
                 </Button>
                 <Button light rounded
-                    style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center'}}
+                    style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center', marginLeft: 5}}
                     onPress={this.goToPasswordRecovery}
                 >
                         <Text style={styles.text_button}>Identifiants</Text>
@@ -196,6 +200,7 @@ class Login extends Component {
             <View style={{flex: 1}}>
                 {content}
                 </View>
+           
             //</SafeAreaView>
         );
   }
@@ -207,6 +212,7 @@ class Login extends Component {
 const styles = StyleSheet.create({
     container: {
         paddingTop: 100,
+        //marginTop: STATUSBAR_HEIGHT,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -238,6 +244,7 @@ const styles = StyleSheet.create({
     container_buttons: {
             flex: 1,
             paddingTop:30,
+            paddingBottom: 60,
            // top: -95,
             // width: 0.2*DEVICE_WIDTH,
             flexDirection: 'row',

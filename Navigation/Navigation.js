@@ -24,64 +24,6 @@ import { TabBarItem } from 'react-native-vector-icons/AntDesign';
 //import { Ionicons } from 'react-native-vector-icons';
 
 
-
-
-/*class IconWithBadge extends React.Component {
-  render() {
-    const { name, badgeCount, color, size } = this.props;
-    return (
-      <View style={{ width: 24, height: 24, margin: 5 }}>
-        <Ionicons name={name} size={size} color={color} />
-        {badgeCount > 0 && (
-          <View
-            style={{
-              // /If you're using react-native < 0.57 overflow outside of the parent
-              // will not work on Android, see https://git.io/fhLJ8
-              position: 'absolute',
-              right: -6,
-              top: -3,
-              backgroundColor: 'red',
-              borderRadius: 6,
-              width: 12,
-              height: 12,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>
-              {badgeCount}
-            </Text>
-          </View>
-        )}
-      </View>
-    );
-  }
-}
-
-const HomeIconWithBadge = props => {
-  // You should pass down the badgeCount in some other ways like context, redux, mobx or event emitters.
-  return <IconWithBadge {...props} badgeCount={3} />;
-};
-
-const getTabBarIcon = (navigation, focused, tintColor) => {
-  const { routeName } = navigation.state;
-  let IconComponent = Ionicons;
-  let iconName;
-  if (routeName === 'Home') {
-    iconName = `ios-information-circle${focused ? '' : '-outline'}`;
-    // We want to add badges to home tab icon
-    IconComponent = HomeIconWithBadge;
-  } else if (routeName === 'Settings') {
-    iconName = `ios-options${focused ? '' : '-outline'}`;
-  }
-
-  // You can return any component that you like here!
-  return <IconComponent name={iconName} size={25} color={tintColor} />;
-};
-
-*/
-
-
-
 //Ecran accueil
 const HomeScreenStack = createStackNavigator({
   Home: {
@@ -162,7 +104,9 @@ const AppFinLive = createBottomTabNavigator(
         },
         tabBarLabel: ({ focused, tintColor }) => {
           return (
+            <View style={{alignItems:'center', justifyContent:'center'}}>
             <Text style={labelStyle(focused,tintColor)}>Accueil</Text>
+            </View>
           );
           }
       }
@@ -194,7 +138,9 @@ const AppFinLive = createBottomTabNavigator(
         },
         tabBarLabel: ({ focused, tintColor }) => {
           return (
+            <View style={{alignItems:'center', justifyContent:'center'}}>
             <Text style={labelStyle(focused,tintColor)}>Evaluer</Text>
+            </View>
           );
           }
       }
@@ -227,7 +173,9 @@ const AppFinLive = createBottomTabNavigator(
       },
       tabBarLabel: ({ focused, tintColor }) => {
         return (
+          <View style={{alignItems:'center', justifyContent:'center'}}>
           <Text style={labelStyle(focused,tintColor)}>Tickets</Text>
+          </View>
         );
         }
       }
@@ -261,7 +209,9 @@ const AppFinLive = createBottomTabNavigator(
         },
         tabBarLabel: ({ focused, tintColor }) => {
           return (
+            <View style={{alignItems:'center', justifyContent:'center'}}>
             <Text style={labelStyle(focused,tintColor)}>Diffusion</Text>
+            </View>
           );
           }
       }
@@ -294,7 +244,9 @@ const AppFinLive = createBottomTabNavigator(
         },
         tabBarLabel: ({ focused, tintColor }) => {
           return (
-            <Text style={labelStyle(focused,tintColor)}>Profil</Text>
+            <View style={{alignItems:'center', justifyContent:'center'}}>
+               <Text style={labelStyle(focused,tintColor)}>Profil</Text>
+            </View>
           );
           }
       }
@@ -312,15 +264,21 @@ const AppFinLive = createBottomTabNavigator(
       showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
       activeTintColor: '#85B3D3',
       inactiveTintColor: '#9A9A9A',
+      justifyContent: 'center',
+      alignItems: 'center',
       style: {
         backgroundColor: '#C8D1DB',
         borderTopColor: '#C8D1DB',
         borderTopWidth: 15,
-        height: 65
+        height: 65,
+        justifyContent: 'center',
+        alignItems: 'center',
         },
  
       labelStyle:{
    //       labelSize: 30,
+          justifyContent: 'center',
+          alignItems: 'center',
           marginTop: 10
         },
       iconStyle: {
@@ -351,6 +309,8 @@ function labelStyle (focused, tintColor) {
     marginTop:10,  
     fontSize: 14 ,
     fontWeight: 'bold',
+    justifyContent: 'center',
+    alignItems: 'center',
     color: couleur
   }
 }

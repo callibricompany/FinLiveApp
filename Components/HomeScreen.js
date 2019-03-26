@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView} from 'react-native'
+import { View, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar} from 'react-native'
 import { Thumbnail, ListItem, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { globalStyle } from '../Styles/globalStyle'
 import { getNews } from '../API/APINews'
@@ -8,9 +8,14 @@ import { UserContext } from '../Context/UserProvider';
 import FLInput from '../Components/commons/FLInput'
 
 
+
 //import Icon from 'react-native-vector-icons/FontAwesome'
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
+const DEVICE_HEIGHT = Dimensions.get('window').height;
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
+
+
 
 class HomeScreen extends React.Component {
 
@@ -20,7 +25,7 @@ class HomeScreen extends React.Component {
         isLoading: true,
         news: []
       }
-
+       // console.log("PLATE-FORME : " + Platform.OS)
     }
 
 
@@ -29,12 +34,13 @@ class HomeScreen extends React.Component {
     static navigationOptions = {
       header: (
         <SafeAreaView style={{
-          flex: 1,
+          //flex: 1,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           backgroundColor: '#C8D1DB',
-          height: 100
+          height: Platform.OS === 'ios' ? 90 : 90-STATUSBAR_HEIGHT,
+          marginTop: STATUSBAR_HEIGHT
         }}>
           <View style={{
             marginLeft: 0.05*DEVICE_WIDTH, 
