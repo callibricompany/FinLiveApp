@@ -5,8 +5,9 @@ import { createStackNavigator, createSwitchNavigator, createAppContainer, create
 
 import AuthLoadingScreen from '../Components/Login/AuthLoadingScreen'
 import SplashScreen from '../Components/Login/SplashScreen'
-import Login from '../Components/Login/Login'
+import Login from '../Components/Login/Login2'
 import Register from '../Components/Login/Register'
+import WaitingRoom from '../Components/Login/WaitingValidationScreen'
 
 import HomeScreen from '../Components/HomeScreen'
 import NewsList from '../Components/NewsList'
@@ -19,7 +20,6 @@ import BroadcastingScreen from '../Components/BroadcastinScreen'
 
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
-import { TabBarItem } from 'react-native-vector-icons/AntDesign';
 
 //import { Ionicons } from 'react-native-vector-icons';
 
@@ -263,7 +263,7 @@ const AppFinLive = createBottomTabNavigator(
       showLabel: true, // On masque les titres
       showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
       activeTintColor: '#85B3D3',
-      inactiveTintColor: '#9A9A9A',
+      inactiveTintColor: '#707070',
       justifyContent: 'center',
       alignItems: 'center',
       style: {
@@ -304,7 +304,7 @@ function labelStyle (focused, tintColor) {
   if (focused) {
     couleur = tintColor }
   else {
-     couleur = '#9A9A9A' }
+     couleur = '#707070' }
   return {
     marginTop:10,  
     fontSize: 14 ,
@@ -318,7 +318,7 @@ function labelStyle (focused, tintColor) {
 
 const styles = StyleSheet.create({
   icon: {
-     color: '#9A9A9A',
+     color: '#707070',
   }
 })  
 
@@ -328,7 +328,8 @@ export default createAppContainer(createSwitchNavigator(
     App: AppFinLive,
     Login: Login,
     Register: Register,
-    Splash: SplashScreen
+    Splash: SplashScreen,
+    WaitingRoom : WaitingRoom
   },
   {
     initialRouteName: 'Splash',

@@ -3,7 +3,7 @@ import { View, Button, Text } from 'react-native'
 import { FLButton } from './commons';
   
 import { globalStyle } from '../Styles/globalStyle'
-import NewsDetail2 from './NewsDetail2';
+//import NewsDetail2 from './NewsDetail2';
 
 
 
@@ -53,10 +53,12 @@ class NewsList extends React.Component {
           <FLButton onPress={this.onButtonPress.bind(this, 2, news2)}>{news2}</FLButton>
           <FLButton onPress={this.onButtonPress.bind(this, 3, news3)}>{news3}</FLButton>
           <Button title="Test" onPress={this._NavToNewDetail} />
-          <NewsDetail2 text={news1}/>
+         
         </View>
       );
       }
 }
 
 export default NewsList
+
+// <NewsDetail2 text={news1}/>

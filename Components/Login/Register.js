@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   StatusBar,
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Text, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
@@ -18,7 +19,10 @@ import Dimensions from 'Dimensions';
 import firebase from 'firebase'
 import bgSrc from '../../assets/icon_1024.png';
 import LogoComponent  from '../LogoComponent'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
+import { withFirebase } from '../../Database';
+import { withNavigation } from 'react-navigation';
+
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
@@ -29,7 +33,13 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
-class Register extends Component {
+const Register = () => (
+    
+  <RegisterForm />
+
+);
+
+class RegisterFormBase extends Component {
 
   constructor(props){
     super(props);
@@ -48,8 +58,20 @@ class Register extends Component {
       isIndependant: true
 
     }
+
+    this.focusNextField = this.focusNextField.bind(this);
+    this.inputs = {};
+
+    this.creationUserOk = false;
   }
-  
+
+  //focus next text input : putain de galere
+  focusNextField = (id) => {
+    //this.inputs[id].focus();
+    this.inputs[id]._root.focus();
+  }
+
+
   //connection a firebase
   componentWillMount () {
    /* this.setState({loading: true});
@@ -67,6 +89,7 @@ class Register extends Component {
   }
 
   componentDidMount () {
+
     this.attends();
   }
   
@@ -88,25 +111,103 @@ class Register extends Component {
   checkEmailValidity = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     
-    if (reg.test(this.state.email) === true){
-        return true;
+
+    if (this.state.name.length < 2){
+      Alert.alert('VERIFIER VOTRE NOM', 'Vérifiez votre nom');
+      return false;
     }
+
+    if (this.state.firstname.length < 2){
+      Alert.alert('VERIFIER VOTRE PRENOM', 'Vérifiez votre prénom');
+      return false;
+    }
+    if (this.state.organisme.length < 2 && !this.state.isIndependant){
+      Alert.alert('VERIFIER VOTRE ORGANISME', 'Vérifiez votre organisme de rattachement');
+      return false;
+    }
+
+    if (reg.test(this.state.email) === false){
+      Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
+      return false;
+    }
+
+    if (this.state.password !== this.state.passwordVerif){
+      Alert.alert('VERIFIER VOTRE MOT DE PASSE', 'Vous avez tapé 2 mots de passe différents');
+      return false;
+    }
+
+    if (this.state.password.length < 6){
+      Alert.alert('RESSAISISSEZ UN MOT DE PASSE', 'Il doit contenir au moins 6 caractères');
+      return false;
+    }
+
+    return true;
+  }
+
+
+  onRegisterFail =  () => {
+    //this.setState({ error: 'Authentication Failed', loading: false });
+    /*const choice = await AlertAsync(
+      'Title',
+      'Message',
+      [
+        {text: 'Yes', onPress: () => 'yes'},
+        {text: 'No', onPress: () => Promise.resolve('no')},
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => 'no',
+      },
+    );*/
+    Alert.alert('ERREUR CREATION DE COMPTE', 'error');
+    console.log("erreur creation compte : " + error)
+    this.setState({loggedIn : false, loading: false});
+    this.creationUserOk = false;
     return false;
   }
 
+  onRegisterSuccess() {
+    this.setState({loggedIn : true, loading: false});
+    this.creationUserOk = true;
+    this.props.navigation.navigate('WaitingRoom');
+    return true;
+  }
+
+
   //creation nouvel utilisateur
   register = () => {
-    console.log("REGISTER : " + this.state.loading) 
-    this.props.navigation.navigate('App');
-    return false;
-    this.setState({
-      loading: true
-    });
+    console.log("REGISTER : " + this.state.loading);
+    
+    //this.checkEmailValidity();
+    //firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+    this.props.firebase
+    .doCreateUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then(authUser => {
+      // Create a user in your Firebase realtime database
+      return this.props.firebase
+        .user(authUser.user.uid)
+        .set({
+          code_zoho : '',
+          email : this.state.email,
+          name : this.state.name,
+          firstname : this.state.firstname,
+          statut : false,
+          independant : this.state.isIndependant,
+          organisme : this.state.isIndependant ? '' : this.state.organisme,
+          supervisor : false,
+          expert : false,
+          phone : this.state.phone
 
-        this.setState({
-                loading: false
-              });
-              this.props.navigation.navigate('App');
+        });
+    })
+    .then(this.onRegisterSuccess())
+    .catch((error) =>{
+      
+      console.log("erreur creation compte : " + error);
+      Alert.alert('ERREUR CREATION DE COMPTE', '' + error);
+    })
+    
+    return this.creationUserOk;
   }
 
     //coche s'il est independant
@@ -128,7 +229,10 @@ class Register extends Component {
         <Input
         onChangeText={e => {this.typingInputText('organisme',e)}}
         clearButtonMode="always"
-        placeholder={"Organisme de rattachement"} />
+        placeholder={"Organisme de rattachement"} 
+        blurOnSubmit={ true }
+        returnKeyType={ "done" }
+        />
        </Item>
        </InputGroup>
       );
@@ -211,16 +315,45 @@ class Register extends Component {
             <ScrollView keyboardShouldPersistTaps="always">
                 <View style={[styles.container, {paddingTop:5}]}>
                 <Text style={styles.text2}>Créer votre compte</Text>
-                  <InputGroup>
-                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                  <InputGroup >
+                    <Item style={{width: 0.45*DEVICE_WIDTH}}>
                         <Icon name="ios-person" style={{color : '#9A9A9A'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('name',e)}}
                        // value={this.state.name}
                         clearButtonMode="always"
-                        placeholder={"Prénom / Nom"} />
-                       
+                        placeholder={"Nom"}
+                        blurOnSubmit={ false }
+                        onSubmitEditing={() => {
+                          this.focusNextField('firstname');
+                        }}
+                        returnKeyType={ "next" }
+                        style={styles.textInput}
+                        ref={ input => {
+                          this.inputs['name'] = input;
+                        }}
+                         />
                     </Item>
+                    <Item style={{width: 0.45*DEVICE_WIDTH}}>
+                        <Input
+                        
+                        onChangeText={e => {this.typingInputText('firstname',e)}}
+                       // value={this.state.name}
+                        clearButtonMode="always"
+                        placeholder={"Prénom"} 
+                        style={styles.textInput}
+                        dataDetectorTypes={'phoneNumber'}
+                        blurOnSubmit={ false }
+                        onSubmitEditing={() => {
+                          this.focusNextField('phone');
+                        }}
+                        returnKeyType={ "next" }
+                        ref={ input => {
+                          this.inputs['firstname'] = input;
+                        }}
+                        />
+                     </Item>
+                  
                   </InputGroup>  
                   
                   <InputGroup>
@@ -229,9 +362,19 @@ class Register extends Component {
                         <Input
                         onChangeText={e => {this.typingInputText('phone',e)}}
                         value={this.state.phone}
+                        mask={"+1 ([000]) [000] [00] [00]"}
                         keyboardType='phone-pad'
                         clearButtonMode="always"
-                        placeholder={"Téléphone"} />
+                        placeholder={"Téléphone"} 
+                        blurOnSubmit={ false }
+                        onSubmitEditing={() => {
+                          this.focusNextField('email');
+                        }}
+                        returnKeyType={ "next" }
+                        ref={ input => {
+                          this.inputs['phone'] = input;
+                        }}
+                        />
                       
                     </Item>
                   </InputGroup>  
@@ -248,7 +391,16 @@ class Register extends Component {
                         value={this.state.email.toLowerCase()}
                         keyboardType='email-address'
                         clearButtonMode="always"
-                        placeholder={"Adresse mail"} />
+                        placeholder={"Adresse mail"} 
+                        blurOnSubmit={ false }
+                        onSubmitEditing={() => {
+                          this.focusNextField('password');
+                        }}
+                        returnKeyType={ "next" }
+                        ref={ input => {
+                          this.inputs['email'] = input;
+                        }}
+                        />
                     </Item>
                   </InputGroup>
                 
@@ -260,7 +412,16 @@ class Register extends Component {
                        // value={this.state.password}
                         secureTextEntry={true}
                         clearButtonMode="always"
-                        placeholder={"Mot de passe"} />
+                        placeholder={"Mot de passe"} 
+                        blurOnSubmit={ false }
+                        onSubmitEditing={() => {
+                          this.focusNextField('passwordVerif');
+                        }}
+                        returnKeyType={ "next" }
+                        ref={ input => {
+                          this.inputs['password'] = input;
+                        }}
+                        />
                     </Item>
                   </InputGroup>
                   <InputGroup>
@@ -271,7 +432,13 @@ class Register extends Component {
                         value={this.state.passwordVerif}
                         secureTextEntry={true}
                         clearButtonMode="always"
-                        placeholder={"Confirmez votre mot de passe"} />
+                        placeholder={"Confirmez votre mot de passe"}
+                        blurOnSubmit={ true }
+                        returnKeyType={ "done" }
+                        ref={ input => {
+                          this.inputs['passwordVerif'] = input;
+                        }}
+                        />
                   </Item>
                   </InputGroup>
                   <InputGroup>
@@ -303,7 +470,7 @@ class Register extends Component {
                 <View style={styles.container_buttons}>
                     
                     <Button light rounded 
-                        style={{ justifyContent:'center'}}
+                        style={{ justifyContent:'center', marginBottom:50}}
                         onPress={this.backToLogin.bind(this)}
                         >
                         <Icon name="md-arrow-dropleft" style={{color : "#9A9A9A"}}/>                      
@@ -392,7 +559,7 @@ const styles = StyleSheet.create({
     container_buttons: {
            //flex: 1,
            paddingTop: 30,
-           paddingBottom: 60,
+           paddingBottom: 10,
            // top: -95,
              width: 0.9*DEVICE_WIDTH,
             flexDirection: 'column',
@@ -404,5 +571,8 @@ const styles = StyleSheet.create({
   });
 
 
-export default Register;
+  const RegisterForm = withNavigation(withFirebase(RegisterFormBase));
+
+  export default Register;
+  export { RegisterForm };
 

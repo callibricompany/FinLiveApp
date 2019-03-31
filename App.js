@@ -1,6 +1,9 @@
 import React from 'react'
 import Navigation from './Navigation/Navigation'
 import UserProvider from './Context/UserProvider'
+import Firebase, { FirebaseContext } from './Database';
+
+
 import { StyleProvider, Container, Text } from 'native-base'
 
 import getTheme from './native-base-theme/components'
@@ -12,6 +15,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = { loading: true };
+    
   }
 
   async componentWillMount() {
@@ -29,6 +33,8 @@ export default class App extends React.Component {
       );
     }
     return (
+     
+      <FirebaseContext.Provider value={new Firebase()}>
       <UserProvider>
         <StyleProvider  style={getTheme(material)}>  
         <Container>
@@ -36,43 +42,22 @@ export default class App extends React.Component {
         </Container>
         </StyleProvider>
       </UserProvider>
+      </FirebaseContext.Provider>
+
     );
   }
 }
 
-/*class SignInScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Please sign in',
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Button title="Sign in!" onPress={this._signInAsync} />
-      </View>
-    );
-  }
-
-  _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
-    this.props.navigation.navigate('App');
-  };
-}
-
-
-
-
-
-  _signOutAsync = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate('Auth');
-  };
-}
-
-
-
-
-}
+/*
+      <FirebaseContext.Provider value={new Firebase()}>
+      <UserProvider>
+        <StyleProvider  style={getTheme(material)}>  
+        <Container>
+           <Navigation/>
+        </Container>
+        </StyleProvider>
+      </UserProvider>
+      </FirebaseContext.Provider>
 */
 
 

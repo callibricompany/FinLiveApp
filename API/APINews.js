@@ -13,10 +13,10 @@ export function getNews () {
     console.log(url);
     return axios.get(url, {
         params: {
-            //country: 'fr',
-            //category: 'business',
+            country: 'fr',
+            category: 'business',
             //q: 'macron',
-            sources: 'les-echos',
+            //sources: 'les-echos',
             apiKey: API_NEWS
         },
         timeout: 10000

@@ -3,7 +3,11 @@ import { View, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,P
 import { Thumbnail, ListItem, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { globalStyle } from '../Styles/globalStyle'
 import { getNews } from '../API/APINews'
+import { FLBadge } from './commons/FLBadge'
+ 
 import Dimensions from 'Dimensions';
+import Moment from 'moment';
+import localization from 'moment/locale/fr'
 import { UserContext } from '../Context/UserProvider';
 import FLInput from '../Components/commons/FLInput'
 
@@ -33,65 +37,16 @@ class HomeScreen extends React.Component {
     
     static navigationOptions = {
       header: (
-        <SafeAreaView style={{
-          //flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: '#C8D1DB',
-          height: Platform.OS === 'ios' ? 90 : 90-STATUSBAR_HEIGHT,
-          marginTop: STATUSBAR_HEIGHT
-        }}>
-          <View style={{
-            marginLeft: 0.05*DEVICE_WIDTH, 
-            width: 50, 
-            height: 50,  
-            //backgroundColor: 'powderblue'
-            backgroundColor: 'transparent'
-            }} 
-            />
-        <View style={{  backgroundColor: 'transparent'}} >
-          <Title style={{color: '#9A9A9A', fontSize:36}}>FinLive</Title>
-        </View>
-        <View style={{
-              marginRight: 0.05*DEVICE_WIDTH, 
-              height: 40, 
-              width: 40,  
-              //borderRadius: 20,
-              justifyContent: 'center',
-              alignItems: 'center',
-              //backgroundColor: 'steelblue'
-              backgroundColor: 'transparent'
-              }} 
-          >
-          <Icon name='ios-notifications' style={{
-                      backgroundColor:'transparent',
-                      color: '#9A9A9A'
-                    }}
-          />
-          <View 
-                    style={{
-                      position: 'absolute',
-                      width :18,
-                      height : 18,
-                      borderRadius: 9,
-                      backgroundColor:'red',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      top: 0,
-                      left: 40 - 18
-                    }}
-                    >
-                      <Text style={{backgroundColor:'transparent',fontSize: 15, color: 'white'}}>4</Text>
-            </View>
-
-        </View>
-    
-       
-  
-               
-       </SafeAreaView>
-   
+        <SafeAreaView style={globalStyle.header_safeviewarea}>
+          <View style={globalStyle.header_left_view} />
+          <View style={globalStyle.header_center_view} >
+            <Title style={globalStyle.header_center_text_big}>FinLive</Title>
+          </View>
+          <View style={globalStyle.header_right_view} >
+            <Icon name='ios-notifications' style={globalStyle.header_icon} />
+            <FLBadge numero='3'/>
+          </View>
+        </SafeAreaView>
       )
     }
 
@@ -99,24 +54,18 @@ class HomeScreen extends React.Component {
       this._getNewsList();
 
     }
-    _NavToNewsList = () => {
-      this.props.navigation.navigate('NewsList');
+    _NavToNewsList = (item) => {
+      this.props.navigation.navigate('NewsDetail', {
+        item: item,
+      });
+      //this.props.navigation.navigate('NewsDetail');
     };
 
    
     _getNewsList = () => {
        getNews().then(data => {
-        //this.setState( {isLoading : false})
-         //response.json({ message: 'Request received!', data })
-         
-         
-         //console.log(data);
-         
          this.setState( {news: data, isLoading: false});
-         //this.setState( {isLoading : false})
        }) 
-       
-       //console.log(this.state.news)   
      };
 
      _displayLoading() {
@@ -130,33 +79,52 @@ class HomeScreen extends React.Component {
     }
 
     _displayNews = ({ item }) => {
+        Moment.locale('fr');
+     
     
       //console.log(item);
         return (
-            
-
-       
-        <Card style={{
+        <TouchableOpacity onPress={this._NavToNewsList.bind(this,item)}>
+        <View style={{
+              flex: 1,
               width: DEVICE_WIDTH*0.65,
+              height: 120,
               marginRight: DEVICE_WIDTH*0.01,
               marginLeft:DEVICE_WIDTH*0.05,
-   
+              marginVertical: 5,
+              marginHorizontal: 2,
+              borderWidth: 1,
+              borderRadius: 2,
+              borderColor: '#ccc',
+              //flexWrap: "nowrap",
+              backgroundColor: 'white',
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 1.5,
+              elevation: 3,
+              flexDirection: 'row',
+              justifyContent: 'space-evenly'
               }}
-              
               >
-        <TouchableOpacity onPress={this._NavToNewsList.bind(this)}>
-        <CardItem > 
-          <Left>
-            <Thumbnail source={{uri: item.urlToImage}} />
-            <Body>
-            <Text>{item.title}</Text>
-              
-              <Text>{item.author} - {item.publishedAt}</Text>
-            </Body>
-          </Left>
-        </CardItem>
+            <View style={{flex:1, flexWrap: "nowrap",justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap'}}>
+                <Thumbnail source={{uri: item.urlToImage}} />
+                </View>
+                <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingLeft: 5, paddingRight: 5}}>
+                <Text >{item.source.name}</Text>
+                </View>
+            </View>
+            <View style={{flex:2, flexDirection:'column', flexWrap: 'wrap'}}>
+               <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap', paddingRight:5}}>
+                  <Text style={{fontSize: 18}}>{item.title}</Text>
+                </View>
+                <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingRight:10, paddingBottom: 2}}>
+                   <Text style={{fontSize: 10}}>{item.author} - {Moment(item.publishedAt).locale('fr',localization).format('LL')}</Text>
+                </View>
+            </View>
+        </View>
         </TouchableOpacity>
-        </Card>
         
         )
     }

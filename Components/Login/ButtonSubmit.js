@@ -38,7 +38,7 @@ export default class ButtonSubmit extends Component {
   _onPress() {
       if (this.state.isLoading) return;
       if (!this.props.onCheckEmail()) {
-          Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
+          //Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
           return;
       } 
 
@@ -60,6 +60,7 @@ export default class ButtonSubmit extends Component {
           if (result === false){
             this.buttonAnimated.setValue(0);
             this.growAnimated.setValue(0);
+            this.setState({isLoading: false});
           }
         //Actions.secondScreen();
       // this.setState({isLoading: false});

@@ -16,7 +16,8 @@ import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import LogoComponent  from '../LogoComponent'
 import Dimensions from 'Dimensions';
-import firebase from 'firebase'
+import { withFirebase } from '../../Database';
+import { withNavigation } from 'react-navigation';
 
 
 // import Signup from './Signup';
@@ -26,12 +27,18 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
-class Login extends Component {
+const Login2 = () => (
+    
+    <LoginForm />
+ 
+);
+
+class LoginFormBase extends Component {
 
   constructor(props){
     super(props);
     // We have the same props as in our signup.js file and they serve the same purposes.
-   
+    console.log("PASSE PAR PROPS" + this.props.navigate);
     this.state = {
       loading: false,
       email: '',
@@ -43,27 +50,12 @@ class Login extends Component {
     this.inputs = {};
   }
   
-    //focus next text input : putain de galere
-    focusNextField = (id) => {
-      //this.inputs[id].focus();
-      this.inputs[id]._root.focus();
-    }
-
-  //connection a firebase
-  componentWillMount () {
-
-    /*  firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            this.setState({ loggedIn: true });
-            console.log("USER FIREBASE : " + JSON.stringify(user.uid)) 
-          } else {
-            this.setState({ loggedIn: false });
-          }
-          
-          console.log("LoggedIn : " + this.state.loggedIn) 
-        });
-      */  
+  //focus next text input : putain de galere
+  focusNextField = (id) => {
+    //this.inputs[id].focus();
+    this.inputs[id]._root.focus();
   }
+
 
   //verif si email correct
   checkEmailValidity = () => {
@@ -91,7 +83,7 @@ class Login extends Component {
     });
     //this.props.navigation.navigate('App');
     // Log in and display an alert to tell the user what happened.
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password
+  /*  firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password
     ).then((userData) =>
       {
         this.setState({
@@ -114,7 +106,23 @@ class Login extends Component {
               });
         alert(error);
         return false;
-    });
+    });*/
+
+    this.props.firebase
+      .doSignInWithEmailAndPassword(this.state.email, this.state.password)
+      .then((authUser) => {
+        console.log("passe ci" + authUser);
+        this.props.navigation.navigate('App');
+        return true;
+      })
+      .catch((error) => {
+              //console.log("erreur connexio n signIn : " + error);
+              this.setState({loading: false});
+              Alert.alert('EREEUR DE CONNEXION',  ''+ error);
+              return false;
+      });
+
+
   }
 
   // Go to the signup page
@@ -129,7 +137,7 @@ class Login extends Component {
      // console.log(snapshot.val())
     //});
 
-    firebase.database().ref('Users/').push({
+    /*firebase.database().ref('Users/').push({
       merde : "jhjh",
 
       }).then((data)=>{
@@ -139,11 +147,13 @@ class Login extends Component {
           //error callback
           console.log('error ' , error)
       })
+      */
       
 
 
     //this.props.navigator.push({component: Signup});
     //this.props.navigation.navigate('App');
+      this.props.navigation.navigate('WaitingRoom');
   }
 
 
@@ -308,6 +318,10 @@ const styles = StyleSheet.create({
           },
   });
 
-//AppRegistry.registerComponent('Login', () => Login);
-export default Login;
+
+const LoginForm = withNavigation(withFirebase(LoginFormBase));
+
+export default Login2;
+export { LoginForm };
+
 

@@ -9,9 +9,10 @@ class AuthLoadingScreen extends React.Component {
     constructor() {
       super();
       this._bootstrapAsync();
+    
     }
   
-    componentWillMount () {
+   /* componentWillMount () {
       firebase.initializeApp({
         apiKey: 'AIzaSyDY7vk5tEGQ3ZeI8iaEn2iAaD6DAhOHyb0',
         authDomain: 'auth-8722c.firebaseapp.com',
@@ -28,7 +29,7 @@ class AuthLoadingScreen extends React.Component {
         }
       });
       
-    }
+    }*/
 
     // recupere le token user et en fonction redirige vers l'ecran d'autentification
     _bootstrapAsync = async () => {
@@ -45,8 +46,8 @@ class AuthLoadingScreen extends React.Component {
       else {
         console.log("User token : " + (userToken));
         console.log("User email : " + userEmail);
-        this.props.navigation.navigate('App');
-        //this.props.navigation.navigate('Login');
+        //this.props.navigation.navigate('App');
+        this.props.navigation.navigate('Login');
       }
       
     };
