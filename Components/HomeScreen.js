@@ -5,11 +5,15 @@ import { globalStyle } from '../Styles/globalStyle'
 import { getNews } from '../API/APINews'
 import { FLBadge } from './commons/FLBadge'
  
+import { withAuthorization } from '../Session';
+import { withNavigation } from 'react-navigation';
+import { compose, hoistStatics } from 'recompose';
 import Dimensions from 'Dimensions';
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 import { UserContext } from '../Context/UserProvider';
 import FLInput from '../Components/commons/FLInput'
+
 
 
 
@@ -21,10 +25,13 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
 
 
-class HomeScreen extends React.Component {
+
+//class HomeScreenFormBase extends React.Component {
+  class HomeScreen extends React.Component {
 
   constructor(props) {
       super(props)
+      console.log("CONSTRUCTEUR HOMESCREEN");
       this.state = {
         isLoading: true,
         news: []
@@ -35,7 +42,8 @@ class HomeScreen extends React.Component {
 
 
     
-    static navigationOptions = {
+    static navigationOptions = ({ navigation }) => {
+      return {
       header: (
         <SafeAreaView style={globalStyle.header_safeviewarea}>
           <View style={globalStyle.header_left_view} />
@@ -47,10 +55,13 @@ class HomeScreen extends React.Component {
             <FLBadge numero='3'/>
           </View>
         </SafeAreaView>
-      )
+      ),
+      tabBarVisible: false,
+      }
     }
 
-    componentWillMount(){
+    componentDidMount(){
+      console.log("VA CHERCHE LES NEWS");
       this._getNewsList();
 
     }
@@ -64,7 +75,11 @@ class HomeScreen extends React.Component {
    
     _getNewsList = () => {
        getNews().then(data => {
+         //console.log("data news " + data);
          this.setState( {news: data, isLoading: false});
+       })
+       .catch(error => {
+         console.log("ERREUR RECUPERATION NEWS : " + error);
        }) 
      };
 
@@ -78,10 +93,12 @@ class HomeScreen extends React.Component {
       }
     }
 
+  
+
     _displayNews = ({ item }) => {
         Moment.locale('fr');
      
-    
+        const imageUri = item.urlToImage!=null ? item.urlToImage : ""
       //console.log(item);
         return (
         <TouchableOpacity onPress={this._NavToNewsList.bind(this,item)}>
@@ -96,7 +113,7 @@ class HomeScreen extends React.Component {
               borderWidth: 1,
               borderRadius: 2,
               borderColor: '#ccc',
-              //flexWrap: "nowrap",
+              flexWrap: "wrap",
               backgroundColor: 'white',
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
@@ -109,7 +126,7 @@ class HomeScreen extends React.Component {
               >
             <View style={{flex:1, flexWrap: "nowrap",justifyContent: 'center', alignItems: 'center'}}>
                 <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap'}}>
-                <Thumbnail source={{uri: item.urlToImage}} />
+                <Thumbnail source={imageUri.length!=0?{uri: imageUri}: null} />
                 </View>
                 <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingLeft: 5, paddingRight: 5}}>
                 <Text >{item.source.name}</Text>
@@ -130,7 +147,8 @@ class HomeScreen extends React.Component {
     }
 
     render() {
-      //console.log(this.props);
+      //console.log(this.props.firebase);
+      //const user = this.props.firebase.auth.currentUser.email!=null ? this.props.firebase.auth.currentUser.email : "User inconnu"
       return(
         <Container>
         
@@ -146,6 +164,7 @@ class HomeScreen extends React.Component {
             <FlatList
               data={this.state.news}
               renderItem={this._displayNews}
+              //keyExtractor={(item, index) => item.key}
               keyExtractor={item => item.title}
               horizontal={true}
               //stickyHeaderIndices={this.state.stickyHeaderIndices}
@@ -155,6 +174,7 @@ class HomeScreen extends React.Component {
 
 
           </Content>
+       
           {this._displayLoading()}
          
         </Container>
@@ -162,7 +182,13 @@ class HomeScreen extends React.Component {
     }
 }
 
+const condition = authUser => !!authUser;
 
-export default HomeScreen
 
-//<Input autoCorrect={false} onChange={e => {this.props.setName(e.nativeEvent.text)}}/>
+const composedWithNavAndAuthorization = compose(
+  withNavigation,
+  withAuthorization(condition)
+);
+
+//export default HomeScreen;
+export default hoistStatics(composedWithNavAndAuthorization)(HomeScreen);

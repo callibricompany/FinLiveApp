@@ -38,7 +38,6 @@ class LoginFormBase extends Component {
   constructor(props){
     super(props);
     // We have the same props as in our signup.js file and they serve the same purposes.
-    console.log("PASSE PAR PROPS" + this.props.navigate);
     this.state = {
       loading: false,
       email: '',
@@ -111,7 +110,7 @@ class LoginFormBase extends Component {
     this.props.firebase
       .doSignInWithEmailAndPassword(this.state.email, this.state.password)
       .then((authUser) => {
-        console.log("passe ci" + authUser);
+        console.log("user id : " + authUser.user.uid);
         this.props.navigation.navigate('App');
         return true;
       })
@@ -127,7 +126,6 @@ class LoginFormBase extends Component {
 
   // Go to the signup page
   goToRegister = () => {
-    //this.props.navigator.push({component: Signup});
     this.props.navigation.navigate('Register');
   }
 
@@ -159,7 +157,7 @@ class LoginFormBase extends Component {
 
 
   render() {
-    console.log("RENDER LOGIN : " + this.state.loading)
+    //console.log("RENDER LOGIN : " + this.state.loading)
  
 
     // The content of the screen should be inputs for a username, password and submit button.

@@ -1,35 +1,39 @@
 import React from 'react'
 import { View, ActivityIndicator, StatusBar, AsyncStorage} from 'react-native'
 import firebase from 'firebase'
+import { withFirebase } from '../../Database';
+import { withAuthorization } from '../../Session';
 
 
 //import globalStyle from '../../Styles/globalStyle'
 
 class AuthLoadingScreen extends React.Component {
-    constructor() {
-      super();
-      this._bootstrapAsync();
-    
-    }
-  
-   /* componentWillMount () {
-      firebase.initializeApp({
-        apiKey: 'AIzaSyDY7vk5tEGQ3ZeI8iaEn2iAaD6DAhOHyb0',
-        authDomain: 'auth-8722c.firebaseapp.com',
-        databaseURL: 'https://auth-8722c.firebaseio.com',
-        projectId: 'auth-8722c',
-        storageBucket: 'auth-8722c.appspot.com',
-        messagingSenderId: '452038208493'
-      });
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          console.log(user);
-        } else {
-          console.log("Pas de user");
-        }
-      });
+    constructor(props) {
+      super(props);
+
       
-    }*/
+      //this._bootstrapAsync();
+      //this._checkIfAlreadyConnected();
+    }
+
+    _checkIfAlreadyConnected = () => {
+        if (this.props.firebase) {
+          console.log("DATABASE : OK");
+          if (this.props.firebase.authUser) {
+            console.log("USER DEJA CONNECTE : " + this.props.firebase.authUser.userEmail);
+            this.props.navigation.navigate('App');
+          } else {
+            console.log("AUCUN USER CONNECTE");
+            this.props.navigation.navigate('Login');
+          }
+        } else {
+          console.log("DATABASE : KO");
+        }
+
+
+    }
+
+
 
     // recupere le token user et en fonction redirige vers l'ecran d'autentification
     _bootstrapAsync = async () => {
@@ -40,7 +44,7 @@ class AuthLoadingScreen extends React.Component {
       //this.props.navigation.navigate(userToken ? 'App' : 'Auth');
       
       if (userToken === null){
-        console.log("User token absent")
+        console.log("User token absent : " + this.props.firebase.authUser)
         this.props.navigation.navigate('Login');
       }
       else {
@@ -51,9 +55,15 @@ class AuthLoadingScreen extends React.Component {
       }
       
     };
-  
+    componentDidMount() {
+      
+     // console.log(this.props);
+
+    }
+
     // Render any loading content that you like here
     render() {
+      
       return (
         <View>
           <ActivityIndicator />
@@ -63,4 +73,6 @@ class AuthLoadingScreen extends React.Component {
     }
   }
 
-  export default AuthLoadingScreen
+const condition = authUser => !!authUser;
+
+export default withAuthorization(condition)(AuthLoadingScreen);

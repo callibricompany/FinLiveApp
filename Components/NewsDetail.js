@@ -45,9 +45,10 @@ class NewsDetail extends React.Component {
 
 
     render() {
+      const imageUri = this.item.urlToImage!=null ? this.item.urlToImage : ""
       return(
         <ScrollView >
-          <Image style={globalStyle.news_detail_image} source={{uri: this.item.urlToImage}} />
+          <Image style={globalStyle.news_detail_image} source={imageUri.length!=0?{uri: imageUri}: null}/>
           <Card style={{flex: 0}}>
           <CardItem style={{alignItems:'center'}}>
           <Text style={{fontSize:20, fontWeight:'bold'}}>

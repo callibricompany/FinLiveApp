@@ -1,30 +1,38 @@
 import React from 'react'
-import Navigation from './Navigation/Navigation'
+
 import UserProvider from './Context/UserProvider'
 import Firebase, { FirebaseContext } from './Database';
-
+import Application from './Components/Login/Application'
 
 import { StyleProvider, Container, Text } from 'native-base'
 
 import getTheme from './native-base-theme/components'
 import material from './native-base-theme/variables/commonColor'
 
-import { Font } from "expo";
+//import { Font } from "expo";
 
-export default class App extends React.Component {
+
+
+
+class App extends React.Component {
   constructor(props) {
-    super(props)
-    this.state = { loading: true };
+    super(props);
+    this.state = {
+      loading : false,
+    };
     
   }
+ 
 
-  async componentWillMount() {
+  /*async componentWillMount() {
     await Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
     });
-    this.setState({ loading: false });
-  }
+    
+  }*/
+
+
 
   render() {
     if (this.state.loading) {
@@ -32,13 +40,14 @@ export default class App extends React.Component {
           <Text>Ca charge ...</Text>
       );
     }
+    console.log("RENDER APP");
     return (
      
       <FirebaseContext.Provider value={new Firebase()}>
       <UserProvider>
         <StyleProvider  style={getTheme(material)}>  
         <Container>
-           <Navigation/>
+           <Application/>
         </Container>
         </StyleProvider>
       </UserProvider>
@@ -48,6 +57,8 @@ export default class App extends React.Component {
   }
 }
 
+
+export default App;
 /*
       <FirebaseContext.Provider value={new Firebase()}>
       <UserProvider>

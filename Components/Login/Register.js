@@ -146,19 +146,7 @@ class RegisterFormBase extends Component {
 
 
   onRegisterFail =  () => {
-    //this.setState({ error: 'Authentication Failed', loading: false });
-    /*const choice = await AlertAsync(
-      'Title',
-      'Message',
-      [
-        {text: 'Yes', onPress: () => 'yes'},
-        {text: 'No', onPress: () => Promise.resolve('no')},
-      ],
-      {
-        cancelable: true,
-        onDismiss: () => 'no',
-      },
-    );*/
+
     Alert.alert('ERREUR CREATION DE COMPTE', 'error');
     console.log("erreur creation compte : " + error)
     this.setState({loggedIn : false, loading: false});
@@ -184,16 +172,18 @@ class RegisterFormBase extends Component {
     .doCreateUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(authUser => {
       // Create a user in your Firebase realtime database
+      console.log("USER CREE : " + authUser.user.uid);
+      console.log(this.props.firebase.user(authUser.user.uid));
       return this.props.firebase
         .user(authUser.user.uid)
         .set({
-          code_zoho : '',
+          zohocode : '',
           email : this.state.email,
           name : this.state.name,
           firstname : this.state.firstname,
-          statut : false,
+          validated : false,
           independant : this.state.isIndependant,
-          organisme : this.state.isIndependant ? '' : this.state.organisme,
+          organization : this.state.isIndependant ? '' : this.state.organisme,
           supervisor : false,
           expert : false,
           phone : this.state.phone

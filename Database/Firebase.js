@@ -1,8 +1,8 @@
 
 import app from 'firebase/app';
 import 'firebase/auth';
-import 'firebase/database';
-
+import 'firebase/firestore';
+import * as ROLES from '../constants/roles';
 
 const devConfig = {
         apiKey: 'AIzaSyDY7vk5tEGQ3ZeI8iaEn2iAaD6DAhOHyb0',
@@ -29,7 +29,10 @@ class Firebase {
     constructor() {
       app.initializeApp(config);
       this.auth = app.auth();
-      this.db = app.database();
+      this.db = app.firestore();
+      
+
+      //this.unsuscribreUserRights = null;
     }
 
 
@@ -57,7 +60,9 @@ class Firebase {
   }
 
   
-  doSignOut = () => this.auth.signOut();
+  doSignOut = () => {
+     return this.auth.signOut();
+  }
 
 
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
@@ -65,11 +70,64 @@ class Firebase {
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
+  // *** Merge Auth and DB User API *** //
+  onAuthUserListener = (next, fallback) =>
+    this.auth.onAuthStateChanged(authUser => {
+      console.log("onAuth Listener firebase : "+authUser);
+      //console.log("SUSCRIBE RIGHTS : " + this.unsuscribreUserRights);
+      if (authUser) {
+         this.unsuscribreUserRights = this.user(authUser.uid)
+            .onSnapshot(function(doc) {
+              const roles = [];
+              //console.log("Current data: ", doc.data());
 
+
+              // ajoute les roles
+              if (doc.data().supervisor) {
+                roles.push(ROLES.SUPERVISOR);
+              }
+              if (doc.data().independant) {
+                roles.push(ROLES.INDEPENDANT);
+              }
+              if (doc.data().validated) {
+                roles.push(ROLES.VALIDATED);
+              }
+              if (doc.data().expert) {
+                roles.push(ROLES.EXPERT);
+              }
+              if (doc.data().admin) {
+                roles.push(ROLES.ADMIN);
+              }             
+              
+            // merge auth and db user
+            authUser = {
+              uid: authUser.uid,
+              email: authUser.email,
+              name: doc.data().name,
+              firstName: doc.data().firstname,
+              zoho: doc.data().zohocode,
+              organization: doc.data().organization,
+              phone: doc.data().phone,
+              roles : roles,
+            };
+            console.log("USER :  ", authUser);
+            next(authUser);
+          }, function(error) {
+            //this.unsuscribreUserRights();
+            console.log("ERREUR ONSNAPSHOT : " + error);
+          })
+      } else {
+        console.log("FALLBACK");
+        fallback();
+      }
+    });
 
   // *** User API ***
 
-  user = uid => this.db.ref(`users/${uid}`);
+  //user = uid => this.db.ref(`users/${uid}`);
+
+
+  user  = uid => this.db.collection("users").doc(uid);
 
   users = () => this.db.ref('users');
 
