@@ -1,10 +1,10 @@
-import React from 'react'
-import { View, Button, Text, AsyncStorage, SafeAreaView } from 'react-native'
-import { Title } from 'native-base'
-import AlertAsync from 'react-native-alert-async'
+import React from 'react';
+import { View, Button, Text, AsyncStorage, SafeAreaView } from 'react-native';
+import { Title } from 'native-base';
+import AlertAsync from 'react-native-alert-async';
 import { withFirebase } from '../Database';
-import { AuthUserContext } from '../Session';
-//import { withAuthentication } from '../Session';
+//import { AuthUserContext } from '../Session';
+import { withUser } from '../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 import { globalStyle } from '../Styles/globalStyle'
 
@@ -73,20 +73,11 @@ class ProfileScreen extends React.Component {
 
 
   render() {
-    //console.log(this.props);
     return (
       <View style={globalStyle.container}>
           
-         <AuthUserContext.Consumer>
-         
-    
-          {authUser => <View>
-                          <Text>{authUser.firstName} {authUser.name}</Text>
-                          <Text>{authUser.roles} </Text>
-                        </View>
-                      }
-       
-          </AuthUserContext.Consumer>
+        <Text>{this.props.firstName} {this.props.name}</Text>
+        {this.props.roles ? this.props.roles.map((role)=> <Text key={role}>{role}</Text>) : <Text></Text>}
          
         <Button title="Me déconnecter" onPress={this._signOutAlert} />
       </View>
@@ -97,11 +88,24 @@ class ProfileScreen extends React.Component {
 
 const composedFB = compose(
   withFirebase,
-//  withAuthentication
-);
+  withUser
+);  
 
 
 export default hoistStatics(composedFB)(ProfileScreen);
+
+//export default withUser(ProfileScreen);
 //export default withFirebase(withAuthentication(ProfileScreen));*/
 
 //export default withFirebase(ProfileScreen);
+
+/*
+         <AuthUserContext.Consumer>
+          {authUser => authUser ? <View>
+                          <Text>{authUser.firstName} {authUser.name}</Text>
+                          <Text>{authUser.roles} </Text>
+                        </View> : <Text> </Text>
+                      }
+          </AuthUserContext.Consumer>
+
+*/

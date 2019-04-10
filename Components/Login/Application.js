@@ -1,7 +1,9 @@
 import React from 'react'
-import { View, ActivityIndicator, StatusBar, AsyncStorage} from 'react-native'
 import Navigation from '../../Navigation/Navigation'
 import { withAuthentication } from '../../Session';
+//import { withUser } from '../../Session/withAuthentication';
+
+
 
 
 
@@ -17,6 +19,7 @@ class Application extends React.Component {
   
     // Render any loading content that you like here
     render() {
+      //console.log("APPLEHJGHSGHGAHA : "+this.props.firstName);
       return (
 
           <Navigation />

@@ -5,13 +5,13 @@ import { withNavigation } from 'react-navigation';
 import AuthUserContext from './context';
 import { compose } from 'recompose';
 
-
+import * as ROLES from '../constants/roles';
 
 const withAuthorization = condition => Component => {
   class WithAuthorization extends React.Component {
     constructor(props) {
         super(props);
-        this.isAlreadyConnected = false;
+        //this.isAlreadyConnected = false;
       }
 
 
@@ -25,11 +25,13 @@ const withAuthorization = condition => Component => {
                 //this.props.navigation.push('Login');
                 this.props.navigation.navigate('Login');
             } else {
-                console.log("with AUTHORIZATION  : " + authUser.email);
-                this.isAlreadyConnected = true;
-                //this.props.history.push('App');
-                //console.log(this.props);
-                this.props.navigation.navigate('App');
+                console.log("with AUTHORIZATION  : " + authUser.name);
+                if (authUser.roles.includes(ROLES.ADMIN)) {
+                  console.log("with AUTHORIZATION  : ADMIN");
+                  this.props.navigation.navigate('AppAdmin');
+                } else {
+                  this.props.navigation.navigate('App');
+                }
             }
           },
           () => {
@@ -50,7 +52,7 @@ const withAuthorization = condition => Component => {
       return (
         <AuthUserContext.Consumer>
         {authUser =>
-          condition(authUser) ? <Component {...this.props} isLoggedIn={this.isAlreadyConnected} /> : null
+          condition(authUser) ? <Component {...this.props} /> : null
           //<Component {...this.props} isLoggedIn={this.isAlreadyConnected} /> 
         }
       </AuthUserContext.Consumer>

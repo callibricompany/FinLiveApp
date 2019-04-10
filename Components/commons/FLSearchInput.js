@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Input, Icon, Item, Text } from 'native-base'
 
-import { withUser } from '../../Context/UserProvider'
+import { withUserTest } from '../../Context/UserProvider'
 
 
 
@@ -82,6 +82,6 @@ constructor(props) {
 }
 
 
-export default withUser(FLSearchInput)
+export default withUserTest(FLSearchInput)
 
 //<Input autoCorrect={false} onChange={e => {this.props.setName(e.nativeEvent.text)}}/>

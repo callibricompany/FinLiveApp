@@ -1,13 +1,20 @@
 import React from 'react'
-
-import UserProvider from './Context/UserProvider'
-import Firebase, { FirebaseContext } from './Database';
-import Application from './Components/Login/Application'
-
 import { StyleProvider, Container, Text } from 'native-base'
 
 import getTheme from './native-base-theme/components'
 import material from './native-base-theme/variables/commonColor'
+
+import UserProvider from './Context/UserProvider'
+import Firebase, { FirebaseContext } from './Database';
+import { withAuthentication } from './Session';
+
+
+import Application from './Components/Login/Application'
+import Navigation from './Navigation/Navigation'
+
+
+
+
 
 //import { Font } from "expo";
 

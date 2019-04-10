@@ -43,11 +43,11 @@ class UserProvider extends Component {
 }
 
 /**
- * La fonction `withUser` sera notre HOC
+ * La fonction `withUserTest` sera notre HOC
  * qui se chargera d'injecter les propriétés de notre contexte
  * à n'importe quel composant qui l'appellera
  */
-export const withUser = Component => props => (
+export const withUserTest = Component => props => (
   <UserContext.Consumer>
     {store => <Component {...props} {...store} />}
   </UserContext.Consumer>

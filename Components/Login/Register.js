@@ -23,6 +23,8 @@ import LogoComponent  from '../LogoComponent'
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
 
+import { ssCreateUser } from '../../API/APIAWS';
+
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
@@ -48,7 +50,7 @@ class RegisterFormBase extends Component {
     this.state = {
       loading: true,
       name:'',
-      firstname:'',
+      firstName:'',
       phone:'',
       email: '',
       passwordVerif:'',
@@ -117,7 +119,7 @@ class RegisterFormBase extends Component {
       return false;
     }
 
-    if (this.state.firstname.length < 2){
+    if (this.state.firstName.length < 2){
       Alert.alert('VERIFIER VOTRE PRENOM', 'Vérifiez votre prénom');
       return false;
     }
@@ -172,15 +174,15 @@ class RegisterFormBase extends Component {
     .doCreateUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(authUser => {
       // Create a user in your Firebase realtime database
-      console.log("USER CREE : " + authUser.user.uid);
-      console.log(this.props.firebase.user(authUser.user.uid));
-      return this.props.firebase
+      //console.log("USER CREE : " + authUser.user.uid);
+      //console.log(this.props.firebase.user(authUser.user.uid));
+      /*return this.props.firebase
         .user(authUser.user.uid)
         .set({
           zohocode : '',
           email : this.state.email,
           name : this.state.name,
-          firstname : this.state.firstname,
+          firstName : this.state.firstName,
           validated : false,
           independant : this.state.isIndependant,
           organization : this.state.isIndependant ? '' : this.state.organisme,
@@ -188,7 +190,25 @@ class RegisterFormBase extends Component {
           expert : false,
           phone : this.state.phone
 
-        });
+        });*/
+        
+        ssCreateUser(authUser.user.uid, 
+                        this.state.email, 
+                        this.state.name, 
+                        this.state.firstName, 
+                        this.state.phone, 
+                        this.state.isIndependant, 
+                        '', 
+                        this.state.organization).then(data => {
+          console.log("USER CREE AVEC SUCCES DANS ZOHO");
+          console.log(data);
+          //this.setState( {news: data, isLoading: false});
+        })
+        .catch(error => {
+          console.log("ERREUR CREATION USER: " + error);
+        }) 
+
+
     })
     .then(this.onRegisterSuccess())
     .catch((error) =>{
@@ -253,8 +273,8 @@ class RegisterFormBase extends Component {
             case 'name':
                 this.setState({name: text});
                 break;
-            case 'firstname':
-                this.setState({firstname: text});
+            case 'firstName':
+                this.setState({firstName: text});
                 break;
             case 'phone':
                 this.setState({phone: text});
@@ -315,7 +335,7 @@ class RegisterFormBase extends Component {
                         placeholder={"Nom"}
                         blurOnSubmit={ false }
                         onSubmitEditing={() => {
-                          this.focusNextField('firstname');
+                          this.focusNextField('firstName');
                         }}
                         returnKeyType={ "next" }
                         style={styles.textInput}
@@ -327,7 +347,7 @@ class RegisterFormBase extends Component {
                     <Item style={{width: 0.45*DEVICE_WIDTH}}>
                         <Input
                         
-                        onChangeText={e => {this.typingInputText('firstname',e)}}
+                        onChangeText={e => {this.typingInputText('firstName',e)}}
                        // value={this.state.name}
                         clearButtonMode="always"
                         placeholder={"Prénom"} 
@@ -339,7 +359,7 @@ class RegisterFormBase extends Component {
                         }}
                         returnKeyType={ "next" }
                         ref={ input => {
-                          this.inputs['firstname'] = input;
+                          this.inputs['firstName'] = input;
                         }}
                         />
                      </Item>

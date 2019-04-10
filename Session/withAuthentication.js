@@ -55,4 +55,10 @@ const withAuthentication = Component => {
   return withFirebase(WithAuthentication);
 };
 
+export const withUser = Component => props => (
+  <AuthUserContext.Consumer>
+    {authUser => <Component {...props} {...authUser} />}
+  </AuthUserContext.Consumer>
+);
+
 export default withAuthentication;

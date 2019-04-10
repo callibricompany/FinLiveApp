@@ -73,44 +73,63 @@ class Firebase {
   // *** Merge Auth and DB User API *** //
   onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged(authUser => {
-      console.log("onAuth Listener firebase : "+authUser);
+      //console.log("onAuth Listener firebase : "+authUser);
       //console.log("SUSCRIBE RIGHTS : " + this.unsuscribreUserRights);
       if (authUser) {
          this.unsuscribreUserRights = this.user(authUser.uid)
             .onSnapshot(function(doc) {
+              
+
               const roles = [];
-              //console.log("Current data: ", doc.data());
+              let name = '';
+              let firstName= '';
+              let zohocode = '';
+              let company = '';
+              let organization = '';
+              let phone = '';
+              //table documents de user non vide
+              if (typeof doc.data() !== 'undefined') {
+                // ajoute les roles
+                if (doc.data().supervisor) {
+                  roles.push(ROLES.SUPERVISOR);
+                }
+                if (doc.data().independant) {
+                  roles.push(ROLES.INDEPENDANT);
+                }
+                if (doc.data().validated) {
+                  roles.push(ROLES.VALIDATED);
+                }
+                if (doc.data().expert) {
+                  roles.push(ROLES.EXPERT);
+                }
+                if (doc.data().admin) {
+                  roles.push(ROLES.ADMIN);
+                } 
+
+                //check si les champs sont presents
+                name = (typeof doc.data().name !== 'undefined') ? doc.data().name : '';
+                firstName = (typeof doc.data().firstName !== 'undefined') ? doc.data().firstName : '';
+                zohocode = (typeof doc.data().zohocode !== 'undefined') ? doc.data().zohocode : '';
+                company = (typeof doc.data().company !== 'undefined') ? doc.data().company : '';
+                organization = (typeof doc.data().organization !== 'undefined') ? doc.data().organization : '';
+                phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
 
 
-              // ajoute les roles
-              if (doc.data().supervisor) {
-                roles.push(ROLES.SUPERVISOR);
-              }
-              if (doc.data().independant) {
-                roles.push(ROLES.INDEPENDANT);
-              }
-              if (doc.data().validated) {
-                roles.push(ROLES.VALIDATED);
-              }
-              if (doc.data().expert) {
-                roles.push(ROLES.EXPERT);
-              }
-              if (doc.data().admin) {
-                roles.push(ROLES.ADMIN);
-              }             
+              }            
               
             // merge auth and db user
             authUser = {
               uid: authUser.uid,
               email: authUser.email,
-              name: doc.data().name,
-              firstName: doc.data().firstname,
-              zoho: doc.data().zohocode,
-              organization: doc.data().organization,
-              phone: doc.data().phone,
+              name: name,
+              firstName: firstName,
+              zoho: zohocode,
+              company: company,
+              organization: organization,
+              phone: phone,
               roles : roles,
             };
-            console.log("USER :  ", authUser);
+            //console.log("USER :  ", authUser);
             next(authUser);
           }, function(error) {
             //this.unsuscribreUserRights();

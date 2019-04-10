@@ -11,7 +11,7 @@ import { compose, hoistStatics } from 'recompose';
 import Dimensions from 'Dimensions';
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
-import { UserContext } from '../Context/UserProvider';
+
 import FLInput from '../Components/commons/FLInput'
 
 

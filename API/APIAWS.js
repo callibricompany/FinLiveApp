@@ -2,7 +2,7 @@
 import axios from 'axios'
 const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
 const URL_FAKE_JSON ="";
-
+const URL_AWS = "http://99.80.186.219:8080/"
 
 export function getFilmsFromApiWithSearchedText (text) {
   const url = 'http://34.245.143.173:8080'
@@ -74,3 +74,33 @@ export function getOpenTickets () {
     }
   );*/
 }
+
+
+export function ssCreateUser (uid, email, name, firstName, phone, independant, company, organization) {
+  let userIdentity = {
+    email: email,
+    name : name, 
+    firstName : firstName,
+    phone : phone,
+    independant : independant,
+    company : company,
+    organization : organization,
+    supervisor: false,
+    validated: false,
+    idToken : uid
+  };
+
+  console.log("APPELLE AXIOS");
+  return axios.post(URL_AWS + '/createuser', userIdentity)
+  .then(function (response) {
+    console.log(response.data);
+
+    //res.render('pages/register',{email: email, isConnected: isConnected});
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+}
+
+
