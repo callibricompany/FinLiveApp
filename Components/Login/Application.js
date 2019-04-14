@@ -1,8 +1,8 @@
 import React from 'react'
 import Navigation from '../../Navigation/Navigation'
-import { withAuthentication } from '../../Session';
+import { withAuthentication , withAuthorization} from '../../Session';
 //import { withUser } from '../../Session/withAuthentication';
-
+import { compose, hoistStatics } from 'recompose';
 
 
 
@@ -28,6 +28,12 @@ class Application extends React.Component {
     }
   }
 
+  const condition = authUser => !!authUser;
 
 
-  export default withAuthentication(Application);
+  const composedBothAuth = compose(
+     //withAuthorization(condition),
+     withAuthentication,
+  );
+
+  export default hoistStatics(composedBothAuth)(Application);

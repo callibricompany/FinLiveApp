@@ -26,8 +26,9 @@ const withAuthorization = condition => Component => {
                 this.props.navigation.navigate('Login');
             } else {
                 console.log("with AUTHORIZATION  : " + authUser.name);
-                if (authUser.roles.includes(ROLES.ADMIN)) {
-                  console.log("with AUTHORIZATION  : ADMIN");
+                if (!authUser.roles.includes(ROLES.VALIDATED)) {
+                  this.props.navigation.navigate('WaitingRoom');
+                } else if (authUser.roles.includes(ROLES.ADMIN)) {
                   this.props.navigation.navigate('AppAdmin');
                 } else {
                   this.props.navigation.navigate('App');

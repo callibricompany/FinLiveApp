@@ -2,7 +2,7 @@
 import axios from 'axios'
 const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
 const URL_FAKE_JSON ="";
-const URL_AWS = "http://99.80.186.219:8080/"
+const URL_AWS = "http://99.80.186.219:8080"
 
 export function getFilmsFromApiWithSearchedText (text) {
   const url = 'http://34.245.143.173:8080'
@@ -80,27 +80,30 @@ export function ssCreateUser (uid, email, name, firstName, phone, independant, c
   let userIdentity = {
     email: email,
     name : name, 
-    firstName : firstName,
+    firstname : firstName,
     phone : phone,
     independant : independant,
     company : company,
     organization : organization,
-    supervisor: false,
-    validated: false,
-    idToken : uid
+    idToken : uid,
+    zohocode : ''
   };
 
   console.log("APPELLE AXIOS");
-  return axios.post(URL_AWS + '/createuser', userIdentity)
-  .then(function (response) {
-    console.log(response.data);
+  return new Promise(
+    (resolve, reject) => {
+      axios.post(URL_AWS + '/createUser', userIdentity)
+      .then((response) => {
+        console.log("Succes : " + response);
+        resolve(response)
+        //res.render('pages/register',{email: email, isConnected: isConnected});
+      })
+      .catch(function (error) {
+        console.log("Erreur requete aws : " + error);
+        reject(error)
+      });
+    });
+  }
 
-    //res.render('pages/register',{email: email, isConnected: isConnected});
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-
-}
 
 

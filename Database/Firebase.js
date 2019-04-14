@@ -37,26 +37,30 @@ class Firebase {
 
 
 
-  // *** Auth API ***
+  // creation user
   doCreateUserWithEmailAndPassword = (email, password) => {
-    console.log("TENTATIVE CREATION  :" + email + "   :   " +password);
-    return this.auth.createUserWithEmailAndPassword(email, password);
+    return new Promise(
+      (resolve, reject) => {
+        this.auth.createUserWithEmailAndPassword(email, password).then((user) => {
+          resolve(user);
+        }, function(error) {
+          reject(error);
+        });
+      });
   }
+
 
   doSignInWithEmailAndPassword = (email, password) => {
     //console.log(this.auth);
-    console.log("TENTATIVE CONNEXION :" + email + "   :   " +password)
-    return this.auth.signInWithEmailAndPassword(email, password);
-    /*.then((userData) =>
-      {
-
-        console.log("passe ici ensuite")
-        return userData;
-      }
-    ).catch((error) =>
-        {
-          return error;
-    });*/
+    console.log("TENTATIVE CONNEXION :" + email + "   :   " +password);
+    return new Promise(
+      (resolve, reject) => {
+      this.auth.signInWithEmailAndPassword(email, password).then((user) => {
+        resolve(user);
+      }, function (error) {
+        reject(error);
+      });
+    });
   }
 
   
@@ -70,76 +74,130 @@ class Firebase {
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
+
+  // retourne l'idToken du user connecte
+  doGetIdToken = () => {
+    //console.log("LE TOKE EST DEMANDE")
+    return new Promise(
+      (resolve, reject) => {
+        this.auth.currentUser.getIdToken(true).then((idToken) => {
+          //console.log("IDTOKEN RESOLU :" +idToken);
+          resolve(idToken);
+        }).catch(function (error) {
+          reject(error);
+        });
+      });
+  }
+
+
   // *** Merge Auth and DB User API *** //
   onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged(authUser => {
-      //console.log("onAuth Listener firebase : "+authUser);
       //console.log("SUSCRIBE RIGHTS : " + this.unsuscribreUserRights);
       if (authUser) {
-         this.unsuscribreUserRights = this.user(authUser.uid)
-            .onSnapshot(function(doc) {
-              
+          var idTokenUser = 'merde';
+          //recuperation idToken
+          this.doGetIdToken()
+          .then(token => {
+             idTokenUser = token;
+                this.unsuscribreUserRights = this.user(authUser.uid)
+                    .onSnapshot(function(doc) {
+                      
 
-              const roles = [];
-              let name = '';
-              let firstName= '';
-              let zohocode = '';
-              let company = '';
-              let organization = '';
-              let phone = '';
-              //table documents de user non vide
-              if (typeof doc.data() !== 'undefined') {
-                // ajoute les roles
-                if (doc.data().supervisor) {
-                  roles.push(ROLES.SUPERVISOR);
-                }
-                if (doc.data().independant) {
-                  roles.push(ROLES.INDEPENDANT);
-                }
-                if (doc.data().validated) {
-                  roles.push(ROLES.VALIDATED);
-                }
-                if (doc.data().expert) {
-                  roles.push(ROLES.EXPERT);
-                }
-                if (doc.data().admin) {
-                  roles.push(ROLES.ADMIN);
-                } 
+                      const roles = [];
+                      let name = '';
+                      let firstName= '';
+                      let zohocode = '';
+                      let company = '';
+                      let organization = '';
+                      let phone = '';
 
-                //check si les champs sont presents
-                name = (typeof doc.data().name !== 'undefined') ? doc.data().name : '';
-                firstName = (typeof doc.data().firstName !== 'undefined') ? doc.data().firstName : '';
-                zohocode = (typeof doc.data().zohocode !== 'undefined') ? doc.data().zohocode : '';
-                company = (typeof doc.data().company !== 'undefined') ? doc.data().company : '';
-                organization = (typeof doc.data().organization !== 'undefined') ? doc.data().organization : '';
-                phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
+                      //table documents de user non vide
+                      if (typeof doc.data() !== 'undefined') {
+                        // ajoute les roles
+                        if (doc.data().supervisor) {
+                          roles.push(ROLES.SUPERVISOR);
+                        }
+                        if (doc.data().independant) {
+                          roles.push(ROLES.INDEPENDANT);
+                        }
+                        if (doc.data().validated) {
+                          roles.push(ROLES.VALIDATED);
+                        }
+                        if (doc.data().expert) {
+                          roles.push(ROLES.EXPERT);
+                        }
+                        if (doc.data().admin) {
+                          roles.push(ROLES.ADMIN);
+                        } 
+
+                        //check si les champs sont presents
+                        name = (typeof doc.data().lastName !== 'undefined') ? doc.data().lastName : '';
+                        firstName = (typeof doc.data().firstName !== 'undefined') ? doc.data().firstName : '';
+                        zohocode = (typeof doc.data().zohocode !== 'undefined') ? doc.data().zohocode : '';
+                        company = (typeof doc.data().company !== 'undefined') ? doc.data().company : '';
+                        organization = (typeof doc.data().organization !== 'undefined') ? doc.data().organization : '';
+                        phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
 
 
-              }            
-              
-            // merge auth and db user
-            authUser = {
-              uid: authUser.uid,
-              email: authUser.email,
-              name: name,
-              firstName: firstName,
-              zoho: zohocode,
-              company: company,
-              organization: organization,
-              phone: phone,
-              roles : roles,
-            };
-            //console.log("USER :  ", authUser);
-            next(authUser);
-          }, function(error) {
-            //this.unsuscribreUserRights();
-            console.log("ERREUR ONSNAPSHOT : " + error);
-          })
+                      }            
+                      
+                    // merge auth and db user
+                    authUser = {
+                      uid: authUser.uid,
+                      email: authUser.email,
+                      name: name,
+                      firstName: firstName,
+                      zoho: zohocode,
+                      company: company,
+                      organization: organization,
+                      phone: phone,
+                      roles : roles,
+                      idToken : idTokenUser
+                    };
+                    console.log("USER :  ", authUser.email);
+                    next(authUser);
+                  }, function(error) {
+                    //this.unsuscribreUserRights();
+                    console.log("ERREUR ONSNAPSHOT : " + error);
+                  })
+                }).catch(function (error) {
+                  idTokenUser = '';
+                    console.log(error);
+      
+                  });
       } else {
         console.log("FALLBACK");
         fallback();
       }
     });
+
+
+
+
+
+  // verifie si user admin
+  isHeAdmin = (user) => {
+    console.log("isHeAdmin : "+ user.email);
+    console.log("isHeAdmin : "+ user.uid);
+    return new Promise(
+      (resolve, reject) => {
+        this.user(user.uid).get().then(function(doc) {
+          if (doc.exists) {
+              console.log("Document data:", doc.data().admin);
+              resolve(doc.data());
+          } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+              reject("Erreur recuperation statut admin du user");
+          }
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+          reject(error);
+      });
+      });
+  }
+
 
   // *** User API ***
 

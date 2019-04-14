@@ -16,7 +16,7 @@ import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Inpu
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import Dimensions from 'Dimensions';
-import firebase from 'firebase'
+import firebase, { auth } from 'firebase'
 import bgSrc from '../../assets/icon_1024.png';
 import LogoComponent  from '../LogoComponent'
 
@@ -26,6 +26,7 @@ import { withNavigation } from 'react-navigation';
 import { ssCreateUser } from '../../API/APIAWS';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 
 
@@ -55,9 +56,11 @@ class RegisterFormBase extends Component {
       email: '',
       passwordVerif:'',
       password: '',
-      organisme: '',
+      organization: '',
+      company: '',
       loggedIn: false,
-      isIndependant: true
+      isIndependant: true,
+      idToken : ''
 
     }
 
@@ -73,22 +76,6 @@ class RegisterFormBase extends Component {
     this.inputs[id]._root.focus();
   }
 
-
-  //connection a firebase
-  componentWillMount () {
-   /* this.setState({loading: true});
-      firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            this.setState({ loggedIn: true });
-            console.log("USER FIREBASE : " + JSON.stringify(user.email)) 
-          } else {
-            this.setState({ loggedIn: false });
-          }
-         
-          console.log("LoggedIn : " + this.state.loggedIn) 
-        });
-        */
-  }
 
   componentDidMount () {
 
@@ -113,6 +100,8 @@ class RegisterFormBase extends Component {
   checkEmailValidity = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     
+    const phoneRegEx =  /^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,3})|(\(?\d{2,3}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$/;
+ 
 
     if (this.state.name.length < 2){
       Alert.alert('VERIFIER VOTRE NOM', 'Vérifiez votre nom');
@@ -123,13 +112,22 @@ class RegisterFormBase extends Component {
       Alert.alert('VERIFIER VOTRE PRENOM', 'Vérifiez votre prénom');
       return false;
     }
-    if (this.state.organisme.length < 2 && !this.state.isIndependant){
+    if (this.state.organization.length < 2 && !this.state.isIndependant){
       Alert.alert('VERIFIER VOTRE ORGANISME', 'Vérifiez votre organisme de rattachement');
       return false;
     }
 
+    if (phoneRegEx.test(this.state.phone) === false){
+      Alert.alert('VERIFIER VOTRE NUMERO DE TELEPHONE', 'Le format de votre numéro de téléphone est invalide');
+      return false;
+    }
     if (reg.test(this.state.email) === false){
       Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
+      return false;
+    }
+
+    if (this.state.company.length < 1 ){
+      Alert.alert('VERIFIER LE NOM DE VOTRE SOCIETE', 'Le nom de votre société est invalide');
       return false;
     }
 
@@ -165,16 +163,15 @@ class RegisterFormBase extends Component {
 
 
   //creation nouvel utilisateur
-  register = () => {
-    console.log("REGISTER : " + this.state.loading);
+   register =  () => {
     
+    this.setState({loading: true});
     //this.checkEmailValidity();
     //firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     this.props.firebase
     .doCreateUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(authUser => {
       // Create a user in your Firebase realtime database
-      //console.log("USER CREE : " + authUser.user.uid);
       //console.log(this.props.firebase.user(authUser.user.uid));
       /*return this.props.firebase
         .user(authUser.user.uid)
@@ -189,28 +186,39 @@ class RegisterFormBase extends Component {
           supervisor : false,
           expert : false,
           phone : this.state.phone
-
         });*/
-        
-        ssCreateUser(authUser.user.uid, 
+    })
+    .then(() => {
+      console.log("DEMANDE ID TOKEN");
+      this.props.firebase.doGetIdToken()
+      .then(token => {
+        console.log("REPONSE ID TOKEN"+token);
+        //this.setState({ idToken : token});
+
+
+        ssCreateUser(token, 
                         this.state.email, 
                         this.state.name, 
                         this.state.firstName, 
                         this.state.phone, 
                         this.state.isIndependant, 
-                        '', 
-                        this.state.organization).then(data => {
-          console.log("USER CREE AVEC SUCCES DANS ZOHO");
-          console.log(data);
-          //this.setState( {news: data, isLoading: false});
+                        this.state.company, 
+                        this.state.organization).then((data) => {
+          //console.log("USER CREE AVEC SUCCES DANS ZOHO");
+          
+          console.log("SUCCES CREATION USER");
+          this.onRegisterSuccess();
         })
         .catch(error => {
           console.log("ERREUR CREATION USER: " + error);
         }) 
 
 
+
+      }).catch(function (error) {
+        console.log(error);
+        });
     })
-    .then(this.onRegisterSuccess())
     .catch((error) =>{
       
       console.log("erreur creation compte : " + error);
@@ -237,7 +245,7 @@ class RegisterFormBase extends Component {
         <Item style={{width: 0.9*DEVICE_WIDTH}} >
         <Icon name="ios-people"  style={{color : '#9A9A9A'}}/>
         <Input
-        onChangeText={e => {this.typingInputText('organisme',e)}}
+        onChangeText={e => {this.typingInputText('organization',e)}}
         clearButtonMode="always"
         placeholder={"Organisme de rattachement"} 
         blurOnSubmit={ true }
@@ -276,11 +284,14 @@ class RegisterFormBase extends Component {
             case 'firstName':
                 this.setState({firstName: text});
                 break;
+            case 'company':
+                this.setState({company: text});
+                break;
             case 'phone':
                 this.setState({phone: text});
                 break;
-            case 'organisme':
-                this.setState({organisme: text});
+            case 'organization':
+                this.setState({organization: text});
                 break;   
             default:
               console.log('Ne trouve pas le bon input');
@@ -326,7 +337,7 @@ class RegisterFormBase extends Component {
                 <View style={[styles.container, {paddingTop:5}]}>
                 <Text style={styles.text2}>Créer votre compte</Text>
                   <InputGroup >
-                    <Item style={{width: 0.45*DEVICE_WIDTH}}>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
                         <Icon name="ios-person" style={{color : '#9A9A9A'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('name',e)}}
@@ -344,9 +355,11 @@ class RegisterFormBase extends Component {
                         }}
                          />
                     </Item>
-                    <Item style={{width: 0.45*DEVICE_WIDTH}}>
+                    </InputGroup>
+                    <InputGroup>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                       <Icon name="ios-person" style={{color : '#9A9A9A'}}/>
                         <Input
-                        
                         onChangeText={e => {this.typingInputText('firstName',e)}}
                        // value={this.state.name}
                         clearButtonMode="always"
@@ -363,7 +376,7 @@ class RegisterFormBase extends Component {
                         }}
                         />
                      </Item>
-                  
+            
                   </InputGroup>  
                   
                   <InputGroup>
@@ -374,15 +387,37 @@ class RegisterFormBase extends Component {
                         value={this.state.phone}
                         mask={"+1 ([000]) [000] [00] [00]"}
                         keyboardType='phone-pad'
+                        textContentType='telephoneNumber'
                         clearButtonMode="always"
                         placeholder={"Téléphone"} 
+                        blurOnSubmit={ false }
+                        onSubmitEditing={() => {
+                          this.focusNextField('company');
+                        }}
+                        returnKeyType={ "next" }
+                        ref={ input => {
+                          this.inputs['phone'] = input;
+                        }}
+                        />
+                      
+                    </Item>
+                  </InputGroup>  
+                  <InputGroup>
+                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                    <Icon name="md-star-outline" style={{color : '#9A9A9A'}}/>
+                        <Input
+                        onChangeText={e => {this.typingInputText('company',e)}}
+                        value={this.state.company}
+                        //keyboardType='phone-pad'
+                        clearButtonMode="always"
+                        placeholder={"Votre société"} 
                         blurOnSubmit={ false }
                         onSubmitEditing={() => {
                           this.focusNextField('email');
                         }}
                         returnKeyType={ "next" }
                         ref={ input => {
-                          this.inputs['phone'] = input;
+                          this.inputs['company'] = input;
                         }}
                         />
                       

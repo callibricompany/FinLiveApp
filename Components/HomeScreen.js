@@ -1,10 +1,12 @@
 import React from 'react'
-import { View, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar} from 'react-native'
+import { View, RefreshControl, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar} from 'react-native'
 import { Thumbnail, ListItem, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { globalStyle } from '../Styles/globalStyle'
 import { getNews } from '../API/APINews'
 import { FLBadge } from './commons/FLBadge'
  
+
+
 import { withAuthorization } from '../Session';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
@@ -34,6 +36,8 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
       console.log("CONSTRUCTEUR HOMESCREEN");
       this.state = {
         isLoading: true,
+        isRefreshing : false,
+        pageNews: 1,
         news: []
       }
        // console.log("PLATE-FORME : " + Platform.OS)
@@ -65,22 +69,44 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
       this._getNewsList();
 
     }
+
+
+
+
+
     _NavToNewsList = (item) => {
       this.props.navigation.navigate('NewsDetail', {
         item: item,
+        news : this.state.news
       });
       //this.props.navigation.navigate('NewsDetail');
     };
 
    
     _getNewsList = () => {
-       getNews().then(data => {
-         //console.log("data news " + data);
-         this.setState( {news: data, isLoading: false});
+      this.setState({ isLoading : true });
+       getNews(this.state.pageNews).then(data => {
+         //console.log("data news " + data);      
+         this.setState( {
+           news: [ ...this.state.news, ...data ],
+           isLoading: false,
+           pageNews : this.state.pageNews +1,
+           isRefreshing : false
+          });
        })
        .catch(error => {
          console.log("ERREUR RECUPERATION NEWS : " + error);
        }) 
+     };
+
+     _onRefreshNews = () => {
+      this.setState( {
+        news: [],
+        pageNews : 1,
+        isRefreshing : true
+       });
+       console.log("ON RAFRAICHIT LES NEWS");
+       this._getNewsList();
      };
 
      _displayLoading() {
@@ -103,7 +129,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
         return (
         <TouchableOpacity onPress={this._NavToNewsList.bind(this,item)}>
         <View style={{
-              flex: 1,
+              //flex: 1,
               width: DEVICE_WIDTH*0.65,
               height: 120,
               marginRight: DEVICE_WIDTH*0.01,
@@ -137,7 +163,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
                   <Text style={{fontSize: 18}}>{item.title}</Text>
                 </View>
                 <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingRight:10, paddingBottom: 2}}>
-                   <Text style={{fontSize: 10}}>{item.author} - {Moment(item.publishedAt).locale('fr',localization).format('LL')}</Text>
+                   <Text style={{fontSize: 10}}>{Moment(item.publishedAt).locale('fr',localization).calendar()}</Text>
                 </View>
             </View>
         </View>
@@ -153,6 +179,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
         <Container>
         
           <Content>
+
             <Text style={{
               marginLeft: DEVICE_WIDTH*0.05,
               marginTop: 20,
@@ -161,22 +188,36 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
               color: '#707070'
 
             }}>Actualités</Text>
+
+            
             <FlatList
               data={this.state.news}
               renderItem={this._displayNews}
               //keyExtractor={(item, index) => item.key}
               keyExtractor={item => item.title}
               horizontal={true}
+              /*refreshControl={
+                <RefreshControl
+                 refreshing={true}
+                 //onRefresh={this._onRefreshNews.bind(this)}
+                 onRefresh={console.log("rafrafarafrafarfarafar")}
+                />
+              }*/
+              onEndReachedThreshold={0.5}
+              onEndReached={() => {
+                console.log("onEndReached");
+                this._getNewsList();
+
+              }}
               //stickyHeaderIndices={this.state.stickyHeaderIndices}
            />
 
    
 
 
-          </Content>
        
           {this._displayLoading()}
-         
+          </Content>
         </Container>
       );
     }
@@ -186,8 +227,8 @@ const condition = authUser => !!authUser;
 
 
 const composedWithNavAndAuthorization = compose(
+ withAuthorization(condition),
   withNavigation,
-  withAuthorization(condition)
 );
 
 //export default HomeScreen;

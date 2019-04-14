@@ -60,6 +60,9 @@ export default class ButtonSubmit extends Component {
           if (result === false){
             this.buttonAnimated.setValue(0);
             this.growAnimated.setValue(0);
+            //this.setState({isLoading: false});
+          }
+          else {
             this.setState({isLoading: false});
           }
         //Actions.secondScreen();

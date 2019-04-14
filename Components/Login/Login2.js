@@ -18,7 +18,9 @@ import LogoComponent  from '../LogoComponent'
 import Dimensions from 'Dimensions';
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
+import { withAuthorization } from '../../Session';
 
+import { compose, hoistStatics } from 'recompose';
 
 
 // import Signup from './Signup';
@@ -75,45 +77,32 @@ class LoginFormBase extends Component {
   }
 
   //login a la base firebase
-  login = () => {
-    console.log("LOGIN : " + this.state.loading) 
-   
+  login = () => { 
     this.setState({
       loading: true
     });
-    //this.props.navigation.navigate('App');
-    // Log in and display an alert to tell the user what happened.
-  /*  firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password
-    ).then((userData) =>
-      {
-        this.setState({
-                loading: false
-              });
-        console.log(userData.user.uid);
-        console.log(userData.user.email);
-
-        AsyncStorage.setItem('userToken', userData.user.uid);
-        AsyncStorage.setItem('userEmail', userData.user.email);
-        //this.props.navigator.push({ component: Account });
-        
-        this.props.navigation.navigate('App');
-        return true;
-      }
-    ).catch((error) =>
-        {
-              this.setState({
-                loading: false
-              });
-        alert(error);
-        return false;
-    });*/
 
     this.props.firebase
       .doSignInWithEmailAndPassword(this.state.email, this.state.password)
       .then((authUser) => {
         console.log("user id : " + authUser.user.uid);
-        this.props.navigation.navigate('App');
-        return true;
+        
+        this.props.firebase.isHeAdmin(authUser.user).then((userData) => {
+            //console.log("RETOUR TEST ADMIN : " + data.admin);
+            if (!userData.validated) {
+              this.props.navigation.navigate('WaitingRoom'); 
+            } else {
+              userData.admin ? this.props.navigation.navigate('AppAdmin') : this.props.navigation.navigate('App');
+            }
+            return true;
+        })
+        .catch((error) => {
+            console.log("RETOUR TEST ADMIN ERREUR : " + error);
+            this.setState({loading: false});
+            return false;
+        })
+        
+
       })
       .catch((error) => {
               //console.log("erreur connexio n signIn : " + error);
@@ -132,24 +121,6 @@ class LoginFormBase extends Component {
 
   // Go to the signup page
   goToPasswordRecovery = () => {
-    //firebase.database().ref('Users/').once('value', function (snapshot) {
-     // console.log(snapshot.val())
-    //});
-
-    /*firebase.database().ref('Users/').push({
-      merde : "jhjh",
-
-      }).then((data)=>{
-          //success callback
-          console.log('data ' , data)
-      }).catch((error)=>{
-          //error callback
-          console.log('error ' , error)
-      })
-      */
-      
-
-
     //this.props.navigator.push({component: Signup});
     //this.props.navigation.navigate('App');
       this.props.navigation.navigate('WaitingRoom');
@@ -226,11 +197,17 @@ class LoginFormBase extends Component {
              
             </View>
             <View style={styles.container}>
-                <ButtonSubmit 
-                    onPress={this.login.bind(this)} 
+               {/* <ButtonSubmit 
+                    onPress={this.login} 
                     onCheckEmail={this.checkEmailValidity.bind(this)}
                     text={'SE CONNECTER'}
-                />
+               />*/}
+                <Button rounded 
+                    style={{backgroundColor : '#85B3D3', width: 0.9*DEVICE_WIDTH, justifyContent:'center', alignItems: 'center',marginLeft: 0.05*DEVICE_WIDTH}}
+                    onPress={this.login}
+                    >
+                        <Text style={styles.text_button}>SE CONNECTER</Text>
+                </Button>
             </View>
             <View style={styles.container_buttons}>
                 <Button light rounded 
@@ -317,10 +294,20 @@ const styles = StyleSheet.create({
           },
   });
 
-
+  const condition = authUser => !!authUser;
+//const LoginForm = withNavigation(withFirebase(LoginFormBase));
 const LoginForm = withNavigation(withFirebase(LoginFormBase));
-
 export default Login2;
 export { LoginForm };
 
 
+const composed = compose(
+  //withNavigation,
+  //withFirebase,
+  withAuthorization,
+  
+ );
+ 
+ //export default HomeScreen;
+ //export default hoistStatics(composed)(Login2);
+ //export default withAuthorization(Login2);

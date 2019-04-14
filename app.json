@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "FinLive",
+    "name": "20190414 - FinLive",
     "slug": "FinLiveApp",
     "privacy": "public",
     "sdkVersion": "32.0.0",
@@ -25,6 +25,6 @@
     "ios": {
       "supportsTablet": true
     },
-    "description": "news"
+    "description": "Connexion ok\nNews ok"
   }
 }

@@ -5,6 +5,7 @@ import AlertAsync from 'react-native-alert-async';
 import { withFirebase } from '../Database';
 //import { AuthUserContext } from '../Session';
 import { withUser } from '../Session/withAuthentication';
+//import { withAuthorization } from '../Session';
 import { compose, hoistStatics } from 'recompose';
 import { globalStyle } from '../Styles/globalStyle'
 
@@ -77,6 +78,7 @@ class ProfileScreen extends React.Component {
       <View style={globalStyle.container}>
           
         <Text>{this.props.firstName} {this.props.name}</Text>
+        <Text>{this.props.email}</Text>
         {this.props.roles ? this.props.roles.map((role)=> <Text key={role}>{role}</Text>) : <Text></Text>}
          
         <Button title="Me déconnecter" onPress={this._signOutAlert} />
@@ -85,10 +87,12 @@ class ProfileScreen extends React.Component {
   }
 }
 
+//const condition = authUser => !!authUser;
 
 const composedFB = compose(
   withFirebase,
-  withUser
+  withUser,
+ // withAuthorization(condition),
 );  
 
 

@@ -114,7 +114,18 @@ news_detail_image : {
       bottom: 0,
       alignItems: 'center',
       justifyContent: 'center'
+    },
+
+
+///////////////////////////////
+//        SWIPE
+///////////////////////////////
+    swipesGestureContainer:{
+      height:'100%',
+      width:'100%'
     }
+
   })
+
 
 export { globalStyle }
