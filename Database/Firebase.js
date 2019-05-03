@@ -27,7 +27,12 @@ const config = devConfig;
 
 class Firebase {
     constructor() {
-      app.initializeApp(config);
+      try {
+        app.initializeApp(config);
+      }
+      catch (error){
+        console.log('EUUER FIREBASE : '+error);
+      }
       this.auth = app.auth();
       this.db = app.firestore();
       

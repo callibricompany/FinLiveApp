@@ -4,7 +4,7 @@ import { FLButton } from './commons';
 import { Badge, Item, Label, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content,Text, Card, CardItem }  from "native-base";
   
 import { globalStyle } from '../Styles/globalStyle'
-import { UserContext } from '../Context/UserProvider';
+import { UserContext } from '../Session/UserProvider';
 import FLInput from '../Components/commons/FLInput'
 
 

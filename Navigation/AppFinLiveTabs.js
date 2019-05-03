@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { createBottomTabNavigator, createStackNavigator } from 'react-navigation'
 
-import HomeScreen from '../Components/HomeScreen'
-import NewsList from '../Components/NewsList'
-import NewsDetail from '../Components/NewsDetail'
-import PricerScreen from '../Components/PricerScreen'
+import HomeScreen from '../Components/Home/HomeScreen'
+import NewsList from '../Components/Home/NewsList'
+import NewsDetail from '../Components/Home/NewsDetail'
+import PricerScreen from '../Components/Pricer/PricerScreen'
 import ProfileScreen from '../Components/ProfileScreen'
 import TicketsList from '../Components/TicketsList'
 import TicketDetail from '../Components/TicketDetail'

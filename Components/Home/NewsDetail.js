@@ -4,12 +4,12 @@ import { Title, Icon, Container, Card, Content, CardItem, Left, Body, Thumbnail,
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
-import { globalStyle } from '../Styles/globalStyle'
-import SwipeGesture from '../Gesture/SwipeGesture'
-import FadeInLeft from '../Animated/FadeInLeft'
+import { globalStyle } from '../../Styles/globalStyle'
+import SwipeGesture from '../../Gesture/SwipeGesture'
+import FadeInLeft from '../../Animated/FadeInLeft'
 
-import { FLBadge } from './commons/FLBadge'
-import bgSrc from '../assets/icon_196.png'
+import { FLBadge } from '../../Components/commons/FLBadge'
+import bgSrc from '../../assets/icon_196.png'
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 
 

@@ -1,20 +1,20 @@
 import React from 'react'
-import { View, RefreshControl, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar} from 'react-native'
-import { Thumbnail, ListItem, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
-import { globalStyle } from '../Styles/globalStyle'
-import { getNews } from '../API/APINews'
-import { FLBadge } from './commons/FLBadge'
+import { View, ScrollView, Image, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar} from 'react-native'
+import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
+import { globalStyle } from '../../Styles/globalStyle'
+import { getNews } from '../../API/APINews'
+import { FLBadge } from '../commons/FLBadge'
  
+import smallIcon from '../../assets/icon_196.png'
 
-
-import { withAuthorization } from '../Session';
+import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 import Dimensions from 'Dimensions';
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
-import FLInput from '../Components/commons/FLInput'
+import FLInput from '../commons/FLInput'
 
 
 
@@ -65,6 +65,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
     }
 
     componentDidMount(){
+
       console.log("VA CHERCHE LES NEWS");
       this._getNewsList();
 
@@ -128,28 +129,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
       //console.log(item);
         return (
         <TouchableOpacity onPress={this._NavToNewsList.bind(this,item)}>
-        <View style={{
-              //flex: 1,
-              width: DEVICE_WIDTH*0.65,
-              height: 120,
-              marginRight: DEVICE_WIDTH*0.01,
-              marginLeft:DEVICE_WIDTH*0.05,
-              marginVertical: 5,
-              marginHorizontal: 2,
-              borderWidth: 1,
-              borderRadius: 2,
-              borderColor: '#ccc',
-              flexWrap: "wrap",
-              backgroundColor: 'white',
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 1.5,
-              elevation: 3,
-              flexDirection: 'row',
-              justifyContent: 'space-evenly'
-              }}
-              >
+         <View style={[globalStyle.rectangle, { width: DEVICE_WIDTH*0.65, height: 130}]}>
             <View style={{flex:1, flexWrap: "nowrap",justifyContent: 'center', alignItems: 'center'}}>
                 <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap'}}>
                 <Thumbnail source={imageUri.length!=0?{uri: imageUri}: null} />
@@ -173,23 +153,52 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
     }
 
     render() {
-      //console.log(this.props.firebase);
-      //const user = this.props.firebase.auth.currentUser.email!=null ? this.props.firebase.auth.currentUser.email : "User inconnu"
       return(
-        <Container>
-        
-          <Content>
+        <ScrollView style={globalStyle.bgColor}>
 
-            <Text style={{
-              marginLeft: DEVICE_WIDTH*0.05,
-              marginTop: 20,
-              marginBottom: 5,
-              fontSize:26,
-              color: '#707070'
 
-            }}>Actualités</Text>
 
+            <Text style={globalStyle.heeader_text_home}>Offres du moment</Text>
+            <View style={[globalStyle.rectangle, { width: DEVICE_WIDTH*0.75, height: 150}]}>
+            </View>
+
+            <Text style={globalStyle.heeader_text_home}>Financier</Text>
+            <View style={[globalStyle.rectangle, { flexDirection : 'column',width: DEVICE_WIDTH*0.90, height: 200,}]}> 
+              <View style={{flex: 0.7}}><Text></Text></View>
+
+              <View style={{flex: 0.3, alignItems:'center',justifyContent: 'space-around', marginLeft: 10, marginRight: 10, marginBottom: 5}}>
+                <View style={{flex: 0.5, flexDirection : 'row',justifyContent: 'center', alignItems: 'center'}}>
+                   <View style={{width: 30}}>
+                    <Image style={{width: 25, height: 25}} source={smallIcon} />
+                    </View>
+                    <View style={{flex:1}}>
+                      <Text style={{fontSize:20}}>Evaluer</Text>
+                    </View>
+                    <View style={{width: 30}}>
+                    <Image style={{width: 25, height: 25}} source={smallIcon} />
+                    </View>
+                    <View style={{flex:1}}>
+                      <Text style={{fontSize:20}}>Suivre</Text>
+                    </View>                    
+                </View>
+                <View style={{flex: 0.5, flexDirection : 'row', justifyContent: 'center', alignItems: 'center'}}>
+                   <View style={{width: 30}}>
+                    <Image style={{width: 25, height: 25}} source={smallIcon} />
+                    </View>
+                    <View style={{flex:1}}>
+                      <Text style={{fontSize:20}}>Alertes</Text>
+                    </View>
+                    <View style={{width: 30}}>
+                    <Image style={{width: 25, height: 25}} source={smallIcon} />
+                    </View>
+                    <View style={{flex:1}}>
+                      <Text style={{fontSize:20}}>Chercher</Text>
+                    </View>                    
+                </View>
+              </View>
+            </View>
             
+            <Text style={globalStyle.heeader_text_home}>Actualités</Text> 
             <FlatList
               data={this.state.news}
               renderItem={this._displayNews}
@@ -217,8 +226,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
        
           {this._displayLoading()}
-          </Content>
-        </Container>
+          </ScrollView>
       );
     }
 }

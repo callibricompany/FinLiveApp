@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
+    "@ptomasroos/react-native-multi-slider": "^1.0.0",
     "add": "^2.0.6",
     "axios": "^0.18.0",
     "core-js": "^2.5.7",
@@ -17,15 +18,18 @@
     "moment": "^2.24.0",
     "native-base": "^2.12.1",
     "newsapi": "^2.4.0",
+    "numeral": "^2.0.6",
     "querystring": "^0.2.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-alert-async": "git+https://github.com/slorber/react-native-alert-async.git",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
-    "react-native-text-input-mask": "^0.3.2",
+    "react-native-masked-text": "^1.12.1",
+    "react-native-snap-carousel": "^3.7.5",
     "react-native-vector-icons": "^6.3.0",
     "react-navigation": "^3.3.2",
     "recompose": "^0.30.0",
+    "victory-native": "^32.0.2",
     "yarn": "^1.13.0"
   },
   "devDependencies": {

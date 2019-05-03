@@ -1,8 +1,8 @@
 import React from 'react'
 import { View, Button, Text } from 'react-native'
-import { FLButton } from './commons';
+import { FLButton } from '../commons/FLButton';
   
-import { globalStyle } from '../Styles/globalStyle'
+import { globalStyle } from '../../Styles/globalStyle'
 //import NewsDetail2 from './NewsDetail2';
 
 

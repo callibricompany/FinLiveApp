@@ -15,6 +15,10 @@ export default class SwipeGesture extends Component {
         let x = gestureState.dx;
         let y = gestureState.dy;
         //console.log(gestureState);
+        if ((Math.abs(x) < 10) && Math.abs(y) < 10) {
+          this.props.onSwipePerformed('tap');
+          return;
+        }
         if (Math.abs(x) > Math.abs(y)) {
           if (x >= 0) {
             this.props.onSwipePerformed('right')
@@ -37,8 +41,8 @@ export default class SwipeGesture extends Component {
 
   render() {
     return (
-      <Animated.View {...this.PanResponder.panHandlers} style={this.props.gestureStyle}>
-        <View>{this.props.children}</View>
+      <Animated.View {...this.PanResponder.panHandlers} {...this.props}  >
+        {this.props.children}
       </Animated.View>
     )
   }

@@ -1,29 +1,10 @@
 import React from 'react'
 import { Button, Input, Icon, Item, Text } from 'native-base'
 
-import { withUserTest } from '../../Context/UserProvider'
+import { withUserTest } from '../../Session/UserProvider'
 
 
 
-/*export default withUser(({ name, setName }) => (
-  
-      <Input autoCorrect={false} onChange={e => {this.props.setName(e.nativeEvent.text)}}/>
-    
-  ));
-  */
-
-
-
-/*class toto extends React.Component {
-    render() {
-
-        return(
-            <Button>
-                <Icon name="close" />
-            </Button>
-        );
-    }
-}*/
 
 
 class FLSearchInput extends React.Component {

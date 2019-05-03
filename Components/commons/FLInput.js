@@ -1,7 +1,7 @@
 import React from 'react'
 import { Input,Form, Item, Label } from 'native-base'
 
-import { withUserTest } from '../../Context/UserProvider'
+import { withUserTest } from '../../Session/UserProvider'
 
 
 /*export default withUser(({ name, setName }) => (

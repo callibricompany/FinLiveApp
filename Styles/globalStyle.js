@@ -8,6 +8,17 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
 const globalStyle = StyleSheet.create({
 
+
+
+///////////////////////////////
+//        BACKGROUNG COLOR 
+///////////////////////////////
+  bgColor :{
+      backgroundColor:'#F9FAFC'
+  },
+
+ 
+
 ///////////////////////////////
 //        header
 ///////////////////////////////
@@ -39,10 +50,25 @@ const globalStyle = StyleSheet.create({
       backgroundColor: 'transparent',
       flexWrap: "nowrap",
     },
+    header_center_view_leftAlign: {
+      flex: 1,
+      width: (DEVICE_WIDTH*0,9-2*40),
+      backgroundColor: 'transparent',
+      flexWrap: "nowrap",
+      justifyContent : 'flex-start',
+      alignItems : 'flex-start'
+    },
+
+
 
     header_center_text_big : {
       color: '#707070', 
       fontSize:36,
+    },
+    header_left_text_medium : {
+      color: '#707070', 
+      fontSize:22,
+      alignItems : 'flex-start'
     },
     header_center_text_medium : {
       color: '#707070', 
@@ -95,6 +121,42 @@ news_detail_image : {
 
 
 ///////////////////////////////
+//        HOME
+///////////////////////////////
+ rectangle : {
+   //flex: 1,
+  //width: DEVICE_WIDTH*0.75,
+  //height: 150,
+  marginRight: DEVICE_WIDTH*0.01,
+  marginLeft:DEVICE_WIDTH*0.05,
+  marginVertical: 5,
+  marginHorizontal: 2,
+  borderWidth: 1,
+  borderRadius: 2,
+  borderColor: '#ccc',
+  flexWrap: "wrap",
+  backgroundColor: 'white',
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 1.5,
+  elevation: 3,
+  flexDirection: 'row',
+  justifyContent: 'space-evenly'
+  },
+
+  heeader_text_home : {
+    marginLeft: DEVICE_WIDTH*0.05,
+    marginTop: 20,
+    marginBottom: 5,
+    fontSize:26,
+    color: '#707070'
+
+  },
+
+
+
+///////////////////////////////
 //        DIVERS
 ///////////////////////////////
     container: {
@@ -123,9 +185,14 @@ news_detail_image : {
     swipesGestureContainer:{
       height:'100%',
       width:'100%'
-    }
+    },
+
 
   })
+
+
+
+
 
 
 export { globalStyle }
