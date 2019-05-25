@@ -39,6 +39,7 @@ const withAuthorization = condition => Component => {
               console.log("with AUTHORIZATION  : Attention user inconnu");
               //this.listener();
               this.props.navigation.navigate('Login');
+              //this.props.navigation.navigate('App');
           },
         );
       }
@@ -53,8 +54,9 @@ const withAuthorization = condition => Component => {
       return (
         <AuthUserContext.Consumer>
         {authUser =>
-          condition(authUser) ? <Component {...this.props} /> : null
+          //condition(authUser) ? <Component {...this.props} /> : null
           //<Component {...this.props} isLoggedIn={this.isAlreadyConnected} /> 
+          <Component {...this.props} /> 
         }
       </AuthUserContext.Consumer>
       );

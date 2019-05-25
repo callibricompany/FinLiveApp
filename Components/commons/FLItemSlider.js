@@ -6,7 +6,7 @@ export class FLItemSlider extends Component {
         return (
             <View>
                 <Text style={ [ this.checkActive() ? styles.active : styles.inactive]}>{this.props.value}{this.props.isPercent ? ' %' :''}</Text>
-                <Text style={[ this.checkActive() ? styles.line : {}]}> { this.checkActive() ? '|' : ''}</Text>
+                <Text style={styles.line}> { this.checkActive() ? '|' : ''}</Text>
             </View>
         );
     }
@@ -22,19 +22,22 @@ export class FLItemSlider extends Component {
 const styles = StyleSheet.create({
     active:{
         textAlign: 'center',
-        fontSize:15,
-        bottom:10,
+        fontSize:12,
+        bottom:0,
         color:'#5e5e5e',
     },
     inactive:{
-        flex:1,
-        textAlignVertical: 'center',
+        //flex:1,
+        fontSize:12,
         textAlign: 'center',
         fontWeight:'normal',
+
+        bottom : 0,
+        textAlignVertical : 'center',
         color:'#bdc3c7',
     },
     line:{
-        fontSize:10,
+        fontSize:9,
         textAlign: 'center',
     }
 });

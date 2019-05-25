@@ -15,6 +15,7 @@ const globalStyle = StyleSheet.create({
 ///////////////////////////////
   bgColor :{
       backgroundColor:'#F9FAFC'
+      //backgroundColor:'pink'
   },
 
  
@@ -81,6 +82,17 @@ const globalStyle = StyleSheet.create({
       width: 40,  
       //borderRadius: 20,
       justifyContent: 'center',
+      alignItems: 'center',
+      //backgroundColor: 'steelblue'
+      backgroundColor: 'transparent'
+    },
+    header_right_view_x2 : {
+      marginRight: 0.0*DEVICE_WIDTH, 
+      borderWidth:0,
+      height: 40, 
+      width: 100,  
+      //justifyContent:'flex-end',
+      //borderRadius: 20,
       alignItems: 'center',
       //backgroundColor: 'steelblue'
       backgroundColor: 'transparent'

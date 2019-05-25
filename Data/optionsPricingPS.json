@@ -1,0 +1,14 @@
+[
+    {
+      "name": "underlying",
+      "title" : "Sous-jacent"
+    },
+    {
+      "name": "maturity",
+      "title" : "Maturité"
+    },
+    {
+      "name": "PDI",
+      "title" : "Protection du capital"
+    }
+  ]

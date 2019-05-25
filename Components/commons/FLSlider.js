@@ -4,20 +4,39 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 //import { CustomMarker } from './CustomMarker';
 import { FLItemSlider } from './FLItemSlider';
 
+
 export class FLSlider extends Component{
 
     constructor(props) {
         super(props);
+        let isActivated = true;
+        if (typeof this.props.activated != 'undefined'){
+            isActivated = this.props.activated;
+        }
         this.state = { 
           multiSliderValue: [this.props.initialMin, this.props.initialMax],
           first: this.props.initialMin,
           second: this.props.initialMax,
+          activated : isActivated,
         }
     }
-    //<View style={[styles.column,{marginLeft:this.props.LRpadding,marginRight:this.props.LRpadding}]}>
+    
+    componentWillReceiveProps(props) {
+        //console.log("RECEIVE PROPS : " + props.activated)
+        let isActivated = true;
+        if (typeof this.props.activated != 'undefined'){
+            isActivated = this.props.activated;
+        }
+        this.setState({
+            activated : isActivated
+        }
+        );
+    }
+    
     render() {
+
         return (
-            <View style={{paddingTop:10, paddingBottom: 20}}>
+            <View style={{paddingTop:5, paddingBottom: 5}}>
                 <View style={styles.column}>
                     {this.renderScale()}
                 </View>
@@ -25,15 +44,15 @@ export class FLSlider extends Component{
             
                     <MultiSlider
                         containerStyle={{
-                            height: 50,
+                            height: 20,
                         }}
                         trackStyle={{
-                            height: 5,
+                            height: 3,
                             backgroundColor: 'red',
                         }}
-                        markerStyle={{height : 20,width:20}}
+                        markerStyle={{height : 14,width:14}}
                         selectedStyle={{
-                            backgroundColor: '#85B3D3',
+                            backgroundColor: this.state.activated ? '#85B3D3' : 'darkgray',
                         }}
                         unselectedStyle={{
                             backgroundColor: 'silver',
@@ -43,7 +62,8 @@ export class FLSlider extends Component{
                          [      this.state.multiSliderValue[0],this.state.multiSliderValue[1]]}
                         //sliderLength={Dimensions.get('window').width-this.props.LRpadding*2}
                         sliderLength={this.props.sliderLength}
-                        onValuesChange={this.multiSliderValuesChange}
+                        //onValuesChange={this.multiSliderValuesChange}
+                        onValuesChangeFinish={this.multiSliderValuesChange}
                         min={this.props.min}
                         max={this.props.max}
                         step={this.props.step}
@@ -98,7 +118,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         justifyContent: 'space-between',
-        bottom:-20,
+        bottom:-5,
     },
     active:{
         textAlign: 'center',

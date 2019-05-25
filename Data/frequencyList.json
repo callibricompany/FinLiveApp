@@ -1,0 +1,32 @@
+[
+    {
+      "name": "Mensuel",
+      "commonName" : "mois",
+      "ticker": "1M",
+      "freq": 1
+    },
+    {
+      "name": "Trimestriel",
+      "commonName" : "trimestre",
+      "ticker": "3M",
+      "freq": 3
+    },
+    {
+      "name": "Semestriel",
+      "commonName" : "semestre",
+      "ticker": "6M",
+      "freq": 6
+    },
+    {
+      "name": "Annuel",
+      "commonName" : "an",
+      "ticker": "1Y",
+      "freq": 12
+    },
+    {
+      "name": "Biannuel",
+      "commonName" : "an",
+      "ticker": "2Y",
+      "freq": 24
+    }
+  ]

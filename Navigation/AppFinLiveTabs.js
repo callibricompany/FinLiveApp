@@ -6,6 +6,7 @@ import HomeScreen from '../Components/Home/HomeScreen'
 import NewsList from '../Components/Home/NewsList'
 import NewsDetail from '../Components/Home/NewsDetail'
 import PricerScreen from '../Components/Pricer/PricerScreen'
+import StructuredProductDetail from '../Components/Pricer/StructuredProductDetail'
 import ProfileScreen from '../Components/ProfileScreen'
 import TicketsList from '../Components/TicketsList'
 import TicketDetail from '../Components/TicketDetail'
@@ -54,12 +55,15 @@ const HomeScreenStack = createStackNavigator({
   
   //Ecran pricer
   const PricerScreenStack = createStackNavigator({
-  Pricer: {
-    screen: PricerScreen,
-    navigationOptions: {
-      title: 'Evaluer'
+    Pricer: {
+      screen: PricerScreen,
+      navigationOptions: {
+        title: 'Evaluer'
+      },
+    },
+    StructuredProductDetail : {
+      screen : StructuredProductDetail
     }
-  }
   })
   
   //Ecran ticket

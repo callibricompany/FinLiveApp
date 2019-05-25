@@ -14,7 +14,7 @@ export default class SwipeGesture extends Component {
       onPanResponderRelease: (evt, gestureState) => {
         let x = gestureState.dx;
         let y = gestureState.dy;
-        //console.log(gestureState);
+   //     console.log(evt);
         if ((Math.abs(x) < 10) && Math.abs(y) < 10) {
           this.props.onSwipePerformed('tap');
           return;

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Autocall",
+    "class": "FIN",
+    "id": "classicAutocall"
+  },
+  {
+    "name": "Autocall incrémental",
+    "class": "FIN",
+    "id": "incrementalAutocall"
+   }, 
+  {
+   "name": "Autocall airbag",
+   "class": "FIN",
+   "id": "airbagAutocall"
+  },
+  {
+    "name": "Phoenix",
+    "class": "FIN",
+    "id": "classicPhoenix"
+  },
+  {
+    "name": "Phoenix mémoire",
+    "class": "FIN",
+    "id": "memoryPhoenix"
+  },
+  {
+    "name": "Reverse convertible",
+    "class": "FIN",
+    "id": "reverse"
+  }
+]

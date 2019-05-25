@@ -2,7 +2,12 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+const firebase = require("firebase");
+
 import * as ROLES from '../constants/roles';
+
+const dataForge = require('data-forge');
+import PRICES from '../Data/20190517.json'
 
 const devConfig = {
         apiKey: 'AIzaSyDY7vk5tEGQ3ZeI8iaEn2iAaD6DAhOHyb0',
@@ -31,12 +36,12 @@ class Firebase {
         app.initializeApp(config);
       }
       catch (error){
-        console.log('EUUER FIREBASE : '+error);
+        console.log('ERREUR FIREBASE : '+error);
       }
       this.auth = app.auth();
       this.db = app.firestore();
-      
-
+      this.lastPricesList = [];
+      this.isAllPricesLoaded = false;
       //this.unsuscribreUserRights = null;
     }
 
@@ -165,6 +170,7 @@ class Firebase {
                   }, function(error) {
                     //this.unsuscribreUserRights();
                     console.log("ERREUR ONSNAPSHOT : " + error);
+                    fallback();
                   })
                 }).catch(function (error) {
                   idTokenUser = '';
@@ -201,6 +207,51 @@ class Firebase {
           reject(error);
       });
       });
+  }
+
+
+
+  //charge tous les prix du jour
+  getAllLastPrices() {
+    return new Promise((resolve, reject) => {
+      if (this.lastPricesList.length === 0 && !this.isAllPricesLoaded) {
+        this.isAllPricesLoaded = true;
+        //let csvFile = require('../Data/20190517.csv');
+        //on se limite aux prix les plus frais : 7 jours pour le moment
+       /* this.db.collection("parameters").doc("structuredPrices").get()
+        .then((result) => {
+            //console.log(result.data());
+            let nbDays = result.data().validityPricesDays;
+            d = new Date(Date.now() - nbDays*24*60*60*1000);
+            fDate = firebase.firestore.Timestamp.fromDate(d);
+            //requete les prix les plus frais
+            this.db.collection("structuredProductsPrices").where('lastCalculationDate', '>', fDate).get()
+            .then(querySnapshot => {
+              querySnapshot.docs.forEach(doc => {
+                descriptifProduit = doc.data().description;
+                descriptifProduit["Price"] = doc.data().lastPrice;
+                descriptifProduit["Vega"] = doc.data().lastVega;
+                //console.log(descriptifProduit["Price"]);
+                this.lastPricesList.push(descriptifProduit);
+              });
+              resolve(this.lastPricesList);
+            })
+            .catch((error) => {
+                this.isAllPricesLoaded = false;
+                console.log("Erreur retrour requete : " + error);
+                reject(error);
+            })
+        })*/
+
+          resolve(PRICES);
+
+     
+        
+       } else {
+          resolve(this.lastPricesList);
+       }
+    }); 
+ 
   }
 
 
