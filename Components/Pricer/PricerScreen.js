@@ -1,6 +1,6 @@
 import React from 'react'
 import { Modal, SafeAreaView, TouchableWithoutFeedback, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, TextInput, Platform} from 'react-native'
-import { ListItem, CheckBox, Left, Body, Content, Text, Title, Item, InputGroup, Icon, Input, Button, Container } from 'native-base'
+import { ListItem, List, Left, Body, Content, Text, Title, Item, Right, Icon, Input, Button, Thumbnail } from 'native-base'
 import { globalStyle } from '../../Styles/globalStyle'
 import { maturityToDate, calculateBestCoupon } from '../../Utils/math'
 import  FLPanel  from '../commons/FLPanel'
@@ -10,6 +10,7 @@ import SwipeGesture from '../../Gesture/SwipeGesture'
 import { FLSlider } from '../../Components/commons/FLSlider'
 
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import { TextInputMask } from 'react-native-masked-text'
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -69,88 +70,93 @@ class PricerScreen extends React.Component {
       showModalOptions : false,
       activeOptionsSlide : 0,
       product: {
-        'name' : {
-          //'value' : productList[0].name,
-          'value' : "toto",
-          'isActivated' : true,
+        'type' : {
+          'value' : 'classicAutocall',
+          'valueLabel' : 'Autocall',
+          'isActivated' : false,
+          'icon': 'TP'
         },
         'nominal' : {
           'value' : 100000,
           'isActivated' : true,
+          'icon': 'N'
         },
         'currency': {
           'value' : 'EUR',
           'isActivated' : true,
+          'icon': 'T'
         },
         'UF' : {
           'value' : 0.02,
           'isActivated' : true,
+          'icon': 'UF'
         },
        'underlying': {
-          'value' : '',
-          'isActivated' : true,
+          'value' : 'CAC',
+          'valueLabel' : 'CAC 40',
+          'isActivated' : false,
+          'icon': 'SJ'
         },
         'maturity': {
-          'valueMin' : 4,
-          'valueMax' : 8,
+          'valueMin' : 6,
+          'valueMax' : 10,
           'value' : '',
+          'valueLabel' : '6 à 10 ans',
           'isActivated' : true,
+          'icon': 'M'
         },
-        'callableCoupon' : {
-          'value' : 0.05,
+        'barrierPDI' : {
+          'value' : 0.3,
           'isActivated' : false,
+          'valueLabel' : Numeral(0.3).format('0.00 %'),
+          'icon': 'PDI'
         },
-        'isCallableCouponIncremental' : {
-          'value' : false,
+        'freqAutocall' : {
+          'value' : 0.5,
           'isActivated' : false,
-        },    
-        'callableCouponProgression' : {
-          'value' : 0,
+          'icon': 'FA'
+        },
+        'degressiveStep' : {
+          'value' : 0.5,
           'isActivated' : false,
+          'icon': 'DS'
         }, 
-        'callableFrequency' :{
-          'value' : 12,
-          'commonName': 'an',
+        'airbagLevel' : {
+          'value' : 0.5,
           'isActivated' : false,
-        }, 
-        'callableLevelDegression' :{
-          'value' : 0,
+          'icon': 'EA'
+        },
+        'barrierPhoenix' : {
+          'value' : 0.5,
           'isActivated' : false,
-        }, 
-        'callableLevel' : {
-          'value' : 1,
+          'icon': 'BP'
+        },
+        'freqPhoenix' : {
+          'value' : 0.5,
           'isActivated' : false,
-        }, 
-        'firstCallablePeriod' : {
-          'value' : 1,
-          'isActivated' : false,
-        }, 
-        'airbag' : {
-          'value' : 0.7,
-          'isActivated' : false,
-        }, 
-        'putStrike' : {
-          'value' : 1,
-          'isActivated' : false,
-        }, 
-        'putActivationLevel' : {
-          'value' : 0.7,
-          'isActivated' : false,
-        }, 
-        'nbPuts' : {
-          'value' : 1,
-          'isActivated' : false,
-        }, 
+          'icon': 'FP'
+        },
+        
+
       },
     }
+    
     this.allPricesDF;
     this.underlyingsList = [];
     this.structuredProductsList = [];
     this.bestProducts = [];
     this.theBestProduct = [];
+
+    this.desactivatedParameters = [];
    
     // var obj = JSON.parse(underlyings);
-  var length = Object.keys(UNDERLYINGS).length;
+    var length = Object.keys(UNDERLYINGS).length;
+
+   //this.activatedParameters = PARAMETERSSTRUCTUREDPRODUCT.filter(d => d.activated);
+
+ 
+   //this.desactivatedParameters = PARAMETERSSTRUCTUREDPRODUCT.filter(d => !d.activated);
+   
   //console.log(STRUCTUREDPRODUCTS.filter(({name}) => name === 'classicAutocall'));
   //console.log("ACTIVATED.UF : "+this.activated["UF"])
   }
@@ -186,7 +192,7 @@ class PricerScreen extends React.Component {
     console.log("DEBUT COMPONENT DIDMOUNT");
     this.props.firebase.getAllLastPrices()
     .then((prices) => {
-      console.log("allo");
+      //console.log("allo");
       this.allPricesDF = dataForge.fromJSON(JSON.stringify(prices));
       
       //console.log("Nombre de produits analysés : "+this.allPricesDF.toArray().length);
@@ -298,7 +304,7 @@ class PricerScreen extends React.Component {
       
       this.theBestProduct = filteredDf.head(1).toArray();
       this.theBestProduct[0].coupon = bestCoupon;
-      console.log(this.theBestProduct);
+      //console.log(this.theBestProduct);
       setTimeout(() => {
             console.log('on attend');
         this.theBestProduct.length === 0 ? reject('Aucun produit trouvé') : resolve("ok");
@@ -434,6 +440,7 @@ class PricerScreen extends React.Component {
     );
   }
 
+  //affiche l'onglet expert
   _displayExpert () {
     //trouve le meilleur prix selon les conditions
     bestPrice = this.theBestProduct;
@@ -451,22 +458,95 @@ class PricerScreen extends React.Component {
          keyExtractor={(item) => item.code}
          renderItem={this._renderBestProduct}
        />
+    
+    var activatedParameters = [];
+    var product = this.state.product;
+    
+    PARAMETERSSTRUCTUREDPRODUCT.forEach(item => {
+      if (product[item.name].isActivated){
+        let param = product[item.name];
+        param['name'] = item.name;
+        param['label'] = item.title;
+        activatedParameters.push(param);
+      } 
+
+    }); 
+    //let activatedParameters = product.filter(d => d.isActivated);
+    //console.log("PARAMETRES ACTIFS : "+JSON.stringify(activatedParameters));
+    //console.log("PARAMETRES ACTIFS : "+activatedParameters.length);
+    let renderParameters =          
+          <View style={{width: DEVICE_WIDTH, marginBottom:10}}>
+            {activatedParameters.map((choosenParameter) => {
+                        
+                         return (
+                          <View key={choosenParameter.name} style={[globalStyle.rectangle, 
+                            {flex:1,
+                              flexDirection:'row',
+                              width: DEVICE_WIDTH*0.94, 
+                              height: 50,  
+                              marginRight: 0, 
+                              marginLeft:0,
+                              backgroundColor : 'white'}]}>
+                       
+                              <View style={{flex:0.15, justifyContent:'center', alignItems: 'center'}}>
+                              <View style={{ height:30, width:30, backgroundColor:'#85B3D3' ,alignSelf:'center',justifyContent:'center', alignItems:'center', borderRadius:30}}>
+                                {/*<Thumbnail source={botImage} />*/}
+                                  <Text style={{fontSize:18, fontWeight:'bold',color:'white'}}>{choosenParameter.icon}</Text>
+                              </View>
+                              </View>
+                          
+                              <View style={{flex:0.65}}>
+                                  <View style={{marginTop:3, marginLeft : 10}}>
+                                    <Text style={{fontWeight:'bold'}}>{choosenParameter.label}</Text>
+                                    <Text>{choosenParameter.valueLabel}</Text>
+                                  </View>
+                              </View>
+                              <View style={{flex:0.2,justifyContent: 'center',alignItems:'center'}}>
+                                <TouchableOpacity onPress={() => {
+                                     //var product = this.state.product;
+                                     this.desactivatedParameters = [];
+                                     PARAMETERSSTRUCTUREDPRODUCT.forEach(item => {
+                                        if (item.name === choosenParameter.name){
+                                          this.desactivatedParameters.push(item);
+                                        }
+                                      });
+                                      this.setState({showModalOptions:true});
+
+                                }}>
+                                    <Text style={{ color : "gray"}}>o o o</Text>
+                                </TouchableOpacity>
+                              </View>
+                           </View>
+                         );
+                   
+            })}
+          </View>
+
     return (
       <ScrollView style={[globalStyle.bgColor, 
         {borderWidth: 0,
         marginLeft   : -10,
-        marginTop  : -10,
+        marginTop  : 0,
         marginRight: -10,
         marginBottom : -30,
         }]}>
         {render}
-        <Button rounded style={{width: DEVICE_WIDTH*0.95, height:35, alignItems: 'center', justifyContent:'center', backgroundColor: 'orange'}}
-                        onPress={()=>{
-                         this.setState({showModalOptions : true})
-                        }}
-        >
-             <Text style={{fontSize: 20, fontWeight:'bold'}}>CHOISSISSEZ VOS PREFERENCES</Text>
-        </Button>
+        {renderParameters}
+        <View style={{flexDirection:'column', justifyContent:'center', marginTop:4, marginBottom:5}}>
+            <Button rounded style={{width: DEVICE_WIDTH*0.95, height:35, alignItems: 'center', justifyContent:'center', backgroundColor: 'orange'}}
+                            onPress={()=>{
+                              var product = this.state.product;
+                              PARAMETERSSTRUCTUREDPRODUCT.forEach(item => {
+                                 if (!product[item.name].isActivated){
+                                   this.desactivatedParameters.push(item);
+                                 }
+                               });
+                            this.setState({showModalOptions : true})
+                            }}
+            >
+                <Text style={{fontSize: 20, fontWeight:'bold'}}>AJOUTEZ VOS PREFERENCES</Text>
+            </Button>
+        </View>
       </ScrollView>
 
     );
@@ -498,19 +578,262 @@ class PricerScreen extends React.Component {
   }
 
   //affiche les oglets du carousel des options
-  _displayOptions = ({ item , index}) => {
-    return (
+  _displayParameters = ({ item , index}) => {
+    let render =  <Text></Text>;     
+    //console.log("LISTE DES PARAMETERS : "+ JSON.stringify(this.structuredProductsList));      
+    switch (item.name) {
+      case 'type' :
+          render= <RadioForm
+                    formHorizontal={false}
+                    animation={true}
+                  >
+                    {this.structuredProductsList.map((product, i) => {
+                      //on met les clés adequate pour le radiogroup
+                      pString = JSON.stringify(product);
+                      var regValue = /id/gi;
+                      var regLabel = /name/gi;
+                      pString = pString.replace(regValue, 'value');
+                      pString = pString.replace(regLabel, 'label');
+                      product = JSON.parse(pString);
+                      return (
+                      <RadioButton labelHorizontal={true} key={i} >
+                        {/*  You can set RadioButtonLabel before RadioButtonInput */}
+                        <RadioButtonInput
+                          obj={product[0]}
+                          index={i}
+                          isSelected={this.state.product['type'].value=== product[0].value}
+                          onPress={(itemValue) =>{
+                            //console.log("ITEM VALUE : "+itemValue);
+                            let label = STRUCTUREDPRODUCTS.filter(d => d.id === itemValue);
+                            var product = this.state.product;
+                            product['type'].value = itemValue;
+                            product['type'].valueLabel = label[0].name;
+                            this.setState({ product });
+                          }}
+                          borderWidth={1}
+                          //buttonInnerColor={'#e74c3c'}
+                          //buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
+                          //buttonSize={40}
+                          //buttonOuterSize={80}
+                          buttonStyle={{}}
+                          //buttonWrapStyle={{marginLeft: 10}}
+                        />
+                        <RadioButtonLabel
+                          obj={product[0]}
+                          index={i}
+                          labelHorizontal={true}
+                          //onPress={onPress}
+                          //labelStyle={{fontSize: 20, color: '#2ecc71'}}
+                          labelWrapStyle={{}}
+                        />
+                        </RadioButton>
+                      );
+                    })}                  
+                  </RadioForm> 
+          break;
+      case 'underlying' :
+              render= <RadioForm
+              formHorizontal={false}
+              animation={true}
+            >
+              {this.underlyingsList.map((product, i) => {
+                //on met les clés adequate pour le radiogroup
+                pString = JSON.stringify(product);
+                var regValue = /ticker/gi;
+                var regLabel = /name/gi;
+                pString = pString.replace(regValue, 'value');
+                pString = pString.replace(regLabel, 'label');
+                product = JSON.parse(pString);
+                return (
+                <RadioButton labelHorizontal={true} key={i} >
+                  {/*  You can set RadioButtonLabel before RadioButtonInput */}
+                  <RadioButtonInput
+                    obj={product[0]}
+                    index={i}
+                    isSelected={this.state.product['underlying'].value=== product[0].value}
+                    onPress={(itemValue) =>{
+                      //console.log("ITEM VALUE : "+itemValue);
+                      let label = UNDERLYINGS.filter(d => d.ticker === itemValue);
+                      var product = this.state.product;
+                      product['underlying'].value = itemValue;
+                      product['underlying'].valueLabel = label[0].name;
+                      this.setState({ product });
+                    }}
+                    borderWidth={1}
+                    //buttonInnerColor={'#e74c3c'}
+                    //buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
+                    //buttonSize={40}
+                    //buttonOuterSize={80}
+                    buttonStyle={{}}
+                    //buttonWrapStyle={{marginLeft: 10}}
+                  />
+                  <RadioButtonLabel
+                    obj={product[0]}
+                    index={i}
+                    labelHorizontal={true}
+                    //onPress={onPress}
+                    //labelStyle={{fontSize: 20, color: '#2ecc71'}}
+                    labelWrapStyle={{}}
+                  />
+                  </RadioButton>
+                );
+              })}                  
+            </RadioForm> 
+          break;
+      case 'maturity' :
+          render=  
           <View>
-              <Button><Text>
-             
-             {item.title}
-             </Text></Button>
-              </View>
+          <FLSlider
+              min={2}
+              max={10}
+              step={1}
+              initialMin={this.state.product['maturity'].valueMin}
+              initialMax={this.state.product['maturity'].valueMax}
+              isPercent={false}
+              spreadScale={1}
+              //activated={!this.state.product["UF"].isActivated}
+              sliderLength={DEVICE_WIDTH*0.65}
+              callback={(value) => {
+                var product = this.state.product;
+                product['maturity'].valueMin = value[0];
+                product['maturity'].valueMax = value[1];
+
+                let title = "";
+                let ans = " ans";
+                if (this.state.product.maturityMax <= 1) {
+                  ans = " an";
+                }
+                if (product['maturity'].valueMin < product['maturity'].valueMax) {
+                  title=title.concat(product['maturity'].valueMin + " à " + product['maturity'].valueMax + ans);
+                } else {
+                  title=title.concat(product['maturity'].valueMax + ans);
+                }
+                product['maturity'].valueLabel = title;
+
+                this.setState({ product });
+              }}
+              single={false}
+            />
+            <View style={{marginTop: 5,justifyContent:'center', alignItems:'centeer'}}>
+              <Text style={{fontWeight:'bold'}}>{this.state.product['maturity'].valueLabel}</Text>
+            </View>
+            </View>
+          break;
+      case 'barrierPDI' :
+          render=  
+          <View>
+          <FLSlider
+              min={0}
+              max={1}
+              step={1}
+              initialMin={this.state.product['maturity'].valueMin}
+              //initialMax={this.state.product['maturity'].valueMax}
+              isPercent={true}
+              spreadScale={1}
+              //activated={!this.state.product["UF"].isActivated}
+              sliderLength={DEVICE_WIDTH*0.65}
+              callback={(value) => {
+
+              }}
+              single={true}
+            />
+            <View style={{marginTop: 5,justifyContent:'center', alignItems:'centeer'}}>
+              <Text style={{fontWeight:'bold'}}>{this.state.product['maturity'].valueLabel}</Text>
+            </View>
+            </View>
+          break;
+      case 'toto' :
+          render =  <Picker
+                          selectedValue={this.state.product['type'].value}
+                          mode='dropdown'
+                          style={{height : 200,         
+                                  marginTop  : 5,
+                                  //paddingBottom : -30,
+                                  borderWidth:0}} 
+                          itemStyle={{height : 60, fontSize : 18}} 
+                          onValueChange={(itemValue, itemIndex) =>{
+                            //console.log("ITEM VALUE : "+itemValue);
+                            var product = this.state.product;
+                            product['type'].value = itemValue;
+                            this.setState({ product });
+                        }}
+                        >
+                        {this.structuredProductsList.map((product) => <Picker.Item  label={product[0].name} value={product[0].id} key={product[0].id}/>)}
+                    </Picker>  
+          break;
+      default :
+          break;
+    }
+
+    let parameter = this.state.product[item.name];
+    isActivated = false;
+    
+    if (typeof parameter !== 'undefined') {
+      //console.log("PArametre defini" + JSON.stringify(parameter));
+      isActivated = parameter.isActivated;
+    }
+
+    
+    
+    
+    return (
+          <View style={{flex:1, flexDirection:'column',marginTop:5, borderTopWidth:0, width: DEVICE_WIDTH*0.8, borderColor:'#85B3D3'}}>
+            <View style={{flex:0.1, borderTopWidth:1, borderTopColor:'#85B3D3',justifyContent:'center', alignItems: 'center'}}>
+              <Text style={{fontSize:18, fontWeight:'bold'}}>
+                 {item.title}
+               </Text>
+             </View>
+             <View style={{flex:0.80}} >
+                <View style={{ marginBottom:15, marginLeft:8, marginRight:8 }} >
+                    {render}
+                </View>
+              <ScrollView style={{ margin:7}} scrollEnabled={this.state.showModalOptions}>
+                <Text style={{fontWeight:'bold'}}>{item.description[0].short_description}</Text>
+               <Text>{item.description[0].long_description}</Text>
+               <Text style={{fontWeight:'bold'}}>{item.description[1].short_description}</Text>
+               <Text>{item.description[1].long_description}</Text>
+               <Text style={{fontWeight:'bold'}}>{item.description[2].short_description}</Text>
+               <Text>{item.description[2].long_description}</Text>
+               <Text style={{fontWeight:'bold'}}>{item.description[3].short_description}</Text>
+               </ScrollView>
+             </View>
+             <View style={{flex:0.1}}>
+             <View style={{flex:1, height:150, borderTopColor : '#85B3D3', flexDirection:'row', borderTopWidth:1, justifyContent:'center', alignItems:'center',marginTop:2, marginBottom:2}}>
+                <View style={{flex: 0.2, alignItems:'center',justifyContent:'center'}}>
+                {this.refs['carouselOptions'].currentIndex !== 0 ? 
+                    <TouchableOpacity onPress={() => this.refs['carouselOptions'].snapToPrev()}>
+                    <Icon name="md-arrow-dropleft-circle"  style={{color : "#85B3D3"}}/>
+                    </TouchableOpacity>
+                    : <Text></Text>}
+                </View>
+                <View style={{flex: 0.6, borderWidth:0,alignItems:'center',justifyContent:'center'}}>
+                  <Button 
+                      //disabled={this.state.product['type'].isActivated}
+                      style={{backgroundColor: !isActivated ? '#85B3D3' : 'lightgrey',alignSelf:'center',alignItems:'center',justifyContent:'center'}}
+                      onPress={() => {
+                        console.log("Item name : "+ item.name);
+                        var product = this.state.product;
+                        product[item.name].isActivated = !product[item.name].isActivated;
+                        this.setState({ product });
+                  }}>
+                    <Text style={{color: !isActivated ? 'white' : 'darkgrey'}}>{!isActivated ? 'ACTIVER' : 'DESACTIVER'}</Text>
+                  </Button>
+                </View>
+                <View style={{flex: 0.2, alignItems:'center',justifyContent:'center'}}>
+                    {this.refs['carouselOptions'].currentIndex !== this.desactivatedParameters.length -1 ? 
+                     <TouchableOpacity onPress={() => this.refs['carouselOptions'].snapToNext()}>
+                        <Icon name="md-arrow-dropright-circle"  style={{color : "#85B3D3"}}/>
+                        </TouchableOpacity>
+                        : <Text></Text>}               
+                </View>
+                </View>
+             </View>
+          </View>
 
     )
   }
 
-
+  //affiche le titre de la retrocession
   _UFTitle(){
     let title = "VOTRE RETROCESSION";
  
@@ -520,6 +843,8 @@ class PricerScreen extends React.Component {
 
     return (title);
   }
+
+  //affiche la maturité
   _maturityTitle(){
     let title = "Maturité : ";
     let ans = " ans";
@@ -536,70 +861,6 @@ class PricerScreen extends React.Component {
   }
 
 
-  _changeProduct = (currentProductIndex) => {
-    //console.log(this.setState.product.name)
-    var product = this.state.product;
-    //product['name']['value'] = productList[currentProductIndex].id;
-    this.setState({ product }, () => console.log(this.state));
-  }
-
-  ////////////////////////////////////////////
-  // CHECK IF MEMORY COUPON
-  ////////////////////////////////////////////
-  checkIfMemory () {
-    return (
-      <CheckBox 
-        checked={this.state.product['isCallableCouponIncremental'].value} 
-        onPress={(value) => {
-          var product = this.state.product;
-          product['isCallableCouponIncremental'].value = !this.state.product['isCallableCouponIncremental'].value;
-          this.setState({ product });
-          
-        }}
-      />
-    );
-  }
-
-  ////////////////////////////////////////////
-  // PICKER CALLABLE FREQUENCY
-  ////////////////////////////////////////////
-  pickerCallableFrequency () {
-
-    let singularName = this.state.product["callableFrequency"].commonName;
-    let pluralName = this.state.product["callableFrequency"].commonName;
-    if (pluralName !== "mois") {
-      pluralName = pluralName + "s";
-    }
-    let un = 1;
-    let deux = 2;
-    let trois = 3;
-    let quatre = 4;
-    if (this.state.product["callableFrequency"].value === 24){
-      un = 2 * un;
-      deux = 2 * deux;
-      trois = 2 * trois;
-      quatre = 2 * quatre;
-      singularName = pluralName;<TouchableOpacity onPress={this._onPressButton}></TouchableOpacity>
-    }
-    return (
-      <Picker
-      selectedValue={this.state.product['firstCallablePeriod'].value}
-      style={{height : 90}} 
-      itemStyle={{height : 90, fontSize : 14}} 
-      onValueChange={(itemValue, itemIndex) =>{
-        var product = this.state.product;
-        product['firstCallablePeriod'].value = itemValue;
-        this.setState({ product });
-      }}
-      >
-        <Picker.Item  label={un + " "+ singularName} value={1} key={1}/>
-        <Picker.Item  label={deux + " "+ pluralName} value={2} key={2}/>
-        <Picker.Item  label={trois + " "+ pluralName} value={3} key={3}/>
-        <Picker.Item  label={quatre + " "+ pluralName} value={4} key={4}/>
-      </Picker>                           
-    );
-  }
-
   onSwipePerformed = (action) => {
     console.log("ACTION : "+ action);
     if (action === 'left') {
@@ -610,38 +871,14 @@ class PricerScreen extends React.Component {
     }
 
   }
-  get pagination () {
-    const { activeOptionsSlide } = this.state;
-    return (
-        <Pagination
-          dotsLength={PARAMETERSSTRUCTUREDPRODUCT.length}
-          //activeDotIndex={this.refs['carouselOptions'].currentIndex}
-          activeDotIndex={activeOptionsSlide}
-          containerStyle={{  backgroundColor: 'rgba(0, 0, 0, 0.75)' }}
-          dotStyle={{
-              width: 10,
-              height: 10,
-              borderRadius: 5,
-              marginHorizontal: 8,
-              backgroundColor: 'rgba(255, 255, 255, 0.92)'
-          }}
-          inactiveDotStyle={{
-              // Define styles for inactive dots here
-          }}
-          inactiveDotOpacity={0.4}
-          inactiveDotScale={0.6}
-        />
-    );  
-  }
+
 
 
   render() {
-    let i =0;
-    console.log("RENDER");
-    return (
-      <ScrollView style={[globalStyle.bgColor, {flex: 1}]}>
-        <Modal
 
+    return (
+      <ScrollView style={[globalStyle.bgColor, {flex: 1}]} scrollEnabled={!this.state.showModalOptions}>
+        <Modal
             animationType="fade"
             transparent={true}
             visible={this.state.showModalOptions}
@@ -654,35 +891,57 @@ class PricerScreen extends React.Component {
                   activeOpacity={1} 
                   onPressOut={() => {this.setState({showModalOptions:false})}}
                 >
-                  <ScrollView 
-                    directionalLockEnabled={true} 
-
-                    contentContainerStyle={{
+                  <View 
+                    //directionalLockEnabled={true} 
+                    //contentContainerStyle={{
+                      style={{
                         backgroundColor: 'white',
                         borderWidth :1,
                         borderRadius:10,
                         borderColor : '#85B3D3',
                         width: DEVICE_WIDTH*0.8,
-                        height: DEVICE_HEIGHT*0.6,
+                        height: DEVICE_HEIGHT*0.7,
                         alignSelf: 'center',
                         //top: DEVICE_HEIGHT*0.15,
-                        marginTop:150,
-                        
+                        marginTop:150,                       
                         //borderRadius: DEVICE_HEIGHT*0.03,
                         alignItems: 'center'
                     }}
                   >
                     <SwipeGesture onSwipePerformed={this.onSwipePerformed.bind(this)}>
-                      <View style={{flex:1, width:DEVICE_WIDTH*0.8, borderWidth:1, borderColor:'red'}}>
-                      { this.pagination }
+                      <View style={{flex:1, flexDirection:'column',width:DEVICE_WIDTH*0.8, borderWidth:0, borderColor:'red'}}>
+                      <View style={{flex:0.1,width:DEVICE_WIDTH*0.8, justifyContent:'center', alignItems:'center'}}>
+                      <Pagination
+                          dotsLength={this.desactivatedParameters.length}
+                          //activeDotIndex={this.refs['carouselOptions'].currentIndex}
+                          activeDotIndex={this.state.activeOptionsSlide}
+                          //containerStyle={{  backgroundColor: 'rgba(0, 0, 0, 0.75)' }}
+                          containerStyle={{ flex:0.5, width: DEVICE_WIDTH*0.78, backgroundColor: 'transparent' }}
+                          dotStyle={{
+                              width: 10,
+                              height: 10,
+                              borderRadius: 5,
+                              //borderWidth:1,
+                              marginHorizontal: 5,
+                              //backgroundColor: 'rgba(255, 255, 255, 0.92)'
+                              backgroundColor : '#85B3D3'
+                          }}
+                          inactiveDotStyle={{
+                              // Define styles for inactive dots here
+                          }}
+                          inactiveDotOpacity={0.4}
+                          inactiveDotScale={0.6}
+                        />
+                        </View>
+                        <View style={{flex:0.9}}>
                         <Carousel
                             ref={'carouselOptions'}
-                            data={PARAMETERSSTRUCTUREDPRODUCT}
-                            renderItem={this._displayOptions}
-                            sliderWidth={DEVICE_WIDTH*0.75}
+                            data={this.desactivatedParameters}
+                            renderItem={this._displayParameters}
+                            sliderWidth={DEVICE_WIDTH*0.8}
                             //sliderHeight={DEVICE_WIDTH*0.3}
                             //itemHeight={35}
-                            itemWidth={DEVICE_WIDTH*0.75}
+                            itemWidth={DEVICE_WIDTH*0.8}
                             firstItem={0}
                             decelerationRate={'fast'}
                             onSnapToItem={(index) => {
@@ -694,9 +953,10 @@ class PricerScreen extends React.Component {
                             }
                             removeClippedSubviews={false}
                           />
+                          </View>
                       </View>
                     </SwipeGesture>
-                  </ScrollView>
+                  </View>
                 </TouchableOpacity> 
           </Modal>
           <View style={[globalStyle.bgColor, {flex : 1, flexDirection : 'column', marginLeft: 0.0*DEVICE_WIDTH, marginRight: 0.0*DEVICE_WIDTH, borderWidth:0}]}>
@@ -804,9 +1064,7 @@ class PricerScreen extends React.Component {
                 //vertical={true}
                 decelerationRate={'fast'}
                 onSnapToItem={(index) => {
-                  //const array = this.state.product;
-                  //array.callableFrequency = index
-                  //this.setState({ product : array });
+                    index === 1 ? this.setState({isExpert : true}) : this.setState({isExpert : false});
                   }
                 }
                 removeClippedSubviews={false}

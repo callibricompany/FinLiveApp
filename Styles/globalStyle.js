@@ -14,8 +14,8 @@ const globalStyle = StyleSheet.create({
 //        BACKGROUNG COLOR 
 ///////////////////////////////
   bgColor :{
-      backgroundColor:'#F9FAFC'
-      //backgroundColor:'pink'
+      //backgroundColor:'#F9FAFC'
+      backgroundColor:'linen'
   },
 
  

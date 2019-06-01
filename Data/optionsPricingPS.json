@@ -1,14 +1,200 @@
 [
-    {
+  {
+    "name": "type",
+    "title" : "Produit",
+    "description": [
+      {
+      "short_description": "Influence",
+      "long_description":"Le produit choisi reflète le profil de risque de votre client. Il offrira plus ou moins de rendement en fonction du risque pris. Consultez les rubriques d'aide pour consulter les fiches descriptives de chacun de nos produits et leurs argumentaires commerciaux facilement transférables à vos clients."
+      },        
+      {
+        "short_description": "Vérification",
+        "long_description":"Etudiez et validez le prfil de risque du produit choisi avec viotre client."
+      },
+      {
+        "short_description": "Risques",
+        "long_description":"Choisir une produit peut entrainer une lourde perte de capital"
+      },
+      {
+        "short_description": "Illustration",
+        "long_description":""
+      }
+    ],
+  },
+  {
       "name": "underlying",
-      "title" : "Sous-jacent"
+      "title" : "Sous-jacent",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Le choix du sous-jacent est primordial et influe grandement le niveau de coupon. Les sous-jacents les plus volatiles permettent généralement d'obtenir de meilleurs coupons."
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Complétez ce choix et votre argumentaire avec des analyses fondamentale que vous trouverez prochainement sur FinLive"
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"Choisir une action est plus risqué car la valeur est plus susceptible de subir des profits warnings"
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
     },
     {
       "name": "maturity",
-      "title" : "Maturité"
+      "title" : "Maturité",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Généralement, plus vous optez pour un produit avec une échéance lointaine, plus votre coupon sera élevé."
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Vérifiez auparavant si l'encapsulage juridique du produit sera compatible à la maturité choisie (par exemple dans une Assurance Vie, la maturité du produit devra être de 8 ans)"
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"La maturité augmentant, le risque de subir les aléas de marché augmentent aussi et le risque de perte en capital également."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
     },
     {
-      "name": "PDI",
-      "title" : "Protection du capital"
-    }
+      "name": "barrierPDI",
+      "title" : "Protection du capital",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Votre coupon sera d'autant plus faible que votre protection sera élévée"
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Validez auprès de votre client la compréhension de la notion de perte potentielle de capital "
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"En cas de troubles sur le marché, la perte en capital peut s'avérer sévère. Adaptez opportunement son niveau d'activation."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
+      "name": "freqAutocall",
+      "title" : "Fréquence de rappel",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Une fréquence de rappel plus élevé augmente les chances de rappel et dimunue ainsi celle de risque surson capital. Le coupon sera d'autant moins élevé. Vous pouvez également choisir de ne pas rappeler votre produit pendant un an, cela permet d'améliorer votre coupon"
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Vérifiez les durées minimum du produit, elles doivent être compatible avec son enveloppe juridique."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"Les risques de non rappel et de risque en capital augmentent si la fréquence du produit est faible"
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
+      "name": "degressiveStep",
+      "title" : "Dégressivité du seuil de rappel",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Baisser le seuil de rappel à chaque période augment les chances de rappel du produit. Le coupon payé sera donc moindre. En contrepartie la prise de risque sur le capital sera aussi plus faible. "
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Adaptez cette dégressivité avec le profil de risque attendu."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"Un produit dont le seuil de rappel reste à 100% a moins de chance d'être rappelé. Le risque de perte de capital est plus élevé."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
+      "name": "airbagLevel",
+      "title" : "Effet airbag",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"L'effet airbag permet de récupérer l'ensemble des coupons si la barrière de perte en capital n'est pas activée. Cette protection a un coût : un coupon plus faible."
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"L'effet airbag n'améliore pas la protection du capital."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
+      "name": "barrierPhoenix",
+      "title" : "Seuil des coupons",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Choisissez un seuil de paiement de coupons inférieur à celui des rappels : cela augemente la probabilité de paiement des coupons; en contrepartie d'un niveau moins élevé."
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"Le changement de seuil des coupons n'améliore pas la protection du capital."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
+      "name": "freqPhoenix",
+      "title" : "Fréquences des coupons",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Choisissez une fréquence de paiement des coupons supérieure à celle des rappels."
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"Le changement de seuil des coupons n'améliore pas la protection du capital."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    }     
   ]

@@ -239,7 +239,7 @@ function containerFLPanel (activated, marginRight, marginLeft, marginTop, border
     let borderColorTemp = "#DDE0E2"
     
     if (activated) {
-        bgColor='white';
+        bgColor=globalStyle.bgColor ;
         borderWidth=1;
         borderColorTemp =  borderColor;
     }

@@ -37,7 +37,7 @@ export class FLSlider extends Component{
 
         return (
             <View style={{paddingTop:5, paddingBottom: 5}}>
-                <View style={styles.column}>
+                <View style={[styles.column, {alignSelf:'center',borderWidth:0, width:this.props.sliderLength+6}]}>
                     {this.renderScale()}
                 </View>
                 <View style={styles.container}>
