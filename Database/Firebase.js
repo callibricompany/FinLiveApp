@@ -4,6 +4,8 @@ import 'firebase/auth';
 import 'firebase/firestore';
 const firebase = require("firebase");
 
+import { sortResults } from '../Utils/convertFresh'
+
 import * as ROLES from '../constants/roles';
 
 const dataForge = require('data-forge');
@@ -43,6 +45,8 @@ class Firebase {
       this.lastPricesList = [];
       this.isAllPricesLoaded = false;
       //this.unsuscribreUserRights = null;
+
+      this.ticketListenner = null;
     }
 
 
@@ -75,6 +79,12 @@ class Firebase {
 
   
   doSignOut = () => {
+    if (this.ticketListenner != null) {
+      this.ticketListenner();
+    }
+
+    //this.unsuscribreUserRights();
+    console.log("SIGNOUT 3");
      return this.auth.signOut();
   }
 
@@ -117,7 +127,7 @@ class Firebase {
                       const roles = [];
                       let name = '';
                       let firstName= '';
-                      let zohocode = '';
+                      let codeTS = '';
                       let company = '';
                       let organization = '';
                       let phone = '';
@@ -144,7 +154,7 @@ class Firebase {
                         //check si les champs sont presents
                         name = (typeof doc.data().lastName !== 'undefined') ? doc.data().lastName : '';
                         firstName = (typeof doc.data().firstName !== 'undefined') ? doc.data().firstName : '';
-                        zohocode = (typeof doc.data().zohocode !== 'undefined') ? doc.data().zohocode : '';
+                        codeTS = (typeof doc.data().codeTS !== 'undefined') ? doc.data().codeTS : '';
                         company = (typeof doc.data().company !== 'undefined') ? doc.data().company : '';
                         organization = (typeof doc.data().organization !== 'undefined') ? doc.data().organization : '';
                         phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
@@ -158,7 +168,7 @@ class Firebase {
                       email: authUser.email,
                       name: name,
                       firstName: firstName,
-                      zoho: zohocode,
+                      codeTS: codeTS,
                       company: company,
                       organization: organization,
                       phone: phone,
@@ -168,7 +178,7 @@ class Firebase {
                     console.log("USER :  ", authUser.email);
                     next(authUser);
                   }, function(error) {
-                    //this.unsuscribreUserRights();
+                    
                     console.log("ERREUR ONSNAPSHOT : " + error);
                     fallback();
                   })
@@ -253,6 +263,33 @@ class Firebase {
     }); 
  
   }
+
+
+  //where('requester_id', '==', idFresh)
+  //orderBy("updated_at", "desc")
+   //charge les tickets
+
+
+
+    onTicketListenner = (next, fallback, idFresh) => {
+      this.ticketListenner = this.db.collection("tickets").where('requester_id', '==', idFresh).onSnapshot(function(querySnapshot) {
+        var tickets = [];
+        querySnapshot.forEach(function(doc) {
+          if (doc.data().requester_id === idFresh) {
+            tickets.push(doc.data());
+          }
+        });
+        //console.log("PASSE PAR FIREBASE");
+        tickets = sortResults(tickets, 'updated_at', false);
+        next(tickets);
+        //reject("Erreur retour snapshot ticket list from datastore");      
+      });
+      fallback();
+    }
+    
+
+ 
+
 
 
   // *** User API ***

@@ -1,4 +1,5 @@
 import React from 'react'
+import Expo from "expo";
 import { View, ScrollView, Image, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar} from 'react-native'
 import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { globalStyle } from '../../Styles/globalStyle'
@@ -40,9 +41,9 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
         pageNews: 1,
         news: []
       }
+
        // console.log("PLATE-FORME : " + Platform.OS)
     }
-
 
 
     
@@ -63,6 +64,24 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
       tabBarVisible: false,
       }
     }
+
+
+    /*async componentWillMount() {
+      try {
+        await Expo.Font.loadAsync({
+    //      Roboto: require("native-base/Fonts/Roboto.ttf"),
+    //      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+            Roboto: require("native-base/Fonts/Roboto.ttf"),
+            Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+            Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+        })
+        } catch (error) {
+          console.log('Erreur chargement icon fonts', error);
+        }
+  
+        this.setState({ isLoading : false });  
+    }*/
+
 
     componentDidMount(){
 
@@ -140,7 +159,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
             </View>
             <View style={{flex:2, flexDirection:'column', flexWrap: 'wrap'}}>
                <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap', paddingRight:5}}>
-                  <Text style={{fontSize: 18}}>{item.title}</Text>
+                  <Text style={{fontSize: 16, flexWrap: 'wrap', }}>{item.title}</Text>
                 </View>
                 <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingRight:10, paddingBottom: 2}}>
                    <Text style={{fontSize: 10}}>{Moment(item.publishedAt).locale('fr',localization).calendar()}</Text>

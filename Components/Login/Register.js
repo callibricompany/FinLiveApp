@@ -10,9 +10,10 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
-  Alert
+  Alert,
+  Text
 } from 'react-native';
-import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Text, Picker, Button } from 'native-base';
+import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import Dimensions from 'Dimensions';
@@ -211,18 +212,23 @@ class RegisterFormBase extends Component {
         })
         .catch(error => {
           console.log("ERREUR CREATION USER: " + error);
+          Alert.alert('ERREUR CREATION DE COMPTE', '' + error);
+          this.props.navigation.navigate('WaitingRoom');
         }) 
 
 
 
       }).catch(function (error) {
         console.log(error);
+        Alert.alert('ERREUR CREATION DE COMPTE', '' + error);
+        this.props.navigation.navigate('WaitingRoom');
         });
     })
     .catch((error) =>{
       
       console.log("erreur creation compte : " + error);
       Alert.alert('ERREUR CREATION DE COMPTE', '' + error);
+      this.props.navigation.navigate('WaitingRoom');
     })
     
     return this.creationUserOk;

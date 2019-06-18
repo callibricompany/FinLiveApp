@@ -14,10 +14,12 @@ import {
 } from 'react-native';
 import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
+import { sendEmail } from '../../Utils/sendEmail'
 import ButtonSubmit from './ButtonSubmit'
 import LogoComponent  from '../LogoComponent'
 import Dimensions from 'Dimensions';
-import firebase from 'firebase'
+
+
 
 
 // import Signup from './Signup';
@@ -32,6 +34,8 @@ class WaitingValidationScreen extends Component {
   constructor(props){
     super(props);
 
+    this.name = this.props.navigation.getParam('name', '');
+    this.firstName = this.props.navigation.getParam('firstName', '');
   }
   
 
@@ -64,16 +68,32 @@ class WaitingValidationScreen extends Component {
                 </View>
 
             <View style={styles.container}>
-            <Button bordered warning  style={{flew:1, width: 0.9*DEVICE_WIDTH,  marginBottom: 50,  flexWrap: "nowrap", justifyContent:'center', alignItems:'center'}}>
-            <Text numberOfLines={3} >Votre compte est en cours de validation</Text>
+            <Button bordered warning  style={{flew:1, height: 60, width: 0.9*DEVICE_WIDTH,  marginBottom: 50, justifyContent:'center', alignItems:'center'}}>
+            <Text numberOfLines={3} >Bonjour {this.firstName} {this.name},{"\n"}Votre compte est en cours de validation</Text>
           </Button>
             
-                <ButtonSubmit 
-                    //onPress={this.login.bind(this)} 
-                    //onCheckEmail={this.checkEmailValidity.bind(this)}
-                    text={'RENVOYER LA DEMANDE'}
-                    style={{flex:1}}
-                />
+                <Button rounded
+                    style={{backgroundColor : '#85B3D3', width: 0.9*DEVICE_WIDTH, justifyContent:'center', alignItems: 'center'}}
+                    onPress={() => {
+                        sendEmail(
+                          'admin@finlive.eu',
+                          'Activation de compte',
+                          'Bonjour,\nSuite à mon incription, je souhaite activer mon compte le plus rapidement possible.\nMerci de faire le nécessaire.\n\nCordialement,\n'
+                        ).then(() => {
+                            console.log('Email envoyé par appli par defaut');
+                        });
+                    }} 
+                >
+                  <Text style={{
+                                color: 'black',
+                                backgroundColor: 'transparent',
+                                alignItems:'center',
+                                justifyContent:'center',
+                                fontSize: 14,
+                              }}>
+                      RENVOYER LA DEMANDE
+                  </Text>
+                </Button>
             </View>
             <View style={styles.container_buttons}>
             
@@ -84,13 +104,13 @@ class WaitingValidationScreen extends Component {
                     <Icon name="md-arrow-dropleft" style={{color : "#9A9A9A"}}/>   
                         <Text style={styles.text_button}>Retour Connexion</Text>
                 </Button>
-                <Button light rounded
+                {/*<Button light rounded
                     style={{flex:1, width: 0.45*DEVICE_WIDTH,  justifyContent:'center', alignItems:'center', marginLeft: 5}}
                     //disabled={true}
                     onPress={() => this.props.navigation.navigate('App')}
                 >
                         <Text style={styles.text_button}>Contacter organisme</Text>
-                </Button>
+                </Button>*/}
             </View>
            
             </ScrollView>

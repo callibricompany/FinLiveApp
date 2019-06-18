@@ -1,0 +1,32 @@
+[
+    {
+      "name": "Ouvert",
+      "id": 0,
+      "color" : "goldenrod"
+    },
+    {
+      "name": "En attente",
+      "id": 1,
+      "color" : "mediumaquamarine"
+    },
+    {
+      "name": "Résolu",
+      "id": 2,
+      "color" : "lawngreen"
+    },
+    {
+      "name": "Fermé",
+      "id": 3,
+      "color" : "gainsboro"
+    },
+    {
+      "name": "Attente client",
+      "id": 4,
+      "color" : "khaki"
+    },
+    {
+      "name": "Attente tiers",
+      "id": 5,
+      "color" : "linen"
+    }
+  ]

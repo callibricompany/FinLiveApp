@@ -6,6 +6,10 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
+export const tabBackgroundColor = '#13223C'; //'whitesmoke';  //ghostwhite   
+const fontColorHeader = 'white'; //#707070
+
+
 const globalStyle = StyleSheet.create({
 
 
@@ -14,8 +18,8 @@ const globalStyle = StyleSheet.create({
 //        BACKGROUNG COLOR 
 ///////////////////////////////
   bgColor :{
-      //backgroundColor:'#F9FAFC'
-      backgroundColor:'linen'
+      backgroundColor:'#F9FAFC'
+      //backgroundColor:'linen'
   },
 
  
@@ -29,7 +33,7 @@ const globalStyle = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      backgroundColor: '#C8D1DB',
+      backgroundColor: tabBackgroundColor,
       height: Platform.OS === 'ios' ? 95 : 95-STATUSBAR_HEIGHT,
       marginTop: STATUSBAR_HEIGHT,
       //flexWrap: "nowrap",
@@ -63,16 +67,16 @@ const globalStyle = StyleSheet.create({
 
 
     header_center_text_big : {
-      color: '#707070', 
+      color: fontColorHeader, 
       fontSize:36,
     },
     header_left_text_medium : {
-      color: '#707070', 
+      color: fontColorHeader, 
       fontSize:22,
       alignItems : 'flex-start'
     },
     header_center_text_medium : {
-      color: '#707070', 
+      color: fontColorHeader, 
       fontSize:22,
     },
 
@@ -99,7 +103,7 @@ const globalStyle = StyleSheet.create({
     },
     header_icon : { 
       backgroundColor:'transparent',
-      color: '#707070'
+      color: fontColorHeader
     },
 
 ///////////////////////////////
@@ -197,9 +201,9 @@ news_detail_image : {
     swipesGestureContainer:{
       height:'100%',
       width:'100%'
-    },
+    }
 
-
+    
   })
 
 

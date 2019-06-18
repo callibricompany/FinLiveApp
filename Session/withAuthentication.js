@@ -11,9 +11,12 @@ const withAuthentication = Component => {
 
       this.state = {
         authUser: null,
+        tickets : [],
+        getAllTickets : () => this.getAllTickets(),
       };
     }
 
+   
 
     componentDidMount() {
       this.listener = this.props.firebase.onAuthUserListener(
@@ -23,7 +26,7 @@ const withAuthentication = Component => {
         },
         () => {
           console.log("didMount Authentication KO");
-          this.setState({ authUser: null });
+          this.setState({ authUser: '' });
           //this.listener();
         },
       );
@@ -39,13 +42,30 @@ const withAuthentication = Component => {
     }*/
 
     componentWillUnmount() {
-      //console.log("withAUTHENTICATION : Appel this.listener() ")
+      console.log("withAUTHENTICATION : Appel this.listener() ");
+      this.ticketListener();
       this.listener();
     }
 
+
+
+    getAllTickets() {
+      this.ticketListener = this.props.firebase.onTicketListenner(
+        tickets => {
+          console.log("Chargement tickets ok");
+          this.setState({ tickets });
+        },
+        () => {
+          console.log("Chargement tickets KO");
+          this.setState({ tickets: null });
+        }, this.state.authUser.codeTS
+      );
+    }
+
+
     render() {
       return (
-        <AuthUserContext.Provider value={this.state.authUser}>
+        <AuthUserContext.Provider value={this.state}>
           <Component {...this.props} />
         </AuthUserContext.Provider>
       );

@@ -19,6 +19,11 @@ export class FLSlider extends Component{
           second: this.props.initialMax,
           activated : isActivated,
         }
+
+       
+         this.nbScales = (this.props.max - this.props.min)/this.props.spreadScale;
+         this.scaleWidth = this.props.sliderLength/this.nbScales;
+
     }
     
     componentWillReceiveProps(props) {
@@ -36,11 +41,11 @@ export class FLSlider extends Component{
     render() {
 
         return (
-            <View style={{paddingTop:5, paddingBottom: 5}}>
-                <View style={[styles.column, {alignSelf:'center',borderWidth:0, width:this.props.sliderLength+6}]}>
+            <View style={{borderWidth:0, justifyContent:'center',alignItems:'center',paddingTop:0, paddingBottom: 0,width:this.props.sliderLength}}>
+                <View style={[styles.column, {borderWidth:0}]}>
                     {this.renderScale()}
                 </View>
-                <View style={styles.container}>
+                <View style={[styles.container, {borderWidth:0}]}>
             
                     <MultiSlider
                         containerStyle={{
@@ -60,8 +65,8 @@ export class FLSlider extends Component{
                         values={ this.props.single ?
                             [this.state.multiSliderValue[1]] : 
                          [      this.state.multiSliderValue[0],this.state.multiSliderValue[1]]}
-                        //sliderLength={Dimensions.get('window').width-this.props.LRpadding*2}
-                        sliderLength={this.props.sliderLength}
+                    
+                        sliderLength={this.props.sliderLength -  this.scaleWidth +6}
                         //onValuesChange={this.multiSliderValuesChange}
                         onValuesChangeFinish={this.multiSliderValuesChange}
                         min={this.props.min}
@@ -116,8 +121,8 @@ const styles = StyleSheet.create({
     },
     column:{
         flexDirection:'row',
-        alignItems:'center',
-        justifyContent: 'space-between',
+        //alignItems:'center',
+        justifyContent: 'flex-start',
         bottom:-5,
     },
     active:{

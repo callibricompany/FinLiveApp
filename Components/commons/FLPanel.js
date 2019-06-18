@@ -20,12 +20,16 @@ class FLPanel extends React.Component{
         }
         
         let expanded = false;
+        if (typeof this.props.expanded != 'undefined'){
+            expanded = this.props.expanded;
+        }
         if (!this.isExpandable){
             expanded = true;
         }      
 
         this.state = {       
             title       : this.props.title,
+            title2      : typeof this.props.title2 != 'undefined' ? this.props.title2 :'',
             expanded    : expanded,
             animation   : this.isExpandable ? new Animated.Value() : this.props.hauteur,
             activated   : this.props.activated
@@ -36,6 +40,8 @@ class FLPanel extends React.Component{
             this.isExpandable = this.props.isExpandable;
            // this.setState({expanded : true})
         }
+
+        
 
         this.fontSizeTitle = 20;
         if (typeof this.props.fontSizeTitle != 'undefined'){
@@ -212,6 +218,7 @@ class FLPanel extends React.Component{
                         {printLeft}
                         <SwipeGesture style={swipeGestureFLPanel(this.isExpandable, this.props.title)} onSwipePerformed={this.onSwipePerformed.bind(this)}>
                             <Text style={titleFLPanel(this.fontSizeTitle)}>{this.state.title}</Text>
+                            {this.state.title2.length !== 0 ? <Text style={titleFLPanel(12)}>{this.state.title2}</Text> :<Text></Text>}
                         </SwipeGesture>
                         {printRight}
                 </View>
@@ -263,7 +270,7 @@ function swipeGestureFLPanel(expandable, title) {
     return {
         height: title !== '' ? 30 : 0, 
         justifyContent : 'center',
-        alignItems:'center',
+        //alignItems:'center',
         marginTop: title !== '' ? 3 : 0,
         flex: expandable ? 0.9 : 1,
 
@@ -291,8 +298,7 @@ function titleFLPanel (fontSize) {
         flex    : 1,
         paddingLeft : 10,
         paddingRight : 10,
-        color   :'#2a2f43',
-        fontWeight:'bold',
+        fontWeight : fontSize === 14 ?'bold' : 'normal',
         fontSize: fontSize
     }
 }

@@ -1,5 +1,6 @@
 import React from 'react'
-import { Button, Input, Icon, Item, Text } from 'native-base'
+import { Button, Input, Icon, Item } from 'native-base'
+import { Text } from 'react-native'
 
 import { withUserTest } from '../../Session/UserProvider'
 

@@ -1,0 +1,25 @@
+[
+    {
+        "cf_airbag": "isAirbag",
+        "cf_niveau_airbag": "airbagLevel",
+        "cf_coupon_de_rappel_en": "couponAutocall",
+        "cf_coupon_phoenix": "couponPhoenix,",
+        "cf_ps_startdate": "startDate",
+        "cf_date_de_strike": "strikeDate",
+        "cf_devise": "currency",
+        "cf_dgressivit_du_seuil_par_priode_de_rappel": "degressiveStep",
+        "cf_freq_rappel": "freqAutocall",
+        "cf_frquence_coupon": "freqPhoenix",
+        "cf_je_veux_une_cotation_sur": "typeRecherche",
+        "cf_maturit": "maturity",
+        "cf_mmoire": "isMemory",
+        "cf_nombre_de_priode_sans_rappel": "noCallNbPeriod",
+        "cf_protection_capital": "barrierPDI",
+        "cf_ps_nominal": "nominal",
+        "cf_rtro": "UF",
+        "cf_seuil_de_rappel": "levelAutocall",
+        "cf_sousjacents": "underlying",
+        "cf_no_call_1_period" : "isIncremental",
+        "cf_sdsd": "isPDIUS"
+    }
+]

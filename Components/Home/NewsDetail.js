@@ -120,9 +120,15 @@ class NewsDetail extends React.Component {
           <Image style={globalStyle.news_detail_image} source={imageUri.length!=0?{uri: imageUri}: null}/>
           <Card style={{flex: 0}}>
           <CardItem style={{alignItems:'center'}}>
-          <Text style={{fontSize:20, fontWeight:'bold'}}>
+            <TouchableOpacity onPress={() => {
+                this.props.navigation.navigate('NewsDetailWeb', {
+                  item: this.item,
+                });
+            }}>
+                <Text style={{fontSize:20, fontWeight:'bold'}}>
                   {this.item.title}
                 </Text>
+            </TouchableOpacity>
           </CardItem>
             <CardItem>
               <Left>

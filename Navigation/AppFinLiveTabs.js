@@ -5,30 +5,75 @@ import { createBottomTabNavigator, createStackNavigator } from 'react-navigation
 import HomeScreen from '../Components/Home/HomeScreen'
 import NewsList from '../Components/Home/NewsList'
 import NewsDetail from '../Components/Home/NewsDetail'
+import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
 import PricerScreen from '../Components/Pricer/PricerScreen'
 import StructuredProductDetail from '../Components/Pricer/StructuredProductDetail'
 import ProfileScreen from '../Components/ProfileScreen'
-import TicketsList from '../Components/TicketsList'
-import TicketDetail from '../Components/TicketDetail'
-import BroadcastingScreen from '../Components/BroadcastinScreen'
+import TicketsList from '../Components/Ticket/TicketsList'
+//import TicketDetail from '../Components/Ticket/TicketDetail'
+import TicketDetail from '../Components/Ticket/SearchScreen'
+import BroadcastingScreen from '../Components/Broadcast/BroadcastingScreen'
 import AdminScreen from '../Components/AdminScreen'
 
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { tabBackgroundColor } from '../Styles/globalStyle';
+
 import * as ROLES from '../constants/roles';
+
+const tabIconFocused = 'white';
+//const tabIconNonFocused = '#C8D1DB';
+const tabIconNonFocused = 'white';
+
+const TABS_BAR_OPTIONS = {
+  tabBarOptions: {
+    activeBackgroundColor: tabBackgroundColor, // Couleur d'arrière-plan de l'onglet sélectionné
+    inactiveBackgroundColor: tabBackgroundColor, // Couleur d'arrière-plan des onglets non sélectionnés
+    showLabel: true, // On masque les titres
+    showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
+    activeTintColor: '#85B3D3',
+    //inactiveTintColor: '#707070',
+    inactiveTintColor: tabBackgroundColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+    style: {
+      backgroundColor: tabBackgroundColor,
+      borderTopColor: 'gray',
+      paddingTop: 10,
+      borderTopWidth: 1,
+      height: 70,
+      //ustifyContent: 'center',
+      //alignItems: 'center',
+      },
+
+    labelStyle:{
+ //       labelSize: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 0
+      },
+    iconStyle: {
+        flexGrow: 1,
+        marginTop: 0,
+        marginBottom: 0,
+        //alignItems : 'center'
+      },
+  },
+}
 
 function labelStyle (focused, tintColor) {
     if (focused) {
       couleur = tintColor }
     else {
-       couleur = '#707070' }
+       //couleur = '#707070' }
+       couleur = 'silver' }
   
     
     return {
       marginTop:10,  
       fontSize: 14 ,
-      fontWeight: 'bold',
+      //fontWeight: 'bold',
       justifyContent: 'center',
       alignItems: 'center',
       color: couleur
@@ -37,7 +82,7 @@ function labelStyle (focused, tintColor) {
 
 
 //Ecran accueil
-const HomeScreenStack = createStackNavigator({
+  const HomeScreenStack = createStackNavigator({
 
     Home: {
       screen: HomeScreen,
@@ -47,6 +92,9 @@ const HomeScreenStack = createStackNavigator({
     },
     NewsDetail : {
       screen: NewsDetail
+    },
+    NewsDetailWeb : {
+      screen: NewsDetailWeb
     }
   }, 
   {
@@ -75,10 +123,23 @@ const HomeScreenStack = createStackNavigator({
       }
     },
     TicketDetail: {
-      screen: TicketDetail
+      screen: TicketDetail,
+      headerMode: 'none',
+      navigationOptions: {
+        headerVisible: false,
+      }
     }
     })
-  
+    //Ecran broadcast
+    const BroadcastingScreenStack = createStackNavigator({
+      Broadcasting: {
+        screen: BroadcastingScreen,
+        navigationOptions: {
+          title: 'Broadcast'
+        }
+      },
+
+      })
   //Ecran profil
   const ProfilScreenStack = createStackNavigator({
   Profil: {
@@ -122,7 +183,7 @@ const HomeScreenStack = createStackNavigator({
                   <FontAwesomeI
                   name='home'
                   size={30}
-                  style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
               />
               </View>
             );
@@ -150,13 +211,13 @@ const HomeScreenStack = createStackNavigator({
                         width:40,
                         height:40,
                         backgroundColor:tintColor,
-                        borderRadius:50,
+                        borderRadius:40,
                       }}
                   >
                   <FontAwesomeI
                   name='euro'
                   size={30}
-                  style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
               />
               </View>
             );
@@ -191,7 +252,7 @@ const HomeScreenStack = createStackNavigator({
                 <FontAwesomeI
                 name='ticket'
                 size={30}
-                style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+                style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
             />
             </View>
           );
@@ -206,7 +267,7 @@ const HomeScreenStack = createStackNavigator({
         }
       },
       Broadcasting: {
-        screen: BroadcastingScreen,
+        screen: BroadcastingScreenStack,
         navigationOptions: {
     
           tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
@@ -227,7 +288,7 @@ const HomeScreenStack = createStackNavigator({
                   <MaterialCommunityIconsI
                   name='radio-tower'
                   size={30}
-                  style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
               />
               </View>
             );
@@ -262,7 +323,7 @@ const HomeScreenStack = createStackNavigator({
                   <FontAwesomeI
                   name='user'
                   size={30}
-                  style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
               />
               </View>
             );
@@ -299,7 +360,7 @@ const HomeScreenStack = createStackNavigator({
                   <FontAwesomeI
                   name='user-plus'
                   size={30}
-                  style={focused ? { color: 'white' } : { color: '#C8D1DB' }}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
               />
               </View>
             );
@@ -315,60 +376,6 @@ const HomeScreenStack = createStackNavigator({
       }
     }
   
-  const TABS_BAR_OPTIONS = {
-      tabBarOptions: {
-        activeBackgroundColor: '#C8D1DB', // Couleur d'arrière-plan de l'onglet sélectionné
-        inactiveBackgroundColor: '#C8D1DB', // Couleur d'arrière-plan des onglets non sélectionnés
-        showLabel: true, // On masque les titres
-        showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
-        activeTintColor: '#85B3D3',
-        inactiveTintColor: '#707070',
-        justifyContent: 'center',
-        alignItems: 'center',
-        style: {
-          backgroundColor: '#C8D1DB',
-          borderTopColor: '#C8D1DB',
-          borderTopWidth: 15,
-          height: 65,
-          justifyContent: 'center',
-          alignItems: 'center',
-          },
-   
-        labelStyle:{
-     //       labelSize: 30,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 10
-          },
-        iconStyle: {
-            flexGrow: 1,
-            marginTop: 0,
-            marginBottom: 10
-          },
-      },
-  }
-    
- /* export default class AppFinLiveTabs extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-  
-    _tabNavigator() {
-        let tabs = {};
-        const {Accueil, Pricer} = TABS;
-        tabs = {Accueil, Pricer};
-  
-        return createBottomTabNavigator(TABS, TABS_BAR_OPTIONS);
-    }
-  
-    render() {
-        const Tabs = this._tabNavigator.bind(this);
-        //const Tabs = createBottomTabNavigator(TABS, TABS_BAR_OPTIONS);
-        return (
-            <Tabs/>
-        );
-    }
-  }*/
 
   export function  AppFinLiveTabs (role) {
         let tabs = {};

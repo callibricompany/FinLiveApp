@@ -5,7 +5,7 @@ import AlertAsync from 'react-native-alert-async';
 import { withFirebase } from '../Database';
 //import { AuthUserContext } from '../Session';
 import { withUser } from '../Session/withAuthentication';
-//import { withAuthorization } from '../Session';
+import { withAuthorization } from '../Session';
 import { compose, hoistStatics } from 'recompose';
 import { globalStyle } from '../Styles/globalStyle'
 
@@ -74,25 +74,26 @@ class ProfileScreen extends React.Component {
 
 
   render() {
+    console.log("RENDER PROFILE SCRRENN : " + this.props.authUser);
     return (
       <View style={globalStyle.container}>
-          
-        <Text>{this.props.firstName} {this.props.name}</Text>
-        <Text>{this.props.email}</Text>
-        {this.props.roles ? this.props.roles.map((role)=> <Text key={role}>{role}</Text>) : <Text></Text>}
-         
+          <Text>{this.props.authUser.firstName} {this.props.authUser.name}</Text>
+          <Text>{this.props.authUser.email}</Text>
+          <Text>{this.props.authUser.codeTS}</Text>
+          {this.props.authUser.roles ? this.props.authUser.roles.map((role)=> <Text key={role}>{role}</Text>) : <Text></Text>}    
         <Button title="Me déconnecter" onPress={this._signOutAlert} />
       </View>
     );
   }
 }
 
-//const condition = authUser => !!authUser;
+const condition = authUser => authUser != null;
 
 const composedFB = compose(
+  //withAuthorization(condition),
   withFirebase,
   withUser,
- // withAuthorization(condition),
+  
 );  
 
 

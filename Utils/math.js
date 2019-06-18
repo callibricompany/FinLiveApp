@@ -4,6 +4,18 @@ export function maturityToDate(mat){
 
 }
 
+export function getJsDateFromExcel(excelDate) {
+
+    // JavaScript dates can be constructed by passing milliseconds
+    // since the Unix epoch (January 1, 1970) example: new Date(12312512312);
+  
+    // 1. Subtract number of days between Jan 1, 1900 and Jan 1, 1970, plus 1 (Google "excel leap year bug")             
+    // 2. Convert to milliseconds.
+  
+    return new Date(Math.round((excelDate - (25567 + 2))*86400)*1000);
+  
+  }
+
 export function linearRegression(y,x){
     var lr = {};
     var n = y.length;
@@ -30,7 +42,7 @@ export function linearRegression(y,x){
 }
 
 
-export function calculateBestCoupon(structuredProduct, df){
+export function calculateBestCoupon(structuredProduct, df, UF){
         //console.log(structuredProduct);
 
         filteredDf = df.where(row => row.underlying === structuredProduct[0].underlying);
@@ -49,6 +61,12 @@ export function calculateBestCoupon(structuredProduct, df){
         filteredDf = filteredDf.where(row => row.freqPhoenix === structuredProduct[0].freqPhoenix);
         filteredDf = filteredDf.where(row => row.isMemory === structuredProduct[0].isMemory);
  
+        //on applique le filtre UF
+        filteredDf = filteredDf.transformSeries({
+            Price: value => value + UF
+          });
+
+
         //on recupere 2 series : les prix et les coupons
         seriePrices = filteredDf.getSeries('Price');
         serieCoupon = filteredDf.getSeries('coupon');

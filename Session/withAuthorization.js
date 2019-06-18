@@ -1,4 +1,5 @@
 import React from 'react';
+import Expo from 'expo';
 
 import { withFirebase } from '../Database';
 import { withNavigation } from 'react-navigation';
@@ -14,7 +15,22 @@ const withAuthorization = condition => Component => {
         //this.isAlreadyConnected = false;
       }
 
-
+    
+      async componentWillMount() {
+        try {
+          await Expo.Font.loadAsync({
+      //      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      //      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+              Roboto: require("native-base/Fonts/Roboto.ttf"),
+              Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+              //Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+          })
+          } catch (error) {
+            console.log('Erreur chargement icon fonts', error);
+          }
+    
+        //this.setState({ isLoading: false });    
+      }
     
 
     componentDidMount() {
@@ -27,7 +43,12 @@ const withAuthorization = condition => Component => {
             } else {
                 console.log("with AUTHORIZATION  : " + authUser.name);
                 if (!authUser.roles.includes(ROLES.VALIDATED)) {
-                  this.props.navigation.navigate('WaitingRoom');
+                  //this.props.navigation.navigate('WaitingRoom');
+                  this.props.navigation.navigate('WaitingRoom', {
+                    name: authUser.name,
+                    firstName : authUser.firstName
+                  });
+
                 } else if (authUser.roles.includes(ROLES.ADMIN)) {
                   this.props.navigation.navigate('AppAdmin');
                 } else {
@@ -37,7 +58,6 @@ const withAuthorization = condition => Component => {
           },
           () => {
               console.log("with AUTHORIZATION  : Attention user inconnu");
-              //this.listener();
               this.props.navigation.navigate('Login');
               //this.props.navigation.navigate('App');
           },
@@ -53,10 +73,14 @@ const withAuthorization = condition => Component => {
     render() {
       return (
         <AuthUserContext.Consumer>
-        {authUser =>
+        {authUser => {
+          console.log("RENDER withAUTHORIZATION : " + authUser);
+          return (
           //condition(authUser) ? <Component {...this.props} /> : null
           //<Component {...this.props} isLoggedIn={this.isAlreadyConnected} /> 
           <Component {...this.props} /> 
+          );
+        }
         }
       </AuthUserContext.Consumer>
       );

@@ -2,7 +2,7 @@
 import axios from 'axios'
 const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
 const URL_FAKE_JSON ="";
-const URL_AWS = "http://99.80.186.219:8080"
+const URL_AWS = "http://99.80.211.255:8080"
 
 export function getFilmsFromApiWithSearchedText (text) {
   const url = 'http://34.245.143.173:8080'
@@ -76,7 +76,7 @@ export function getOpenTickets () {
 }
 
 
-export function ssCreateUser (uid, email, name, firstName, phone, independant, company, organization) {
+export function ssCreateUser (idToken, email, name, firstName, phone, independant, company, organization) {
   let userIdentity = {
     email: email,
     name : name, 
@@ -85,14 +85,23 @@ export function ssCreateUser (uid, email, name, firstName, phone, independant, c
     independant : independant,
     company : company,
     organization : organization,
-    idToken : uid,
-    zohocode : ''
+    //idToken : uid
   };
+
+  var axiosConfig = {
+    headers :{
+      //'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json; charset=utf-8',
+      'Accept': 'application/json',
+      'bearer' : idToken
+    }
+  };
+
 
   console.log("APPELLE AXIOS");
   return new Promise(
     (resolve, reject) => {
-      axios.post(URL_AWS + '/createUser', userIdentity)
+      axios.post(URL_AWS + '/createUser', userIdentity, axiosConfig)
       .then((response) => {
         console.log("Succes : " + response);
         resolve(response)
@@ -105,5 +114,56 @@ export function ssCreateUser (uid, email, name, firstName, phone, independant, c
     });
   }
 
+export function ssCreateStructuredProduct (idToken, product) {
+
+  var FormData = require('form-data');
+  var form = new FormData();
+
+  Object.keys(product).forEach(key => {
+    console.log(key + "   -   " + product[key]);
+    form.append(key, product[key]);
+  });
+
+
+  console.log(product);
+  console.log("BOUNDARY : "+form._boundary);
+  //var filesuploaded = req.files;
+  /*console.log(req.files);
+
+  if ( filesuploaded.length > 0 ) {
+      for (var i = 0; i < filesuploaded.length; i++) {
+          formData.append('fileinput', fs.createReadStream(filesuploaded[i].path),filesuploaded[i].originalname);
+          // formData.append('fileinput', filesuploaded[i].buffer, { filename : filesuploaded[i].originalname });
+        }
+  }*/
+  
+
+  var axiosConfig = {
+    headers :{
+      //'Content-Type': 'application/x-www-form-urlencoded',
+      //'Content-Type': 'application/json; charset=utf-8',
+      'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+      //'Accept'      : 'application/json',
+      'bearer'      : idToken,
+      'type'        : 'Produit structuré'
+    }
+  };
+
+
+  return new Promise(
+    (resolve, reject) => {
+      axios.post(URL_AWS + '/createTicket', form, axiosConfig)
+      .then((response) => {
+        console.log("Succes : " + response);
+        resolve(response)
+        //res.render('pages/register',{email: email, isConnected: isConnected});
+      })
+      .catch(function (error) {
+        console.log("Erreur requete aws : " + error);
+        reject(error)
+      });
+    });
+  }
+  
 
 

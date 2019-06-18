@@ -9,9 +9,10 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
-  Alert
+  Alert,
+  Text
 } from 'react-native';
-import { Thumbnail, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Text, Picker, Button } from 'native-base';
+import { Thumbnail, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import LogoComponent  from '../LogoComponent'

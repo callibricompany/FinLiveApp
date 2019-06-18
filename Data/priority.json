@@ -1,0 +1,22 @@
+[
+    {
+      "name": "Faible",
+      "id": 1,
+      "color" : "lightgreen"
+    },
+    {
+      "name": "Moyenne",
+      "id": 2,
+      "color" : "darkcyan"
+    },
+    {
+      "name": "Elevée",
+      "id": 3,
+      "color" : "lightpink"
+    },
+    {
+      "name": "Urgente",
+      "id": 4,
+      "color" : "red"
+    }
+  ]
