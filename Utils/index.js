@@ -18,7 +18,7 @@ export function isIphoneX() {
 
   //var isX = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS && (height === 812 || width === 812);
   var isX = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS && (height/width > 2.16) && (height/width < 2.17);
-  console.log("isIPhoneX : " + isX);
+  //console.log("isIPhoneX : " + isX);
 
   return isX;
 }

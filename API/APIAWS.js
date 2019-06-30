@@ -120,13 +120,13 @@ export function ssCreateStructuredProduct (idToken, product) {
   var form = new FormData();
 
   Object.keys(product).forEach(key => {
-    console.log(key + "   -   " + product[key]);
+    //console.log(key + "   -   " + product[key]);
     form.append(key, product[key]);
   });
 
 
-  console.log(product);
-  console.log("BOUNDARY : "+form._boundary);
+  //console.log(product);
+  //console.log("BOUNDARY : "+form._boundary);
   //var filesuploaded = req.files;
   /*console.log(req.files);
 
@@ -164,6 +164,31 @@ export function ssCreateStructuredProduct (idToken, product) {
       });
     });
   }
+
+export function getUserAllInfo (idToken) {
+  var axiosConfig = {
+    headers :{
+      //'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json; charset=utf-8',
+      'Accept'      : 'application/json',
+      'bearer'      : idToken
+    }
+  };
+
+  return new Promise(
+    (resolve, reject) => {
+      axios.get(URL_AWS + '/getUserAllInfo', axiosConfig)
+      .then((response) => {
+        console.log("Succes : " + response);
+        resolve(response)
+        //res.render('pages/register',{email: email, isConnected: isConnected});
+      })
+      .catch(function (error) {
+        console.log("Erreur requete aws : " + error);
+        reject(error)
+      });
+    });
+}
   
 
 

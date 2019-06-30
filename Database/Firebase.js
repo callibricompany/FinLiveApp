@@ -8,6 +8,8 @@ import { sortResults } from '../Utils/convertFresh'
 
 import * as ROLES from '../constants/roles';
 
+import { getUserAllInfo } from '../API/APIAWS';
+
 const dataForge = require('data-forge');
 import PRICES from '../Data/20190517.json'
 
@@ -160,23 +162,36 @@ class Firebase {
                         phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
 
 
-                      }            
+                      }    
                       
-                    // merge auth and db user
-                    authUser = {
-                      uid: authUser.uid,
-                      email: authUser.email,
-                      name: name,
-                      firstName: firstName,
-                      codeTS: codeTS,
-                      company: company,
-                      organization: organization,
-                      phone: phone,
-                      roles : roles,
-                      idToken : idTokenUser
-                    };
-                    console.log("USER :  ", authUser.email);
-                    next(authUser);
+                    
+                      //on recupere les infos du serveur
+                      getUserAllInfo(idTokenUser)
+                      .then((userDatas) => {
+                        console.log("BELLE RECUP DES USER DATAS");
+                        console.log(userDatas);
+                        //this.onRegisterSuccess();
+                      })
+                      .catch(error => {
+                        console.log("ERREUR RECUPERATION DES INFOS USER " + error);
+                        alert('ERREUR RECUPERATION DES INFOS USER', '' + error);
+                      }) 
+                      // merge auth and db user
+                      authUser = {
+                        uid: authUser.uid,
+                        email: authUser.email,
+                        name: name,
+                        firstName: firstName,
+                        codeTS: codeTS,
+                        company: company,
+                        organization: organization,
+                        phone: phone,
+                        roles : roles,
+                        idToken : idTokenUser
+                      };
+                      console.log("USER :  ", authUser.email);
+
+                      next(authUser);
                   }, function(error) {
                     
                     console.log("ERREUR ONSNAPSHOT : " + error);

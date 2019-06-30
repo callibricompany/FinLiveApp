@@ -6,7 +6,7 @@ export class FLItemSlider extends Component {
         return (
             <View style={{flex: 1, borderWidth:0, alignItems: 'stretch', justifyContent:'flex-start'}}>
                 <Text style={ [ this.checkActive() ? styles.active : styles.inactive]}>{this.props.value}{this.props.isPercent ? ' %' :''}</Text>
-                <Text style={styles.line}> { this.checkActive() ? '|' : ''}</Text>
+                <Text style={styles.line}> { this.checkActive() ? '|' : '|'}</Text>
             </View>
         );
     }

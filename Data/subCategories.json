@@ -1,0 +1,170 @@
+[
+  {
+    "ticker": "INDEX",
+    "name" : "Indices",
+    "type" : "SubCategory",
+    "eod"  : "",
+    "category" : "PF"
+  },
+    {
+      "ticker": "CAC",
+      "name" : "CAC 40",
+      "type" : "Indice",
+      "eod"  : "FCHI.INDX",
+      "category" : "PF"
+    },
+    {
+        "ticker": "SX5E",
+        "name" : "EuroStoxx 50",
+        "type" : "Indice",
+        "eod"  : "SX5EE.INDX",
+        "category" : "PF"
+    },
+    {
+        "ticker": "EWD80",
+        "name" : "SBF TOP80",
+        "type" : "Indice",
+        "eod"  : "",
+        "category" : "PF"
+    },
+    {
+      "ticker": "EWC50",
+      "name" : "Euro iStoxx EWC 50",
+      "type" : "Indice",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+      "ticker": "STOCK",
+      "name" : "Actions",
+      "type" : "SubCategory",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+        "ticker": "FP FP",
+        "name" : "Total",
+        "type" : "Action",
+        "eod"  : "",
+        "category" : "PF"
+    },
+    {
+        "ticker": "GLE FP",
+        "name" : "Société Générale",
+        "type" : "Action",
+        "eod"  : "",
+        "category" : "PF"
+    },
+    {
+      "ticker": "BNP",
+      "name" : "BNP",
+      "type" : "Action",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+        "ticker": "ENGI",
+        "name" : "Engie",
+        "type" : "Action",
+        "eod"  : "",
+        "category" : "PF"
+    },
+    {
+        "ticker": "EDF",
+        "name" : "EDF",
+        "type" : "Action",
+        "eod"  : "",
+        "category" : "PF"
+    },
+    {
+      "ticker": "RNO FP",
+      "name" : "Renault",
+      "type" : "Action",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+      "ticker": "VAL",
+      "name" : "Vallourec",
+      "type" : "Action",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+      "ticker": "ILL",
+      "name" : "Illiad",
+      "type" : "Action",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+      "ticker": "CAR",
+      "name" : "Carrefour",
+      "type" : "Action",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+      "ticker": "FUND",
+      "name" : "Fonds",
+      "type" : "SubCategory",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+      "ticker": "H2O",
+      "name" : "H2O Allegro",
+      "type" : "Fonds",
+      "eod"  : "",
+      "category" : "PF"
+    },
+    {
+      "ticker": "PRESTIGE",
+      "name" : "Prestige",
+      "type" : "SubCategory",
+      "eod"  : "",
+      "category" : "IMMO"
+    },
+    {
+      "ticker": "APT",
+      "name" : "Appartements",
+      "type" : "Prestige",
+      "eod"  : "",
+      "category" : "IMMO"
+    },
+    {
+      "ticker": "CTL",
+      "name" : "Châteaux",
+      "type" : "Prestige",
+      "eod"  : "",
+      "category" : "IMMO"
+    },
+    {
+      "ticker": "SKIIMMO",
+      "name" : "Ski",
+      "type" : "SubCategory",
+      "eod"  : "",
+      "category" : "IMMO"
+    },
+    {
+      "ticker": "CHL",
+      "name" : "Châlets",
+      "type" : "Ski",
+      "eod"  : "",
+      "category" : "IMMO"
+    },
+    {
+      "ticker": "INSKI",
+      "name" : "Investissements",
+      "type" : "Ski",
+      "eod"  : "",
+      "category" : "IMMO"
+    },
+    {
+      "ticker": "APTSKI",
+      "name" : "Appartements",
+      "type" : "Ski",
+      "eod"  : "",
+      "category" : "IMMO"
+    }
+  ]

@@ -26,7 +26,8 @@ export default class SearchBarProvider extends React.Component {
         animation: this.searchBarAnimation.animationProps, 
         addHandlerScroll: this._addHandlerScroll,
         _canJumpToTab: this._canJumpToTab
-      }
+      },
+
     };
   }
 

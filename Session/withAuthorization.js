@@ -13,6 +13,7 @@ const withAuthorization = condition => Component => {
     constructor(props) {
         super(props);
         //this.isAlreadyConnected = false;
+
       }
 
     
@@ -52,6 +53,9 @@ const withAuthorization = condition => Component => {
                 } else if (authUser.roles.includes(ROLES.ADMIN)) {
                   this.props.navigation.navigate('AppAdmin');
                 } else {
+                  //on va charger les infos du users
+                  console.log("ON CAHRGER LES INFOS DU USER");
+
                   this.props.navigation.navigate('App');
                 }
             }
@@ -66,7 +70,7 @@ const withAuthorization = condition => Component => {
 
 
     componentWillUnmount() {
-        console.log("withAUTHORIZATION : Appel this.listener() ");
+        //console.log("withAUTHORIZATION : Appel this.listener() ");
       this.listener();
     }
 
@@ -74,7 +78,7 @@ const withAuthorization = condition => Component => {
       return (
         <AuthUserContext.Consumer>
         {authUser => {
-          console.log("RENDER withAUTHORIZATION : " + authUser);
+          //console.log("RENDER withAUTHORIZATION : " + authUser);
           return (
           //condition(authUser) ? <Component {...this.props} /> : null
           //<Component {...this.props} isLoggedIn={this.isAlreadyConnected} /> 

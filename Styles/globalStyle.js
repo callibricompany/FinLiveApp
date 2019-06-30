@@ -6,8 +6,16 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
-export const tabBackgroundColor = '#13223C'; //'whitesmoke';  //ghostwhite   
-const fontColorHeader = 'white'; //#707070
+export const tabBackgroundColor = '#597fab'; //'#13223C'; //'whitesmoke';  //ghostwhite   
+export const generalFontColor = 'white'; //#707070
+
+export const headerTabColor = '#749B14';
+export const selectElementTab = '#87B916';
+
+export const subscribeColor = '#00B6FF';
+
+export const FLFontFamily = Platform.OS !== 'ios' ? 'Roboto' :'Arial';
+export const FLFontFamilyBold = Platform.OS !== 'ios' ? 'notoserif' :'Papyrus';
 
 
 const globalStyle = StyleSheet.create({
@@ -22,7 +30,7 @@ const globalStyle = StyleSheet.create({
       //backgroundColor:'linen'
   },
 
- 
+
 
 ///////////////////////////////
 //        header
@@ -67,16 +75,16 @@ const globalStyle = StyleSheet.create({
 
 
     header_center_text_big : {
-      color: fontColorHeader, 
+      color: generalFontColor, 
       fontSize:36,
     },
     header_left_text_medium : {
-      color: fontColorHeader, 
+      color: generalFontColor, 
       fontSize:22,
       alignItems : 'flex-start'
     },
     header_center_text_medium : {
-      color: fontColorHeader, 
+      color: generalFontColor, 
       fontSize:22,
     },
 
@@ -103,7 +111,7 @@ const globalStyle = StyleSheet.create({
     },
     header_icon : { 
       backgroundColor:'transparent',
-      color: fontColorHeader
+      color: generalFontColor
     },
 
 ///////////////////////////////

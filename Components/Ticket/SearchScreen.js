@@ -41,8 +41,10 @@ export default class SearchScreen extends React.Component {
   _renderHeader = (animation, canJumpToTab) => props => (
     <SearchBar 
       animation={animation}
-      changeInputFocus={suggestionFocus => 
-        this.setState({suggestionFocus})
+      changeInputFocus={suggestionFocus => {
+        console.log("suggestionFocus : " +suggestionFocus);
+        this.setState({suggestionFocus});
+       }
       }
       renderTabBar={() => (
         <TabBar
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
     margin: 0,
     marginTop: 6,
     marginBottom: 6,
-    fontWeight: '400'
+    fontWeight: '200'
   },
   suggestionWrap: {
     position: 'absolute',

@@ -29,8 +29,8 @@ class SplashScreen extends React.Component {
 
   render() {
     var {height, width} = Dimensions.get('window');
-    console.log ("HAUTEUR" + height);
-    console.log ("LARGEUR" + width);
+    //console.log ("HAUTEUR" + height);
+    //console.log ("LARGEUR" + width);
     return (
  
           <View style={styles.container}>

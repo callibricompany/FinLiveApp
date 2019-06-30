@@ -7,20 +7,33 @@ const API_NEWS ="94e5cbc4590c47f485de387180dee952"
 // To query /v2/top-headlines
 // All options passed to topHeadlines are optional, but you need to include at least one of them
 
-export function getNews (page = 1) {
+export function getNews (page = 1, searchText = '') {
     
-    const url = 'https://newsapi.org/v2/top-headlines'
+    const urlTopHeadlines = 'https://newsapi.org/v2/top-headlines'
+    const urlEveryThing = 'https://newsapi.org/v2/everything'
     const MAX_PAGES = 50;
-    console.log(url);
-    return axios.get(url, {
-        params: {
-            country: 'fr',
-            category: 'business',
-            page: page,
-            //q: 'macron',
-            //sources: 'les-echos',
-            apiKey: API_NEWS
-        },
+    
+    let paramTopHeadlines = {
+      country: 'fr',
+      //language: 'fr',
+      category: 'business',
+      page: page,
+      //sources: 'les-echos',
+      apiKey: API_NEWS
+    };
+
+    let paramEverything = {
+      //country: 'fr',
+      language: 'fr',
+      page: page,
+      q: searchText,
+      sortBy: 'publishedAt',
+      apiKey: API_NEWS
+    };
+
+
+    return axios.get(searchText.length === 0 ? urlTopHeadlines : urlEveryThing, {
+        params: searchText.length === 0 ? paramTopHeadlines : paramEverything,
         timeout: 10000
       })
       .then(response => {

@@ -49,7 +49,7 @@ class App extends React.Component {
           <Text>Ca charge ...</Text>
       );
     }
-    console.log("RENDER APP");
+    //console.log("RENDER APP");
     return (
      
       <FirebaseContext.Provider value={new Firebase()}>

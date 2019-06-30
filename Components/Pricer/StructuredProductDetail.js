@@ -26,7 +26,7 @@ import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import StepIndicator from 'react-native-step-indicator';
 import Dimensions from 'Dimensions';
 
-import UNDERLYINGS from '../../Data/underlyings.json'
+import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
 import FREQUENCYLIST from '../../Data/frequencyList.json'
 

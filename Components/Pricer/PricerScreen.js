@@ -8,7 +8,9 @@ import FLProductTicket from '../commons/FLProductTicket'
 
 import SwipeGesture from '../../Gesture/SwipeGesture'
 
+
 import { FLSlider } from '../../Components/commons/FLSlider'
+import { FLSlider2 } from '../../Components/commons/FLSlider2'
 
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 
@@ -37,7 +39,7 @@ import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 
 import Dimensions from 'Dimensions';
 
-import UNDERLYINGS from '../../Data/underlyings.json'
+import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
 import FREQUENCYLIST from '../../Data/frequencyList.json'
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
@@ -524,7 +526,8 @@ class PricerScreen extends React.Component {
                              });
                              this.setState({showModalOptions:true});
 
-                          }}>
+                          }}
+                          key = {(item => TimeRanges.code)}>
                               <View key={choosenParameter.name} style={[globalStyle.rectangle, 
                                 {flex:1,
                                   flexDirection:'row',
@@ -1079,19 +1082,20 @@ class PricerScreen extends React.Component {
                       customLeftRight={null}
                       borderColor={'transparent'}
                   >
-                      <FLSlider
+
+                                
+                      <FLSlider2
                           min={0}
                           max={6}
                           step={0.05}
-                          initialMin={0}
-                          initialMax={this.state.product['UF'].value*100}
+                          value={this.state.product['UF'].value*100}
                           isPercent={true}
                           spreadScale={1}
                           //activated={!this.state.product["UF"].isActivated}
                           sliderLength={DEVICE_WIDTH*0.9}
                           callback={(value) => {
                             var product = this.state.product;
-                            product['UF'].value = value[0].toFixed(2)/100;
+                            product['UF'].value = value.toFixed(2)/100;
                             this.setState({ product, isLoadingBestProduct : true }, () => {
                               this.calculateBestProducts()
                               .then(() => this.setState({isLoadingBestProduct:false, isRecalculationNeeded : true}) )
@@ -1104,6 +1108,32 @@ class PricerScreen extends React.Component {
                           }}
                           single={true}
                         />
+                        {/*} <Slider
+                            
+                            minimumValue={0}
+                            maximumValue={6}
+                            step={0.05}
+                            value={this.state.product['UF'].value*100}
+                            minimumTrackTintColor={'green'}
+
+                            onSlidingComplete={(value) => {
+                              console.log("VALUE SLIDER : "+value);
+                              var product = this.state.product;
+                              product['UF'].value = value.toFixed(2)/100;
+                              
+                              this.setState({ product, isLoadingBestProduct : true }, () => {
+                                this.calculateBestProducts()
+                                .then(() => this.setState({isLoadingBestProduct:false, isRecalculationNeeded : true}) )
+                                .catch((error) => {
+                                    this.setState({isLoadingBestProduct:false});
+                                    console.log("ERREUR CALCULATE BEST PRODUCTS : "+error);
+                                });
+                              });
+                              
+                            }}
+       
+                          />*/}
+  
       
                   </FLPanel>
         

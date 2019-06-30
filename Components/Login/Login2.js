@@ -82,7 +82,7 @@ class LoginFormBase extends Component {
     this.setState({
       loading: true
     });
-
+    //console.log("PASSE PAR LOG IN");
     this.props.firebase
       .doSignInWithEmailAndPassword(this.state.email, this.state.password)
       .then((authUser) => {

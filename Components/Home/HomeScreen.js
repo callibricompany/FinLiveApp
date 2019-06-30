@@ -1,9 +1,11 @@
 import React from 'react'
 import Expo from "expo";
-import { View, ScrollView, Image, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar} from 'react-native'
+import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar, Animated} from 'react-native'
 import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
-import { globalStyle } from '../../Styles/globalStyle'
-import { getNews } from '../../API/APINews'
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
+import { globalStyle , tabBackgroundColor, subscribeColor} from '../../Styles/globalStyle'
+
+
 import { FLBadge } from '../commons/FLBadge'
  
 import smallIcon from '../../assets/icon_196.png'
@@ -12,14 +14,16 @@ import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 import Dimensions from 'Dimensions';
-import Moment from 'moment';
-import localization from 'moment/locale/fr'
-
-import FLInput from '../commons/FLInput'
 
 
+import { SearchBarProvider } from '../SearchBar/searchBarAnimation';
+import SearchBarHome from './SearchBarHome';
 
+import TabNews from './TabNews';
+import TabHome from './TabHome';
 
+import CATEGORIES from '../../Data/categories.json'
+import SUBCATEGORIES from '../../Data/subCategories.json'
 //import Icon from 'react-native-vector-icons/FontAwesome'
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -27,19 +31,29 @@ const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
 
-
+const initialLayout = {
+  width: DEVICE_WIDTH,
+  height: DEVICE_HEIGHT
+};
 
 //class HomeScreenFormBase extends React.Component {
   class HomeScreen extends React.Component {
 
   constructor(props) {
       super(props)
-      console.log("CONSTRUCTEUR HOMESCREEN");
+
       this.state = {
         isLoading: true,
-        isRefreshing : false,
-        pageNews: 1,
-        news: []
+
+        index: 0,
+        currentTab: 'tabHome',
+        routes: [
+          { key: 'tabHome', title: 'FINLIVE' },
+          { key: 'tabNews', title: 'Actualités' }
+        ],
+
+        filterText : '',
+        searchTextForNews : ''
       }
 
        // console.log("PLATE-FORME : " + Platform.OS)
@@ -47,24 +61,60 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
 
     
-    static navigationOptions = ({ navigation }) => {
-      return {
-      header: (
-        <SafeAreaView style={globalStyle.header_safeviewarea}>
-          <View style={globalStyle.header_left_view} />
-          <View style={globalStyle.header_center_view} >
-            <Title style={globalStyle.header_center_text_big}>FinLive</Title>
-          </View>
-          <View style={globalStyle.header_right_view} >
-            <Icon name='ios-notifications' style={globalStyle.header_icon} />
-            <FLBadge numero='3'/>
-          </View>
-        </SafeAreaView>
-      ),
-      tabBarVisible: false,
-      }
-    }
+    static navigationOptions = {
+      header: null
+  }
 
+
+  _filterUpdated(category, subCategory, filterText='') {
+
+    let subCatName = SUBCATEGORIES.filter(({ticker}) => ticker === subCategory);
+
+    let whatToFilter = category;
+    
+
+    this.setState({searchTextForNews : filterText === '' ? subCatName[0].name : filterText});
+  }
+
+  _renderHeader = (animation, canJumpToTab) => props => (
+    <SearchBarHome
+      animation={animation}
+      category={this.props.category}
+
+
+      filterUpdated={(cat, subCat, filterText) => {
+        this._filterUpdated(cat, subCat, filterText);
+      }
+      }
+      renderTabBar={() => (
+        <TabBar
+          onTabPress={({route}) => {
+            if(route.key != this.state.currentTab && canJumpToTab) {
+              animation.onTabPress(route);
+            }
+          }}
+          getLabelText={this._getLabelText}
+          indicatorStyle={styles.indicator}
+          style={styles.tabbar}
+          labelStyle={styles.label}
+          {...props}
+        />
+      )}
+      /*renderTabBar={() => (
+        <View><Text>djfhdjfh</Text></View>
+      )
+
+      }*/
+    />
+  );
+
+    _handleIndexChange = index => {
+      this.setState({
+        currentTab: this.state.routes[index].key,
+        index
+      });
+    }
+    _getLabelText = ({ route }) => route.title;
 
     /*async componentWillMount() {
       try {
@@ -81,53 +131,7 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
   
         this.setState({ isLoading : false });  
     }*/
-
-
-    componentDidMount(){
-
-      console.log("VA CHERCHE LES NEWS");
-      this._getNewsList();
-
-    }
-
-
-
-
-
-    _NavToNewsList = (item) => {
-      this.props.navigation.navigate('NewsDetail', {
-        item: item,
-        news : this.state.news
-      });
-      //this.props.navigation.navigate('NewsDetail');
-    };
-
-   
-    _getNewsList = () => {
-      this.setState({ isLoading : true });
-       getNews(this.state.pageNews).then(data => {
-         //console.log("data news " + data);      
-         this.setState( {
-           news: [ ...this.state.news, ...data ],
-           isLoading: false,
-           pageNews : this.state.pageNews +1,
-           isRefreshing : false
-          });
-       })
-       .catch(error => {
-         console.log("ERREUR RECUPERATION NEWS : " + error);
-       }) 
-     };
-
-     _onRefreshNews = () => {
-      this.setState( {
-        news: [],
-        pageNews : 1,
-        isRefreshing : true
-       });
-       console.log("ON RAFRAICHIT LES NEWS");
-       this._getNewsList();
-     };
+ 
 
      _displayLoading() {
       if (this.state.isLoading) {
@@ -139,116 +143,107 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
       }
     }
 
-  
+   /* _renderScene = SceneMap({
+      tabHome: TabHome,
+      tabNews: TabNews
+    });*/
 
-    _displayNews = ({ item }) => {
-        Moment.locale('fr');
+    _renderScene = ({ route, jumpTo }) => {
      
-        const imageUri = item.urlToImage!=null ? item.urlToImage : ""
-      //console.log(item);
+      switch (route.key) {
+        case 'tabHome':
+          return <TabHome  route={route} jumpTo={jumpTo} />;
+        case 'tabNews':
+          return  <TabNews  route={route} jumpTo={jumpTo} filterNews={this.state.searchTextForNews} />;
+        default:
+          return null;
+      }
+    };
+  
+    
+    _renderSuggestion(animation) {
+      //console.log("TAB : "+ this.state.currentTab);
+
+      if(this.state.currentTab === 'sssstabNews') {
+        let styleAnimation = animation.getStyleSuggestion();
+        //let Suggestion = (focus == 'location') ? SearchBarLocationSuggestion : SearchBarSuggestion;
+        //let Suggestion = <TabNews filterNews={this.searchText} />
+  
         return (
-        <TouchableOpacity onPress={this._NavToNewsList.bind(this,item)}>
-         <View style={[globalStyle.rectangle, { width: DEVICE_WIDTH*0.65, height: 130}]}>
-            <View style={{flex:1, flexWrap: "nowrap",justifyContent: 'center', alignItems: 'center'}}>
-                <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap'}}>
-                <Thumbnail source={imageUri.length!=0?{uri: imageUri}: null} />
-                </View>
-                <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingLeft: 5, paddingRight: 5}}>
-                <Text >{item.source.name}</Text>
-                </View>
-            </View>
-            <View style={{flex:2, flexDirection:'column', flexWrap: 'wrap'}}>
-               <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap', paddingRight:5}}>
-                  <Text style={{fontSize: 16, flexWrap: 'wrap', }}>{item.title}</Text>
-                </View>
-                <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingRight:10, paddingBottom: 2}}>
-                   <Text style={{fontSize: 10}}>{Moment(item.publishedAt).locale('fr',localization).calendar()}</Text>
-                </View>
-            </View>
-        </View>
-        </TouchableOpacity>
-        
-        )
+          <Animated.View style={[initialLayout, styles.suggestionWrap, styleAnimation]}>
+            <TabNews filterNews={this.searchText} />
+          </Animated.View>
+        );
+      }
     }
+    
+
 
     render() {
       return(
-        <ScrollView style={globalStyle.bgColor}>
 
+        <SafeAreaView style={{backgroundColor: tabBackgroundColor}}>
+              <SearchBarProvider currentTab={this.state.currentTab}>
+                {(animation, { canJumpToTab }) => 
+                  <View style={initialLayout}>
+                    {Platform.OS === 'android' && 
+                      <StatusBar
+                        translucent={true}
+                        backgroundColor={tabBackgroundColor}
+                      />
+                    }
+                    <TabView
+                      style={styles.container}
+                      navigationState={this.state}
+                      renderScene={this._renderScene}
+                      renderTabBar={this._renderHeader(animation, canJumpToTab)}
+                      onIndexChange={this._handleIndexChange}
+                      initialLayout={initialLayout}
+                      swipeEnabled={true} // TODO ...
+                      //canJumpToTab={() => canJumpToTab}
+                      useNativeDriver
+                    />
 
-
-            <Text style={globalStyle.heeader_text_home}>Offres du moment</Text>
-            <View style={[globalStyle.rectangle, { width: DEVICE_WIDTH*0.75, height: 150}]}>
-            </View>
-
-            <Text style={globalStyle.heeader_text_home}>Financier</Text>
-            <View style={[globalStyle.rectangle, { flexDirection : 'column',width: DEVICE_WIDTH*0.90, height: 200,}]}> 
-              <View style={{flex: 0.7}}><Text></Text></View>
-
-              <View style={{flex: 0.3, alignItems:'center',justifyContent: 'space-around', marginLeft: 10, marginRight: 10, marginBottom: 5}}>
-                <View style={{flex: 0.5, flexDirection : 'row',justifyContent: 'center', alignItems: 'center'}}>
-                   <View style={{width: 30}}>
-                    <Image style={{width: 25, height: 25}} source={smallIcon} />
-                    </View>
-                    <View style={{flex:1}}>
-                      <Text style={{fontSize:20}}>Evaluer</Text>
-                    </View>
-                    <View style={{width: 30}}>
-                    <Image style={{width: 25, height: 25}} source={smallIcon} />
-                    </View>
-                    <View style={{flex:1}}>
-                      <Text style={{fontSize:20}}>Suivre</Text>
-                    </View>                    
-                </View>
-                <View style={{flex: 0.5, flexDirection : 'row', justifyContent: 'center', alignItems: 'center'}}>
-                   <View style={{width: 30}}>
-                    <Image style={{width: 25, height: 25}} source={smallIcon} />
-                    </View>
-                    <View style={{flex:1}}>
-                      <Text style={{fontSize:20}}>Alertes</Text>
-                    </View>
-                    <View style={{width: 30}}>
-                    <Image style={{width: 25, height: 25}} source={smallIcon} />
-                    </View>
-                    <View style={{flex:1}}>
-                      <Text style={{fontSize:20}}>Chercher</Text>
-                    </View>                    
-                </View>
-              </View>
-            </View>
-            
-            <Text style={globalStyle.heeader_text_home}>Actualités</Text> 
-            <FlatList
-              data={this.state.news}
-              renderItem={this._displayNews}
-              //keyExtractor={(item, index) => item.key}
-              keyExtractor={item => item.title}
-              horizontal={true}
-              /*refreshControl={
-                <RefreshControl
-                 refreshing={true}
-                 //onRefresh={this._onRefreshNews.bind(this)}
-                 onRefresh={console.log("rafrafarafrafarfarafar")}
-                />
-              }*/
-              onEndReachedThreshold={0.5}
-              onEndReached={() => {
-                console.log("onEndReached");
-                this._getNewsList();
-
-              }}
-              //stickyHeaderIndices={this.state.stickyHeaderIndices}
-           />
-
-   
-
-
-       
+                    {this._renderSuggestion(animation)}
+                  </View>
+                }
+              </SearchBarProvider>
+            <View>
           {this._displayLoading()}
-          </ScrollView>
+          </View>
+       
+          </SafeAreaView>
       );
     }
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#edeef0'
+  },
+  tabbar: {
+    backgroundColor: '#fff',
+    elevation: 0,
+    height : 35
+  },
+  indicator: {
+    backgroundColor: '#45688e'
+  },
+  label: {
+    color: '#45688e',
+    margin: 0,
+    marginTop: 0,
+    marginBottom: 10,
+    fontWeight: '200'
+  },
+  suggestionWrap: {
+    position: 'absolute',
+    backgroundColor: '#fff',  
+    zIndex: 3
+  }
+});
 
 const condition = authUser => !!authUser;
 

@@ -17,6 +17,7 @@ import AdminScreen from '../Components/AdminScreen'
 
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
+import { Icon } from 'native-base'
 
 import { tabBackgroundColor } from '../Styles/globalStyle';
 
@@ -249,18 +250,23 @@ function labelStyle (focused, tintColor) {
                       borderRadius:50,
                     }}
                 >
-                <FontAwesomeI
+                {/*<FontAwesomeI
                 name='ticket'
                 size={30}
                 style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-            />
+                />*/}
+             <MaterialCommunityIconsI
+                  name='radio-tower'
+                  size={30}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
+              />    
             </View>
           );
         },
         tabBarLabel: ({ focused, tintColor }) => {
           return (
             <View style={{alignItems:'center', justifyContent:'center'}}>
-            <Text style={labelStyle(focused,tintColor)}>Tickets</Text>
+            <Text style={labelStyle(focused,tintColor)}>Live</Text>
             </View>
           );
           }
@@ -285,18 +291,23 @@ function labelStyle (focused, tintColor) {
                 borderRadius:50,
               }}
           >
-                  <MaterialCommunityIconsI
+              {/* <MaterialCommunityIconsI
                   name='radio-tower'
                   size={30}
                   style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-              />
+              />*/}
+                 <Icon 
+                      size={30}
+                      name='ios-notifications' 
+                      style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
+                    />
               </View>
             );
           },
           tabBarLabel: ({ focused, tintColor }) => {
             return (
               <View style={{alignItems:'center', justifyContent:'center'}}>
-              <Text style={labelStyle(focused,tintColor)}>Diffusion</Text>
+              <Text style={labelStyle(focused,tintColor)}>Alertes</Text>
               </View>
             );
             }
@@ -380,12 +391,12 @@ function labelStyle (focused, tintColor) {
   export function  AppFinLiveTabs (role) {
         let tabs = {};
         if (role === ROLES.ADMIN) {
-          const {Accueil, Pricer, Tickets, Broadcasting, Profil, Admin} = TABS;
-          tabs = {Accueil, Pricer, Tickets, Broadcasting, Profil, Admin};
+          const {Accueil, Tickets, Pricer, Broadcasting, Profil, Admin} = TABS;
+          tabs = {Accueil, Tickets, Pricer, Broadcasting, Profil, Admin};
         }
         else {
-          const {Accueil, Pricer, Tickets, Broadcasting, Profil} = TABS;
-          tabs = {Accueil, Pricer, Tickets, Broadcasting, Profil};
+          const {Accueil, Tickets, Pricer, Broadcasting, Profil} = TABS;
+          tabs = {Accueil, Tickets, Pricer,  Broadcasting, Profil};
         }
         
         return createBottomTabNavigator(tabs, TABS_BAR_OPTIONS);

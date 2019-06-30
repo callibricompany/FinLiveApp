@@ -5,6 +5,7 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { FLItemSlider } from './FLItemSlider';
 
 
+
 export class FLSlider extends Component{
 
     constructor(props) {
@@ -69,6 +70,8 @@ export class FLSlider extends Component{
                         sliderLength={this.props.sliderLength -  this.scaleWidth +6}
                         //onValuesChange={this.multiSliderValuesChange}
                         onValuesChangeFinish={this.multiSliderValuesChange}
+                        //onValuesChangeStart={this.multiSliderValuesChange}
+                        onValuesChangeStart={console.log("totototototoototot")}
                         min={this.props.min}
                         max={this.props.max}
                         step={this.props.step}

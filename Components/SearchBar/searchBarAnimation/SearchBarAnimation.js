@@ -1,7 +1,8 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
 import { Animated, StatusBar } from 'react-native'; 
-import { ifIphoneX, isAndroid } from '../utils';
+import { ifIphoneX, isAndroid } from '../../../Utils';
+
 
 export default class SearchBarAnimation {
   /**
@@ -240,7 +241,9 @@ export default class SearchBarAnimation {
     };
   }
 
-  getTransformSearchBar() {
+  getTransformSearchBar(blurFunction, stateBarGiven) {
+    blurFunction(stateBarGiven);
+    //console.log("TRANSFORM SEARCH BAR");
     return {
       transform: [{
         translateY: Animated.add(

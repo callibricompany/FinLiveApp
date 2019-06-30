@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { ifIphoneX, ifAndroid } from '../utils';
+import { ifIphoneX, ifAndroid } from '../../../Utils';
 import {
   View,
   StyleSheet,
@@ -12,7 +12,7 @@ import {
 export default class SearchBar extends Component {
   blurInputs() {
     this.inputSearch.blur();
-    this.inputLocation.blur();
+    //this.inputLocation.blur();
     this.props.changeInputFocus(false);
   }
 
@@ -29,7 +29,7 @@ export default class SearchBar extends Component {
       <Animated.View style={[styles.wrapper, transformWrapper]}>
         <Animated.View style={opacitySearchBar}>
           <View style={styles.searchContainer}>
-           {/* <Animated.View style={[
+            <Animated.View style={[
               styles.arrowMinimizeContainer, 
               arrowMinimizeStyle
             ]}>
@@ -45,7 +45,7 @@ export default class SearchBar extends Component {
                 />
               </TouchableOpacity>
             </Animated.View>
-            */}
+           
             <Animated.View style={[transformSearchBar]}>
               <View style={styles.searchInput}>
                 <MaterialIcons

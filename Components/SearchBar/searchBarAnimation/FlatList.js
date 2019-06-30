@@ -1,7 +1,7 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
 import React from 'react';
-import { ifIphoneX, isAndroid } from '../utils';
+import { ifIphoneX, isAndroid } from '../../../Utils';
 import { FlatList, Animated } from 'react-native'; 
 import { SearchBarContext } from './SearchBarContext';
 
