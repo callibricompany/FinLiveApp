@@ -1,7 +1,8 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
-import { Animated, StatusBar } from 'react-native'; 
+import { Animated, StatusBar, Platform } from 'react-native'; 
 import { ifIphoneX, isAndroid } from '../../../Utils';
+
 
 
 export default class SearchBarAnimation {
@@ -34,14 +35,16 @@ export default class SearchBarAnimation {
   paddingStatusBar = 41;
   //arrowHeight = 36 - ifIphoneX(2, 0);
   arrowHeight = 0;
-  topPartHeight = this.arrowHeight + 45 + 10; // arrowHeight + inputHeight + padding (Top part)
+  //topPartHeight = this.arrowHeight + 45 + 10; // arrowHeight + inputHeight + padding (Top part)
+  topPartHeight = this.arrowHeight + 0 + 10; // arrowHeight + inputHeight + padding (Top part)
   fullHeight = this.topPartHeight + 131; // = 222
   distanceRange = this.fullHeight - this.topPartHeight;
   maxClamp = this.fullHeight - (this.paddingStatusBar + this.statusBarHeight);
   minClamp = this.topPartHeight;
   diffClamp = this.maxClamp - this.minClamp;
 
-  initialScroll = this.topPartHeight;
+  //initialScroll = this.topPartHeight;
+  initialScroll = 0;
   maxActionAnimated = 88; // Location input height + padding (Bottom part)
   actionAnimated = new Animated.Value(0);
   scrollY = new Animated.Value(this.initialScroll);
@@ -51,7 +54,8 @@ export default class SearchBarAnimation {
   _statusBarStyle = null;
 
   stateBarTypes = { CLAMPED: 1, NORMAL: 2, EXPANDED: 3 };
-  stateBar = this.stateBarTypes.NORMAL;
+  //stateBar = this.stateBarTypes.NORMAL;
+  stateBar = this.stateBarTypes.EXPANDED;
 
   constructor(initialState) {
     this.initialState = initialState;
@@ -65,6 +69,7 @@ export default class SearchBarAnimation {
   }
 
   _updateScroll = ({value, manually}) => {
+    //console.log("Value : "+value+"     -  scrollValue : "+ this._scrollValue);
     if(value && manually) {
      this._clampedScrollValue = value;
     } else {
@@ -74,6 +79,7 @@ export default class SearchBarAnimation {
         Math.max(this._clampedScrollValue + diff, this.minClamp), 
         this.maxClamp
       );
+      //console.log("Clamped : "+ this._clampedScrollValue );
     }
 
     this._changeStatusBarStyle();
@@ -125,13 +131,16 @@ export default class SearchBarAnimation {
 
   _changeStatusBarStyle() {
     let statusBarStyle = Math.round(this._clampedScrollValue) != this.maxClamp ? 
-                        'light-content' : 
+                        Platform.OS === 'ios' ? 'light-content': 'dark-content' : 
                         'dark-content';
     
-    if(statusBarStyle != this._statusBarStyle) {
+    //StatusBar.setTranslucent(false);
+    /*if(statusBarStyle != this._statusBarStyle) {
       StatusBar.setBarStyle(statusBarStyle);
       this._statusBarStyle = statusBarStyle;
-    }
+    }*/
+    StatusBar.setBarStyle('dark-content');
+    
   }
 
   _handleIntermediateState = (scrollToOffset) => {
@@ -181,10 +190,12 @@ export default class SearchBarAnimation {
   };
 
   expandBar = () => {
+    console.log("Etat bar : " + this.scrollY._value);
+    console.log("Etat bar : " + this.topPartHeight);
     if(this.stateBarTypes.EXPANDED == this.stateBar) {
       return;
     }
-
+    
     if(Math.round(this.scrollY._value) == this.topPartHeight) { // Full
       this.scrollToOffset(0);
     } else { // Clamped

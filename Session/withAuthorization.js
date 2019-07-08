@@ -53,9 +53,6 @@ const withAuthorization = condition => Component => {
                 } else if (authUser.roles.includes(ROLES.ADMIN)) {
                   this.props.navigation.navigate('AppAdmin');
                 } else {
-                  //on va charger les infos du users
-                  console.log("ON CAHRGER LES INFOS DU USER");
-
                   this.props.navigation.navigate('App');
                 }
             }

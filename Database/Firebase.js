@@ -160,22 +160,23 @@ class Firebase {
                         company = (typeof doc.data().company !== 'undefined') ? doc.data().company : '';
                         organization = (typeof doc.data().organization !== 'undefined') ? doc.data().organization : '';
                         phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
-
-
                       }    
                       
                     
                       //on recupere les infos du serveur
+                      //console.log("LANCEMENT RECUP USER DTAS : "+ idTokenUser );
+                      
                       getUserAllInfo(idTokenUser)
                       .then((userDatas) => {
-                        console.log("BELLE RECUP DES USER DATAS");
-                        console.log(userDatas);
+                        //console.log("BELLE RECUP DES USER DATAS : "+ userDatas["data"]);
+                        //console.log(userDatas.length);
                         //this.onRegisterSuccess();
                       })
                       .catch(error => {
-                        console.log("ERREUR RECUPERATION DES INFOS USER " + error);
+                        //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
                         alert('ERREUR RECUPERATION DES INFOS USER', '' + error);
                       }) 
+                      console.log("AUTHUSER : " + authUser.idToken)
                       // merge auth and db user
                       authUser = {
                         uid: authUser.uid,

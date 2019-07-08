@@ -6,17 +6,19 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
-export const tabBackgroundColor = '#597fab'; //'#13223C'; //'whitesmoke';  //ghostwhite   
+export const tabBackgroundColor = '#597fab'; //'#13223C'; //'whitesmoke';  //ghostwhite   //#45688e
 export const generalFontColor = 'white'; //#707070
 
-export const headerTabColor = '#749B14';
-export const selectElementTab = '#87B916';
+export const headerTabColor = '#13223C'; //'#749B14';
+export const selectElementTab = '#13223C';//'#87B916';
+export const progressBarColor = '#87B916';
 
 export const subscribeColor = '#00B6FF';
 
-export const FLFontFamily = Platform.OS !== 'ios' ? 'Roboto' :'Arial';
+export const FLFontFamily = Platform.OS !== 'ios' ? 'sans-serif-condensed' :'Arial';
 export const FLFontFamilyBold = Platform.OS !== 'ios' ? 'notoserif' :'Papyrus';
 
+export const backgdColor = '#F9FAFC';
 
 const globalStyle = StyleSheet.create({
 
@@ -26,7 +28,7 @@ const globalStyle = StyleSheet.create({
 //        BACKGROUNG COLOR 
 ///////////////////////////////
   bgColor :{
-      backgroundColor:'#F9FAFC'
+      backgroundColor:'#F9FAFC' //#edeef0
       //backgroundColor:'linen'
   },
 
@@ -197,6 +199,15 @@ news_detail_image : {
       left: 0,
       right: 0,
       top: 100,
+      bottom: 0,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    loading: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: DEVICE_HEIGHT/2,
       bottom: 0,
       alignItems: 'center',
       justifyContent: 'center'

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Animated, Dimensions } from 'react-native'
+import { Animated, Dimensions, Easing } from 'react-native'
 
 class FadeInLeft extends React.Component {
 
@@ -11,20 +11,25 @@ class FadeInLeft extends React.Component {
   }
 
   componentDidMount() {
-    Animated.spring(
+    this.isAppearing();
+  }
+
+  isAppearing() {
+    Animated.timing(
       this.state.positionLeft,
       {
         toValue: 0,
-        duration : 3000,
-        speed : 5
+        duration : 1000,
+        easing: Easing.elastic(),
+        speed : 1
       }
     ).start()
   }
 
   render() {
     return (
-      <Animated.View
-        style={{ left: this.state.positionLeft }}>
+      <Animated.View {...this.props}
+        style={{ left: this.state.positionLeft , width : 200, height: 200, backgroundColor: this.props.style.backgroundColor}}>
         {this.props.children}
       </Animated.View>
     )

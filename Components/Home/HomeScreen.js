@@ -49,7 +49,7 @@ const initialLayout = {
         currentTab: 'tabHome',
         routes: [
           { key: 'tabHome', title: 'FINLIVE' },
-          { key: 'tabNews', title: 'Actualités' }
+          //{ key: 'tabNews', title: 'Actualités' }
         ],
 
         filterText : '',
@@ -60,8 +60,24 @@ const initialLayout = {
     }
 
 
+    componentDidMount () {
+      this.attends();
+    }
     
-    static navigationOptions = {
+    resolveAfter2Seconds(x) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(x);
+        }, 300);
+      });
+    }
+    
+    async attends() {
+      var x = await this.resolveAfter2Seconds(10);
+      this.setState({ isLoading: false });
+    }
+    
+  static navigationOptions = {
       header: null
   }
 
@@ -88,24 +104,19 @@ const initialLayout = {
       }
       renderTabBar={() => (
         <TabBar
-          onTabPress={({route}) => {
-            if(route.key != this.state.currentTab && canJumpToTab) {
-              animation.onTabPress(route);
-            }
-          }}
-          getLabelText={this._getLabelText}
-          indicatorStyle={styles.indicator}
-          style={styles.tabbar}
-          labelStyle={styles.label}
-          {...props}
+              onTabPress={({route}) => {
+                if(route.key != this.state.currentTab && canJumpToTab) {
+                  animation.onTabPress(route);
+                }
+              }}
+              getLabelText={this._getLabelText}
+              indicatorStyle={{    backgroundColor: tabBackgroundColor, height : 0 }}
+              style={{ backgroundColor: 'white', elevation: 0, height : 0 }}
+              labelStyle={{ color: 'pink', margin: 0, marginTop: 0, marginBottom: 0, fontWeight: '200', height: 0 }}
+              {...props}
+            />
+          )}
         />
-      )}
-      /*renderTabBar={() => (
-        <View><Text>djfhdjfh</Text></View>
-      )
-
-      }*/
-    />
   );
 
     _handleIndexChange = index => {
@@ -115,33 +126,9 @@ const initialLayout = {
       });
     }
     _getLabelText = ({ route }) => route.title;
-
-    /*async componentWillMount() {
-      try {
-        await Expo.Font.loadAsync({
-    //      Roboto: require("native-base/Fonts/Roboto.ttf"),
-    //      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
-            Roboto: require("native-base/Fonts/Roboto.ttf"),
-            Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
-            Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
-        })
-        } catch (error) {
-          console.log('Erreur chargement icon fonts', error);
-        }
-  
-        this.setState({ isLoading : false });  
-    }*/
  
 
-     _displayLoading() {
-      if (this.state.isLoading) {
-        return (
-          <View style={globalStyle.loading_container}>
-              <ActivityIndicator size='large' />
-            </View>
-        )
-      }
-    }
+
 
    /* _renderScene = SceneMap({
       tabHome: TabHome,
@@ -153,8 +140,8 @@ const initialLayout = {
       switch (route.key) {
         case 'tabHome':
           return <TabHome  route={route} jumpTo={jumpTo} />;
-        case 'tabNews':
-          return  <TabNews  route={route} jumpTo={jumpTo} filterNews={this.state.searchTextForNews} />;
+        //case 'tabNews':
+        //  return  <TabNews  route={route} jumpTo={jumpTo} filterNews={this.state.searchTextForNews} />;
         default:
           return null;
       }
@@ -170,7 +157,7 @@ const initialLayout = {
         //let Suggestion = <TabNews filterNews={this.searchText} />
   
         return (
-          <Animated.View style={[initialLayout, styles.suggestionWrap, styleAnimation]}>
+          <Animated.View style={[initialLayout, { position: 'absolute', backgroundColor: '#fff', zIndex: 3 }, styleAnimation]}>
             <TabNews filterNews={this.searchText} />
           </Animated.View>
         );
@@ -180,70 +167,50 @@ const initialLayout = {
 
 
     render() {
+      let render =    <SearchBarProvider currentTab={this.state.currentTab}>
+                        {(animation, { canJumpToTab }) => 
+                          <View style={initialLayout}>
+                            {Platform.OS === 'android' && 
+                              <StatusBar
+                                translucent={false}
+                                backgroundColor={'black'}
+                                barStyle={'dark-content'}
+                                animated={false}
+                              />
+                            }
+                            <TabView
+                              style={[globalStyle.bgColor, {flex: 1}]}
+                              navigationState={this.state}
+                              renderScene={this._renderScene}
+                              renderTabBar={this._renderHeader(animation, canJumpToTab)}
+                              onIndexChange={this._handleIndexChange}
+                              initialLayout={initialLayout}
+                              swipeEnabled={true} // TODO ...
+                              //canJumpToTab={() => canJumpToTab}
+                              useNativeDriver
+                            />
+
+                            {this._renderSuggestion(animation)}
+                          </View>
+                        }
+                      </SearchBarProvider>
+                
+
+          if (this.state.isLoading) {
+            render =  <View style={globalStyle.loading}>
+                  <ActivityIndicator size='large' />
+                </View>
+          }
       return(
-
-        <SafeAreaView style={{backgroundColor: tabBackgroundColor}}>
-              <SearchBarProvider currentTab={this.state.currentTab}>
-                {(animation, { canJumpToTab }) => 
-                  <View style={initialLayout}>
-                    {Platform.OS === 'android' && 
-                      <StatusBar
-                        translucent={true}
-                        backgroundColor={tabBackgroundColor}
-                      />
-                    }
-                    <TabView
-                      style={styles.container}
-                      navigationState={this.state}
-                      renderScene={this._renderScene}
-                      renderTabBar={this._renderHeader(animation, canJumpToTab)}
-                      onIndexChange={this._handleIndexChange}
-                      initialLayout={initialLayout}
-                      swipeEnabled={true} // TODO ...
-                      //canJumpToTab={() => canJumpToTab}
-                      useNativeDriver
-                    />
-
-                    {this._renderSuggestion(animation)}
-                  </View>
-                }
-              </SearchBarProvider>
-            <View>
-          {this._displayLoading()}
-          </View>
-       
-          </SafeAreaView>
+            <SafeAreaView style={{backgroundColor: tabBackgroundColor}}>
+            {render}
+            </SafeAreaView>
       );
     }
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#edeef0'
-  },
-  tabbar: {
-    backgroundColor: '#fff',
-    elevation: 0,
-    height : 35
-  },
-  indicator: {
-    backgroundColor: '#45688e'
-  },
-  label: {
-    color: '#45688e',
-    margin: 0,
-    marginTop: 0,
-    marginBottom: 10,
-    fontWeight: '200'
-  },
-  suggestionWrap: {
-    position: 'absolute',
-    backgroundColor: '#fff',  
-    zIndex: 3
-  }
-});
+
 
 const condition = authUser => !!authUser;
 

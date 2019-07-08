@@ -93,7 +93,7 @@ class RegisterFormBase extends Component {
   
   async attends() {
     var x = await this.resolveAfter2Seconds(10);
-    console.log(x); // 10
+    //console.log(x); // 10
     this.setState({loading: false});
   }
 
@@ -549,7 +549,7 @@ class RegisterFormBase extends Component {
                         //To hide statusBar
                         backgroundColor="#00BCD4"
                         //Background color of statusBar
-                        translucent={true}
+                        translucent={false}
                         //allowing light, but not detailed shapes
                         networkActivityIndicatorVisible={true}
                       />

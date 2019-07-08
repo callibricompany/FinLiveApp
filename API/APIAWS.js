@@ -169,17 +169,17 @@ export function getUserAllInfo (idToken) {
   var axiosConfig = {
     headers :{
       //'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Type': 'application/json; charset=utf-8',
-      'Accept'      : 'application/json',
+      //'Content-Type': 'application/json; charset=utf-8',
+      //'Accept'      : 'application/json',
       'bearer'      : idToken
     }
   };
-
+  
   return new Promise(
     (resolve, reject) => {
       axios.get(URL_AWS + '/getUserAllInfo', axiosConfig)
       .then((response) => {
-        console.log("Succes : " + response);
+        //console.log("Succes : " + JSON.stringify(response["data"]));
         resolve(response)
         //res.render('pages/register',{email: email, isConnected: isConnected});
       })

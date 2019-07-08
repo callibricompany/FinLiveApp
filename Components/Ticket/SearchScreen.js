@@ -98,7 +98,7 @@ export default class SearchScreen extends React.Component {
           <View style={initialLayout}>
             {Platform.OS === 'android' && 
                <StatusBar
-                translucent={true}
+                translucent={false}
                 backgroundColor="transparent"
               />
             }

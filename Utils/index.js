@@ -30,6 +30,16 @@ export function ifIphoneX(iphoneXStyle, regularStyle) {
   return regularStyle;
 }
 
+export function sizeByDevice(iphoneXStyle, regularIphoneStyle, androidStyle) {
+  if (isIphoneX()) {
+    return iphoneXStyle;
+  } else if (isAndroid()) {
+    return androidStyle;
+  } else {
+    return regularIphoneStyle;
+  }
+}
+
 export function isAndroid() {
   return (Platform.OS === 'android');
 }

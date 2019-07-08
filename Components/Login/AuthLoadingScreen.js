@@ -67,7 +67,7 @@ class AuthLoadingScreen extends React.Component {
       return (
         <View>
           <ActivityIndicator />
-          <StatusBar barStyle="default" />
+          <StatusBar barStyle="dark-content" />
         </View>
       );
     }

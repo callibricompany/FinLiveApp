@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ifIphoneX, isAndroid } from '../../../Utils';
-import { FlatList, Animated } from 'react-native'; 
+import { FlatList, Animated, View, Text } from 'react-native'; 
 import { SearchBarContext } from './SearchBarContext';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
@@ -36,6 +36,7 @@ class FlatListHelper extends React.PureComponent {
     let { contentContainerStyle } = this.props;
     
     return (
+  
       <AnimatedFlatList
         {...this.props}
         scrollEventThrottle={1}  

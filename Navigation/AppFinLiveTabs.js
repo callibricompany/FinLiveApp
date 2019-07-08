@@ -19,7 +19,7 @@ import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Icon } from 'native-base'
 
-import { tabBackgroundColor } from '../Styles/globalStyle';
+import { tabBackgroundColor, FLFontFamily } from '../Styles/globalStyle';
 
 import * as ROLES from '../constants/roles';
 
@@ -43,7 +43,7 @@ const TABS_BAR_OPTIONS = {
       borderTopColor: 'gray',
       paddingTop: 10,
       borderTopWidth: 1,
-      height: 70,
+      height: 60,
       //ustifyContent: 'center',
       //alignItems: 'center',
       },
@@ -68,16 +68,18 @@ function labelStyle (focused, tintColor) {
       couleur = tintColor }
     else {
        //couleur = '#707070' }
-       couleur = 'silver' }
+       couleur = 'white' }
   
     
     return {
       marginTop:10,  
+      //paddingTop: -20,
       fontSize: 14 ,
       //fontWeight: 'bold',
       justifyContent: 'center',
       alignItems: 'center',
-      color: couleur
+      color: couleur,
+      fontFamily : FLFontFamily
     }
   }
 
