@@ -30,7 +30,7 @@ export class FLSlider2 extends Component{
     componentWillReceiveProps(props) {
  
         if (typeof this.props.value != 'undefined'){
-            this.setState({value : this.props.value});
+            this.setState({value : props.value});
         }
 
     }   
@@ -39,7 +39,7 @@ export class FLSlider2 extends Component{
     render() {
 
         return (
-            <View style={{flexDirection: 'column',borderWidth:0,justifyContent:'center',alignItems:'center',width:this.props.sliderLength}}>
+            <View style={{flexDirection: 'column',borderWidth:0,justifyContent:'center',alignItems:'flex-start',width:this.props.sliderLength}}>
                 <View style={styles.column}>
                     {this.renderScale()}
                 </View>
@@ -62,6 +62,11 @@ export class FLSlider2 extends Component{
                                     //this.setState({value : val});
                                     this.props.callback(value);
                                 }}
+                                /*onValueChange={(value) => {
+                                    console.log("VALUE CHANGE : "+value);
+                                    //this.setState({value : val});
+                                    this.props.callback(value);
+                                }}*/
 
                             />
                         </View>

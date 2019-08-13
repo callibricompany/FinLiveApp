@@ -9,6 +9,11 @@ import { SearchBarContext } from './SearchBarContext';
 export default class SearchBarProvider extends React.Component {
   constructor(props) {
     super(props);
+    
+    let adjustFullHeight = 0;
+    if (typeof this.props.adjustFullHeight != 'undefined'){
+      adjustFullHeight = this.props.adjustFullHeight;
+    }
 
     this.searchBarAnimation = new SearchBarAnimation({
       scrollToOffset: (configScroll) => {
@@ -17,7 +22,7 @@ export default class SearchBarProvider extends React.Component {
         let scrollToOffset = this._handlersScroll[tab];
         scrollToOffset && scrollToOffset(configScroll.offset, configScroll.animated);
       }
-    });
+    }, adjustFullHeight);
 
     this.state = {
       currentTab: null,

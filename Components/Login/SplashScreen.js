@@ -3,7 +3,9 @@ import { StyleSheet, View, Text, Dimensions, ImageBackground, Image, StatusBar} 
 import { Button } from 'native-base';
 import { Svg } from "expo";
 
-import bgSrc from '../../assets/icon_1024.png';
+import bgSrc from '../../assets/splash_transparent.png';
+import { tabBackgroundColor } from '../../Styles/globalStyle';
+
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
@@ -36,10 +38,10 @@ class SplashScreen extends React.Component {
           <View style={styles.container}>
           <StatusBar hidden />
           
-          <Svg width={DEVICE_WIDTH} height={DEVICE_HEIGHT} viewBox="0 0 100 100">
+          {/*<Svg width={DEVICE_WIDTH} height={DEVICE_HEIGHT} viewBox="0 0 100 100">
              <Svg.Circle cx="100" cy="0" r="50" fill="#479ac8" opacity="0.2"/>
              <Svg.Circle cx="0" cy="100" r="50" fill="#479ac8" opacity="0.2"/>
-          </Svg>
+    </Svg>*/}
             <ImageBackground
             //source={{uri: 'https://picsum.photos/200/300?image=1062'}}
               //source={{uri: 'https://picsum.photos/400/600?random'}}
@@ -47,7 +49,7 @@ class SplashScreen extends React.Component {
               //</View>source={{uri: 'https://images.unsplash.com/photo-1424819827928-55f0c8497861?fit=crop&w=600&h=600'}}
               source={bgSrc}
               style={styles.picture}
-              resizeMode="center"
+              resizeMode="contain"
             />
 
           </View >
@@ -74,9 +76,10 @@ const styles = StyleSheet.create({
     top: 0, left: 0, right: 0, bottom: 0,
     //opacity: 0.15,
     position: "absolute",
+    backgroundColor : tabBackgroundColor,
     width: null,
     height: null,
-    resizeMode: 'cover',
+    //resizeMode: 'cover',
   },
 });
 

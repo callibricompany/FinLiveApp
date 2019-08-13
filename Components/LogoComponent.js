@@ -6,16 +6,38 @@
  **/
 
 import React from "react";
-
+import { View, Image } from 'react-native';
 import { Svg } from "expo";
-/* Adobe XD React Exporter has dropped some elements not supported by react-native-svg: style */
+
+import botImage from '../assets/splash.png'
+
+import Dimensions from 'Dimensions';
+
+const DEVICE_WIDTH = Dimensions.get('window').width;
+const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 class LogoComponent extends React.Component {
   
 
   render () {
     return (
-      <Svg width="160" height="160" viewBox="0 0 160 160">
+      <View>
+        <Image style={{width: DEVICE_WIDTH/2, height: DEVICE_WIDTH/2}} source={botImage} />
+      </View>
+    );
+  }
+  };
+  
+
+export default LogoComponent;
+
+/*              <View style={styles.container}>
+                    <Button  style={{height:100, width:DEVICE_WIDTH-50, alignItems:'center',justifyContent:'center'}} dark>
+                    <Text style={{color: 'aquamarine',fontWeight: 'bold',fontSize: 50,}}>FinLive</Text>
+                    </Button>
+  */
+
+/*<Svg width="160" height="160" viewBox="0 0 160 160">
       <Svg.G transform="translate(-315 -498)">
       <Svg.G transform="translate(315 498)" fill="#e8e8e8" stroke="#c9caca" stroke-width="1">
       <Svg.Rect width="160" height="160" rx="80" stroke="none"/>
@@ -36,19 +58,4 @@ class LogoComponent extends React.Component {
       </Svg.Text>
    
       </Svg.G>
-      </Svg>       
-
-  
-         
-    );
-  }
-  };
-  
-
-export default LogoComponent;
-
-{/*              <View style={styles.container}>
-                    <Button  style={{height:100, width:DEVICE_WIDTH-50, alignItems:'center',justifyContent:'center'}} dark>
-                    <Text style={{color: 'aquamarine',fontWeight: 'bold',fontSize: 50,}}>FinLive</Text>
-                    </Button>
-  */}
+    </Svg>     */ 

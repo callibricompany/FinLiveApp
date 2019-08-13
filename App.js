@@ -8,7 +8,7 @@ import material from './native-base-theme/variables/commonColor'
 
 import UserProvider from './Session/UserProvider'
 import Firebase, { FirebaseContext } from './Database';
-import { withAuthentication } from './Session';
+
 
 
 import Application from './Components/Login/Application'

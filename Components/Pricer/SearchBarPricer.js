@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Icon, Button } from 'native-base'
-import { ifIphoneX, ifAndroid } from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 import {
   View,
   ScrollView,
@@ -36,12 +36,24 @@ export default class SearchBarPricer extends Component {
     super(props);
  
     this.state = {
-
+      title : this.props.currentTab
     }
-
-    
   }
 
+
+  componentWillReceiveProps(props) {
+    this.setState( { title : props.currentTab});
+  }
+
+  //retourne le titre du tab
+  _getLabelText  ( titleCode ) {
+      switch (titleCode) {
+        case  'tabPricerResults' : return 'Résultats';
+        case  'tabPricerParameters' : return 'Optimisez votre produit';
+        case  'tabPricerUF' : return 'Fixez vos conditions';
+        default : return titleCode;
+      }
+  }
 
   blurInputs(stateBar) {
     if (this.inputSearch !== null && this.inputSearch !== undefined) {
@@ -56,7 +68,7 @@ export default class SearchBarPricer extends Component {
   render() {
     const { animation, changeInputFocus, renderTabBar } = this.props;
 
-    const transformWrapper = animation.getTransformWrapper();
+    const transformWrapper = animation.getTransformWrapper(-13, false);
     const transformSearchBar = animation.getTransformSearchBar(this.blurInputs, animation.stateBar);
     const opacitySearchBar = animation.getOpacitySearchBar();
     const opacityLocationInput = animation.getOpacityLocationInput();
@@ -66,12 +78,43 @@ export default class SearchBarPricer extends Component {
     
     return (
       <Animated.View style={[styles.wrapper, transformWrapper]}>
-       <Animated.View style={opacitySearchBar}>
+       <Animated.View style={[opacitySearchBar, {
+                  display: 'flex',
+                  //backgroundColor: '#45688e',
+                  //borderRadius: 3,
+                  borderWidth:0,
+                  
+                  //height: 45,
+                  //marginTop: 10,
+                  width: DEVICE_WIDTH,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                  //alignItems: 'center'
+                }]}> 
           <View style={styles.searchContainer}>
-            <Animated.View style={[transformSearchBar]}>
-               <View style={[styles.searchInput,  { flexDirection:'row' , borderWidth: 0, borderColor: tabBackgroundColor}]}>     
-                  <Text>TOTO</Text>
-              </View>
+            <Animated.View style={transformSearchBar} >
+               <View style={{flex: 1, height: 40,borderWidth: 0, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>   
+                    <View style={{flex:0.9, borderWidth: 0, height: 40,justifyContent: 'center', alignItems: 'flex-start'}}>
+                       <TouchableOpacity onPress={() => {
+                                console.log("test");
+                        }}>
+                         <Text style={{paddingLeft : 15,fontFamily: FLFontFamily, fontWeight:'300', fontSize : 18, color:'white'}}>
+                          Toto {this._getLabelText(this.state.title)}
+                         </Text>    
+                        </TouchableOpacity>
+                    </View>  
+                    <View style={{ flex:0.1,  borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}> 
+                      <TouchableOpacity onPress={() => {
+                          alert("ouverture aide");
+                        }}>  
+                          <MaterialIcons
+                            name='help' 
+                            size={25} 
+                            color='white'
+                          />
+                      </TouchableOpacity>
+                    </View> 
+                  </View>
             </Animated.View>
 
           </View>
@@ -92,54 +135,20 @@ const styles = StyleSheet.create({
     //backgroundColor: '#fff',
   },
   searchContainer: {
-    zIndex: 99,
+    //zIndex: 99,
     backgroundColor: tabBackgroundColor,
+  
     width: '100%',
-    overflow: 'hidden',
-    paddingBottom: 10,
-    ...ifIphoneX({
-      paddingTop: 12
+    //overflow: 'hidden',
+    paddingBottom: 0, //10,
+    ...sizeByDevice({
+      paddingTop: 2, //12
     }, {
-      paddingTop: 28
+      paddingTop: 2, //12
+    },
+    {
+      paddingTop: 2,//27, //37
     }),
   },
-  arrowMinimizeContainer: {
-    position: 'relative',
-    top: -3
-  },
-  arrowMinimizeIcon: {
-    marginLeft: 12,
-  },
-  searchInput: {
-    display: 'flex',
-    backgroundColor: '#fff',
-    borderRadius: 3,
-    height: 45,
-    marginTop: 3,
-    width: DEVICE_WIDTH*0.925,
-    marginRight : -1,
-    marginLeft : Platform.OS === 'ios' ? 0 : -1,
-    alignSelf: 'center'
-   //marginLeft: DEVICE_WIDTH*0.0375,
-   // marginRight:  DEVICE_WIDTH*0.0375,
-  },
-  locationInput: {
-    marginTop: 10,
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: 13,
-    top: 12,
-  },
-  inputText: {
-    display: 'flex',
-    ...ifAndroid({
-      marginTop: 9
-    }, {
-      marginTop: 13
-    }),
-    marginLeft: 43,
-    fontSize: 15,
-    color: '#999',
-  },
+
 });

@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { ifIphoneX, isAndroid } from '../../../Utils';
-import { FlatList, Animated, View, Text } from 'react-native'; 
+import { ScrollView, Animated, View, Text } from 'react-native'; 
 import { SearchBarContext } from './SearchBarContext';
 
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
-class FlatListHelper extends React.PureComponent {
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+
+class FLScrollViewHelper extends React.PureComponent {
   componentDidMount() {
     let { tabRoute, animation, addHandlerScroll } = this.props;
 
@@ -19,7 +20,8 @@ class FlatListHelper extends React.PureComponent {
   }
 
   scrollToOffset = (offset, animated = true) => {
-    this.flatList.getNode().scrollToOffset({offset, animated});
+    //this.scroll.getNode().scrollToOffset({offset, animated});
+    //this.scroll.scrollToOffset({offset, animated});
   };
 
   _onMomentumScrollBegin = () =>  this.props._canJumpToTab(false);  
@@ -37,7 +39,7 @@ class FlatListHelper extends React.PureComponent {
     
     return (
   
-      <AnimatedFlatList
+      <AnimatedScrollView
         {...this.props}
         scrollEventThrottle={1}  
         onScrollEndDrag={this._onScrollEndDrag}
@@ -48,7 +50,7 @@ class FlatListHelper extends React.PureComponent {
           contentContainerStyle
         ]}
         ref={component => { 
-          this.flatList = component; 
+          this.scroll = component; 
         }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -71,4 +73,4 @@ const withSearchBarContext = Comp => props => (
   </SearchBarContext.Consumer>
 );
 
-export default withSearchBarContext(FlatListHelper);
+export default withSearchBarContext(FLScrollViewHelper);

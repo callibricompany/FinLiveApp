@@ -13,12 +13,13 @@ export const headerTabColor = '#13223C'; //'#749B14';
 export const selectElementTab = '#13223C';//'#87B916';
 export const progressBarColor = '#87B916';
 
-export const subscribeColor = '#00B6FF';
+export const subscribeColor = '#00B6FF'; //#71CCF1
 
 export const FLFontFamily = Platform.OS !== 'ios' ? 'sans-serif-condensed' :'Arial';
 export const FLFontFamilyBold = Platform.OS !== 'ios' ? 'notoserif' :'Papyrus';
 
-export const backgdColor = '#F9FAFC';
+export const backgdColor = '#edeef0';
+export const backgdColorPricerParameter = 'snow';
 
 const globalStyle = StyleSheet.create({
 
@@ -28,7 +29,7 @@ const globalStyle = StyleSheet.create({
 //        BACKGROUNG COLOR 
 ///////////////////////////////
   bgColor :{
-      backgroundColor:'#F9FAFC' //#edeef0
+      backgroundColor: '#edeef0'//'#F9FAFC' //#edeef0
       //backgroundColor:'linen'
   },
 

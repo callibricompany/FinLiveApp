@@ -166,7 +166,7 @@ class Firebase {
                       //on recupere les infos du serveur
                       //console.log("LANCEMENT RECUP USER DTAS : "+ idTokenUser );
                       
-                      getUserAllInfo(idTokenUser)
+                      /*getUserAllInfo(idTokenUser)
                       .then((userDatas) => {
                         //console.log("BELLE RECUP DES USER DATAS : "+ userDatas["data"]);
                         //console.log(userDatas.length);
@@ -175,7 +175,7 @@ class Firebase {
                       .catch(error => {
                         //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
                         alert('ERREUR RECUPERATION DES INFOS USER', '' + error);
-                      }) 
+                      }) */
                       console.log("AUTHUSER : " + authUser.idToken)
                       // merge auth and db user
                       authUser = {
@@ -281,12 +281,39 @@ class Firebase {
   }
 
 
+  //charge l'etat des categories
+  getCategoriesState() {
+    return new Promise((resolve, reject) => {
+
+      this.db.collection("parameters").doc("FLDatas").get()
+      .then((doc) => {
+        resolve(doc.data().underlyingActivated);
+      })
+      .catch((error) => {
+        console.log("Erreur retrour getCategoriesState : " + error);
+        reject(error);
+      }); 
+    });
+  }
+  
+  //charge tous les sous-jacents
+  getUnderlyingList() {
+      return new Promise((resolve, reject) => {
+
+        this.db.collection("parameters").doc("FLDatas").collection("underlying").get()
+        .then((querySnapshot) => {
+          resolve(querySnapshot);
+        })
+        .catch((error) => {
+          console.log("Erreur retrour requete : " + error);
+          reject(error);
+        }); 
+      });
+  }
+
   //where('requester_id', '==', idFresh)
   //orderBy("updated_at", "desc")
    //charge les tickets
-
-
-
     onTicketListenner = (next, fallback, idFresh) => {
       this.ticketListenner = this.db.collection("tickets").where('requester_id', '==', idFresh).onSnapshot(function(querySnapshot) {
         var tickets = [];

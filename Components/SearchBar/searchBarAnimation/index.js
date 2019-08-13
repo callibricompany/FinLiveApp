@@ -1,11 +1,13 @@
 import SearchBarProvider from './SearchBarProvider';
 import SearchBarContext from './SearchBarContext';
 import SearchBarAnimation from './SearchBarAnimation';
-import FlatList from './FlatList';
+import FLFlatList from './FLFlatList';
+import FLScrollView from './FLScrollView';
 
 export {
   SearchBarProvider,
   SearchBarContext,
   SearchBarAnimation,
-  FlatList
+  FLFlatList,
+  FLScrollView
 };

@@ -32,12 +32,12 @@ export default class SearchBarAnimation {
 
   statusBarHeight = 21;
   wrapperHeight = 177;
-  paddingStatusBar = 41;
+  paddingStatusBar = 41+10;//-20;
   //arrowHeight = 36 - ifIphoneX(2, 0);
   arrowHeight = 0;
   //topPartHeight = this.arrowHeight + 45 + 10; // arrowHeight + inputHeight + padding (Top part)
   topPartHeight = this.arrowHeight + 0 + 10; // arrowHeight + inputHeight + padding (Top part)
-  fullHeight = this.topPartHeight + 131; // = 222
+  fullHeight = this.topPartHeight + 131 - 20; // = 222
   distanceRange = this.fullHeight - this.topPartHeight;
   maxClamp = this.fullHeight - (this.paddingStatusBar + this.statusBarHeight);
   minClamp = this.topPartHeight;
@@ -57,11 +57,18 @@ export default class SearchBarAnimation {
   //stateBar = this.stateBarTypes.NORMAL;
   stateBar = this.stateBarTypes.EXPANDED;
 
-  constructor(initialState) {
+  constructor(initialState, adjustFullHeight) {
     this.initialState = initialState;
 
-    this._createClampedScroll();
+    //this._createClampedScroll();
     this.scrollY.addListener(this._updateScroll);
+    
+    //ajustement de la hauteur
+    this.fullHeight = this.fullHeight + adjustFullHeight;
+    this.distanceRange = this.distanceRange + adjustFullHeight;
+    this.maxClamp = this.maxClamp + adjustFullHeight;
+    this.diffClamp = this.diffClamp + adjustFullHeight;
+    this._createClampedScroll();
   }
 
   destroy() {
@@ -69,19 +76,19 @@ export default class SearchBarAnimation {
   }
 
   _updateScroll = ({value, manually}) => {
-    //console.log("Value : "+value+"     -  scrollValue : "+ this._scrollValue);
+   //console.log("UPDATESCROLL : "+manually);
     if(value && manually) {
      this._clampedScrollValue = value;
     } else {
       const diff = value - this._scrollValue;
       this._scrollValue = Math.max(value, this.topPartHeight); // Fix normal state
+      this._scrollValue = Math.max(value, 0); // Fix normal state
       this._clampedScrollValue = Math.min(
         Math.max(this._clampedScrollValue + diff, this.minClamp), 
         this.maxClamp
       );
-      //console.log("Clamped : "+ this._clampedScrollValue );
     }
-
+    //console.log("Value : "+value+"     -  scrollValue : "+ this._scrollValue+"  topPartH : " +this.topPartHeight+ "  Clamp :   "+this._clampedScrollValue+"   MaxClamp : "+this.maxClamp);
     this._changeStatusBarStyle();
     this._changeStateBar();
   };
@@ -116,11 +123,15 @@ export default class SearchBarAnimation {
   _changeStateBar() {
     let newState, types = this.stateBarTypes;
     let clampedValue = Math.round(this._clampedScrollValue);
+
     if(Math.round(this.scrollY._value) < this.topPartHeight) {
+      //console.log("PASSE EXPANDED");
       newState = types.EXPANDED;
     } else if(clampedValue == this.minClamp) {
+      //console.log("PASSE NORMAL");
       newState = types.NORMAL;
     } else if(clampedValue == this.maxClamp) {
+      //console.log("PASSE CLAMPED");
       newState = types.CLAMPED;
     }
 
@@ -139,7 +150,7 @@ export default class SearchBarAnimation {
       StatusBar.setBarStyle(statusBarStyle);
       this._statusBarStyle = statusBarStyle;
     }*/
-    StatusBar.setBarStyle('dark-content');
+    //StatusBar.setBarStyle('dark-content');
     
   }
 
@@ -232,28 +243,52 @@ export default class SearchBarAnimation {
     handleIntermediateState: this._handleIntermediateState
   };
 
-  getTransformWrapper() {
-    let byScroll = Animated.add(
-      Animated.multiply(this.clampedScroll, -1),
-      this.scrollY.interpolate({ // To negative
-        inputRange: [0, 1],
-        outputRange: [0, -1],
-      }).interpolate({ // Add bottom height part 
-        inputRange: [-this.topPartHeight, 0],
-        outputRange: [0, this.minClamp],
-        extrapolate: 'clamp',
-      })
-    );
+  getTransformWrapper(toValue=0, useMinClamp = true) {
+      //console.log("TRANSFORM WRAPPER: " + this.minClamp);
+      let clampMinValue = this.minClamp;
+      if (!useMinClamp) {
+        clampMinValue = 0;
+      }
+      let byScroll = Animated.add(
+        Animated.multiply(this.clampedScroll, -1),
+        this.scrollY.interpolate({ // To negative
+          inputRange: [0, 1],
+          outputRange: [0, -1],
+        }).interpolate({ // Add bottom height part 
+          inputRange: [-this.topPartHeight, 0],
+          outputRange: [toValue, clampMinValue], //c'est la qu'on bloque le min clamp
+          extrapolate: 'clamp',
+        })
+      );
 
-    return {
-      transform: [{
-        translateY: Animated.add(byScroll, this.actionAnimated)
-      }]
-    };
+      return {
+        transform: [{
+          translateY: Animated.add(byScroll, this.actionAnimated)
+        }]
+      };
+
   }
 
   getTransformSearchBar(blurFunction, stateBarGiven) {
     blurFunction(stateBarGiven);
+    
+    //this.topPartHeight = this.topPartHeight -9;
+   /* return {
+      transform: [{
+        translateY: Animated.add(
+          this.actionAnimated.interpolate({
+            inputRange: [0, this.maxActionAnimated],
+            outputRange: [0, -this.topPartHeight + this.arrowHeight],
+            extrapolate: 'clamp',
+          }),
+          this.scrollY.interpolate({
+          inputRange: [0, this.topPartHeight],
+          outputRange: [0, this.topPartHeight - this.arrowHeight],
+          extrapolate: 'clamp',
+        })
+       )
+      }]
+    };*/
     //console.log("TRANSFORM SEARCH BAR");
     return {
       transform: [{
@@ -262,24 +297,27 @@ export default class SearchBarAnimation {
             inputRange: [0, this.maxActionAnimated],
             outputRange: [0, -this.topPartHeight + this.arrowHeight],
             extrapolate: 'clamp',
-          }), 
+          }),
           this.scrollY.interpolate({
           inputRange: [0, this.topPartHeight],
-          outputRange: [0, this.topPartHeight - this.arrowHeight],
+          outputRange: [0, 0],
           extrapolate: 'clamp',
-        }))
+        })
+       )
       }]
     };
   }
 
-  getOpacitySearchBar() {
-    return {
-      opacity: this.clampedScroll.interpolate({
-        inputRange: [this.topPartHeight, this.maxClamp],
-        outputRange: [1, 0],
-        extrapolate: 'clamp',
-      })
-    };
+  getOpacitySearchBar(mustBeExecuted = true) {
+    if (mustBeExecuted) {
+      return {
+        opacity: this.clampedScroll.interpolate({
+          inputRange: [this.topPartHeight, this.maxClamp],
+          outputRange: [1, 0],
+          extrapolate: 'clamp',
+        })
+      };
+    }
   }
 
   getOpacityLocationInput() {

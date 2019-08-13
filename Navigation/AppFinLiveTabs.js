@@ -21,54 +21,23 @@ import { Icon } from 'native-base'
 
 import { tabBackgroundColor, FLFontFamily } from '../Styles/globalStyle';
 
+import { withUser } from '../Session/withAuthentication';
+
 import * as ROLES from '../constants/roles';
+
 
 const tabIconFocused = 'white';
 //const tabIconNonFocused = '#C8D1DB';
-const tabIconNonFocused = 'white';
+const tabIconNonFocused = tabBackgroundColor;
 
-const TABS_BAR_OPTIONS = {
-  tabBarOptions: {
-    activeBackgroundColor: tabBackgroundColor, // Couleur d'arrière-plan de l'onglet sélectionné
-    inactiveBackgroundColor: tabBackgroundColor, // Couleur d'arrière-plan des onglets non sélectionnés
-    showLabel: true, // On masque les titres
-    showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
-    activeTintColor: '#85B3D3',
-    //inactiveTintColor: '#707070',
-    inactiveTintColor: tabBackgroundColor,
-    justifyContent: 'center',
-    alignItems: 'center',
-    style: {
-      backgroundColor: tabBackgroundColor,
-      borderTopColor: 'gray',
-      paddingTop: 10,
-      borderTopWidth: 1,
-      height: 60,
-      //ustifyContent: 'center',
-      //alignItems: 'center',
-      },
 
-    labelStyle:{
- //       labelSize: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 0
-      },
-    iconStyle: {
-        flexGrow: 1,
-        marginTop: 0,
-        marginBottom: 0,
-        //alignItems : 'center'
-      },
-  },
-}
 
 function labelStyle (focused, tintColor) {
     if (focused) {
       couleur = tintColor }
     else {
        //couleur = '#707070' }
-       couleur = 'white' }
+       couleur = tabBackgroundColor }
   
     
     return {
@@ -102,7 +71,10 @@ function labelStyle (focused, tintColor) {
   }, 
   {
     initialRouteName: 'Home'
-  })
+  });
+
+
+
   
   //Ecran pricer
   const PricerScreenStack = createStackNavigator({
@@ -138,7 +110,8 @@ function labelStyle (focused, tintColor) {
       Broadcasting: {
         screen: BroadcastingScreen,
         navigationOptions: {
-          title: 'Broadcast'
+          title: 'Broadcast',
+
         }
       },
 
@@ -148,7 +121,7 @@ function labelStyle (focused, tintColor) {
   Profil: {
     screen: ProfileScreen,
     navigationOptions: {
-      title: 'Profil'
+      title: 'Profil',
     }
   }
   })
@@ -197,7 +170,8 @@ function labelStyle (focused, tintColor) {
               <Text style={labelStyle(focused,tintColor)}>Accueil</Text>
               </View>
             );
-            }
+            },
+          //tabBarVisible: false,
         }
       },
       Pricer: {
@@ -231,7 +205,8 @@ function labelStyle (focused, tintColor) {
               <Text style={labelStyle(focused,tintColor)}>Evaluer</Text>
               </View>
             );
-            }
+            },
+            //tabBarVisible : false
         }
       },
       Tickets: {
@@ -389,6 +364,57 @@ function labelStyle (focused, tintColor) {
       }
     }
   
+  TABS['Accueil'].navigationOptions = ({ navigation }) => {
+    const { state: { routes, index } } = navigation;
+    let tabBarVisible = true;
+    //console.log("NAVIGATION.js :"+JSON.stringify(navigation));
+    //console.log("NAVIGATION.js: "+routes[index].routeName);
+    //console.log("NAVIGATION.js : "+ navigation.getParam('hideBottomTabBar'));
+    //console.log(JSON.stringify(navigation));
+    if(routes[index].routeName === 'Home'){
+      if (typeof routes[index].params !== 'undefined') {
+        //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params);
+        //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params['hideBottomTabBar']);
+        tabBarVisible = !routes[index].params['hideBottomTabBar'];
+      }
+      
+    }
+    return {
+ 
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View  style={{
+                      borderWidth:0,
+                      //borderColor:'rgba(0,0,0,0.2)',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      width:40,
+                      height:40,
+                      backgroundColor:tintColor,
+                      borderRadius:50,
+                    }}
+                >
+                <FontAwesomeI
+                name='home'
+                size={30}
+                style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
+            />
+            </View>
+          );
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <View style={{alignItems:'center', justifyContent:'center'}}>
+            <Text style={labelStyle(focused,tintColor)}>Accueil</Text>
+            </View>
+          );
+          },
+        //tabBarVisible: false,
+   
+      tabBarVisible
+    }
+  }
 
   export function  AppFinLiveTabs (role) {
         let tabs = {};
@@ -401,6 +427,6 @@ function labelStyle (focused, tintColor) {
           tabs = {Accueil, Tickets, Pricer,  Broadcasting, Profil};
         }
         
-        return createBottomTabNavigator(tabs, TABS_BAR_OPTIONS);
+        return tabs;
 
   }

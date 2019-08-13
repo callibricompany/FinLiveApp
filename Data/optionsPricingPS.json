@@ -2,6 +2,7 @@
   {
     "name": "type",
     "title" : "Produit",
+    "mandatory" : true,
     "description": [
       {
       "short_description": "Influence",
@@ -19,11 +20,12 @@
         "short_description": "Illustration",
         "long_description":""
       }
-    ],
+    ]
   },
   {
       "name": "underlying",
       "title" : "Sous-jacent",
+      "mandatory" : true,
       "description": [
         {
         "short_description": "Influence",
@@ -46,6 +48,7 @@
     {
       "name": "maturity",
       "title" : "Maturité",
+      "mandatory" : true,
       "description": [
         {
         "short_description": "Influence",
@@ -68,6 +71,7 @@
     {
       "name": "barrierPDI",
       "title" : "Protection du capital",
+      "mandatory" : true,
       "description": [
         {
         "short_description": "Influence",
@@ -88,8 +92,32 @@
       ]
     },
     {
+      "name": "typePDI",
+      "title" : "Type de protection",
+      "mandatory" : false,
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Votre coupon sera d'autant plus élevé si votre protection de capital est possible à tout moment"
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Validez auprès de votre client la compréhension de la notion de perte potentielle de capital "
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"En cas de troubles sur le marché, la perte en capital peut s'avérer sévère. Adaptez opportunement son niveau d'activation."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
       "name": "freqAutocall",
       "title" : "Fréquence de rappel",
+      "mandatory" : true,
       "description": [
         {
         "short_description": "Influence",
@@ -110,52 +138,9 @@
       ]
     },
     {
-      "name": "degressiveStep",
-      "title" : "Dégressivité du seuil de rappel",
-      "description": [
-        {
-        "short_description": "Influence",
-        "long_description":"Baisser le seuil de rappel à chaque période augment les chances de rappel du produit. Le coupon payé sera donc moindre. En contrepartie la prise de risque sur le capital sera aussi plus faible. "
-        },        
-        {
-          "short_description": "Vérification",
-          "long_description":"Adaptez cette dégressivité avec le profil de risque attendu."
-        },
-        {
-          "short_description": "Risques",
-          "long_description":"Un produit dont le seuil de rappel reste à 100% a moins de chance d'être rappelé. Le risque de perte de capital est plus élevé."
-        },
-        {
-          "short_description": "Illustration",
-          "long_description":""
-        }
-      ]
-    },
-    {
-      "name": "airbagLevel",
-      "title" : "Effet airbag",
-      "description": [
-        {
-        "short_description": "Influence",
-        "long_description":"L'effet airbag permet de récupérer l'ensemble des coupons si la barrière de perte en capital n'est pas activée. Cette protection a un coût : un coupon plus faible."
-        },        
-        {
-          "short_description": "Vérification",
-          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
-        },
-        {
-          "short_description": "Risques",
-          "long_description":"L'effet airbag n'améliore pas la protection du capital."
-        },
-        {
-          "short_description": "Illustration",
-          "long_description":""
-        }
-      ]
-    },
-    {
       "name": "barrierPhoenix",
-      "title" : "Seuil des coupons",
+      "title" : "Protection des coupons",
+      "mandatory" : false,
       "description": [
         {
         "short_description": "Influence",
@@ -178,6 +163,7 @@
     {
       "name": "freqPhoenix",
       "title" : "Fréquences des coupons",
+      "mandatory" : false,
       "description": [
         {
         "short_description": "Influence",
@@ -196,5 +182,51 @@
           "long_description":""
         }
       ]
-    }     
+    },
+    {
+      "name": "airbagLevel",
+      "title" : "Effet airbag",
+      "mandatory" : false,
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"L'effet airbag permet de récupérer l'ensemble des coupons si la barrière de perte en capital n'est pas activée. Cette protection a un coût : un coupon plus faible."
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"L'effet airbag n'améliore pas la protection du capital."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    }, 
+    {
+      "name": "degressiveStep",
+      "title" : "Dégressivité seuil de rappel",
+      "mandatory" : false,
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Baisser le seuil de rappel à chaque période augment les chances de rappel du produit. Le coupon payé sera donc moindre. En contrepartie la prise de risque sur le capital sera aussi plus faible. "
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Adaptez cette dégressivité avec le profil de risque attendu."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"Un produit dont le seuil de rappel reste à 100% a moins de chance d'être rappelé. Le risque de perte de capital est plus élevé."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    }   
   ]

@@ -11,14 +11,24 @@ const withAuthentication = Component => {
 
       this.state = {
         authUser: null,
+
+        //donnees statiques
+        categories : [],
+        categoriesState : '',
+        underlyings : [],
+        loadFLDatas : () => this.loadFLDatas(),
+
         tickets : [],
         getAllTickets : () => this.getAllTickets(),
       };
+
+      
     }
 
    
 
     componentDidMount() {
+      console.log("didMount Authentication lancement");
       this.listener = this.props.firebase.onAuthUserListener(
         authUser => {
           console.log("didMount Authentication ok");
@@ -30,16 +40,36 @@ const withAuthentication = Component => {
           //this.listener();
         },
       );
+
+
     }
-    /*componentDidMount() {
-      this.listener = this.props.firebase.auth.onAuthStateChanged(
-        authUser => {
-          authUser
-            ? this.setState({ authUser })
-            : this.setState({ authUser: null });
-        },
-      );
-    }*/
+
+    //chargement des donnees statiques
+    async loadFLDatas() {
+      //chargement des categories
+      let underlyings = [];
+      await this.props.firebase.getCategoriesState()
+      .then((data) => {
+        this.setState({ categoriesState: data });
+        //console.log(data);
+      })
+      .catch((error) => console.log(error));
+
+      //chargement des sous-categories dont les sous-jacents
+      await this.props.firebase.getUnderlyingList()
+      .then((data) => {
+        data.forEach(doc => {
+          //console.log(descriptifProduit["Price"]);
+          underlyings.push(doc.data());
+        });
+
+        let categories  = [...new Set(underlyings.map(x => x.underlyingGroup))];
+        this.setState({ categories, underlyings });
+
+      })
+      .catch((error) => console.log(error));
+    }
+
 
     componentWillUnmount() {
       console.log("withAUTHENTICATION : Appel this.listener() ");

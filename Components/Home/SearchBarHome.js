@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Font } from 'expo';
 import { Icon, Button } from 'native-base'
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
+
 import FadeInLeft  from '../../Animated/FadeInLeft';
 import {
   View,
@@ -15,7 +17,8 @@ import {
   Modal,
   Dimensions,
   SectionList,
-  Easing
+  Easing,
+  Keyboard
 } from 'react-native';
 
 import {  globalSyle, 
@@ -23,12 +26,9 @@ import {  globalSyle,
           tabBackgroundColor,
           headerTabColor,
           selectElementTab,
-          FLFontFamily
+          FLFontFamily,
+          backgdColor
 } from '../../Styles/globalStyle';
-
-
-import CATEGORIES from '../../Data/categories.json'
-import SUBCATEGORIES from '../../Data/subCategories.json'
 
 
 
@@ -41,36 +41,83 @@ export default class SearchBarHome extends Component {
 
   constructor(props) {
     super(props);
- 
+
+    console.log("CONSTRUCTOR HOME : ");
+
+    let selectedCategory = 'Produits financiers';
+    //let selectedCategory = 'Immobilier';
+    //determination des sous categories titres possible selon la selection des categorires
+    this._buildSubCategoriesList(selectedCategory);
+    
+
     this.state = {
+      //font 
+      fontLoaded : false, 
+
+      
+
+      //hide or show category and sub-category if searchtext is showed
+      categoryHeight : new Animated.Value(45),
+      //paddingCategoryHeight : new Animated.Value(50),
+      showModalTitle : true,
+      
       //animation barre de recherche
       positionLeft: new Animated.Value(DEVICE_WIDTH),
       bgInputTextColor : new Animated.Value(0),
 
 
       showModalCategory: false,
-      selectedCategory : 'PF',
+      selectedCategory : selectedCategory,
 
       showModalSubCategory : false,
-      selectedSubCategory : 'INDEX'
+      selectedSubCategory : this.subCategoriesSelected[0].name,
+      selectedSubCategoryTicker : this.subCategoriesSelected[0].ticker,
+      selectedSubCategory : 'Tous sous-jacents',
+      selectedSubCategoryTicker : '',
     }
-
-    //determination des sous categories
-    this.subCategories = [];
-    CATEGORIES.forEach((value) => {
-      let uc = SUBCATEGORIES.filter(({category}) => category === value.id);
-      this.subCategories.push(uc);
-    });
-
-    //determination des sous categories titres possible selon la selection des categorires
-    this.subCategoriesSelected = SUBCATEGORIES.filter(({category}) => category === this.state.selectedCategory);
-    this.distinctSubCategoriesTitle = [...new Set(this.subCategoriesSelected.map(x => x.type))];
-
-
 
     //texte de la barre de filtre
     this.searchText = '';
     
+  }
+
+
+
+  componentWillMount() {
+    //fait pour palier au bug android d'apparition des tabbar quand les claviers apparaissent
+    //this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => console.log("CLAVIER DEACTIVE"));
+    //this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => console.log("CLAVIER ACTIVE"));
+  }
+
+  componentWillUnmount() {
+      //this.keyboardDidShowListener.remove();
+      //this.keyboardDidHideListener.remove();
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      'FLFontTitle': require('../../assets/fonts/Typo_Round_Regular_Demo.otf'),
+    });
+
+    this.setState({ fontLoaded: true });
+  }
+
+  //construction de la liste des sous-categories
+  _buildSubCategoriesList=(selectedCategory) => {
+    //console.log("Debut build sub category");
+    this.subCategoriesSelected = [];
+    let subCategoriesSelectedTemp = this.props.underlyings.filter(({underlyingGroup}) => underlyingGroup === selectedCategory);
+    this.distinctSubCategoriesTitle = [...new Set(subCategoriesSelectedTemp.map(x => x.type))];
+    this.distinctSubCategoriesTitle.forEach((value) => {
+      let obj = {};
+      obj['name'] = value;
+      obj['ticker'] = value;
+      obj['isTitle'] = true;
+      this.subCategoriesSelected.push(obj);
+      this.props.underlyings.filter(({type}) => type === value).forEach((underlying) => this.subCategoriesSelected.push(underlying));
+      //this.subCategoriesSelected.push(this.props.underlyings.filter(({type}) => type === value));
+      //callback();
+    });
   }
 
 
@@ -87,14 +134,14 @@ export default class SearchBarHome extends Component {
   render() {
     const { animation, changeInputFocus, renderTabBar } = this.props;
 
-    const transformWrapper = animation.getTransformWrapper();
+    let transformWrapper = animation.getTransformWrapper();
     const transformSearchBar = animation.getTransformSearchBar(this.blurInputs, animation.stateBar);
-    const opacitySearchBar = animation.getOpacitySearchBar();
+    let opacitySearchBar = animation.getOpacitySearchBar(this.state.showModalTitle);
     const opacityLocationInput = animation.getOpacityLocationInput();
     const arrowMinimizeStyle = animation.getArrowMinimizeStyle();
   
     //determination de la categorie a afficher
-    let selectedCategorie = CATEGORIES.filter(({id}) => id === this.state.selectedCategory);
+    //let selectedCategorie = CATEGORIES.filter(({id}) => id === this.state.selectedCategory);
     //determination de la sous-categorie a afficher
     let selectedSubCategory = this.subCategoriesSelected.filter(({ticker}) => ticker === this.state.selectedSubCategory); 
 
@@ -103,9 +150,9 @@ export default class SearchBarHome extends Component {
       inputRange: [0, 300],
       outputRange: ['rgba(255, 0, 0, 1)', 'rgba(0, 255, 0, 1)']
     });*/
-    
+    //console.log("TRANSFORMSEARCHBAR : "+ JSON.stringify(transformSearchBar));
     return (
-      <Animated.View style={[styles.wrapper, transformWrapper]}>
+      <Animated.View style={[styles.wrapper, this.state.showModalTitle ? transformWrapper : transformSearchBar]}>
         <Modal
             animationType="fade"
             transparent={true}
@@ -125,9 +172,9 @@ export default class SearchBarHome extends Component {
                 let y = evt.nativeEvent.pageY;
                 //si on a clické en dehors du module view cidessous on ferme le modal
                 let verifX = x < DEVICE_WIDTH*0.0375  || x > DEVICE_WIDTH*0.9625 ? true : false;
-                let departY =  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 122) : 
-                             animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 113) : sizeByDevice(86, 86-23, 44);
-                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(CATEGORIES).length*40+5) ? true : false;
+                let departY =  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
+                             animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111)-4: sizeByDevice(86, 86-23, 42)-4;
+                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.props.categories).length*40+5) ? true : false;
                 if (verifX || verifY) {
                   this.setState({showModalCategory : false})
                 }
@@ -143,9 +190,9 @@ export default class SearchBarHome extends Component {
                         borderColor : headerTabColor,
                         //borderRadius:10,
                         width: DEVICE_WIDTH*0.925,
-                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(CATEGORIES).length*40+5),
-                        top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 122) : 
-                                  animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 113) : sizeByDevice(86, 86-23, 44),
+                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.props.categories).length*40+5),
+                        top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
+                                  animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) - 30-4: sizeByDevice(86, 86-23, 42)-4,
                         left : DEVICE_WIDTH*0.075/2,
                         //marginTop:DEVICE_HEIGHT*0.15,                       
                         //borderRadius: DEVICE_HEIGHT*0.03,
@@ -154,22 +201,23 @@ export default class SearchBarHome extends Component {
                   >
                   <ScrollView>
                   {
-                    CATEGORIES.map((value, index) => {
-
+                    this.props.categories.map((value, index) => {
                       return (
-                        <TouchableOpacity key={value.id} onPress={() => {
-                          if (this.subCategories[index].length !== 0) {
-                            this.subCategoriesSelected = SUBCATEGORIES.filter(({category}) => category === value.id);
-                            this.distinctSubCategoriesTitle = [...new Set(this.subCategoriesSelected.map(x => x.type))];
-                            this.setState({
-                                  selectedCategory : value.id, 
-                                  selectedSubCategory : this.subCategoriesSelected[0].ticker,
-                                  showModalCategory : false
-                                }, () => {
-                                  this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
-                                });
-                            //this.setState({ showModalCategory : false});
+                        <TouchableOpacity key={value} onPress={() => {
+                          //verifie si la categorie est activee
+                          if (this.props.categoriesState[value] === true) {
+                              this._buildSubCategoriesList(value);
+                              this.setState({
+                                selectedCategory : value, 
+                                selectedSubCategory :'Tous sous-jacents',
+                                selectedSubCategoryTicker : '',
+                                showModalCategory : false
+                              }, () => {
+    
+                                this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategoryTicker, this.searchText);
+                              });
                           }
+  
                         }}>
                         <View style={{
                                             height : 40, 
@@ -178,9 +226,9 @@ export default class SearchBarHome extends Component {
                                             justifyContent: 'center', 
                                             alignItems: 'center'
                                             }}>
-                            <View style={{flex : 1, backgroundColor: this.state.selectedCategory === value.id ? selectElementTab :'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth : 0, borderColor : this.subCategories[index].length !== 0 ? 'black' : 'lightgray'}}>
+                            <View style={{flex : 1, backgroundColor: this.state.selectedCategory === value ? selectElementTab :'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth : 0, borderColor : this.props.categoriesState[value] === true ? 'black' : 'lightgray'}}>
                               <View style={{flex:1, alignItems:'flex-start', justifyContent: 'center'}}>
-                                  <Text style={{color:this.state.selectedCategory === value.id ? 'white' : this.subCategories[index].length !== 0 ? 'black' : 'lightgray' }}>{value.name.toUpperCase()}</Text>
+                                  <Text style={{color:this.state.selectedCategory === value ? 'white' : this.props.categoriesState[value] === true ? 'black' : 'lightgray' }}>{value.toUpperCase()}</Text>
                               </View>
                               {/*<View style={{flex:0.2, alignItems: 'flex-end', justifyContent: 'center'}}>
                                    <Icon name="ios-arrow-forward"  style={{color : this.state.selectedCategory === value.id ? 'white' :this.subCategories[index].length !== 0 ? 'black' : 'lightgray' }}/>
@@ -215,8 +263,8 @@ export default class SearchBarHome extends Component {
                 //si on a clické en dehors du module view cidessous on ferme le modal
                 let verifX = x < DEVICE_WIDTH*0.0375 || x > DEVICE_WIDTH*0.9625 ? true : false;
                 //let verifY = y < animation.topPartHeight + 45  || y > Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.subCategoriesSelected).length*40+5) ? true : false;
-                let departY = animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 122) : 
-                              animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 113) : sizeByDevice(86, 86-23, 44) ;
+                let departY = animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30 -4: 
+                              animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) - 30 - 4: sizeByDevice(86, 86-23, 42) - 4;
                 let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.subCategoriesSelected).length*40+5) ? true : false;
                 if (verifX || verifY) {
                   this.setState({showModalSubCategory : false})
@@ -234,8 +282,8 @@ export default class SearchBarHome extends Component {
                         borderColor : headerTabColor,
                         width: DEVICE_WIDTH*0.925,
                         height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.subCategoriesSelected).length*40+5),
-                        top: animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 122) : 
-                                        animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 113) : sizeByDevice(86, 86-23, 44) ,
+                        top: animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
+                                        animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) -30-4: sizeByDevice(86, 86-23, 42)-4 ,
                         left : DEVICE_WIDTH*0.075/2,
                         //marginTop:DEVICE_HEIGHT*0.15,                       
                         //borderRadius: DEVICE_HEIGHT*0.03,
@@ -245,16 +293,20 @@ export default class SearchBarHome extends Component {
                    <ScrollView>
                   {                      
                       this.subCategoriesSelected.map((subValue, index) => {
-                          //console.log(subValue.ticker +"  : "+ index+"   :  "+value);
+                          //console.log(subValue.ticker +"  : "+ index+"   :  "+subValue.name+"   :   "+subValue.isTitle);
                           return (            
                             <TouchableOpacity key={subValue.ticker} onPress={() => {
-                              this.setState({
-       
-                                selectedSubCategory : subValue.ticker,
-                                showModalSubCategory : false
-                              }, () => {
-                                this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
-                              });
+                              //possibilité de cliquer s'il ne s'agit d'une section de sous-jacent
+                              if(!subValue.isTitle) {
+                                this.setState({
+        
+                                  selectedSubCategory : subValue.name,
+                                  selectedSubCategoryTicker : subValue.ticker,
+                                  showModalSubCategory : false
+                                }, () => {
+                                  this.props.filterUpdated(this.state.selectedCategory, subValue.ticker, this.searchText);
+                                });
+                              }
                             }}>
                               <View style={{
                                                   height : 40, 
@@ -264,14 +316,14 @@ export default class SearchBarHome extends Component {
                                                   alignItems: 'center',
                                                   //borderBottomWidth: 1,
                                                   }}>
-                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategory === subValue.ticker ? selectElementTab :subValue.type === 'SubCategory' ?'white' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth :subValue.type === 'SubCategory' ? 1 : 1, borderBottomColor : 'gainsboro'}}>
+                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategoryTicker === subValue.ticker ? selectElementTab :subValue.isTitle ?'gainsboro' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth :subValue.isTitle ? 1 : 1, borderBottomColor : 'gainsboro'}}>
                                     <View style={{flex:1, 
                                                   //alignItems: subValue.type === 'SubCategory' ? 'flex-start' : 'center', 
                                                   alignItems: 'flex-start', 
                                                   justifyContent: 'center'}}>
                                         <Text style={{
-                                            color: this.state.selectedSubCategory === subValue.ticker ? 'white' : 'black',
-                                            fontWeight: subValue.type === 'SubCategory' ? 'bold' : '400',
+                                            color: this.state.selectedSubCategoryTicker === subValue.ticker ? 'white' : 'black',
+                                            fontWeight: subValue.isTitle ? 'bold' : '400',
                                             //fontSize : subValue.type === 'SubCategory' ? 18 : 16,
                                             }}>{subValue.name}</Text>
                                     </View>
@@ -287,37 +339,42 @@ export default class SearchBarHome extends Component {
                 </View>
             </View>
         </Modal>
-      <Animated.View style={opacitySearchBar}>
+       <Animated.View style={opacitySearchBar}>
           <View style={styles.searchContainer}>
-
-            
-    
             <Animated.View style={[opacitySearchBar, {
                   display: 'flex',
-                  backgroundColor: '#45688e',
+                  backgroundColor: tabBackgroundColor,
                   //borderRadius: 3,
                   borderWidth:0,
                   
                   height: 45,
-                  marginTop: 10,
-                  width: DEVICE_WIDTH*0.925,
+                  marginTop: 0,
+                  width: DEVICE_WIDTH*1,
                   alignSelf: 'center',
                   justifyContent: 'center',
-                  //alignItems: 'center'
+                  alignItems: 'center'
                 }]}> 
-                  <View style={{flex: 1, height: 45, borderWidth: 0, flexDirection: 'row'}}>   
+                  <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.925,flexDirection: 'row'}}>   
                     <View style={{flex:0.9, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
-                    <TouchableOpacity onPress={() => {
-                                console.log("qsjhfjhdfjd");
-                    }}>
-                      <Text style={{paddingLeft : 20,fontFamily: FLFontFamily, fontWeight:'300', fontSize : 30, color:'white'}}>FinLive</Text>    
+                      <TouchableOpacity onPress={() => {
+                                  console.log("qsjhfjhdfjd");
+                      }}>
+                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 30, color:'white'}}>F i n L i v e</Text>    
                       </TouchableOpacity>
                     </View>   
 
                     <View style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}> 
                       <TouchableOpacity onPress={() => {
-                          
-                                Animated.timing(
+                          this.props.manageVisibilityTabBar(true);
+                           this.setState ({ showModalTitle : !this.state.showModalTitle });
+                           if (parseInt(JSON.stringify(animation.scrollY)) === 0) {
+                              //console.log("ON EST EN HAUT");
+                              this.props.changeMarginSearch(40);
+                            } else {
+                              this.props.changeMarginSearch(9999);
+                            }
+                            Animated.parallel([
+                              Animated.timing(
                                   this.state.positionLeft,
                                     {
                                       toValue: 0,
@@ -325,17 +382,29 @@ export default class SearchBarHome extends Component {
                                       easing: Easing.elastic(),
                                       speed : 1
                                     }
-                                  ).start();
-                                  /*Animated.timing(
-                                    this.state.bgInputTextColor,
-                                      {
-                                        //toValue: rgba(69, 104, 142),
-                                        toValue: 40,
-                                        duration : 2000,
-                                        //easing: Easing.elastic(),
-                                        speed : 1
-                                      }
-                                    ).start();*/
+                              ),
+                                Animated.timing(
+                                  this.state.categoryHeight,
+                                  {
+                                    toValue: 0,
+                                    duration : 1000,
+                                    easing: Easing.elastic(),
+                                    speed : 1
+                                  }
+                                )  
+                            ]).start(() => {
+                              //force le render avec un changement de state dont on se fiche 
+                              //this.setState ({ showModalTitle : !this.state.showModalTitle });
+                              
+  
+                              
+                          });
+                            
+                            if (this.inputSearch !== null && this.inputSearch !== undefined) {
+                              this.inputSearch.focus();
+                            }
+                           
+
                         }}>  
                           <MaterialIcons
                             name='search' 
@@ -345,34 +414,46 @@ export default class SearchBarHome extends Component {
                       </TouchableOpacity>
                     </View>
                   </View>
-                  <Animated.View style={{flexDirection:'row', top: 0, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
+                  <Animated.View style={{flexDirection:'row', top: 0, width: DEVICE_WIDTH, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
                       <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                           <TouchableOpacity onPress={() => {
-                                console.log("qsjhfjhdfjd");
-                                      Animated.timing(
-                                        this.state.positionLeft,
-                                          {
-                                            toValue: DEVICE_WIDTH,
-                                            duration : 1000,
-                                            easing: Easing.elastic(),
-                                            speed : 1
-                                          }
-                                        ).start();
-                                        /*Animated.timing(
-                                          this.state.bgInputTextColor,
-                                            {
-                                              //toValue: rgba(69, 104, 142),
-                                              toValue: 40,
-                                              duration : 2000,
-                                              //easing: Easing.elastic(),
-                                              speed : 1
-                                            }
-                                          ).start();*/
+                                       //this.setState ({ showModalTitle : !this.state.showModalTitle });
+                                       //console.log("SCROLL Y : "+ JSON.stringify(animation.scrollY));
+
+                                       this.props.changeMarginSearch(0);
+                                        Animated.parallel([
+                                          Animated.timing(
+                                              this.state.positionLeft,
+                                                {
+                                                  toValue: DEVICE_WIDTH,
+                                                  duration : 1000,
+                                                  easing: Easing.elastic(),
+                                                  speed : 1
+                                                }
+                                          ),
+                                            Animated.timing(
+                                              this.state.categoryHeight,
+                                              {
+                                                toValue: 45,
+                                                duration : 1000,
+                                                easing: Easing.elastic(),
+                                                speed : 1
+                                              }
+                                            )  
+                                        ]).start(() => {
+                                              //force le render avec un changement de state dont on se fiche 
+                                              this.setState ({ showModalTitle : !this.state.showModalTitle });
+                                              this.props.manageVisibilityTabBar(false);
+                                        });
+                                        if (this.inputSearch !== null && this.inputSearch !== undefined) {
+                                          this.inputSearch.blur();
+                                        }
                               }}>  
                                 <MaterialIcons
-                                      name='search' 
+                                      name='arrow-back' 
                                       size={22} 
                                       color='lightgray'
+                                      style={{paddingLeft: 20}}
                                     />
                             </TouchableOpacity>
                        </View>
@@ -385,91 +466,67 @@ export default class SearchBarHome extends Component {
                               autoCorrect={false}
                               //editable={false}
                               onSubmitEditing={() => {
-                                
+                                this.props.manageVisibilityTabBar(false);
                                 this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
                               }}
                               ref={(inputSearch) => {
-                                if (this.inputSearch !== null && this.inputSearch !== undefined) {
+                                //if (this.inputSearch !== null && this.inputSearch !== undefined) {
                                   this.inputSearch = inputSearch;
-                                  inputSearch.blur();
-                                }
+                                  //inputSearch.focus();
+                              //  }
                               }}
                               onChangeText={(text) => this.searchText = text}
                             />
                           </View>
-                  </Animated.View>
-        
-                    {/*
-                                     
-                    
-                    <TextInput 
-                      style={styles.inputText}
-                      placeholder={'Je recherche ...'}
-                      placeholderTextColor={'#999'}        
-                      underlineColorAndroid={'#fff'}
-                      autoCorrect={false}
-                      //editable={false}
-                      onSubmitEditing={() => {
-                        animation.expandBar();
-                        this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
-                      }}
-                      ref={(inputSearch) => {
-                        if (this.inputSearch !== null && this.inputSearch !== undefined) {
-                          this.inputSearch = inputSearch;
-                          inputSearch.blur();
-                        }
-                      }}
-                      onChangeText={(text) => this.searchText = text}
-                    />*/}
-                    
+                  </Animated.View>                    
             </Animated.View>
           </View>
         </Animated.View>
         {
           //renderTabBar()
         }
-                <View style={ { flexDirection:'row' , alignSelf: 'center', height: 45, width: DEVICE_WIDTH, borderWidth: 0, borderColor: 'black'}}>     
+        <Animated.View style={ { flexDirection:'row' , borderBottomWidth: 4, borderBottomColor : backgdColor,alignSelf: 'center', height: this.state.categoryHeight, width: DEVICE_WIDTH, borderWidth: 0, borderColor: 'black'}}>     
                       <View style={{flex: 0.0375, backgroundColor: tabBackgroundColor}}>
                       </View>
                       <View style={{ borderWidth:0, flex:0.4625, backgroundColor: this.state.showModalCategory ? headerTabColor : tabBackgroundColor}}>
-                        <TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalCategory : true})}>  
+                        { this.state.showModalTitle ?<TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalCategory : true})}>  
                             <View style={{  flexDirection: 'row',flex:1, backgroundColor: this.state.showModalCategory ? headerTabColor : tabBackgroundColor}}>
                                 <View style={{flexWrap: 'wrap',flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>
                               
-                                  <Text style={{paddingLeft: 5,flexWrap: 'wrap',fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 18, color: generalFontColor}}>
-                                      {selectedCategorie[0].name}
+                                  <Text style={{paddingLeft: 5,flexWrap: 'wrap',fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 12, color: generalFontColor}}>
+                                      {this.state.selectedCategory.toUpperCase()}
                                   </Text>
                                   
                                 </View>
                                 <View style={{flex:0.3, justifyContent : 'center', alignItems: 'center'}}>
                                   
-                                  <Icon name={this.state.showModalCategory ? "ios-arrow-up" :"ios-arrow-down"}  style={{color : tabBackgroundColor}}/>
+                                  <Icon name={this.state.showModalCategory ? "ios-arrow-up" :"ios-arrow-down"}  style={{color : this.state.showModalCategory ? tabBackgroundColor : 'white'}}/>
                                 
                                 </View> 
                             </View>
-                          </TouchableOpacity>
+                          </TouchableOpacity> : null }
                         </View>
                         <View style={{ flex:0.4625, backgroundColor: this.state.showModalSubCategory ? headerTabColor : tabBackgroundColor}}>
-                          <TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalSubCategory : true})}>
-                            <View style={{ flexDirection: 'row',flex:1, backgroundColor: this.state.showModalSubCategory ? headerTabColor : tabBackgroundColor}}>
+                        { this.state.showModalTitle ? <TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalSubCategory : true})}>
+                            <View style={{ flexDirection: 'row',flex:1,  backgroundColor: this.state.showModalSubCategory ? headerTabColor : tabBackgroundColor}}>
                                 <View style={{flexWrap: 'wrap',paddingLeft: 3, flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>  
                                 
-                                  <Text style={{flexWrap: 'wrap',fontFamily: FLFontFamily, fontWeight: '400', fontSize: 18, color: generalFontColor}}>
-                                    {selectedSubCategory[0].name}
+                                  <Text style={{flexWrap: 'wrap',fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: generalFontColor}}>
+                                    {this.state.selectedSubCategory.toUpperCase()}
                                   </Text>
                                 
                                 </View>
                                 <View style={{flex:0.3, justifyContent : 'center', alignItems: 'center'}}>
                                   
-                                    <Icon name={this.state.showModalSubCategory ? "ios-arrow-up" :"ios-arrow-down"}   style={{color : tabBackgroundColor}}/>
+                                    <Icon name={this.state.showModalSubCategory ? "ios-arrow-up" :"ios-arrow-down"}   style={{color : this.state.showModalSubCategory ? tabBackgroundColor : 'white'}}/>
                                   
                                 </View>
                             </View>
-                          </TouchableOpacity>
+                          </TouchableOpacity> : null }
                         </View>
                         <View style={{flex: 0.0375, backgroundColor: tabBackgroundColor}}>
                         </View>
-                      </View> 
+                      </Animated.View> 
       </Animated.View>
     );
   }
@@ -483,20 +540,22 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 1,
     backgroundColor: '#fff',
+    borderWidth: 0,
+    //paddingBottom : -50
   },
   searchContainer: {
     //zIndex: 99,
     backgroundColor: tabBackgroundColor,
     width: '100%',
     //overflow: 'hidden',
-    paddingBottom: 10,
+    paddingBottom: 0, //10,
     ...sizeByDevice({
-      paddingTop: 12
+      paddingTop: 2, //12
     }, {
-      paddingTop: 12
+      paddingTop: 2, //12
     },
     {
-      paddingTop: 37
+      paddingTop: 1, //37
     }),
   },
   arrowMinimizeContainer: {

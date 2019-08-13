@@ -330,7 +330,7 @@ class RegisterFormBase extends Component {
             
    
          
-           <Header style={{backgroundColor: 'transparent', borderBottomWidth: 0, height:200}}>
+           <Header style={{backgroundColor: 'transparent', borderBottomWidth: 0, height:250}}>
               <View style={[styles.container, {paddingTop:10} ]}>
                  
                <LogoComponent />

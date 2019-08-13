@@ -10,15 +10,59 @@ import Register from '../Components/Login/Register'
 import WaitingRoom from '../Components/Login/WaitingValidationScreen'
 import { AppFinLiveTabs } from './AppFinLiveTabs';
 
+import { tabBackgroundColor, FLFontFamily } from '../Styles/globalStyle';
+
 import * as ROLES from '../constants/roles';
+
+
+const TABS_BAR_OPTIONS = {
+  tabBarOptions: {
+    activeBackgroundColor: 'white', // Couleur d'arrière-plan de l'onglet sélectionné
+    inactiveBackgroundColor: 'white', // Couleur d'arrière-plan des onglets non sélectionnés
+    showLabel: true, // On masque les titres
+    showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
+    activeTintColor: tabBackgroundColor,//'#85B3D3',
+    //inactiveTintColor: '#707070',
+    inactiveTintColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    style: {
+      backgroundColor: 'white',
+      borderTopColor: tabBackgroundColor,
+      paddingTop: 10,
+      borderTopWidth: 2,
+      height: Platform.OS === 'ios' ? 60 : 70,
+      //ustifyContent: 'center',
+      //alignItems: 'center',
+      },
+    
+    labelStyle:{
+ //       labelSize: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 0
+      },
+    iconStyle: {
+        flexGrow: 1,
+        marginTop: 0,
+        marginBottom: 0,
+        //alignItems : 'center'
+      },
+    
+  },
+}
+
+
+const bottomTabs = createBottomTabNavigator(AppFinLiveTabs(''), TABS_BAR_OPTIONS);
+const bottomTabsAdmin = createBottomTabNavigator(AppFinLiveTabs(ROLES.ADMIN), TABS_BAR_OPTIONS);
 
 
 
 const Navigation =  createAppContainer(createSwitchNavigator(
   {
     AuthLoading: AuthLoadingScreen,
-    App: AppFinLiveTabs(''),
-    AppAdmin : AppFinLiveTabs(ROLES.ADMIN),
+    App: bottomTabs,
+    AppAdmin : bottomTabsAdmin,
     Login: Login,
     Register: Register,
     Splash: SplashScreen,
@@ -28,6 +72,8 @@ const Navigation =  createAppContainer(createSwitchNavigator(
     initialRouteName: 'Splash',
   }
 ));
+
+
 
 
 export default Navigation;

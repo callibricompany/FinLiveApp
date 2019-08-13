@@ -1,7 +1,7 @@
 import React from 'react'
-import Expo from "expo";
-import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar, Animated} from 'react-native'
-import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
+
+import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar, Animated, KeyboardAvoidingView} from 'react-native'
+import { Thumbnail, Toast, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { globalStyle , tabBackgroundColor, subscribeColor} from '../../Styles/globalStyle'
 
@@ -12,9 +12,10 @@ import smallIcon from '../../assets/icon_196.png'
 
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
+import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
-import Dimensions from 'Dimensions';
 
+import Dimensions from 'Dimensions';
 
 import { SearchBarProvider } from '../SearchBar/searchBarAnimation';
 import SearchBarHome from './SearchBarHome';
@@ -24,6 +25,7 @@ import TabHome from './TabHome';
 
 import CATEGORIES from '../../Data/categories.json'
 import SUBCATEGORIES from '../../Data/subCategories.json'
+
 //import Icon from 'react-native-vector-icons/FontAwesome'
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -39,85 +41,127 @@ const initialLayout = {
 //class HomeScreenFormBase extends React.Component {
   class HomeScreen extends React.Component {
 
-  constructor(props) {
-      super(props)
+    constructor(props) {
+        super(props)
+        
+        this.state = {
+          isLoading : true,
 
-      this.state = {
-        isLoading: true,
+          //gestion du scroll avec l'input text recherche
+          marginSearch : 0,
 
-        index: 0,
-        currentTab: 'tabHome',
-        routes: [
-          { key: 'tabHome', title: 'FINLIVE' },
-          //{ key: 'tabNews', title: 'Actualités' }
-        ],
+          //gestion des tabs
+          index: 0,
+          currentTab: 'tabHome',
+          routes: [
+            { key: 'tabHome', title: 'FINLIVE' },
+            //{ key: 'tabNews', title: 'Actualités' }
+          ],
 
-        filterText : '',
-        searchTextForNews : ''
-      }
-
-       // console.log("PLATE-FORME : " + Platform.OS)
-    }
-
-
-    componentDidMount () {
-      this.attends();
+          filterText : '',
+          searchTextForNews : ''
+        }
+        
+        // console.log("PLATE-FORME : " + Platform.OS)
     }
     
-    resolveAfter2Seconds(x) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(x);
-        }, 300);
+    static navigationOptions = ({ navigation }) => {
+      //static navigationOptions = {
+        //item = navigation.getParam('item', '...');
+       
+        //console.log("HOME SCREEN : "+JSON.stringify(navigation));
+        return ({
+          header : null,
+        }
+        );
+    }
+
+    /*static navigationOptions = {
+      header: null
+    }*/
+
+    async componentWillMount () {
+      
+      //console.log(CATEGORIES);
+      await this.props.loadFLDatas();
+      console.log("PASSEE E EE E  E E E E E  E E E E E E E E EE E  E E E EE E E E E E  E");
+      //toto = {...this.props.categories};
+      //console.log(this.props.categories);
+      //console.log(this.props.categoriesState);
+      /*this.props.categories.forEach((value, cle) => {
+            console.log(value + " : "+ cle);
       });
-    }
-    
-    async attends() {
-      var x = await this.resolveAfter2Seconds(10);
+      /*Toast.show({
+        text: "Wrong password!",
+        buttonText: "Okay",
+        duration: 3000
+      });*/
+
+      //on va charger toutes les constantes (sous jacents, etc, ....)
+
+      //setTimeout(() => {
+        
+      //}, 300);
       this.setState({ isLoading: false });
     }
     
-  static navigationOptions = {
-      header: null
-  }
-
-
-  _filterUpdated(category, subCategory, filterText='') {
-
-    let subCatName = SUBCATEGORIES.filter(({ticker}) => ticker === subCategory);
-
-    let whatToFilter = category;
     
 
-    this.setState({searchTextForNews : filterText === '' ? subCatName[0].name : filterText});
-  }
 
-  _renderHeader = (animation, canJumpToTab) => props => (
-    <SearchBarHome
-      animation={animation}
-      category={this.props.category}
+    _filterUpdated(category, subCategory, filterText='') {
+
+      let subCatName = this.props.underlyings.filter(({ticker}) => ticker === subCategory);
 
 
-      filterUpdated={(cat, subCat, filterText) => {
-        this._filterUpdated(cat, subCat, filterText);
+      
+      console.log("CATEGORY : " + category);
+      console.log("SUB-CATEGORY : " + subCategory);
+      console.log("FILTER TEXT : " + filterText);
+      this.setState({searchTextForNews : filterText === '' ? subCatName : filterText});
+
+      if (filterText === 'Test'){
+        //console.log("C est bien un test : " + JSON.stringify(this.props.navigation));
+        this.props.navigation.setParams({ hideBottomTabBar : true});
       }
-      }
-      renderTabBar={() => (
-        <TabBar
-              onTabPress={({route}) => {
-                if(route.key != this.state.currentTab && canJumpToTab) {
-                  animation.onTabPress(route);
-                }
-              }}
-              getLabelText={this._getLabelText}
-              indicatorStyle={{    backgroundColor: tabBackgroundColor, height : 0 }}
-              style={{ backgroundColor: 'white', elevation: 0, height : 0 }}
-              labelStyle={{ color: 'pink', margin: 0, marginTop: 0, marginBottom: 0, fontWeight: '200', height: 0 }}
-              {...props}
-            />
-          )}
-        />
-  );
+    }
+
+    _renderHeader = (animation, canJumpToTab) => props => (
+      <SearchBarHome
+        animation={animation}
+        categories={this.props.categories}
+        categoriesState = {this.props.categoriesState}
+        underlyings={this.props.underlyings}
+
+        changeMarginSearch={(marginSearch) => {
+          //console.log("SCROLL Y HomeScreen : "+marginSearch);
+          this.setState({ marginSearch : marginSearch });
+        }
+        }
+
+        manageVisibilityTabBar={(hideBottomTabBar = false)  => {
+          this.props.navigation.setParams({ hideBottomTabBar : hideBottomTabBar});
+        }}
+
+        filterUpdated={(cat, subCat, filterText) => {
+          this._filterUpdated(cat, subCat, filterText);
+        }
+        }
+        renderTabBar={() => (
+          <TabBar
+                onTabPress={({route}) => {
+                  if(route.key != this.state.currentTab && canJumpToTab) {
+                    animation.onTabPress(route);
+                  }
+                }}
+                getLabelText={this._getLabelText}
+                indicatorStyle={{    backgroundColor: tabBackgroundColor, height : 0 }}
+                style={{ backgroundColor: 'white', elevation: 0, height : 0 }}
+                labelStyle={{ color: 'pink', margin: 0, marginTop: 0, marginBottom: 0, fontWeight: '200', height: 0 }}
+                {...props}
+              />
+            )}
+          />
+    );
 
     _handleIndexChange = index => {
       this.setState({
@@ -139,7 +183,7 @@ const initialLayout = {
      
       switch (route.key) {
         case 'tabHome':
-          return <TabHome  route={route} jumpTo={jumpTo} />;
+          return <TabHome  route={route} jumpTo={jumpTo} marginSearch={this.state.marginSearch} />;
         //case 'tabNews':
         //  return  <TabNews  route={route} jumpTo={jumpTo} filterNews={this.state.searchTextForNews} />;
         default:
@@ -170,13 +214,13 @@ const initialLayout = {
       let render =    <SearchBarProvider currentTab={this.state.currentTab}>
                         {(animation, { canJumpToTab }) => 
                           <View style={initialLayout}>
-                            {Platform.OS === 'android' && 
+                            {/*Platform.OS === 'android' && 
                               <StatusBar
                                 translucent={false}
                                 backgroundColor={'black'}
                                 barStyle={'dark-content'}
                                 animated={false}
-                              />
+                              />*/
                             }
                             <TabView
                               style={[globalStyle.bgColor, {flex: 1}]}
@@ -203,7 +247,9 @@ const initialLayout = {
           }
       return(
             <SafeAreaView style={{backgroundColor: tabBackgroundColor}}>
+           
             {render}
+
             </SafeAreaView>
       );
     }
@@ -218,6 +264,7 @@ const condition = authUser => !!authUser;
 const composedWithNavAndAuthorization = compose(
  withAuthorization(condition),
   withNavigation,
+  withUser
 );
 
 //export default HomeScreen;

@@ -17,7 +17,7 @@ const withAuthorization = condition => Component => {
       }
 
     
-      async componentWillMount() {
+      /*async componentWillMount() {
         try {
           await Expo.Font.loadAsync({
       //      Roboto: require("native-base/Fonts/Roboto.ttf"),
@@ -31,7 +31,7 @@ const withAuthorization = condition => Component => {
           }
     
         //this.setState({ isLoading: false });    
-      }
+      }*/
     
 
     componentDidMount() {

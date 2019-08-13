@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaView ,Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
-import { Title, Icon, Button } from 'native-base'
+
 import {
   PanGestureHandler,
   NativeViewGestureHandler,
@@ -8,22 +8,21 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
+import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
-import { globalStyle } from '../../Styles/globalStyle'
-  
-import { withAuthorization } from '../../Session';
-import { withNavigation } from 'react-navigation';
-import { withFirebase } from '../../Database';
-import { withUser } from '../../Session/withAuthentication';
-import { compose, hoistStatics } from 'recompose';
+import { globalStyle, backgdColor, tabBackgroundColor, backgdColorPricerParameter } from '../../Styles/globalStyle'
+
+
+
+const DEVICE_WIDTH = Dimensions.get('window').width;
+const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
 
 const HEADER_HEIGHT = 20;
-const windowHeight = Dimensions.get('window').height;
-const SNAP_POINTS_FROM_TOP = [50, windowHeight * 0.4, windowHeight * 0.85];
+const SNAP_POINTS_FROM_TOP = [30, DEVICE_HEIGHT * 0.3, sizeByDevice(DEVICE_HEIGHT -260 , DEVICE_HEIGHT - 200 , DEVICE_HEIGHT - 215) ];
 
-class BroadcastingScreen extends React.Component {
+class FLBottomPanel extends React.Component {
  
   masterdrawer = React.createRef();
   drawer = React.createRef();
@@ -106,29 +105,10 @@ class BroadcastingScreen extends React.Component {
     }
   };
 
-  static navigationOptions = {
-    header: null
-  } 
-
 
 
     render() {
       return(
-        <View style={styles.main_container}>
-          <Text style={{fontSize: 30}}>Bonjour</Text>
-          <Button onPress={() => {
-                  Animated.spring(this._translateYOffset, {
-                    //velocity: velocityY,
-                    tension: 68,
-                    friction: 12,
-                    toValue: SNAP_POINTS_FROM_TOP[1],
-                    useNativeDriver: true,
-                  }).start();
-            this.setState({lastSnap : SNAP_POINTS_FROM_TOP[1]})
-          }
-          }>
-            <Text>GGGGGGGGGG</Text>
-          </Button>
         <TapGestureHandler
         maxDurationMs={100000}
         ref={this.masterdrawer}
@@ -147,7 +127,9 @@ class BroadcastingScreen extends React.Component {
               shouldCancelWhenOutside={false}
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHeaderHandlerStateChange}>
-              <Animated.View style={styles.header} />
+              <Animated.View style={styles.header} >
+               <View style={{width: DEVICE_WIDTH/3, height : HEADER_HEIGHT/5, backgroundColor: tabBackgroundColor, borderRadius: 5}}><Text></Text></View>
+              </Animated.View>
             </PanGestureHandler>
             <PanGestureHandler
               ref={this.drawer}
@@ -168,33 +150,7 @@ class BroadcastingScreen extends React.Component {
                     bounces={false}
                     onScrollBeginDrag={this._onRegisterLastScroll}
                     scrollEventThrottle={1}>
-                    <View>
-                      <Text>GGGGGGGGGG</Text>
-                      
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                      <Text>GGGGGGGGGG</Text>
-                    </View>
+                        {this.props.renderFLBottomPanel}
                   </Animated.ScrollView>
                 </NativeViewGestureHandler>
               </Animated.View>
@@ -202,36 +158,27 @@ class BroadcastingScreen extends React.Component {
           </Animated.View>
         </View>
       </TapGestureHandler>
-        </View>
       );
       }
 }
 
 const styles = StyleSheet.create({
-  main_container: {
-    flex: 1,
-    
-    paddingTop : 200,
-    paddingLeft : 40
-  },
+
   container: {
-    backgroundColor : 'lightgray',
+    backgroundColor : backgdColorPricerParameter,
     flex: 1,
   },
   header: {
     height: HEADER_HEIGHT,
-    backgroundColor: 'red',
+    backgroundColor: backgdColorPricerParameter,
+    justifyContent : 'center',
+    alignItems : 'center',
+    borderTopRightRadius : 5,
+    borderTopLeftRadius : 5,
   },
 });
 
 
-const condition = authUser => !!authUser;
-const composedPricerScreen = compose(
- withAuthorization(condition),
-  withFirebase,
-  withUser,
-  withNavigation,
-);
 
 //export default HomeScreen;
-export default hoistStatics(composedPricerScreen)(BroadcastingScreen);
+export default FLBottomPanel;
