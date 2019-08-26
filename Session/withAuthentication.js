@@ -3,6 +3,8 @@ import React from 'react';
 import AuthUserContext from './context';
 import { withFirebase } from '../Database';
 
+import { getUserAllInfo } from '../API/APIAWS';
+
 
 const withAuthentication = Component => {
   class WithAuthentication extends React.Component {
@@ -13,13 +15,12 @@ const withAuthentication = Component => {
         authUser: null,
 
         //donnees statiques
-        categories : [],
-        categoriesState : '',
-        underlyings : [],
-        loadFLDatas : () => this.loadFLDatas(),
-
         tickets : [],
         getAllTickets : () => this.getAllTickets(),
+
+        //chargé au départ
+        allInfo : [],
+        getUserAllInfo : () => this.getUserAllInfo(),
       };
 
       
@@ -44,10 +45,39 @@ const withAuthentication = Component => {
 
     }
 
+    //chargement des donnees de départ deopuis le serveur
+    async getUserAllInfo() {
+
+      return new Promise((resolve, reject) => {
+        this.props.firebase.doGetIdToken()
+        .then(token => {
+              getUserAllInfo(token)
+              .then((userDatas) => {
+                //console.log("reception : " + JSON.stringify(userDatas.categories));
+                //console.log("Passage de withAuth");
+                this.setState({ allInfo: userDatas });
+                resolve("ok");
+    
+              })
+              .catch(error => {
+                //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
+                alert('ERREUR TOKEN USER FIREBASE : ', '' + error);
+                reject(error);
+              }) 
+            }
+        )
+        .catch(error => {
+          //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
+          alert('ERREUR RECUPERATION DES INFOS USER : ', '' + error);
+          reject(error);
+        }) 
+      });
+    }
+
     //chargement des donnees statiques
     async loadFLDatas() {
       //chargement des categories
-      let underlyings = [];
+     /* let underlyings = [];
       await this.props.firebase.getCategoriesState()
       .then((data) => {
         this.setState({ categoriesState: data });
@@ -65,9 +95,12 @@ const withAuthentication = Component => {
 
         let categories  = [...new Set(underlyings.map(x => x.underlyingGroup))];
         this.setState({ categories, underlyings });
+        console.log(categories);
 
       })
       .catch((error) => console.log(error));
+      */
+
     }
 
 

@@ -180,7 +180,7 @@ export function getUserAllInfo (idToken) {
       axios.get(URL_AWS + '/getUserAllInfo', axiosConfig)
       .then((response) => {
         //console.log("Succes : " + JSON.stringify(response["data"]));
-        resolve(response)
+        resolve(response.data);
         //res.render('pages/register',{email: email, isConnected: isConnected});
       })
       .catch(function (error) {

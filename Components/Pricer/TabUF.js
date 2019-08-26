@@ -74,29 +74,6 @@ class TabUF extends React.PureComponent {
                 tabRoute={this.props.route.key}
           >
 
-              <View style={{borderWidth: 0, flexDirection: 'row',  width : DEVICE_WIDTH*0.925, marginTop: 10, alignSelf: 'center'}}>
-                <View style={{flex:0.3, borderWidth: 0, height: 35, justifyContent:'center', alignItems:'flex-start'}}>
-                  <View>
-                    <Text style={{fontFamily: FLFontFamily, fontWeight: '500', fontSize: 16}}>
-                       { }
-                    </Text>
-                  </View>
-                </View>
-   
-                <View style={{flex:0.7, justifyContent:'center', alignItems:'flex-end'}}>
-                  <View>
-                    <Button style={{borderRadius : 4, height: 35,  backgroundColor: subscribeColor}}
-                            onPress={() => {
-                                this.props.launchPricing('toto');
-                            }}
-                    >
-                      <Text style={{paddingLeft: 3, paddingRight: 3, fontFamily: FLFontFamily, fontWeight: '300', fontSize: 12, color: 'white'}}>
-                        ACTUALISER STRCUTURES
-                      </Text>
-                    </Button>
-                  </View>
-                </View>            
-              </View>
 
               <View style={{marginTop: 30, borderWidth: 0}}>
                       <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 18, color: 'black', marginBottom : 20}}>

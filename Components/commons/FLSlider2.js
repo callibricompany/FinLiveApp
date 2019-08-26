@@ -18,6 +18,8 @@ export class FLSlider2 extends Component{
           first: this.props.initialMin,
           second: this.props.initialMax,
 
+          toto : true,
+
         }
 
         
@@ -28,16 +30,16 @@ export class FLSlider2 extends Component{
 
 
     componentWillReceiveProps(props) {
- 
-        if (typeof this.props.value != 'undefined'){
-            this.setState({value : props.value});
+        //console.log("ON EST DANS LE CALLBACK DU SLIDER : "+props.value);
+        if (typeof props.value !== 'undefined'){
+            this.setState({value : props.value, toto : !this.state.toto });
         }
 
     }   
 
     
     render() {
-
+        //console.log("RENDER SLIDER");
         return (
             <View style={{flexDirection: 'column',borderWidth:0,justifyContent:'center',alignItems:'flex-start',width:this.props.sliderLength}}>
                 <View style={styles.column}>
@@ -47,7 +49,9 @@ export class FLSlider2 extends Component{
                         <View onTouchStart={(e) => {
                             let x = e.nativeEvent.locationX;
                             let percent = x / this.scaleWidth;
-                            let value = percent * (this.props.max - this.props.min);
+                            let value = percent * (this.props.max - this.props.min) +this.props.min;
+                            //console.log("Percent : " + percent);
+                            value = Math.trunc(value/this.props.step) * this.props.step;
                             this.props.callback(value);
                         }}>
                             <Slider
@@ -58,7 +62,7 @@ export class FLSlider2 extends Component{
                                 value={this.state.value}
                                 minimumTrackTintColor={tabBackgroundColor}
                                 onSlidingComplete={(value) => {
-                                    console.log("CHANGE : "+value);
+                                    //console.log("CHANGE : "+value);
                                     //this.setState({value : val});
                                     this.props.callback(value);
                                 }}

@@ -3,6 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Font } from 'expo';
 import { Icon, Button } from 'native-base'
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
+import { getAllUnderlying } from '../../Utils';
 
 import FadeInLeft  from '../../Animated/FadeInLeft';
 import {
@@ -42,19 +43,30 @@ export default class SearchBarHome extends Component {
   constructor(props) {
     super(props);
 
-    console.log("CONSTRUCTOR HOME : ");
 
-    let selectedCategory = 'Produits financiers';
-    //let selectedCategory = 'Immobilier';
-    //determination des sous categories titres possible selon la selection des categorires
-    this._buildSubCategoriesList(selectedCategory);
-    
+
+    //rajout des favoris et de l'organisation 
+    this.categories = JSON.parse(JSON.stringify(this.props.categories));
+    let obj = {};
+    obj["active"] = true;
+    obj["categoryName"] = "Favoris";
+    obj["codeCategory"] = "PS";
+    obj["subCategory"] = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
+    this.categories.push(obj);
+    obj = {};
+    obj["active"] = true;
+    obj["categoryName"] = "Institut du Patrimoine";
+    obj["codeCategory"] = "PS";
+    obj["subCategory"] = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
+    this.categories.push(obj);   
+   
+  
+    //on selectionne les produits structures par defaut 
+    let selectedCategory = this.categories.filter(({codeCategory}) => codeCategory === 'PS')[0];  
 
     this.state = {
       //font 
       fontLoaded : false, 
-
-      
 
       //hide or show category and sub-category if searchtext is showed
       categoryHeight : new Animated.Value(45),
@@ -70,15 +82,13 @@ export default class SearchBarHome extends Component {
       selectedCategory : selectedCategory,
 
       showModalSubCategory : false,
-      selectedSubCategory : this.subCategoriesSelected[0].name,
-      selectedSubCategoryTicker : this.subCategoriesSelected[0].ticker,
-      selectedSubCategory : 'Tous sous-jacents',
-      selectedSubCategoryTicker : '',
+      selectedSubCategory : selectedCategory.subCategory[0],
     }
 
     //texte de la barre de filtre
     this.searchText = '';
     
+    //console.log(this.categories);
   }
 
 
@@ -100,25 +110,11 @@ export default class SearchBarHome extends Component {
     });
 
     this.setState({ fontLoaded: true });
+
+    //console.log(this.props.categories)
   }
 
-  //construction de la liste des sous-categories
-  _buildSubCategoriesList=(selectedCategory) => {
-    //console.log("Debut build sub category");
-    this.subCategoriesSelected = [];
-    let subCategoriesSelectedTemp = this.props.underlyings.filter(({underlyingGroup}) => underlyingGroup === selectedCategory);
-    this.distinctSubCategoriesTitle = [...new Set(subCategoriesSelectedTemp.map(x => x.type))];
-    this.distinctSubCategoriesTitle.forEach((value) => {
-      let obj = {};
-      obj['name'] = value;
-      obj['ticker'] = value;
-      obj['isTitle'] = true;
-      this.subCategoriesSelected.push(obj);
-      this.props.underlyings.filter(({type}) => type === value).forEach((underlying) => this.subCategoriesSelected.push(underlying));
-      //this.subCategoriesSelected.push(this.props.underlyings.filter(({type}) => type === value));
-      //callback();
-    });
-  }
+
 
 
   blurInputs(stateBar) {
@@ -140,16 +136,8 @@ export default class SearchBarHome extends Component {
     const opacityLocationInput = animation.getOpacityLocationInput();
     const arrowMinimizeStyle = animation.getArrowMinimizeStyle();
   
-    //determination de la categorie a afficher
-    //let selectedCategorie = CATEGORIES.filter(({id}) => id === this.state.selectedCategory);
-    //determination de la sous-categorie a afficher
-    let selectedSubCategory = this.subCategoriesSelected.filter(({ticker}) => ticker === this.state.selectedSubCategory); 
+    let subCategories = this.state.selectedCategory.subCategory;
 
-
-    /*let colorInputText = this.state.bgInputTextColor.interpolate({
-      inputRange: [0, 300],
-      outputRange: ['rgba(255, 0, 0, 1)', 'rgba(0, 255, 0, 1)']
-    });*/
     //console.log("TRANSFORMSEARCHBAR : "+ JSON.stringify(transformSearchBar));
     return (
       <Animated.View style={[styles.wrapper, this.state.showModalTitle ? transformWrapper : transformSearchBar]}>
@@ -174,7 +162,7 @@ export default class SearchBarHome extends Component {
                 let verifX = x < DEVICE_WIDTH*0.0375  || x > DEVICE_WIDTH*0.9625 ? true : false;
                 let departY =  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
                              animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111)-4: sizeByDevice(86, 86-23, 42)-4;
-                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.props.categories).length*40+5) ? true : false;
+                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5) ? true : false;
                 if (verifX || verifY) {
                   this.setState({showModalCategory : false})
                 }
@@ -190,7 +178,7 @@ export default class SearchBarHome extends Component {
                         borderColor : headerTabColor,
                         //borderRadius:10,
                         width: DEVICE_WIDTH*0.925,
-                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.props.categories).length*40+5),
+                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5),
                         top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
                                   animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) - 30-4: sizeByDevice(86, 86-23, 42)-4,
                         left : DEVICE_WIDTH*0.075/2,
@@ -201,20 +189,19 @@ export default class SearchBarHome extends Component {
                   >
                   <ScrollView>
                   {
-                    this.props.categories.map((value, index) => {
+                    this.categories.map((value, index) => {
                       return (
-                        <TouchableOpacity key={value} onPress={() => {
+                        <TouchableOpacity key={index} onPress={() => {
                           //verifie si la categorie est activee
-                          if (this.props.categoriesState[value] === true) {
-                              this._buildSubCategoriesList(value);
+                          if (value.active) {
+                              //console.log(this.categories.filter(({codeCategory}) => codeCategory === value.codeCategory)[0].subCategory[0]);
                               this.setState({
                                 selectedCategory : value, 
-                                selectedSubCategory :'Tous sous-jacents',
-                                selectedSubCategoryTicker : '',
+                                selectedSubCategory : this.categories.filter(({codeCategory}) => codeCategory === value.codeCategory)[0].subCategory[0],
                                 showModalCategory : false
                               }, () => {
     
-                                this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategoryTicker, this.searchText);
+                                this.props.filterUpdated(value, this.state.selectedSubCategory, this.searchText);
                               });
                           }
   
@@ -226,9 +213,9 @@ export default class SearchBarHome extends Component {
                                             justifyContent: 'center', 
                                             alignItems: 'center'
                                             }}>
-                            <View style={{flex : 1, backgroundColor: this.state.selectedCategory === value ? selectElementTab :'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth : 0, borderColor : this.props.categoriesState[value] === true ? 'black' : 'lightgray'}}>
+                            <View style={{flex : 1, backgroundColor: this.state.selectedCategory === value ? selectElementTab :'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925, borderColor : this.categories.active ? 'black' : 'lightgray'}}>
                               <View style={{flex:1, alignItems:'flex-start', justifyContent: 'center'}}>
-                                  <Text style={{color:this.state.selectedCategory === value ? 'white' : this.props.categoriesState[value] === true ? 'black' : 'lightgray' }}>{value.toUpperCase()}</Text>
+                                  <Text style={{color: this.state.selectedCategory === value ? 'white' : value.active ? 'black' : 'lightgray' }}>{value.categoryName.toUpperCase()}</Text>
                               </View>
                               {/*<View style={{flex:0.2, alignItems: 'flex-end', justifyContent: 'center'}}>
                                    <Icon name="ios-arrow-forward"  style={{color : this.state.selectedCategory === value.id ? 'white' :this.subCategories[index].length !== 0 ? 'black' : 'lightgray' }}/>
@@ -265,7 +252,7 @@ export default class SearchBarHome extends Component {
                 //let verifY = y < animation.topPartHeight + 45  || y > Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.subCategoriesSelected).length*40+5) ? true : false;
                 let departY = animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30 -4: 
                               animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) - 30 - 4: sizeByDevice(86, 86-23, 42) - 4;
-                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.subCategoriesSelected).length*40+5) ? true : false;
+                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(subCategories).length*40+5) ? true : false;
                 if (verifX || verifY) {
                   this.setState({showModalSubCategory : false})
                 }
@@ -281,7 +268,7 @@ export default class SearchBarHome extends Component {
                         //borderRadius:10,
                         borderColor : headerTabColor,
                         width: DEVICE_WIDTH*0.925,
-                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.subCategoriesSelected).length*40+5),
+                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(subCategories).length*40+5),
                         top: animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
                                         animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) -30-4: sizeByDevice(86, 86-23, 42)-4 ,
                         left : DEVICE_WIDTH*0.075/2,
@@ -292,21 +279,19 @@ export default class SearchBarHome extends Component {
                   >
                    <ScrollView>
                   {                      
-                      this.subCategoriesSelected.map((subValue, index) => {
+                      subCategories.map((subValue, index) => {
                           //console.log(subValue.ticker +"  : "+ index+"   :  "+subValue.name+"   :   "+subValue.isTitle);
                           return (            
-                            <TouchableOpacity key={subValue.ticker} onPress={() => {
+                            <TouchableOpacity key={index} onPress={() => {
                               //possibilité de cliquer s'il ne s'agit d'une section de sous-jacent
-                              if(!subValue.isTitle) {
-                                this.setState({
-        
-                                  selectedSubCategory : subValue.name,
-                                  selectedSubCategoryTicker : subValue.ticker,
+                              //if(!subValue.isTitle) {
+                                this.setState({    
+                                  selectedSubCategory : subValue,
                                   showModalSubCategory : false
                                 }, () => {
-                                  this.props.filterUpdated(this.state.selectedCategory, subValue.ticker, this.searchText);
+                                  this.props.filterUpdated(this.state.selectedCategory, subValue, this.searchText);
                                 });
-                              }
+                              //}
                             }}>
                               <View style={{
                                                   height : 40, 
@@ -316,16 +301,16 @@ export default class SearchBarHome extends Component {
                                                   alignItems: 'center',
                                                   //borderBottomWidth: 1,
                                                   }}>
-                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategoryTicker === subValue.ticker ? selectElementTab :subValue.isTitle ?'gainsboro' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth :subValue.isTitle ? 1 : 1, borderBottomColor : 'gainsboro'}}>
+                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategory === subValue ? selectElementTab :subValue.subCategoryHead ? 'gainsboro' : subValue.groupingHead ? 'lavender' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth :subValue.subCategoryHead ? 1 : 1, borderBottomColor : 'gainsboro'}}>
                                     <View style={{flex:1, 
                                                   //alignItems: subValue.type === 'SubCategory' ? 'flex-start' : 'center', 
                                                   alignItems: 'flex-start', 
                                                   justifyContent: 'center'}}>
                                         <Text style={{
-                                            color: this.state.selectedSubCategoryTicker === subValue.ticker ? 'white' : 'black',
-                                            fontWeight: subValue.isTitle ? 'bold' : '400',
+                                            color: this.state.selectedSubCategory === subValue ? 'white' : 'black',
+                                            fontWeight: subValue.subCategoryHead ? 'bold' : '400',
                                             //fontSize : subValue.type === 'SubCategory' ? 18 : 16,
-                                            }}>{subValue.name}</Text>
+                                            }}>{subValue.subCategoryName}</Text>
                                     </View>
 
                                   </View>
@@ -494,7 +479,7 @@ export default class SearchBarHome extends Component {
                                 <View style={{flexWrap: 'wrap',flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>
                               
                                   <Text style={{paddingLeft: 5,flexWrap: 'wrap',fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 12, color: generalFontColor}}>
-                                      {this.state.selectedCategory.toUpperCase()}
+                                      {this.state.selectedCategory.categoryName.toUpperCase()}
                                   </Text>
                                   
                                 </View>
@@ -512,7 +497,7 @@ export default class SearchBarHome extends Component {
                                 <View style={{flexWrap: 'wrap',paddingLeft: 3, flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>  
                                 
                                   <Text style={{flexWrap: 'wrap',fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: generalFontColor}}>
-                                    {this.state.selectedSubCategory.toUpperCase()}
+                                    {this.state.selectedSubCategory.subCategoryName.toUpperCase()}
                                   </Text>
                                 
                                 </View>

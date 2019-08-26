@@ -44,40 +44,40 @@ class TabHome extends React.PureComponent {
     }
   
     componentWillReceiveProps (props) {
-      console.log("NEW MARGIN SEARCH : "+props.marginSearch+ "     ANCIEN : "+this.state.scrollTo);
+      //console.log("NEW MARGIN SEARCH : "+props.marginSearch+ "     ANCIEN : "+this.state.scrollTo);
       this.setState({ scrollTo: props.marginSearch});
     }
 
     _renderTicket = ({ item , id}) => {
-        //console.log("item : " +id)
-        if (id < 0) {
-          
-          return (<View style={{height: 100, width:200, backgroundColor:'magenta'}}>
-          <Text>AHAH</Text></View>);
-        } else {
+        //console.log("item : " +id + "   :   "+ this.state.dataSource.length);
           return (
               <FLTicket id={id} item={item} ticketType={TICKET_TYPE.BROADCAST}/>
           )
-        }
     }
 
 
     render() {
       return (
-          <View style={{flex: 1, marginTop :  Platform.OS === 'android' ? -25 : 0}}>
-            <FLFlatList
-              //style={styles.wrapper}
-              scrollTo={this.state.scrollTo}
-              contentContainerStyle={styles.wrapper}
-              data={this.state.dataSource}
-              //renderItem={this._renderRow}
-              keyExtractor={(item) => item.id.toString()}
-              tabRoute={this.props.route.key}
-              renderItem={({item}) => (
-                this._renderTicket(item)      
-              )}
-            />
+          <View style={{marginTop :  Platform.OS === 'android' ? -25 : 0}}>
+            <View>
+              <FLFlatList
+                //style={styles.wrapper}
+                scrollTo={this.state.scrollTo}
+                contentContainerStyle={styles.wrapper}
+                data={this.state.dataSource}
+                //renderItem={this._renderRow}
+                keyExtractor={(item) => item.id.toString()}
+                tabRoute={this.props.route.key}
+                renderItem={({item}) => (
+                  this._renderTicket(item)      
+                )}
+              />
+            </View>
+            <View style={{height: 150}}>
+            </View>
+  
           </View>
+
       );
     }
   }

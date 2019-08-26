@@ -2,6 +2,11 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+
+import getEnvVars from '../environment';
+const {     APIKEY, AUTHDOMAIN, DATABASEURL, PROJECTID, STORAGEBUCKET, MESSAGINGSENDERID } = getEnvVars();
+
+
 const firebase = require("firebase");
 
 import { sortResults } from '../Utils/convertFresh'
@@ -14,21 +19,23 @@ const dataForge = require('data-forge');
 import PRICES from '../Data/20190517.json'
 
 const devConfig = {
-        apiKey: 'AIzaSyDY7vk5tEGQ3ZeI8iaEn2iAaD6DAhOHyb0',
-        authDomain: 'auth-8722c.firebaseapp.com',
-        databaseURL: 'https://auth-8722c.firebaseio.com',
-        projectId: 'auth-8722c',
-        storageBucket: 'auth-8722c.appspot.com',
-        messagingSenderId: '452038208493'
+  apiKey: APIKEY, 
+  authDomain: AUTHDOMAIN, 
+  databaseURL: DATABASEURL, 
+  projectId: PROJECTID, 
+  storageBucket: STORAGEBUCKET, 
+  messagingSenderId: MESSAGINGSENDERID, 
 }
 
+
+
 const prodConfig = {
-  apiKey: process.env.REACT_APP_DEV_API_KEY,
-  authDomain: process.env.REACT_APP_DEV_AUTH_DOMAIN,
-  databaseURL: process.env.REACT_APP_DEV_DATABASE_URL,
-  projectId: process.env.REACT_APP_DEV_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_DEV_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_DEV_MESSAGING_SENDER_ID,
+  apiKey: APIKEY, 
+  authDomain: AUTHDOMAIN, 
+  databaseURL: DATABASEURL, 
+  projectId: PROJECTID, 
+  storageBucket: STORAGEBUCKET, 
+  messagingSenderId: MESSAGINGSENDERID, 
 };
 
 //const config = process.env.NODE_ENV === 'production' ? prodConfig : devConfig;

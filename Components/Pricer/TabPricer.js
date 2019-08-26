@@ -10,6 +10,7 @@ import FLBottomPanel from '../commons/FLBottomPanel'
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
 import { withNavigation } from 'react-navigation';
+import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
 import * as Progress from 'react-native-progress';
@@ -34,13 +35,25 @@ import {  globalSyle,
   FLFontFamilyBold
 } from '../../Styles/globalStyle';
 
+import { FLAuctionDetail } from './description/FLAuctionDetail';
+import { FLProductDetail } from './description/FLProductDetail';
+import { FLUnderlyingDetail } from './description/FLUnderlyingDetail';
+import { FLMaturityDetail } from './description/FLMaturityDetail';
+import { FLPDIDetail } from './description/FLPDIDetail';
+import { FLFreqDetail } from './description/FLFreqDetail';
+import { FLPhoenixBarrierDetail } from './description/FLPhoenixBarrierDetail';
+import { FLAirbagDetail } from './description/FLAirbagDetail';
+import { FLDegressiveDetail } from './description/FLDegressiveDetail';
 
+import { SNAP_POINTS_FROM_TOP } from '../commons/FLBottomPanel';
 import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
 import FREQUENCYLIST from '../../Data/frequencyList.json'
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
 import * as TICKET_TYPE from '../../constants/ticket'
+
+
 
 
 
@@ -55,12 +68,23 @@ class TabPricer extends React.PureComponent {
 
       this.state = {
         toto : true,
+        
+        //position du bottomPanel
+        bottomPanelPosition : SNAP_POINTS_FROM_TOP[2],
       };
+
       //current product parameter used for bootom panel
-      this.currentParameters = 'help';
+      this.currentParameters = 'typeAuction';
       this.product = this.props.product;
 
-      this.dataSource = Array(10).fill().map((_, index) => ({id: index}));
+      //console.log("0 : " + SNAP_POINTS_FROM_TOP[0]);
+      //console.log("1 : " + SNAP_POINTS_FROM_TOP[1]);
+      //console.log("2 : " + SNAP_POINTS_FROM_TOP[2]);
+
+      //recuperation de la liste des sous-jacents
+      this.underlyings = this.props.allInfo.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
+
+      this.dataSource = Array(9).fill().map((_, index) => ({id: index}));
     }
   
     //on recoit les props a nouveau
@@ -72,59 +96,126 @@ class TabPricer extends React.PureComponent {
       this.setState({toto : !this.state.toto})
     }
 
+
+    _updateValue=(id, value, valueLabel) =>{
+        console.log(id + "  :  "+value+"  :  "+valueLabel);
+        this.product[id].value = value;
+        this.product[id].valueLabel = valueLabel;
+        //mise a jour de produit dans pricerScreen
+        this.props.parameterProductUpdated(this.product);
+
+        //on indique qu'un refresh est necesssire
+        this.props.needToRefresh();
+    }
+
+    _snapChange=(bottomPanelPosition) => {
+      //console.log(bottomPanelPosition);
+      this.setState({ bottomPanelPosition });
+    }
+
+    _activateParameter=(toActivate) => {
+      this.product[this.currentParameters].isActivated = toActivate;
+
+      //mise a jour de produit dans pricerScreen
+      this.props.parameterProductUpdated(this.product);
+
+      //fermeture du panel
+      //this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[2] });
+    }
+
     _renderFLBottomPanel=() => {
-      return (
-        <ScrollView>
-          <Text>TOTO</Text>
-        </ScrollView>
-      );
+      switch (this.currentParameters) {
+        case 'typeAuction' : return  <FLAuctionDetail updateValue={this._updateValue} initialValue={this.product['typeAuction'].value}/>
+        case 'type' : return  <FLProductDetail updateValue={this._updateValue} initialValue={this.product['type'].value}/>
+        case 'underlying' : return  <FLUnderlyingDetail underlyings={this.underlyings} updateValue={this._updateValue} initialValue={this.product['underlying'].value}/>
+        case 'maturity' : return  <FLMaturityDetail updateValue={this._updateValue} initialValue={this.product['maturity'].value}/>
+        case 'barrierPDI' : return  <FLPDIDetail updateValue={this._updateValue} initialValue={this.product['barrierPDI'].value}/>
+        case 'barrierPhoenix' : return  <FLPhoenixBarrierDetail updateValue={this._updateValue} initialValue={this.product['barrierPhoenix'].value}/>
+        case 'freq' : return  <FLFreqDetail updateValue={this._updateValue} initialValue={this.product['freq'].value}/>
+        case 'airbagLevel' : return  <FLAirbagDetail updateValue={this._updateValue} initialValue={this.product['airbagLevel'].value}/>
+        case 'degressiveStep' : return  <FLDegressiveDetail updateValue={this._updateValue} initialValue={this.product['degressiveStep'].value}/>
+
+        default : return  <View>
+                            <Text style={{padding : 15, fontSize : 24, fontFamily : 'FLFontTitle'}}>F i n l i v e</Text>
+                          </View>;
+      }
     }
 
     _renderParameter = ({ item , id}) => {
       //console.log("item : " +id)
       let col1 = id % 3 === 0 ? '1er col' : (id-2) % 3 === 0 ? '3eme col' : '';
-      
+
+
       let title = '';
-      let value = '';
+      let valueLabel = this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated ? this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].valueLabel : this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].defaultValueLabel;
       let help = '';
-      let isActivated = false;
+      let isActivated = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated;
+      let isMandatory = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isMandatory;
+      
       switch (id) {
-          case 0 : 
+          case 0 : //choix du produit
 
             break;
           default : break;
       }
       return (
         <View style={{flexDirection: 'column',height: (DEVICE_WIDTH*0.925-20)/3, width: (DEVICE_WIDTH*0.925-20)/3, marginLeft : id % 3 === 0 ? 0 : 5,  marginRight : (id -2) % 3 === 0 ? 0 : 5, marginBottom: 5, marginTop : 5,
-                      backgroundColor: this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated ? tabBackgroundColor : 'lightsteelblue'
+                      backgroundColor: isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue'
                     }}
         >
-          <View style={{flex: 0.3, borderWidth: 0, padding: 3, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}>
-             <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: 'white', textAlign: 'center'}}>
+          <View style={{height: (DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, padding: 2, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}>
+             <Text style={{fontFamily: FLFontFamily, fontWeight: '600', fontSize: 12, color: 'white', textAlign: 'center'}}>
                 {PARAMETERSSTRUCTUREDPRODUCT[id].title.toUpperCase()}
              </Text>
           </View>
           <TouchableOpacity onPress={() => {
+              //on souleve ou abaisse le bottom panel si on e-active sinon on desactive le panneau
+              //console.log("Current posiion : "+ this.state.bottomPanelPosition);
+              if (isMandatory) {
+                this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[this.state.bottomPanelPosition === SNAP_POINTS_FROM_TOP[2] ? 1 : this.currentParameters === PARAMETERSSTRUCTUREDPRODUCT[id].name ? 2 : 1] });
+              } else {
+                if (this.state.bottomPanelPosition === SNAP_POINTS_FROM_TOP[2]) {
+                  //le panel est en bas et on le remonte et on active le produit
+                  this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                  this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated  =true;
+                } else {
+                  //le panel est deja remonte 
+                  //on a appuye sur l'element en cours on cache le panel et on desactive
+                  if (this.currentParameters === PARAMETERSSTRUCTUREDPRODUCT[id].name) {
+                    this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[2] });
+                    //this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated = !isActivated;
+                  } else {
+                    this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated  =true;
+                  }
+                }
+              }
+  
+              //on indique quel est le parametre en cours
+              setTimeout(() => {
+                this.currentParameters = PARAMETERSSTRUCTUREDPRODUCT[id].name;
+                //forcage re-render pour bug
+                this.setState({ toto : !this.state.toto })
+               }, 100);
               
-              isActivated = this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated;
-              this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated = !isActivated;
+
+              //mise a jour de produit dans pricerScreen
               this.props.parameterProductUpdated(this.product);
-              console.log("hghghghg : " + isActivated);
+
+              //on indique qu'un refresh est necesssire
+              //this.props.needToRefresh();
+            
+
+
+              
             }} 
-            style={{flex: 0.5, borderWidth: 1, paddingTop: 1, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}
+            style={{height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, paddingTop: 3, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}
           >
              <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: 'white', textAlign: 'center'}}>
-              {this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].valueLabel}
+              {valueLabel.toUpperCase()}
             </Text>
+            {PARAMETERSSTRUCTUREDPRODUCT[id].name === 'barrierPDI'? <Text style={{marginTop: 25, fontFamily: FLFontFamily, fontWeight: '300', fontSize: 10, color: 'midnightblue', textAlign: 'center'}}>Barrière européenne</Text> : null}
           </TouchableOpacity>
-          <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}>
-             <View style={{flex : 0.35, justifyContent: 'center', alignItems: 'center'}}>
-                  <Ionicons name="md-options" size={20} color='white'/>
-             </View>
-             <View style={{flex : 0.65, justifyContent: 'flex-start', alignItems: 'center'}}>
-               <Switch style={{ transform: [{ scaleX: 0.7 }, { scaleY: .7 }] }} />
-             </View>
-          </View>
+          
         </View>
       );
     }
@@ -136,37 +227,10 @@ class TabPricer extends React.PureComponent {
           contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: Platform.OS === 'ios' ? -60+35 : -25+35 }}
                 tabRoute={this.props.route.key}
           > */
-          <View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: Platform.OS === 'ios' ? 100 : 100+35 }}>
+          <View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 0 }}>
            
-              <View style={{borderWidth: 0, flexDirection: 'row',  width : DEVICE_WIDTH*0.925, marginTop: 10, alignSelf: 'center'}}>
-                <View style={{flex:0.6, borderWidth: 0, height: 35, justifyContent:'center', alignItems:'flex-start'}}>
-                  <View>
-                    <Text style={{fontFamily: FLFontFamily, fontWeight: '500', fontSize: 16}}>
-                      {String("Produit structuré").toUpperCase()}
-                    </Text>
-                  </View>
-                </View>
-                <View style={{flex:0.15, borderWidth: 0, height: 35, justifyContent:'center', alignItems:'center'}}>
-                  <View>
-                     <Image style={{width: 25, height: 25}} source={botImage} />
-                  </View>
-                </View>    
-                <View style={{flex:0.25, justifyContent:'center', alignItems:'center'}}>
-                  <View>
-                    <Button style={{borderRadius : 4, height: 35,  backgroundColor: subscribeColor}}
-                            onPress={() => {
-                                this.props.launchPricing('toto');
-                            }}
-                    >
-                      <Text style={{paddingLeft: 3, paddingRight: 3, fontFamily: FLFontFamily, fontWeight: '300', fontSize: 12, color: 'white'}}>
-                        CHERCHER
-                      </Text>
-                    </Button>
-                  </View>
-                </View>            
-              </View>
-
-              <ScrollView style={{marginTop: 10, marginBottom: Platform.OS === 'ios' ? 10 : 10 , borderWidth: 0}}>
+       
+              <View style={{marginTop: 10, marginBottom: Platform.OS === 'ios' ? 10 : 10 , borderWidth: 0}}>
                   <FlatList
                     contentContainerStyle={{}}
                     data={this.dataSource}
@@ -179,12 +243,19 @@ class TabPricer extends React.PureComponent {
               
                     )}
                   />
-              <View style={{flex : 1, height: 150, backgroundColor: 'green'}}>
+              <View style={{flex : 1, height: 150}}>
+                
               </View>
-              </ScrollView>
+              </View>
 
-               <FLBottomPanel renderFLBottomPanel={this._renderFLBottomPanel()}/>
-              
+               <FLBottomPanel position={this.state.bottomPanelPosition} 
+                              snapChange={this._snapChange} 
+                              renderFLBottomPanel={this._renderFLBottomPanel()} 
+                              renderTitle={this.product[this.currentParameters].title}
+                              activateParameter={this._activateParameter}
+                              isActivated={this.product[this.currentParameters].isActivated}
+                />
+             
           </View>
 
       );
@@ -195,6 +266,7 @@ class TabPricer extends React.PureComponent {
 const composedWithNav = compose(
     //withAuthorization(condition),
      withNavigation,
+     withUser
    );
    
    //export default HomeScreen;

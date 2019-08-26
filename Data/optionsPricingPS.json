@@ -1,8 +1,17 @@
 [
   {
+    "name": "typeAuction",
+    "title" : "Demande",
+    "description": [
+      {
+      "short_description": "Choix",
+      "long_description": "Indiquez s'il s'agit d'un placement privé ou d'un APE"
+      }       
+    ]
+  },
+  {
     "name": "type",
     "title" : "Produit",
-    "mandatory" : true,
     "description": [
       {
       "short_description": "Influence",
@@ -10,11 +19,11 @@
       },        
       {
         "short_description": "Vérification",
-        "long_description":"Etudiez et validez le prfil de risque du produit choisi avec viotre client."
+        "long_description":"Etudiez et validez le profil de risque du produit choisi avec votre client."
       },
       {
         "short_description": "Risques",
-        "long_description":"Choisir une produit peut entrainer une lourde perte de capital"
+        "long_description":"Choisir un produit peut entrainer une lourde perte de capital"
       },
       {
         "short_description": "Illustration",
@@ -25,7 +34,6 @@
   {
       "name": "underlying",
       "title" : "Sous-jacent",
-      "mandatory" : true,
       "description": [
         {
         "short_description": "Influence",
@@ -48,7 +56,6 @@
     {
       "name": "maturity",
       "title" : "Maturité",
-      "mandatory" : true,
       "description": [
         {
         "short_description": "Influence",
@@ -71,7 +78,6 @@
     {
       "name": "barrierPDI",
       "title" : "Protection du capital",
-      "mandatory" : true,
       "description": [
         {
         "short_description": "Influence",
@@ -92,55 +98,8 @@
       ]
     },
     {
-      "name": "typePDI",
-      "title" : "Type de protection",
-      "mandatory" : false,
-      "description": [
-        {
-        "short_description": "Influence",
-        "long_description":"Votre coupon sera d'autant plus élevé si votre protection de capital est possible à tout moment"
-        },        
-        {
-          "short_description": "Vérification",
-          "long_description":"Validez auprès de votre client la compréhension de la notion de perte potentielle de capital "
-        },
-        {
-          "short_description": "Risques",
-          "long_description":"En cas de troubles sur le marché, la perte en capital peut s'avérer sévère. Adaptez opportunement son niveau d'activation."
-        },
-        {
-          "short_description": "Illustration",
-          "long_description":""
-        }
-      ]
-    },
-    {
-      "name": "freqAutocall",
-      "title" : "Fréquence de rappel",
-      "mandatory" : true,
-      "description": [
-        {
-        "short_description": "Influence",
-        "long_description":"Une fréquence de rappel plus élevé augmente les chances de rappel et dimunue ainsi celle de risque surson capital. Le coupon sera d'autant moins élevé. Vous pouvez également choisir de ne pas rappeler votre produit pendant un an, cela permet d'améliorer votre coupon"
-        },        
-        {
-          "short_description": "Vérification",
-          "long_description":"Vérifiez les durées minimum du produit, elles doivent être compatible avec son enveloppe juridique."
-        },
-        {
-          "short_description": "Risques",
-          "long_description":"Les risques de non rappel et de risque en capital augmentent si la fréquence du produit est faible"
-        },
-        {
-          "short_description": "Illustration",
-          "long_description":""
-        }
-      ]
-    },
-    {
       "name": "barrierPhoenix",
       "title" : "Protection des coupons",
-      "mandatory" : false,
       "description": [
         {
         "short_description": "Influence",
@@ -161,21 +120,20 @@
       ]
     },
     {
-      "name": "freqPhoenix",
-      "title" : "Fréquences des coupons",
-      "mandatory" : false,
+      "name": "freq",
+      "title" : "Fréquence",
       "description": [
         {
         "short_description": "Influence",
-        "long_description":"Choisissez une fréquence de paiement des coupons supérieure à celle des rappels."
+        "long_description":"Une fréquence de rappel plus élevé augmente les chances de rappel et dimunue ainsi celle de risque surson capital. Le coupon sera d'autant moins élevé. Vous pouvez également choisir de ne pas rappeler votre produit pendant un an, cela permet d'améliorer votre coupon"
         },        
         {
           "short_description": "Vérification",
-          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
+          "long_description":"Vérifiez les durées minimum du produit, elles doivent être compatible avec son enveloppe juridique."
         },
         {
           "short_description": "Risques",
-          "long_description":"Le changement de seuil des coupons n'améliore pas la protection du capital."
+          "long_description":"Les risques de non rappel et de risque en capital augmentent si la fréquence du produit est faible"
         },
         {
           "short_description": "Illustration",
@@ -186,7 +144,6 @@
     {
       "name": "airbagLevel",
       "title" : "Effet airbag",
-      "mandatory" : false,
       "description": [
         {
         "short_description": "Influence",
@@ -209,7 +166,6 @@
     {
       "name": "degressiveStep",
       "title" : "Dégressivité seuil de rappel",
-      "mandatory" : false,
       "description": [
         {
         "short_description": "Influence",

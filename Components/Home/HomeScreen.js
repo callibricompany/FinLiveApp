@@ -83,8 +83,12 @@ const initialLayout = {
     async componentWillMount () {
       
       //console.log(CATEGORIES);
-      await this.props.loadFLDatas();
-      console.log("PASSEE E EE E  E E E E E  E E E E E E E E EE E  E E E EE E E E E E  E");
+      await this.props.getUserAllInfo();
+
+      //creation de l aliste des categories 
+      //console.log("Passage homescrrenn");
+      //console.log(this.props.allInfo.categories);
+      //console.log("PASSEE E EE E  E E E E E  E E E E E E E E EE E  E E E EE E E E E E  E");
       //toto = {...this.props.categories};
       //console.log(this.props.categories);
       //console.log(this.props.categoriesState);
@@ -104,20 +108,20 @@ const initialLayout = {
       //}, 300);
       this.setState({ isLoading: false });
     }
-    
+
     
 
 
     _filterUpdated(category, subCategory, filterText='') {
 
-      let subCatName = this.props.underlyings.filter(({ticker}) => ticker === subCategory);
+      //let subCatName = this.props.underlyings.filter(({ticker}) => ticker === subCategory);
 
 
       
       console.log("CATEGORY : " + category);
       console.log("SUB-CATEGORY : " + subCategory);
       console.log("FILTER TEXT : " + filterText);
-      this.setState({searchTextForNews : filterText === '' ? subCatName : filterText});
+      //this.setState({searchTextForNews : filterText === '' ? subCatName : filterText});
 
       if (filterText === 'Test'){
         //console.log("C est bien un test : " + JSON.stringify(this.props.navigation));
@@ -128,9 +132,7 @@ const initialLayout = {
     _renderHeader = (animation, canJumpToTab) => props => (
       <SearchBarHome
         animation={animation}
-        categories={this.props.categories}
-        categoriesState = {this.props.categoriesState}
-        underlyings={this.props.underlyings}
+        categories={this.props.allInfo.categories}
 
         changeMarginSearch={(marginSearch) => {
           //console.log("SCROLL Y HomeScreen : "+marginSearch);
@@ -211,6 +213,7 @@ const initialLayout = {
 
 
     render() {
+
       let render =    <SearchBarProvider currentTab={this.state.currentTab}>
                         {(animation, { canJumpToTab }) => 
                           <View style={initialLayout}>
