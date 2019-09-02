@@ -16,7 +16,7 @@ import * as ROLES from '../constants/roles';
 import { getUserAllInfo } from '../API/APIAWS';
 
 const dataForge = require('data-forge');
-import PRICES from '../Data/20190517.json'
+
 
 const devConfig = {
   apiKey: APIKEY, 
@@ -243,49 +243,6 @@ class Firebase {
   }
 
 
-
-  //charge tous les prix du jour
-  getAllLastPrices() {
-    return new Promise((resolve, reject) => {
-      if (this.lastPricesList.length === 0 && !this.isAllPricesLoaded) {
-        this.isAllPricesLoaded = true;
-        //let csvFile = require('../Data/20190517.csv');
-        //on se limite aux prix les plus frais : 7 jours pour le moment
-       /* this.db.collection("parameters").doc("structuredPrices").get()
-        .then((result) => {
-            //console.log(result.data());
-            let nbDays = result.data().validityPricesDays;
-            d = new Date(Date.now() - nbDays*24*60*60*1000);
-            fDate = firebase.firestore.Timestamp.fromDate(d);
-            //requete les prix les plus frais
-            this.db.collection("structuredProductsPrices").where('lastCalculationDate', '>', fDate).get()
-            .then(querySnapshot => {
-              querySnapshot.docs.forEach(doc => {
-                descriptifProduit = doc.data().description;
-                descriptifProduit["Price"] = doc.data().lastPrice;
-                descriptifProduit["Vega"] = doc.data().lastVega;
-                //console.log(descriptifProduit["Price"]);
-                this.lastPricesList.push(descriptifProduit);
-              });
-              resolve(this.lastPricesList);
-            })
-            .catch((error) => {
-                this.isAllPricesLoaded = false;
-                console.log("Erreur retrour requete : " + error);
-                reject(error);
-            })
-        })*/
-
-          resolve(PRICES);
-
-     
-        
-       } else {
-          resolve(this.lastPricesList);
-       }
-    }); 
- 
-  }
 
 
   //charge l'etat des categories

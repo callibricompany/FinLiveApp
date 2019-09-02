@@ -28,7 +28,7 @@ import Dimensions from 'Dimensions';
 
 import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
-import FREQUENCYLIST from '../../Data/frequencyList.json'
+
 
 
 

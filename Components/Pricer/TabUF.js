@@ -34,10 +34,6 @@ import {  globalSyle,
 } from '../../Styles/globalStyle';
 
 
-import UNDERLYINGS from '../../Data/subCategories.json'
-import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
-import FREQUENCYLIST from '../../Data/frequencyList.json'
-import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
 import * as TICKET_TYPE from '../../constants/ticket'
 

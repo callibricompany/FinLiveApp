@@ -51,14 +51,17 @@ export class FLUnderlyingDetail extends React.Component{
 
         //on initialise avec les sous-jacents deja selectionnes 
         console.log("INITIAL : "+ this.props.initialValue);
-        this.selectedUnderlyings.push(this.underlyings.filter(obj => obj.underlyingCode == this.props.initialValue[0])[0]);
+        this.props.initialValue.forEach((underlyingCode) => {
+            this.selectedUnderlyings.push(this.underlyings.filter(obj => obj.underlyingCode == underlyingCode)[0]);
+        })
+        
         possibleUnderlyings = JSON.parse(JSON.stringify(this.selectedUnderlyings));
         possibleUnderlyings.map((obj) => {obj["active"]= true });
         this.selectedUnderlyings.forEach((underlying) => this.underlyingsCode.push(underlying.underlyingCode));
 
 
         this.state = { 
-            currentType : this.selectedUnderlyings[0].codeSubCategory,
+            currentType : this.selectedUnderlyings.length === 0 ? '' : this.selectedUnderlyings[0].codeSubCategory,
             currentSector : this.sectorList[0],
             possibleUnderlyings,
         }
@@ -77,11 +80,18 @@ export class FLUnderlyingDetail extends React.Component{
         possibleUnderlyings = this.underlyings.filter(obj => obj.codeSubCategory == this.state.currentType);
         possibleUnderlyings = possibleUnderlyings.filter(obj => obj.subCategoryHead == false);
 
+        
+        //console.log(possibleUnderlyings);
         //il s'agit des actions / on n'affiche pas les secteurs
         if (this.state.currentType === "PSACTIONS") {
-            possibleUnderlyings = possibleUnderlyings.filter(obj => obj.groupingHead == false);
-            if (this.state.currentSector.underlyingCode !== 'NONE') {
-                possibleUnderlyings = possibleUnderlyings.filter(obj => obj.groupingName == this.state.currentSector.groupingName);
+            if (this.state.currentSector.underlyingCode === 'NONE') {
+                possibleUnderlyings = [];
+            } 
+            else {
+                possibleUnderlyings = possibleUnderlyings.filter(obj => obj.groupingHead == false);
+                if (this.state.currentSector.underlyingCode !== 'NONE') {
+                    possibleUnderlyings = possibleUnderlyings.filter(obj => obj.groupingName == this.state.currentSector.groupingName);
+                }
             }
         }
         //boucle sur la liste des underlying initiaux afin de savoir s'ils sont deja selectionnes 
@@ -116,6 +126,9 @@ export class FLUnderlyingDetail extends React.Component{
 
                         let selectedUnderlyingArray  = [...new Set(this.selectedUnderlyings.map(x => x.underlyingCode))];
                         let selectedUnderlyingNameArray  = [...new Set(this.selectedUnderlyings.map(x => x.subCategoryName))];
+                        if (selectedUnderlyingNameArray.length === 0){
+                            selectedUnderlyingNameArray = 'Peu importe';
+                        }
                         //console.log(selectedUnderlyingNameArray.toString());
                         this.props.updateValue("underlying", selectedUnderlyingArray ,selectedUnderlyingNameArray.toString().replace(/,/g,'\n'));
                     }}>

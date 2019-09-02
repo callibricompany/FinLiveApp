@@ -80,6 +80,12 @@ export class FLAirbagDetail extends Component{
                                 onPress={() => console.log()}
                                 labelStyle={{fontSize: 16, fontFamily : FLFontFamily, color: 'black', marginTop: 10}}
                                 labelWrapStyle={{}}
+                                onPress={(itemValue) =>{
+                                  //console.log(i +"-ITEM VALUE : "+itemValue);
+                                  this.setState({ currentChoice : this.airbag[i].value}, () => {
+                                    this.props.updateValue("airbagLevel", this.airbag[i].value, this.airbag[i].label);
+                                  });
+                                }}
                               />
                               </RadioButton>
                             );

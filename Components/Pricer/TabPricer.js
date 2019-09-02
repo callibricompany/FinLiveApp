@@ -48,10 +48,10 @@ import { FLDegressiveDetail } from './description/FLDegressiveDetail';
 import { SNAP_POINTS_FROM_TOP } from '../commons/FLBottomPanel';
 import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
-import FREQUENCYLIST from '../../Data/frequencyList.json'
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
 import * as TICKET_TYPE from '../../constants/ticket'
+import { isNull } from 'util';
 
 
 
@@ -103,6 +103,10 @@ class TabPricer extends React.PureComponent {
         this.product[id].valueLabel = valueLabel;
         //mise a jour de produit dans pricerScreen
         this.props.parameterProductUpdated(this.product);
+        
+        /*if (Array.isArray(value)  &&  value.length === 0) {
+          this._activateParameter(false);
+        }*/
 
         //on indique qu'un refresh est necesssire
         this.props.needToRefresh();
@@ -145,25 +149,27 @@ class TabPricer extends React.PureComponent {
       //console.log("item : " +id)
       let col1 = id % 3 === 0 ? '1er col' : (id-2) % 3 === 0 ? '3eme col' : '';
 
+      //evalue le nombre de sous-jacents selectionné pour le pricing
+      //pour calculer la hauteur de la tuile et decaler ainsi les autres 
+      let nbUnderlyings = this.product['underlying'].value.length;
+      let shift = 15 * Math.max(0, nbUnderlyings - 4)
+      let hShift = id === 2 ?  shift : 0;
+      let marginShift = (id > 2 && (id%3 === 0 || (id-1)%3 === 0)) ? -shift : 0;
+      //console.log(col1 +" BN UNDERLYING : " + nbUnderlyings + "  margin : " + marginShift + "   id : "+id );
 
-      let title = '';
+    
       let valueLabel = this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated ? this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].valueLabel : this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].defaultValueLabel;
-      let help = '';
+  
       let isActivated = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated;
       let isMandatory = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isMandatory;
       
-      switch (id) {
-          case 0 : //choix du produit
 
-            break;
-          default : break;
-      }
       return (
-        <View style={{flexDirection: 'column',height: (DEVICE_WIDTH*0.925-20)/3, width: (DEVICE_WIDTH*0.925-20)/3, marginLeft : id % 3 === 0 ? 0 : 5,  marginRight : (id -2) % 3 === 0 ? 0 : 5, marginBottom: 5, marginTop : 5,
+        <View style={{flexDirection: 'column',height: (DEVICE_WIDTH*0.925-20)/3 +hShift, width: (DEVICE_WIDTH*0.925-20)/3, marginLeft : id % 3 === 0 ? 0 : 5,  marginRight : (id -2) % 3 === 0 ? 0 : 5, marginBottom: 5, marginTop : marginShift,
                       backgroundColor: isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue'
                     }}
         >
-          <View style={{height: (DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, padding: 2, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}>
+          <View style={{height: 35, borderBottomWidth : 1, borderBottomColor : selectElementTab, padding: 2, justifyContent: 'center', alignItems: 'center',flexGrow: 1}}>
              <Text style={{fontFamily: FLFontFamily, fontWeight: '600', fontSize: 12, color: 'white', textAlign: 'center'}}>
                 {PARAMETERSSTRUCTUREDPRODUCT[id].title.toUpperCase()}
              </Text>
@@ -208,10 +214,10 @@ class TabPricer extends React.PureComponent {
 
               
             }} 
-            style={{height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, paddingTop: 3, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}
+            style={{height: hShift + 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, paddingTop: 7, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}
           >
-             <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: 'white', textAlign: 'center'}}>
-              {valueLabel.toUpperCase()}
+             <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: 'white', textAlign: 'center'}}>
+              {valueLabel}
             </Text>
             {PARAMETERSSTRUCTUREDPRODUCT[id].name === 'barrierPDI'? <Text style={{marginTop: 25, fontFamily: FLFontFamily, fontWeight: '300', fontSize: 10, color: 'midnightblue', textAlign: 'center'}}>Barrière européenne</Text> : null}
           </TouchableOpacity>

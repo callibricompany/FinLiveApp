@@ -44,25 +44,38 @@ export default class SearchBarHome extends Component {
     super(props);
 
 
+    //recuperation du nom de l'organisation
+    this.orgName = this.props.userOrg.hasOwnProperty('name') ? this.props.userOrg.name : '[ORG]';
 
     //rajout des favoris et de l'organisation 
     this.categories = JSON.parse(JSON.stringify(this.props.categories));
     let obj = {};
     obj["active"] = true;
     obj["categoryName"] = "Favoris";
-    obj["codeCategory"] = "PS";
+    obj["codeCategory"] = "PSFAVORITES";
     obj["subCategory"] = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
     this.categories.push(obj);
     obj = {};
     obj["active"] = true;
-    obj["categoryName"] = "Institut du Patrimoine";
-    obj["codeCategory"] = "PS";
+    obj["categoryName"] = this.orgName;
+    obj["codeCategory"] = "PSORG";
     obj["subCategory"] = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
     this.categories.push(obj);   
-   
-  
+
+    //on ajoute egalement une sous categorie TOUS a PS
+    let objSousCat = {};
+    objSousCat["subCategoryHead"] = true;
+    objSousCat["subCategoryName"] = "TOUS";
+    objSousCat["codeSubCategory"] = "PS";
+    
     //on selectionne les produits structures par defaut 
     let selectedCategory = this.categories.filter(({codeCategory}) => codeCategory === 'PS')[0];  
+
+    //on ajoute la categorie TOUS au début des sous-categories
+    selectedCategory.subCategory.unshift(objSousCat);
+    (this.categories.filter(({codeCategory}) => codeCategory === 'PSFAVORITES')[0]).subCategory.unshift(objSousCat);
+    
+
 
     this.state = {
       //font 
@@ -195,9 +208,20 @@ export default class SearchBarHome extends Component {
                           //verifie si la categorie est activee
                           if (value.active) {
                               //console.log(this.categories.filter(({codeCategory}) => codeCategory === value.codeCategory)[0].subCategory[0]);
+                              let filter = value.codeCategory;
+                  
+                              if (value.codeCategory === "PSFAVORITES"){
+                                
+                                filter = "PS";
+                             
+                              }
+                              if (this.orgName === value.codeCategory){
+                                filter = "PS";
+                               
+                              }
                               this.setState({
                                 selectedCategory : value, 
-                                selectedSubCategory : this.categories.filter(({codeCategory}) => codeCategory === value.codeCategory)[0].subCategory[0],
+                                selectedSubCategory : this.categories.filter(({codeCategory}) => codeCategory === filter)[0].subCategory[0],
                                 showModalCategory : false
                               }, () => {
     
@@ -301,7 +325,7 @@ export default class SearchBarHome extends Component {
                                                   alignItems: 'center',
                                                   //borderBottomWidth: 1,
                                                   }}>
-                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategory === subValue ? selectElementTab :subValue.subCategoryHead ? 'gainsboro' : subValue.groupingHead ? 'lavender' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth :subValue.subCategoryHead ? 1 : 1, borderBottomColor : 'gainsboro'}}>
+                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategory === subValue ? selectElementTab :subValue.subCategoryHead ? subValue.codeSubCategory === "PS" ? 'darkgray' : 'gainsboro' : subValue.groupingHead ? 'lavender' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth :subValue.subCategoryHead ? 1 : 1, borderBottomColor : 'gainsboro'}}>
                                     <View style={{flex:1, 
                                                   //alignItems: subValue.type === 'SubCategory' ? 'flex-start' : 'center', 
                                                   alignItems: 'flex-start', 
@@ -404,7 +428,7 @@ export default class SearchBarHome extends Component {
                           <TouchableOpacity onPress={() => {
                                        //this.setState ({ showModalTitle : !this.state.showModalTitle });
                                        //console.log("SCROLL Y : "+ JSON.stringify(animation.scrollY));
-
+                                       
                                        this.props.changeMarginSearch(0);
                                         Animated.parallel([
                                           Animated.timing(
@@ -430,9 +454,12 @@ export default class SearchBarHome extends Component {
                                               this.setState ({ showModalTitle : !this.state.showModalTitle });
                                               this.props.manageVisibilityTabBar(false);
                                         });
+
                                         if (this.inputSearch !== null && this.inputSearch !== undefined) {
                                           this.inputSearch.blur();
                                         }
+                                        this.searchText = '';
+                                        this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, '');
                               }}>  
                                 <MaterialIcons
                                       name='arrow-back' 

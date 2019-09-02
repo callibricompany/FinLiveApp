@@ -1,3 +1,6 @@
+const Spline = require('cubic-spline');
+
+
 export function maturityToDate(mat){
     let y = mat.substring(0,mat.length-1);
     return new Date(Date.now() + y * 365.25 * 86400 * 1000);
@@ -79,3 +82,4 @@ export function calculateBestCoupon(structuredProduct, df, UF){
         var lr = linearRegression(serieCoupon.toArray(), seriePrices.toArray());
         return lr.intercept;
 }
+

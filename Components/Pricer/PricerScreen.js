@@ -41,19 +41,20 @@ import { compose, hoistStatics } from 'recompose';
 import { FLBadge } from '../commons/FLBadge'
 import botImage from '../../assets/bot.png'
 
+import { searchProducts } from '../../API/APIAWS';
 
 import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
-import FREQUENCYLIST from '../../Data/frequencyList.json'
+
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
 import Dimensions from 'Dimensions';
 
 
 import PRICES from '../../Data/20190517.json';
+import FREQUENCYLIST from '../../Data/frequencyList.json'
 
-
-
+const Spline = require('cubic-spline');
 const dataForge = require('data-forge');
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -106,10 +107,10 @@ class PricerScreen extends React.Component {
       },
       'underlying': {
         'value': ['CAC','SX5E'],
-        'valueLabel': 'CAC 40',
+        'valueLabel': 'CAC 40\nEurostoxx 50',
         'defaultValueLabel': 'Peu importe',
         'title': 'SOUS-JACENT',
-        'isActivated': false,
+        'isActivated': true,
         'isMandatory': false,
       },
       'maturity': {
@@ -210,14 +211,190 @@ class PricerScreen extends React.Component {
   }
 
   async calculateProducts() {
+    console.log([...new Set(PRICES.map(x => x.maturity))]);
     this.setState({ isLoading : true });
+
+    //chagrgement des prix depuis le serveur
+    /*let criteria ={};
+    criteria['underlying'] = ["CAC","SX5E"];
+    criteria['maturity'] = ["3Y","5Y","8Y"];
+    this.props.firebase.doGetIdToken()
+    .then(token => {
+      console.log("REPONSE ID TOKEN"+token);
+
+
+      searchProducts(token, criteria)
+      .then((data) => {
+        //console.log("USER CREE AVEC SUCCES DANS ZOHO");
+        
+        //console.log(data);
+        //this.onRegisterSuccess();
+      })
+      .catch(error => {
+        console.log("ERREUR recup prix: " + error);
+        alert('ERREUR recupération prix', '' + error);
+      }) 
+    });*/
+
+
     //chargement des meilleurs prix
-    let allPricesDF = dataForge.fromJSON(JSON.stringify(PRICES));
+    var allPricesDF = dataForge.fromJSON(JSON.stringify(PRICES));
     let underlyingsList = [];
     let structuredProductsList = [];
- 
+    var df = new dataForge.DataFrame(allPricesDF);
+
+    console.log("Taille départ : " +df.toRows().length);
+
     //retrouve tous les sous jacents distincts
-    const distinctUnderlyings = allPricesDF.getSeries('underlying').distinct();
+    if (this.product.underlying.isActivated) {
+        df= df.where((row) => this.product.underlying.value.includes(row.underlying));
+    }
+
+    
+    //on filtre les produits
+    df= this.product.type.isActivated ? df.where(row => row.product === this.product.type.value) : df;
+
+   
+
+ 
+    /**  on a la data-frame filtré au maximum, il faut avoir le meilleur prix
+     pour chaque sous-jacent et pour chaque produit
+     on va retenir :
+            - sans effet airbag
+            - sans degressivite
+            - une frequence la plus faible
+            - une periode sans rappel la plus elevée
+            - PDI US ou EU : PDI EU
+            - isMemory : non
+            - la barrirer de protection la plus eleve --> si nombre saisi par user on interpolera
+            - la protection des coupons la plus haute --> si nombre saisi par user on interpolera
+
+
+      on va interpoler les maturités demandées
+      on va appliquer les UF + notre marge + un bump trading
+      on va sortir le max et les neufs suivants
+    */
+
+    //AIRBAG
+    if (this.product.airbagLevel.isActivated) {
+      switch (this.product.airbagLevel.value) {
+        case 'NA' : //pas d'airbag
+          df= df.where((row) => row.airbagLevel === 1);
+          break;
+        case 'SA' : //semi-airbag
+          df= df.where((row) => row.airbagLevel === (1 +row.barrierPDI)/2);
+          break;
+        case 'FA' : // fullairbag
+          df= df.where((row) => row.airbagLevel === row.barrierPDI);
+          break;
+        default : 
+          break;
+      }
+    } else { //on ne garde que les sans airbag
+        df= df.where((row) => row.airbagLevel === 1);
+    }
+
+    //DEGRESSIVITE ......
+
+    //FREQUENCE
+    if (this.product.freq.isActivated) {
+      df= df.where((row) => row.freqAutocall === this.product.freq.value);
+    } else { //on prend la plus faible parmis les dispos
+      let f = [...new Set(PRICES.map(x => x.freqAutocall))];
+      freqArray = FREQUENCYLIST.filter(({id}) => f.includes(id));
+      freqMin = Math.min(...freqArray.map((x) => x.freq));
+      freq = freqArray.filter(id => id.freq === freqMin)[0];
+      df= df.where((row) => row.freqAutocall ===freq.id);
+    }
+    
+    //PERIODE SANS RAPPEL ......
+
+    //PDI US ou EU ......
+
+    //IS MEMORY......
+
+    console.log("Taille apres 1ers filtres : " +df.toRows().length);
+
+    //PDI
+    if (this.product.barrierPDI.isActivated) {
+      //il faut interpoler et distinguer tous 
+      let distinctProducts = df.getSeries('product').distinct();
+      let distinctUnderlyings = df.getSeries('underlying').distinct();
+      let distinctMaturities = df.getSeries('maturity').distinct();
+      let distinctBarrierPhoenix = df.getSeries('barrierPhoenix').distinct();
+      let distinctFreqAutocall = df.getSeries('freqAutocall').distinct();
+      let distinctFreqPhoenix = df.getSeries('freqPhoenix').distinct();
+      let distinctAirbagLevel = df.getSeries('airbagLevel').distinct();
+      let distinctDegressiveStep = df.getSeries('degressiveStep').distinct();
+      let distinctCoupon = df.getSeries('coupon').distinct();
+      //coupon
+      //isIncremental
+      //noCallNbPeriod
+      //isPDIUS
+      //isMemory
+
+      let dfToAdd = new dataForge.DataFrame();
+      //[...new Set(PRICES.map(x => x.maturity))].forEach((mat) => {
+      distinctMaturities.forEach((mat) => {
+        d = new dataForge.DataFrame(df);
+        d = d.dropSeries(['code','currency','strike','strikeDate', 'finalDate','startDate','endDate','swapPrice','levelAutocall','spreadAutocall','spreadPDI','gearingPDI','spreadBarrier','Vega', 'couponAutocall','couponPhoenix']);
+        d1 = d.where((row) => row.maturity === mat);
+        distinctProducts.forEach((prod) => {
+          d2 = d1.where((row) => row.product === prod);
+          distinctUnderlyings.forEach((udl) => {
+            d3 = d2.where((row) => row.underlying === udl);
+            distinctBarrierPhoenix.forEach((bPh) => {
+              d4 = d3.where((row) => row.barrierPhoenix === bPh);
+              distinctFreqAutocall.forEach((freqAut) => {
+                d5 = d4.where((row) => row.freqAutocall === freqAut);
+                distinctFreqPhoenix.forEach((freqPh) => {
+                  d6 = d5.where((row) => row.freqPhoenix === freqPh);
+                  distinctAirbagLevel.forEach((abgLavel) => {
+                    d7 = d6.where((row) => row.airbagLevel === abgLavel);
+                    distinctDegressiveStep.forEach((ds) => {
+                      d8 = d7.where((row) => row.degressiveStep === ds);
+                      distinctCoupon.forEach((cpn) => {
+                        //calcul du prix a cette barriere
+                        d9 = d8.where((row) => row.coupon === cpn);
+                        if (d9.toRows().length !== 0) {
+                          //interpolation
+                          xs = d9.getSeries('barrierPDI').distinct().toArray();
+                          ys = d9.getSeries('Price').distinct().toArray();
+                          
+                          splinePDIBarrier = new Spline(xs, ys);
+                          
+                          console.log("barrierPDI @ "+ this.product.barrierPDI.value +" : "+splinePDIBarrier.at(this.product.barrierPDI.value));
+                          console.log("Apres reduction : " + d9.toRows().length);
+                          console.log(d9.toString());
+                          d10 = d9.head(1);
+                          d10 = d10.transformSeries({
+                            barrierPDI: value => this.product.barrierPDI.value,
+                            Price: value =>splinePDIBarrier.at(this.product.barrierPDI.value)
+                          });
+                          dfToAdd = dfToAdd.concat(d10);
+                          console.log(d9.head(1).toString()); 
+                          console.log(d10.head(1).toString()); 
+                        }
+                      })
+                    })
+                  })
+                })
+              })
+            })
+          })
+        })
+        
+      })
+      console.log(dfToAdd.toString());
+    } else { //pas d'instruction : on prend le max
+      //on prend le min dispo
+      let pdi = [...new Set(PRICES.map(x => x.barrierPDI))];
+      pdiMax = Math.max(...pdi);
+      
+      df= df.where((row) => row.barrierPDI === pdiMax);
+    }
+
+    /*const distinctUnderlyings = df.getSeries('underlying').distinct();
     distinctUnderlyings.forEach(value => {
       let obj = UNDERLYINGS.filter(({ticker}) => ticker === value);
       underlyingsList.push(obj);
@@ -262,7 +439,7 @@ class PricerScreen extends React.Component {
      /*df = df.generateSeries({
       SomeNewColumn: row => 'bonjour'
      });*/
-     this.bestProducts = df.toArray();  
+     this.bestProducts = df.head(10).toArray();  
      //console.log(this.bestProducts[0]);
      //await setTimeout(() => {
       this.setState({ isLoading : false, needToRefresh : false});

@@ -26,7 +26,7 @@ export class FLPDIDetail extends Component{
     _getProtectionTitle=() => {
 
 
-      return Numeral(this.state.barrier - 1).format('0%');
+      ;
 
     }
 
@@ -59,7 +59,7 @@ export class FLPDIDetail extends Component{
                         />
                 </View>
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 40}}>
-                  <Text style={{fontSize: 11, fontWeight: '400', fontFamily : FLFontFamily}}>{Numeral(this.state.barrier).format('0%')} du capital protégé jusqu'à {this._getProtectionTitle()} de baisse du marché</Text> 
+                  <Text style={{fontSize: 11, fontWeight: '400', fontFamily : FLFontFamily}}>100% du capital protégé jusqu'à une baisse de {Numeral(1 - this.state.barrier).format('0%')} du sous-jacent</Text> 
                 </View>
             </View>
         );

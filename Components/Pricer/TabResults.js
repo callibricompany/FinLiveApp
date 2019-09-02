@@ -37,7 +37,6 @@ import FLTicket from '../commons/FLTicket'
 
 import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
-import FREQUENCYLIST from '../../Data/frequencyList.json'
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
 import * as TICKET_TYPE from '../../constants/ticket'
@@ -67,9 +66,11 @@ class TabResults extends React.PureComponent {
     }
     
     _renderPrice = (item , id) => {
-      console.log('id : ' +id);
+      //console.log('id : ' +id);
       return (
-          <FLTicket id={id} item={item} ticketType={TICKET_TYPE.STURCTUREDPRODUCT_CREATION} isGoodToShow={this.state.isGoodToShow}/>
+  
+      <FLTicket id={id} item={item} ticketType={TICKET_TYPE.PSCREATION} isGoodToShow={this.state.isGoodToShow}/>
+      
       );
     }
 

@@ -1,5 +1,6 @@
-export const STURCTUREDPRODUCT_CREATION = 'STURCTURED PRODUCT CREATION';
-export const STURCTUREDPRODUCT_STATE = 'STURCTURED PRODUCT STATE';
+export const LIST = 'PSLIST';
 export const IMMO = 'IMMOBILER';
-export const BROADCAST = 'BROADCAST';
+export const BROADCAST = 'PSBROADCAST';
+export const APE = 'PSAPE';
+export const PSCREATION = 'PSCREATION';
 

@@ -189,6 +189,46 @@ export function getUserAllInfo (idToken) {
       });
     });
 }
+
+
+export function searchProducts (idToken, criteria) {
+
+  var FormData = require('form-data');
+  var form = new FormData();
+
+  Object.keys(criteria).forEach(key => {
+    console.log(key + "   -   " + criteria[key]);
+    form.append(key, criteria[key]);
+  });
+  
+
+  var axiosConfig = {
+    headers :{
+      //'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json; charset=utf-8',
+      //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+      'Accept'      : 'application/json',
+      'bearer'      : idToken,
+      //'type'        : 'Produit structuré'
+    }
+  };
+
+
+  return new Promise(
+    (resolve, reject) => {
+      axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
+      .then((response) => {
+        console.log("Succes demande prix : " + response.data);
+        resolve(response)
+        //res.render('pages/register',{email: email, isConnected: isConnected});
+      })
+      .catch(function (error) {
+        console.log("Erreur requete prix aws : " + error);
+        reject(error)
+      });
+    });
+  }
+
   
 
 

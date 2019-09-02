@@ -85,6 +85,7 @@ const initialLayout = {
       //console.log(CATEGORIES);
       await this.props.getUserAllInfo();
 
+      //console.log(this.props.homePage[0]);
       //creation de l aliste des categories 
       //console.log("Passage homescrrenn");
       //console.log(this.props.allInfo.categories);
@@ -111,21 +112,23 @@ const initialLayout = {
 
     
 
-
+    //le user veut filtrer --> on va renvoyer à HOC un objet filtre
     _filterUpdated(category, subCategory, filterText='') {
-
-      //let subCatName = this.props.underlyings.filter(({ticker}) => ticker === subCategory);
-
-
       
-      console.log("CATEGORY : " + category);
-      console.log("SUB-CATEGORY : " + subCategory);
-      console.log("FILTER TEXT : " + filterText);
-      //this.setState({searchTextForNews : filterText === '' ? subCatName : filterText});
+      let filters = {};
+      filters["category"] = category.codeCategory;
+      filters["subcategory"] = subCategory;
+      filters["filterText"] = filterText;
 
+
+      //this.setState({searchTextForNews : filterText === '' ? subCatName : filterText});
+      console.log (JSON.stringify(filters));
+      this.props.setFiltersHomePage(filters);
+
+      //test pour supprimer le menu du bas
       if (filterText === 'Test'){
         //console.log("C est bien un test : " + JSON.stringify(this.props.navigation));
-        this.props.navigation.setParams({ hideBottomTabBar : true});
+        //this.props.navigation.setParams({ hideBottomTabBar : true});
       }
     }
 
@@ -133,6 +136,7 @@ const initialLayout = {
       <SearchBarHome
         animation={animation}
         categories={this.props.allInfo.categories}
+        userOrg={this.props.userOrg}
 
         changeMarginSearch={(marginSearch) => {
           //console.log("SCROLL Y HomeScreen : "+marginSearch);

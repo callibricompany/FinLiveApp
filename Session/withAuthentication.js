@@ -21,6 +21,14 @@ const withAuthentication = Component => {
         //chargé au départ
         allInfo : [],
         getUserAllInfo : () => this.getUserAllInfo(),
+
+        //la homepage
+        homePage : [],
+        userOrg : [],
+
+        //les filtres a appliquer sur la home page
+        filtersHomePage : [],
+        setFiltersHomePage : (filters) => this.setFiltersHomePage(filters),
       };
 
       
@@ -30,6 +38,7 @@ const withAuthentication = Component => {
 
     componentDidMount() {
       console.log("didMount Authentication lancement");
+      
       this.listener = this.props.firebase.onAuthUserListener(
         authUser => {
           console.log("didMount Authentication ok");
@@ -41,8 +50,13 @@ const withAuthentication = Component => {
           //this.listener();
         },
       );
+    }
 
 
+    //enregistre les filtres 
+    setFiltersHomePage (filters) {
+      
+      this.setState({ filtersHomePage : filters});
     }
 
     //chargement des donnees de départ deopuis le serveur
@@ -55,13 +69,16 @@ const withAuthentication = Component => {
               .then((userDatas) => {
                 //console.log("reception : " + JSON.stringify(userDatas.categories));
                 //console.log("Passage de withAuth");
-                this.setState({ allInfo: userDatas });
+                this.setState({ allInfo: userDatas, 
+                                homePage : JSON.parse(JSON.stringify(userDatas.homePage)),
+                                userOrg : userDatas.userOrg});
+                
                 resolve("ok");
     
               })
               .catch(error => {
                 //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
-                alert('ERREUR TOKEN USER FIREBASE : ', '' + error);
+                alert('ERREUR CONNEXION AU SERVEUR : ', '' + error);
                 reject(error);
               }) 
             }
@@ -106,6 +123,7 @@ const withAuthentication = Component => {
 
     componentWillUnmount() {
       console.log("withAUTHENTICATION : Appel this.listener() ");
+
       this.ticketListener();
       this.listener();
     }
