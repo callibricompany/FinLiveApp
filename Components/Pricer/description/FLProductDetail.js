@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 import { Icon } from 'native-base';
 import Carousel from 'react-native-snap-carousel';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 import STRUCTUREDPRODUCTS from '../../../Data/structuredProducts.json';
 
@@ -18,18 +19,27 @@ export class FLProductDetail extends Component{
         super(props);
 
         this.state = { 
-            currentProductIndex : STRUCTUREDPRODUCTS.findIndex(obj => obj.id == this.props.initialValue),
-            toto: true,
+            currentChoice : STRUCTUREDPRODUCTS.findIndex(obj => obj.id == this.props.initialValue),
+
         }
         
+        this.productType = [];
+        let obj = {};
+        //remplissage type demande
+        STRUCTUREDPRODUCTS.map((product, i ) => {
+            obj = {};
+            obj["value"] = product.id;
+            obj["label"] = product.name;
+            this.productType.push(obj);
+
+        })
     }
 
    componentDidMount () {
 
         //on va sur la valeur du carousel par defaut
-        this.refs['carousel'].snapToItem(this.state.currentProductIndex);
-        
-        this.setState({ toto : !this.state.toto });
+        //this.refs['carousel'].snapToItem(this.state.currentProductIndex);
+
    }
     _displayProductList = ({ item }) => {
 	    return (
@@ -41,7 +51,54 @@ export class FLProductDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', alignItems: 'center', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+                    
+                    <RadioForm
+                          formHorizontal={false}
+                          animation={true}
+                        >
+                          {this.productType.map((type, i) => {
+
+
+                          return (
+                            <RadioButton labelHorizontal={true} key={i} >
+              
+                              <RadioButtonInput
+                                obj={type}
+                                index={i}
+                                isSelected={this.state.currentChoice === type.value}
+                                onPress={(itemValue) =>{
+                                  //console.log(i +"-ITEM VALUE : "+itemValue);
+                                  this.setState({ currentChoice : this.productType[i].value}, () => {
+                                    this.props.updateValue("type", this.productType[i].value, this.productType[i].label);});
+                                }}
+                                borderWidth={1}
+                                buttonSize={12}
+                                buttonOuterSize={20}
+                                buttonStyle={{marginTop : 10}}
+                                //buttonWrapStyle={{marginLeft: 10}}
+                              />
+                              <RadioButtonLabel
+                                obj={type}
+                                index={i}
+                                labelHorizontal={true}
+                                onPress={() => console.log()}
+                                labelStyle={{fontSize: 16, fontFamily : FLFontFamily, color: 'black', marginTop: 10}}
+                                labelWrapStyle={{}}
+
+                              />
+                              </RadioButton>
+                            );
+                          })}                  
+                    </RadioForm> 
+            </View>
+        );
+    }
+
+
+}
+
+/*
                 <View style={{alignItems:'center'}}>
 
                     <Icon name="md-arrow-dropdown"  style={{marginTop: 15, color : "#85B3D3"}}/>
@@ -68,9 +125,4 @@ export class FLProductDetail extends Component{
                         {STRUCTUREDPRODUCTS[this.state.currentProductIndex].comments}
                     </Text>
                 </View>
-            </View>
-        );
-    }
-
-
-}
+*/

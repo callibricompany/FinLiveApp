@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#9A9A9A',
     height: MARGIN,
-    borderRadius: 20,
+    borderRadius: 2,
     zIndex: 100,
   },
   circle: {

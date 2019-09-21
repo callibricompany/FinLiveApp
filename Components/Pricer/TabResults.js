@@ -33,13 +33,13 @@ import {  globalSyle,
   FLFontFamilyBold
 } from '../../Styles/globalStyle';
 
-import FLTicket from '../commons/FLTicket'
+import FLTemplate from '../commons/FLTemplate'
 
 import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
-import * as TICKET_TYPE from '../../constants/ticket'
+import * as TEMPLATE_TYPE from '../../constants/template'
 
 
 
@@ -69,7 +69,7 @@ class TabResults extends React.PureComponent {
       //console.log('id : ' +id);
       return (
   
-      <FLTicket id={id} item={item} ticketType={TICKET_TYPE.PSCREATION} isGoodToShow={this.state.isGoodToShow}/>
+      <FLTemplate id={id} item={item} templateType={TEMPLATE_TYPE.LIST} isGoodToShow={this.state.isGoodToShow}/>
       
       );
     }
@@ -97,10 +97,16 @@ class TabResults extends React.PureComponent {
                       this._renderPrice(item, id)    
               
                     )}
+                    ListFooterComponent={() => {
+                      return (
+                        <View style={{height : 150}}>
+                          <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
+                        </View>
+                      );
+                    }}
                   />
               </View>
-              <View style={{height: 150}}>
-              </View>
+        
           </ScrollView>
 
       );

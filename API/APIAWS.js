@@ -165,7 +165,7 @@ export function ssCreateStructuredProduct (idToken, product) {
     });
   }
 
-export function getUserAllInfo (idToken) {
+export function getUserAllInfoAPI (idToken) {
   var axiosConfig = {
     headers :{
       //'Content-Type': 'application/x-www-form-urlencoded',
@@ -190,6 +190,57 @@ export function getUserAllInfo (idToken) {
     });
 }
 
+export function getUserFavorites (idToken) {
+  var axiosConfig = {
+    headers :{
+      //'Content-Type': 'application/x-www-form-urlencoded',
+      //'Content-Type': 'application/json; charset=utf-8',
+      //'Accept'      : 'application/json',
+      'bearer'      : idToken
+    }
+  };
+  
+  return new Promise(
+    (resolve, reject) => {
+      axios.get(URL_AWS + '/getUserFavorites', axiosConfig)
+      .then((response) => {
+        //console.log("Succes : " + JSON.stringify(response["data"]));
+        resolve(response.data);
+        //res.render('pages/register',{email: email, isConnected: isConnected});
+      })
+      .catch(function (error) {
+        console.log("Erreur requete aws : " + error);
+        reject(error)
+      });
+    });
+}
+
+export function setFavoriteAPI (idToken, obj) {
+
+
+  var axiosConfig = {
+    headers :{
+      //'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json; charset=utf-8',
+      //'Accept'      : 'application/json',
+      'bearer'      : idToken
+    }
+  };
+  
+  return new Promise(
+    (resolve, reject) => {
+      axios.post(URL_AWS + '/switchfavorite', obj, axiosConfig)
+      .then((response) => {
+        console.log("Succes : " + JSON.stringify(response["data"]));
+        resolve(response.data);
+        //res.render('pages/register',{email: email, isConnected: isConnected});
+      })
+      .catch(function (error) {
+        console.log("Erreur requete aws : " + error);
+        reject(error)
+      });
+    });
+}
 
 export function searchProducts (idToken, criteria) {
 
@@ -218,8 +269,8 @@ export function searchProducts (idToken, criteria) {
     (resolve, reject) => {
       axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
       .then((response) => {
-        console.log("Succes demande prix : " + response.data);
-        resolve(response)
+        console.log("Succes demande prix : " + response.data.length);
+        resolve(response.data)
         //res.render('pages/register',{email: email, isConnected: isConnected});
       })
       .catch(function (error) {

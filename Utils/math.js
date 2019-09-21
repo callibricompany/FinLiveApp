@@ -2,8 +2,13 @@ const Spline = require('cubic-spline');
 
 
 export function maturityToDate(mat){
-    let y = mat.substring(0,mat.length-1);
-    return new Date(Date.now() + y * 365.25 * 86400 * 1000);
+    //check if 18M
+    if (mat.substring(mat.length-1, mat.length) === 'M'){
+      let months = mat.substring(0,mat.length-1);
+      return new Date(Date.now() + months * 365.25 * 86400 * 1000/12);
+    }
+    let years = mat.substring(0,mat.length-1);
+    return new Date(Date.now() + years * 365.25 * 86400 * 1000);
 
 }
 
@@ -44,42 +49,115 @@ export function linearRegression(y,x){
     return lr;
 }
 
+export function getJSONFromCode(code, date) {
 
-export function calculateBestCoupon(structuredProduct, df, UF){
-        //console.log(structuredProduct);
-
-        filteredDf = df.where(row => row.underlying === structuredProduct[0].underlying);
-        filteredDf = filteredDf.where(row => row.maturity === structuredProduct[0].maturity);
-        filteredDf = filteredDf.where(row => row.currency === structuredProduct[0].currency);
-        filteredDf = filteredDf.where(row => row.strike === structuredProduct[0].strike);
-        filteredDf = filteredDf.where(row => row.levelAutocall === structuredProduct[0].levelAutocall);
-        filteredDf = filteredDf.where(row => row.isIncremental === structuredProduct[0].isIncremental);
-        filteredDf = filteredDf.where(row => row.freqAutocall === structuredProduct[0].freqAutocall);
-        filteredDf = filteredDf.where(row => row.degressiveStep === structuredProduct[0].degressiveStep);
-        filteredDf = filteredDf.where(row => row.noCallNbPeriod === structuredProduct[0].noCallNbPeriod);
-        filteredDf = filteredDf.where(row => row.airbagLevel === structuredProduct[0].airbagLevel);
-        filteredDf = filteredDf.where(row => row.barrierPDI === structuredProduct[0].barrierPDI);
-        filteredDf = filteredDf.where(row => row.isPDIUS === structuredProduct[0].isPDIUS);
-        filteredDf = filteredDf.where(row => row.gearingPDI === structuredProduct[0].gearingPDI);
-        filteredDf = filteredDf.where(row => row.freqPhoenix === structuredProduct[0].freqPhoenix);
-        filteredDf = filteredDf.where(row => row.isMemory === structuredProduct[0].isMemory);
- 
-        //on applique le filtre UF
-        filteredDf = filteredDf.transformSeries({
-            Price: value => value + UF
-          });
+    var obj = {};
+    
+    
+    obj ['code'] = code
+    obj ['price'] = 0;
+    obj ['vega'] = 0;
+    obj['date'] = date;
 
 
-        //on recupere 2 series : les prix et les coupons
-        seriePrices = filteredDf.getSeries('Price');
-        serieCoupon = filteredDf.getSeries('coupon');
-
-        //on regresse
-        console.log(seriePrices.toArray());
-        console.log(serieCoupon.toArray());
-
-
-        var lr = linearRegression(serieCoupon.toArray(), seriePrices.toArray());
-        return lr.intercept;
+    var parameters = currentline[0].split('_');
+    
+    for(var j=0; j < parameters.length; j++){
+        let value = parameters[j].split(':');
+        switch (value[0]) {
+            case 'U' :
+                value[0] = 'underlying';
+                break;
+            case 'M' :
+                value[0] = 'maturity';
+                break;
+            case 'CU' :
+                value[0] = 'currency';
+                break;
+            case 'S' :
+                value[0] = 'strike';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'LA' :
+                value[0] = 'levelAutocall';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'CA' :
+                value[0] = 'couponAutocall';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'II' :
+                value[0] = 'isIncremental';
+                (value[1].toLowerCase() === 'true' || value[1].toLocaleUpperCase() === 'true') ? value[1] = true : value[1] = false;
+                break;
+            case 'FA' :
+                value[0] = 'freqAutocall';
+                break;
+            case 'DS' :
+                value[0] = 'degressiveStep';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'NNCP' :
+                value[0] = 'noCallNbPeriod';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'AL' :
+                value[0] = 'airbagLevel';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'BPDI' :
+                value[0] = 'barrierPDI';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'PDIUS' :
+                value[0] = 'isPDIUS';
+                value[1].toLowerCase() === 'true' || value[1].toLocaleUpperCase() === 'true' ? value[1] = true : value[1] = false;
+                break;
+            case 'GPDI' :
+                value[0] = 'gearingPDI';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'CP' :
+                value[0] = 'couponPhoenix';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'FP' :
+                value[0] = 'freqPhoenix';
+                break;
+            case 'CB' :
+                value[0] = 'barrierPhoenix';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            case 'IM' :
+                value[0] = 'isMemory';
+                (value[1].toLowerCase() === 'true' || value[1].toLocaleUpperCase() === 'true') ? value[1] = true : value[1] = false;
+                break;
+            case 'C' :
+                value[0] = 'coupon';
+                value[1] = Number(value[1].replace(',','.'));
+                break;
+            default : break;
+        }
+        obj[value[0]] = value[1];
+    }
+    // determination du nom du produit
+    if (obj['barrierPhoenix'] !== 1) { //phoenix
+            obj['isMemory'] ? obj['product'] = 'memoryPhoenix' : obj['product'] = 'classicPhoenix';
+    } else { //c'est un autocall
+            obj['isIncremental'] ?  
+                                    (obj['airbagLevel'] === obj['barrierPDI'] || obj['airbagLevel'] === (1 + obj['barrierPDI'])/2) ?  obj['product'] = 'airbagAutocall'
+                                                                              :  obj['product'] = 'incrementalAutocall'
+                                  : obj['product'] = 'classicAutocall';
+    }
+    return obj;
 }
+/*Object {
+
+  "category": "PSACTIONS",
+  "code": "U:FP FP_M:8Y_CU:EUR_S:1_LA:1_CA:0_II:FALSE_FA:1Y_DS:0_NNCP:1_AL:1_BPDI:0.4_PDIUS:FALSE_GPDI:-1_CP:0.102_FP:1Y_CB:0.5_IM:TRUE_C:0.102",
+  "sector": "Energie",
+  "underlyingName": "Total",
+ 
+}*/
+
 

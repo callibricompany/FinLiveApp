@@ -29,10 +29,12 @@ export class FLUnderlyingDetail extends React.Component{
         let typeUnderlying = [...new Set(this.underlyings.map(x => x.codeSubCategory))];
         this.typeUnderlying = [];
         typeUnderlying.forEach((value) => {
-            let obj = {};
-            obj["value"] = value;
-            obj["label"] = value.substring(2, value.length);
-            this.typeUnderlying.push(obj);
+            if (value !== "PS") {
+                let obj = {};
+                obj["value"] = value;
+                obj["label"] = value.substring(2, value.length);
+                this.typeUnderlying.push(obj);
+            }
         });
        
         //construction de la liste des secteurs
@@ -85,7 +87,8 @@ export class FLUnderlyingDetail extends React.Component{
         //il s'agit des actions / on n'affiche pas les secteurs
         if (this.state.currentType === "PSACTIONS") {
             if (this.state.currentSector.underlyingCode === 'NONE') {
-                possibleUnderlyings = [];
+                //possibleUnderlyings = [];
+                possibleUnderlyings = possibleUnderlyings.filter(obj => obj.groupingHead == false);
             } 
             else {
                 possibleUnderlyings = possibleUnderlyings.filter(obj => obj.groupingHead == false);
@@ -127,7 +130,7 @@ export class FLUnderlyingDetail extends React.Component{
                         let selectedUnderlyingArray  = [...new Set(this.selectedUnderlyings.map(x => x.underlyingCode))];
                         let selectedUnderlyingNameArray  = [...new Set(this.selectedUnderlyings.map(x => x.subCategoryName))];
                         if (selectedUnderlyingNameArray.length === 0){
-                            selectedUnderlyingNameArray = 'Peu importe';
+                            selectedUnderlyingNameArray = 'Optimisé';
                         }
                         //console.log(selectedUnderlyingNameArray.toString());
                         this.props.updateValue("underlying", selectedUnderlyingArray ,selectedUnderlyingNameArray.toString().replace(/,/g,'\n'));

@@ -9,14 +9,14 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
-  Alert,
+  Image,
   Text
 } from 'react-native';
 import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import { sendEmail } from '../../Utils/sendEmail'
 import ButtonSubmit from './ButtonSubmit'
-import LogoComponent  from '../LogoComponent'
+import splashImage from '../../assets/splash_transparent.png';
 import Dimensions from 'Dimensions';
 
 
@@ -54,25 +54,19 @@ class WaitingValidationScreen extends Component {
   render() {
 
     const content =    <View style={{flex: 1,justifyContent:'center',alignItems:'center'}}>
-            <ImageBackground
-                style={styles.picture} 
-                //source={{uri: 'https://picsum.photos/g/400/600?random'}}
-                backgroundColor="#F9FAFC"
-            />
+            <Image style={styles.picture} source={splashImage} />
             
      
             <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
             <ScrollView keyboardShouldPersistTaps="always" >
-             <View style={styles.container}>
-                <LogoComponent />
-                </View>
+ 
 
             <View style={styles.container}>
             <Button bordered warning  style={{flew:1, height: 60, width: 0.9*DEVICE_WIDTH,  marginBottom: 50, justifyContent:'center', alignItems:'center'}}>
-            <Text numberOfLines={3} >Bonjour {this.firstName} {this.name},{"\n"}Votre compte est en cours de validation</Text>
+            <Text numberOfLines={3} >Bonjour {this.firstName} {this.name}{"\n\n\n"}Votre compte est en cours de validation</Text>
           </Button>
             
-                <Button rounded
+                <Button 
                     style={{backgroundColor : '#85B3D3', width: 0.9*DEVICE_WIDTH, justifyContent:'center', alignItems: 'center'}}
                     onPress={() => {
                         sendEmail(
@@ -97,7 +91,7 @@ class WaitingValidationScreen extends Component {
             </View>
             <View style={styles.container_buttons}>
             
-                <Button light rounded 
+                <Button light  
                     style={{flex:1, justifyContent:'center',alignItems:'center',  marginRight: 5}}
                     onPress={this.goToLogin}
                     >
@@ -160,11 +154,11 @@ const styles = StyleSheet.create({
       },
     picture: {
           flex: 1,
-          top: 0, left: 0, right: 0, bottom: 0,
-          opacity: 0.25,
+          top: DEVICE_HEIGHT/5, left: 0, right: 0, bottom: 0,
+          opacity: 0.05,
           position: "absolute",
-          width: null,
-          height: null,
+          width: DEVICE_WIDTH,
+          height: 4*DEVICE_HEIGHT/5,
           resizeMode: 'cover',
         },
     container_buttons: {

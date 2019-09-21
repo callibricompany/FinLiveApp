@@ -50,7 +50,7 @@ import UNDERLYINGS from '../../Data/subCategories.json'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
-import * as TICKET_TYPE from '../../constants/ticket'
+import * as TICKET_TYPE from '../../constants/template'
 import { isNull } from 'util';
 
 
@@ -83,6 +83,7 @@ class TabPricer extends React.PureComponent {
 
       //recuperation de la liste des sous-jacents
       this.underlyings = this.props.allInfo.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
+      
 
       this.dataSource = Array(9).fill().map((_, index) => ({id: index}));
     }
@@ -122,7 +123,7 @@ class TabPricer extends React.PureComponent {
 
       //mise a jour de produit dans pricerScreen
       this.props.parameterProductUpdated(this.product);
-
+      this.props.needToRefresh();
       //fermeture du panel
       //this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[2] });
     }
@@ -169,7 +170,7 @@ class TabPricer extends React.PureComponent {
                       backgroundColor: isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue'
                     }}
         >
-          <View style={{height: 35, borderBottomWidth : 1, borderBottomColor : selectElementTab, padding: 2, justifyContent: 'center', alignItems: 'center',flexGrow: 1}}>
+          <View style={{height: 35, borderBottomWidth : 1, borderBottomColor : 'aliceblue', padding: 2, justifyContent: 'center', alignItems: 'center',flexGrow: 1}}>
              <Text style={{fontFamily: FLFontFamily, fontWeight: '600', fontSize: 12, color: 'white', textAlign: 'center'}}>
                 {PARAMETERSSTRUCTUREDPRODUCT[id].title.toUpperCase()}
              </Text>

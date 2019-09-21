@@ -35,7 +35,6 @@ import {  globalSyle,
 
 
 
-import * as TICKET_TYPE from '../../constants/ticket'
 
 
 
@@ -49,8 +48,8 @@ class TabUF extends React.PureComponent {
       super(props);
 
       this.state = {
-        UF : 0.02,
-        UFAssoc : 0.002,
+        UF : this.props.product.UF.value,
+        UFAssoc : this.props.product.UFAssoc.value,
         nimporte : true,
       };
 

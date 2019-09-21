@@ -7,7 +7,7 @@ import NewsList from '../Components/Home/NewsList'
 import NewsDetail from '../Components/Home/NewsDetail'
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
 import PricerScreen from '../Components/Pricer/PricerScreen'
-import StructuredProductDetail from '../Components/Pricer/StructuredProductDetail'
+import FLTicketPS from '../Components/Pricer/FLTicketPS'
 import ProfileScreen from '../Components/ProfileScreen'
 import TicketsList from '../Components/Ticket/TicketsList'
 //import TicketDetail from '../Components/Ticket/TicketDetail'
@@ -67,6 +67,9 @@ function labelStyle (focused, tintColor) {
     },
     NewsDetailWeb : {
       screen: NewsDetailWeb
+    },
+    FLTicketPS : {
+      screen : FLTicketPS
     }
   }, 
   {
@@ -84,8 +87,8 @@ function labelStyle (focused, tintColor) {
         title: 'Evaluer'
       },
     },
-    StructuredProductDetail : {
-      screen : StructuredProductDetail
+    FLTicketPS : {
+      screen : FLTicketPS
     }
   })
   

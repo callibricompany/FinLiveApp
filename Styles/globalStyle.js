@@ -1,7 +1,7 @@
 
 import { StyleSheet, Platform, StatusBar} from 'react-native'
 import Dimensions from 'Dimensions'
-
+import { sizeByDevice } from '../Utils'
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
@@ -42,79 +42,65 @@ const globalStyle = StyleSheet.create({
     header_safeviewarea :{
       //flex: 1,
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: tabBackgroundColor,
-      height: Platform.OS === 'ios' ? 95 : 95-STATUSBAR_HEIGHT,
-      marginTop: STATUSBAR_HEIGHT,
+      borderBottomColor : tabBackgroundColor,
+      borderBottomWidth : 1,
+      height: sizeByDevice(80, 65, 65 - STATUSBAR_HEIGHT),
+      marginTop: 0,
       //flexWrap: "nowrap",
     },
 
     header_left_view : {
-      marginRight: 0.05*DEVICE_WIDTH, 
-      height: 40, 
-      width: 40,  
+      //marginRight: 0.05*DEVICE_WIDTH, 
+      //height: 40, 
+      //width: DEVICE_WIDTH/4,  
       //borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      //backgroundColor: 'steelblue'
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
+      //backgroundColor: 'transparent'
     },
     header_center_view : {
-      flex: 1,
-      width: (DEVICE_WIDTH*0,9-2*40),
-      backgroundColor: 'transparent',
+      width: DEVICE_WIDTH/2,  
+      backgroundColor: 'pink',
+      justifyContent : 'center',
+      alignItems: 'center',
       flexWrap: "nowrap",
-    },
-    header_center_view_leftAlign: {
-      flex: 1,
-      width: (DEVICE_WIDTH*0,9-2*40),
-      backgroundColor: 'transparent',
-      flexWrap: "nowrap",
-      justifyContent : 'flex-start',
-      alignItems : 'flex-start'
-    },
-
-
-
-    header_center_text_big : {
-      color: generalFontColor, 
-      fontSize:36,
-    },
-    header_left_text_medium : {
-      color: generalFontColor, 
-      fontSize:22,
-      alignItems : 'flex-start'
-    },
-    header_center_text_medium : {
-      color: generalFontColor, 
-      fontSize:22,
     },
 
     header_right_view : {
-      marginRight: 0.05*DEVICE_WIDTH, 
-      height: 40, 
-      width: 40,  
+      //marginRight: 0.05*DEVICE_WIDTH, 
+      //height: 40, 
+      width: DEVICE_WIDTH/4,  
       //borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
       //backgroundColor: 'steelblue'
       backgroundColor: 'transparent'
     },
-    header_right_view_x2 : {
-      marginRight: 0.0*DEVICE_WIDTH, 
-      borderWidth:0,
-      height: 40, 
-      width: 100,  
-      //justifyContent:'flex-end',
-      //borderRadius: 20,
-      alignItems: 'center',
-      //backgroundColor: 'steelblue'
-      backgroundColor: 'transparent'
+
+    header_center_text_big : {
+      color: 'black', 
+      fontSize:36,
     },
+    header_left_text_medium : {
+      color: 'black', 
+      fontSize:18,
+      fontWeight : '300',
+      alignItems : 'flex-start'
+    },
+    header_center_text_medium : {
+      color: 'black', 
+      fontWeight : '300',
+      fontSize:16,
+    },
+
+
+
     header_icon : { 
       backgroundColor:'transparent',
-      color: generalFontColor
+      color: 'black'
     },
 
 ///////////////////////////////

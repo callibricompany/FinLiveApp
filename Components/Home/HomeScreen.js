@@ -61,7 +61,7 @@ const initialLayout = {
           filterText : '',
           searchTextForNews : ''
         }
-        
+     
         // console.log("PLATE-FORME : " + Platform.OS)
     }
     
@@ -84,8 +84,8 @@ const initialLayout = {
       
       //console.log(CATEGORIES);
       await this.props.getUserAllInfo();
-
-      //console.log(this.props.homePage[0]);
+     
+      //console.log(this.props.allInfo.favorites);
       //creation de l aliste des categories 
       //console.log("Passage homescrrenn");
       //console.log(this.props.allInfo.categories);
@@ -110,7 +110,7 @@ const initialLayout = {
       this.setState({ isLoading: false });
     }
 
-    
+ 
 
     //le user veut filtrer --> on va renvoyer à HOC un objet filtre
     _filterUpdated(category, subCategory, filterText='') {

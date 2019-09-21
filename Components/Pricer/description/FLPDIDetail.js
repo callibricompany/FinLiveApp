@@ -40,7 +40,7 @@ export class FLPDIDetail extends Component{
                     <FLSlider2
                           min={40}
                           max={100}
-                          step={1}
+                          step={5}
                           //value={this.state.product['UF'].value*100}
                           value={(this.state.barrier)*100}
                           isPercent={true}

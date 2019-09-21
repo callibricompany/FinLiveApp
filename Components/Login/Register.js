@@ -11,23 +11,22 @@ import {
   StatusBar,
   Platform,
   Alert,
-  Text
+  Text,
+  Image
 } from 'react-native';
 import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import Dimensions from 'Dimensions';
-import firebase, { auth } from 'firebase'
-import bgSrc from '../../assets/icon_1024.png';
-import LogoComponent  from '../LogoComponent'
+
+import splashImage from '../../assets/splash_transparent.png';
 
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
 
 import { ssCreateUser } from '../../API/APIAWS';
 
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+
 
 
 
@@ -35,6 +34,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 //import Account from './Main'
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
+const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
 const Register = () => (
@@ -249,7 +249,7 @@ class RegisterFormBase extends Component {
       return (
         <InputGroup>
         <Item style={{width: 0.9*DEVICE_WIDTH}} >
-        <Icon name="ios-people"  style={{color : '#9A9A9A'}}/>
+        <Icon name="ios-people"  style={{color : 'black'}}/>
         <Input
         onChangeText={e => {this.typingInputText('organization',e)}}
         clearButtonMode="always"
@@ -320,31 +320,28 @@ class RegisterFormBase extends Component {
     <View style={styles.style_activityIndicator}>
     <ActivityIndicator size="large"/>
     </View> :
-        <View style={{flex: 1}}>
-            <ImageBackground
-                style={styles.picture} 
-                //source={{uri: 'https://picsum.photos/g/400/600?random'}}
-                source={bgSrc}
-                resizeMode="center"
-            />
+        <View style={{flexDirection :'column', flex: 1}}>
+
             
    
          
-           <Header style={{backgroundColor: 'transparent', borderBottomWidth: 0, height:250}}>
-              <View style={[styles.container, {paddingTop:10} ]}>
+
+           
+            
                  
-               <LogoComponent />
+              <Image style={styles.picture} source={splashImage} />
                   
-              </View>
-              </Header>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+               <Text style={styles.text2}>Créer votre compte</Text>
+            </View>
              
             <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
             <ScrollView keyboardShouldPersistTaps="always">
                 <View style={[styles.container, {paddingTop:5}]}>
-                <Text style={styles.text2}>Créer votre compte</Text>
+                
                   <InputGroup >
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                        <Icon name="ios-person" style={{color : '#9A9A9A'}}/>
+                        <Icon name="ios-person" style={{color : 'black'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('name',e)}}
                        // value={this.state.name}
@@ -364,7 +361,7 @@ class RegisterFormBase extends Component {
                     </InputGroup>
                     <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                       <Icon name="ios-person" style={{color : '#9A9A9A'}}/>
+                       <Icon name="ios-person" style={{color : 'black'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('firstName',e)}}
                        // value={this.state.name}
@@ -387,7 +384,7 @@ class RegisterFormBase extends Component {
                   
                   <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                    <Icon name="ios-phone-portrait" style={{color : '#9A9A9A'}}/>
+                    <Icon name="ios-phone-portrait" style={{color : 'black'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('phone',e)}}
                         value={this.state.phone}
@@ -410,7 +407,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>  
                   <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                    <Icon name="md-star-outline" style={{color : '#9A9A9A'}}/>
+                    <Icon name="md-star-outline" style={{color : 'black'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('company',e)}}
                         value={this.state.company}
@@ -436,7 +433,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>              
                   <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}} >
-                        <Icon name="ios-mail" style={{color : '#9A9A9A'}}/>
+                        <Icon name="ios-mail" style={{color : 'black'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('email',e)}}
                         value={this.state.email.toLowerCase()}
@@ -457,7 +454,7 @@ class RegisterFormBase extends Component {
                 
                   <InputGroup>
                   <Item style={{width: 0.9*DEVICE_WIDTH}} >
-                        <Icon name="ios-unlock"  style={{color : '#9A9A9A'}}/>
+                        <Icon name="ios-unlock"  style={{color : 'black'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('password',e)}}
                        // value={this.state.password}
@@ -477,7 +474,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>
                   <InputGroup>
                   <Item style={{width: 0.9*DEVICE_WIDTH}} >
-                        <Icon name="ios-unlock"  style={{color : '#9A9A9A'}}/>
+                        <Icon name="ios-unlock"  style={{color : 'black'}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('passwordVerif',e)}}
                         value={this.state.passwordVerif}
@@ -502,7 +499,7 @@ class RegisterFormBase extends Component {
                         <Text style={{ color: 'black',}}>CGPI Indépendant  </Text>
                         <CheckBox 
                             checked={this.state.isIndependant} 
-                            color="#9A9A9A"
+                            color="black"
                            onPress={this.checkIfIsIndependant.bind(this)}
                             />
                         </ListItem>
@@ -520,11 +517,11 @@ class RegisterFormBase extends Component {
                
                 <View style={styles.container_buttons}>
                     
-                    <Button light rounded 
-                        style={{ justifyContent:'center', marginBottom:50}}
+                    <Button light  
+                        style={{ justifyContent:'center', marginBottom:50, width : DEVICE_WIDTH/2}}
                         onPress={this.backToLogin.bind(this)}
                         >
-                        <Icon name="md-arrow-dropleft" style={{color : "#9A9A9A"}}/>                      
+                        <Icon name="md-arrow-dropleft" style={{color : "black"}}/>                      
                             <Text style={styles.text_button}>Retour Connexion</Text>
                     </Button>
                     
@@ -584,24 +581,24 @@ const styles = StyleSheet.create({
       backgroundColor: '#F5FCFF',
     },
     text2: {
-        color: '#9A9A9A',
+        color: 'black',
         backgroundColor: 'transparent',
         marginTop: 30,
         marginBottom: 30,
         fontSize: 25,
       },
     picture: {
-          flex: 1,
-          top: 0, left: 0, right: 0, bottom: 0,
+          //lex: 1,
+          top: DEVICE_HEIGHT/5, left: 0, right: 0, bottom: 0,
           opacity: 0.05,
           position: "absolute",
-          width: null,
-          height: null,
+          width: DEVICE_WIDTH,
+          height: 4*DEVICE_HEIGHT/5,
           resizeMode: 'cover',
         },
 
     text_button: {
-            color: '#9A9A9A',
+            color: 'black',
             backgroundColor: 'transparent',
          //   alignItems:'center',
           //  justifyContent:'center',

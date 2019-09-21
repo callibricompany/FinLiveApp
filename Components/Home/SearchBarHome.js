@@ -65,7 +65,7 @@ export default class SearchBarHome extends Component {
     //on ajoute egalement une sous categorie TOUS a PS
     let objSousCat = {};
     objSousCat["subCategoryHead"] = true;
-    objSousCat["subCategoryName"] = "TOUS";
+    objSousCat["subCategoryName"] = "Filtre ...";
     objSousCat["codeSubCategory"] = "PS";
     
     //on selectionne les produits structures par defaut 

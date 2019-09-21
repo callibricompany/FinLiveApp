@@ -10,16 +10,17 @@ import {
   StatusBar,
   Platform,
   Alert,
-  Text
+  Text,
+  Image
 } from 'react-native';
 import { Thumbnail, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
-import LogoComponent  from '../LogoComponent'
 import Dimensions from 'Dimensions';
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
 import { withAuthorization } from '../../Session';
+import splashImage from '../../assets/splash_transparent.png';
 
 import { compose, hoistStatics } from 'recompose';
 
@@ -143,6 +144,7 @@ class LoginFormBase extends Component {
             <ImageBackground
                 style={styles.picture} 
                 //source={{uri: 'https://picsum.photos/g/400/600?random'}}
+                //source={splashImage} 
                 backgroundColor="#F9FAFC"
             />
             
@@ -150,12 +152,12 @@ class LoginFormBase extends Component {
             <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
             <ScrollView keyboardShouldPersistTaps="always">
              <View style={styles.container}>
-                <LogoComponent />
+                   <Image style={styles.picture} source={splashImage} />
                 </View>
                 <View style={styles.container}>
                     <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                        <Icon name="ios-mail" style={{color : "#9A9A9A"}}/>
+                        <Icon name="ios-mail" style={{color : "black"}}/>
                         <Input
                         //onChangeText={(text) => this.setState({email: text})}
                         onChangeText={e => {this.setState({ email: e })}}
@@ -178,7 +180,7 @@ class LoginFormBase extends Component {
                 
                     <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                        <Icon name="ios-unlock"  style={{color : "#9A9A9A"}}/>
+                        <Icon name="ios-unlock"  style={{color : "black"}}/>
                         <Input
                         onChangeText={e => {this.setState({ password: e })}}
                         //value={this.state.password}
@@ -203,7 +205,7 @@ class LoginFormBase extends Component {
                     onCheckEmail={this.checkEmailValidity.bind(this)}
                     text={'SE CONNECTER'}
                />*/}
-                <Button rounded 
+                <Button  
                     style={{backgroundColor : '#85B3D3', width: 0.9*DEVICE_WIDTH, justifyContent:'center', alignItems: 'center',marginLeft: 0.05*DEVICE_WIDTH}}
                     onPress={this.login}
                     >
@@ -211,17 +213,17 @@ class LoginFormBase extends Component {
                 </Button>
             </View>
             <View style={styles.container_buttons}>
-                <Button light rounded 
-                    style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center',marginRight: 5}}
+                <Button light  
+                    style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center',marginRight: 5, height : 50}}
                     onPress={this.goToRegister}
                     >
                         <Text style={styles.text_button}>Créer un compte</Text>
                 </Button>
-                <Button light rounded
-                    style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center', marginLeft: 5}}
+                <Button light 
+                    style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center', marginLeft: 5, height : 50}}
                     onPress={this.goToPasswordRecovery}
                 >
-                        <Text style={styles.text_button}>Identifiants</Text>
+                        <Text style={styles.text_button}>Identifiants{'\n'}perdus</Text>
                 </Button>
             </View>
            
@@ -269,12 +271,12 @@ const styles = StyleSheet.create({
         fontSize: 40,
       },
     picture: {
-          flex: 1,
-          top: 0, left: 0, right: 0, bottom: 0,
-          opacity: 0.25,
+          //flex: 1,
+          top: DEVICE_HEIGHT/5, left: 0, right: 0, bottom: 0,
+          opacity: 0.1,
           position: "absolute",
-          width: null,
-          height: null,
+          width: DEVICE_WIDTH,
+          height: 4*DEVICE_HEIGHT/5,
           resizeMode: 'cover',
         },
     container_buttons: {
@@ -291,6 +293,7 @@ const styles = StyleSheet.create({
             backgroundColor: 'transparent',
             alignItems:'center',
             justifyContent:'center',
+            textAlign:'center',
             fontSize: 14,
           },
   });

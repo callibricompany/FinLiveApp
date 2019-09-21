@@ -111,7 +111,7 @@ class FLPanel extends React.Component{
                // activated : !this.state.activated
             }, () => {
                 //console.log(this.state.activated +"    -     " +this.props.idComponent);
-                this.props.updateActivatedDesactivated(this.state.activated, this.props.idComponent);
+                //this.props.updateActivatedDesactivated(this.state.activated, this.props.idComponent);
             });
         }
       }
@@ -218,7 +218,7 @@ class FLPanel extends React.Component{
                         {printLeft}
                         <SwipeGesture style={swipeGestureFLPanel(this.isExpandable, this.props.title)} onSwipePerformed={this.onSwipePerformed.bind(this)}>
                             <Text style={titleFLPanel(this.fontSizeTitle)}>{this.state.title}</Text>
-                            {this.state.title2.length !== 0 ? <Text style={titleFLPanel(12)}>{this.state.title2}</Text> :<Text></Text>}
+                            {this.state.title2.length !== 0 ? <Text style={titleFLPanel(12)}>{this.state.title2}</Text> :null}
                         </SwipeGesture>
                         {printRight}
                 </View>
@@ -257,7 +257,7 @@ function containerFLPanel (activated, marginRight, marginLeft, marginTop, border
         marginTop: marginTop,
         marginRight: marginRight,
         marginLeft: marginLeft,
-        borderRadius: 4,
+        borderRadius: 2,
         overflow:'hidden',
         borderWidth: borderWidth,
         borderColor: borderColorTemp,
@@ -298,7 +298,8 @@ function titleFLPanel (fontSize) {
         flex    : 1,
         paddingLeft : 10,
         paddingRight : 10,
-        fontWeight : fontSize === 14 ?'bold' : 'normal',
+        //fontWeight : fontSize === 14 ?'bold' : 'normal',
+        textAlign: 'center',
         fontSize: fontSize
     }
 }

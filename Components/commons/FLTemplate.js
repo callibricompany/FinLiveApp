@@ -16,14 +16,21 @@ import Dimensions from 'Dimensions';
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
+import { withUser } from '../../Session/withAuthentication';
+import { withAuthorization } from '../../Session';
+import { withNavigation } from 'react-navigation';
+import { compose, hoistStatics } from 'recompose';
+
 import * as Progress from 'react-native-progress';
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
+import * as TEMPLATE_TYPE from '../../constants/template'
 import * as TICKET_TYPE from '../../constants/ticket'
 
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
+
 
 
 import podiumImage from '../../assets/podium.png'
@@ -38,10 +45,11 @@ import FREQUENCYLIST from '../../Data/frequencyList.json'
 
 
 
+
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
-class FLTicket extends React.Component {
+class FLTemplate extends React.Component {
 
 
   constructor(props) {
@@ -50,18 +58,42 @@ class FLTicket extends React.Component {
     this.state = {
 
       isGoodToShow : typeof this.props.isGoodToShow !== 'undefined' ? this.props.isGoodToShow : true,
+      toto : true,
     }
 
     //ticket
-    this.item = this.props.item;
+    this.item = {};
+
+    //console.log(this.item);
 
     //type de tycket
-    this.type = typeof this.props.ticketType !== 'undefined' ? this.props.ticketType : this.item['template'].toUpperCase();
-    if (this.type === TICKET_TYPE.PSCREATION) {
-      this.type = TICKET_TYPE.LIST;
-      this.item['data'] = this.props.item;
+    this.type = this.props.templateType;
 
+    //copie des datas au format correct
+    if (!this.props.item.hasOwnProperty('data')) {
+      //reconstruction de l'objet style envoie dans homepage
+      this.item['category'] = this.props.item.category;
+      this.item['code'] = this.props.item.underlying;
+      this.item['isOrg'] = false;
+      this.item['template'] = TEMPLATE_TYPE.LIST;
+      this.item['isFavorite'] = false;
+      this.item['data'] = this.props.item;
+      
+
+      let toFavorites = {};
+      toFavorites['active'] = false;
+      toFavorites['code'] = this.props.item.code;
+      toFavorites['label'] = this._getTitleTicket();
+      toFavorites['source'] = 'sp';
+      toFavorites['userId'] = this.props.authUser.uid;
+      toFavorites['id'] = "";
+      this.item['toFavorites'] = toFavorites;
+      
+    } else {
+
+      this.item = this.props.item;
     }
+
    
 
     //le produit-ticket est filtre ou pas
@@ -70,10 +102,16 @@ class FLTicket extends React.Component {
   }
 
   componentWillReceiveProps (props) {
-    //console.log("Prop received in FLTicket : " + props.isGoodToShow);
+    //console.log("Prop received in FLTemplate : " + props.isGoodToShow);
     typeof props.isGoodToShow !== 'undefined' ? this.setState({ isGoodToShow : props.isGoodToShow }) : null;
     typeof props.filters !== 'undefined' ? this.updateFilters(props.filters) : null;
   }
+
+  /*shouldComponentUpdate(nextProps) {
+    console.log("SouldComponentUpdate : ");
+    console.log(nextProps);
+    return true;
+  }*/
 
   //va aider pour savoir si on affiche ou pas 
   updateFilters(filters) {
@@ -95,7 +133,7 @@ class FLTicket extends React.Component {
                         this._getCouponTitle() +
                         this._getOrganization() +
                         this._getTypePlacement() +
-                        this.item["code"];
+                        this.item["data"]["code"];
 
       description.toLowerCase().includes(String(filters['filterText']).toLowerCase()) ? this.isFiltered = false : this.isFiltered = true;
     } else if (filters.length !== 0) {
@@ -126,7 +164,7 @@ class FLTicket extends React.Component {
 
     //determine le nom du produit
   _getProductTypeName() {
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
       let name = '[PDT]';
       
       if (product.hasOwnProperty('product')) {        
@@ -142,7 +180,7 @@ class FLTicket extends React.Component {
 
     //determine la frequence du produit
   _getFrequencyName() {
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
       let name = '[FREQ]';
       
       if (product.hasOwnProperty('freqAutocall')) {        
@@ -159,8 +197,8 @@ class FLTicket extends React.Component {
     //determine le nom du sous
   _getUnderlyingName() {
       let name = '[UDL]';
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
-      //this.type === TICKET_TYPE.APE ? console.log(product) : null;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      //this.type === TEMPLATE_TYPE.APE ? console.log(product) : null;
       
       if (product.hasOwnProperty('underlying')) {        
           name = product.hasOwnProperty('underlyingName') ? product.underlyingName : product.underlying;
@@ -173,8 +211,8 @@ class FLTicket extends React.Component {
   _getMaturityName() {
       let name = '[MTY]';
 
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
-      //this.type === TICKET_TYPE.APE ? console.log(product) : null;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      //this.type === TEMPLATE_TYPE.APE ? console.log(product) : null;
       
       if (product.hasOwnProperty('maturity')) {        
           name = product.maturity.substring(0,product.maturity.length-1)
@@ -192,7 +230,7 @@ class FLTicket extends React.Component {
   _getActionTitle() {
         let name = 'voir';
   
-        if (this.type === TICKET_TYPE.BROADCAST) {
+        if (this.type === TEMPLATE_TYPE.BROADCAST) {
             name = 'souscrire';
         }
   
@@ -204,7 +242,7 @@ class FLTicket extends React.Component {
   _getBarrierPDITitle() {
       let name = '[XX]';
 
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
       
       if (product.hasOwnProperty('barrierPDI')) {        
           name = Numeral(product.barrierPDI-1).format('0%');
@@ -218,7 +256,7 @@ class FLTicket extends React.Component {
   _getBarrierPDITypeTitle() {
       let name = 'Protection européenne';
       
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
 
       if (product.hasOwnProperty('isPDIUS')) {  
         if (product.isPDIUS) {      
@@ -234,7 +272,7 @@ class FLTicket extends React.Component {
       let name = '[XX]';
 
 
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
 
       if (product.hasOwnProperty('barrierPhoenix')) {  
         
@@ -249,7 +287,7 @@ class FLTicket extends React.Component {
     _getBarrierAirbagTitle () {
       let name = '[ABG]';
 
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
 
       if (product.hasOwnProperty('airbagLevel') && product.hasOwnProperty('levelAutocall') && product.hasOwnProperty('barrierPDI')) {  
         let PDI = product.barrierPDI;
@@ -273,7 +311,7 @@ class FLTicket extends React.Component {
     _getDegressivityCallableTitle () {
       let name = '[DGS]';
       
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
 
       if (product.hasOwnProperty('degressiveStep')) { 
         if(product.degressiveStep === 0 ) {
@@ -290,7 +328,7 @@ class FLTicket extends React.Component {
     //renvoie le coupon annualisé
     _getCouponTitle () {
       let name = '[CPN]';
-      let product = this.type === TICKET_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
 
       if (product.hasOwnProperty('coupon')) {  
         name = Numeral(product.coupon).format('0.00%');
@@ -303,7 +341,7 @@ class FLTicket extends React.Component {
     //retourne l'organisation
     _getOrganization() {
       let organization = '';
-      if (this.type === TICKET_TYPE.APE) {
+      if (this.type === TEMPLATE_TYPE.APE) {
         organization = "lancé par " + this.item.data.userInfo.company;
       }
       return organization;
@@ -312,9 +350,9 @@ class FLTicket extends React.Component {
     //retourne le type de placement
     _getTypePlacement() {
       let typePlacement = '';
-      if (this.type === TICKET_TYPE.BROADCAST) {
+      if (this.type === TEMPLATE_TYPE.BROADCAST) {
         typePlacement = 'Broadcast';
-      } else if (this.type === TICKET_TYPE.APE) {
+      } else if (this.type === TEMPLATE_TYPE.APE) {
         typePlacement = "Appel Public à l'Epargne";
       }
       return typePlacement;
@@ -326,15 +364,15 @@ class FLTicket extends React.Component {
       let typePlacement = this._getTypePlacement();
       let description = '';
      
-      if (this.type === TICKET_TYPE.APE) {
+      if (this.type === TEMPLATE_TYPE.APE) {
         description = this.item['data'].hasOwnProperty('type') ? "  ["+this.item.data.type + "]" : '';
       }
       //this.item['data'].hasOwnProperty('type') 
 
       let title = null;
       //si on est en train de traiter le produit
-      if (this.type === TICKET_TYPE.BROADCAST || this.type === TICKET_TYPE.APE) {
-        title = <View style={{backgroundColor: this.type === TICKET_TYPE.BROADCAST ? headerTabColor : '#749B14'}}>
+      if (this.type === TEMPLATE_TYPE.BROADCAST || this.type === TEMPLATE_TYPE.APE) {
+        title = <View style={{backgroundColor: this.type === TEMPLATE_TYPE.BROADCAST ? headerTabColor : '#749B14'}}>
                   <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 16, color: 'white', padding: 5}}>
                     {typePlacement.toUpperCase()}
                     {organization !== '' ? '\n' + organization : null}
@@ -359,7 +397,7 @@ class FLTicket extends React.Component {
 
 
       let title =   <View style={{borderWidth:0, flex: 0.55, marginTop: Platform.OS === 'ios' ? -2 : -5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                        <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: generalFontColor}}>
+                        <Text style={{paddingTop: 2, fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: generalFontColor}}>
                           {typeProduit}  {maturite}
                         </Text>
                         <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: generalFontColor}}>
@@ -376,7 +414,7 @@ class FLTicket extends React.Component {
 
     //renvoie le sujet du broadcast
     _getBroadcastSubject () {
-      let name = this.type === TICKET_TYPE.BROADCAST ?
+      let name = this.type === TEMPLATE_TYPE.BROADCAST ?
                   <View style={{flex: 0.2, backgroundColor: 'azure', padding: 5, paddingLeft: 10, justifyContent: 'center', alignItems: 'flex-start'}}>
                     <Text style={{fontSize : 16, fontFamily:  FLFontFamily, fontWeight: '600', color:'black'}}>{this.item.data['subject']}</Text>
                 </View>
@@ -387,7 +425,7 @@ class FLTicket extends React.Component {
     //renvoie la progression du broadcast
     _getBroadcastResume () {
       let progressionBroadCast = Math.random();
-      let name = this.type === TICKET_TYPE.BROADCAST ?
+      let name = this.type === TEMPLATE_TYPE.BROADCAST ?
                               <View style={{flex: 0.2, borderWidth: 0,flexDirection: 'row', paddingBottom:10}}>
                                 <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center', borderWidth:0  }}>
                                   <Image  style={{width: 30, height: 20}} source={podiumImage} />
@@ -433,18 +471,40 @@ class FLTicket extends React.Component {
       if (this.isFiltered) {
         return null;
       }
-        
+
         return (
             <View opacity={this.state.isGoodToShow ? 1 : 0.1} style={[styles.item, {flexDirection : 'column', width: DEVICE_WIDTH*0.925, borderBottomWidth : 1}]}>
                 {this._getTitleTicket()}
               <View style={{flex : 0.25, flexDirection : 'row', backgroundColor: tabBackgroundColor}}>
-                  <TouchableOpacity style={{flex : 0.10, justifyContent: 'center', alignItems: 'center', margin: 1}}>
+                  <TouchableOpacity style={{flex : 0.10, justifyContent: 'center', alignItems: 'center', margin: 1}}
+                                    onPress={() => {
+                                      this.props.setFavorite(this.item)
+                                      .then((fav) => {
+                                        this.item = fav;
+                                        
+                                        console.log("Mise en Favori OK :");
+                                        //console.log(fav);
+                                        //this.item.isFavorite = !this.item.isFavorite;
+                                        this.setState({ toto: !this.state.toto })
+                                      })
+                                      .catch((error) => console.log("Erreur de mise en favori : " + error));
+                                    }}
+                  >
                     <Icon  size={5} style={{ color : 'darkred'}} name={this.item.isFavorite ? 'ios-star' : 'ios-star-outline'} />
                   </TouchableOpacity>
                   
                     {this._getTitleProduct()}
 
-                  <TouchableOpacity style={{flex: 0.35}} onPress={() => alert("J'EN VEUX PUTAIN DE MERDE")}>
+                  <TouchableOpacity style={{flex: 0.35}} 
+                        onPress={() => {
+                          //envoi du produit
+                          console.log("TYPE : " +this.type);
+                          this.props.navigation.navigate('FLTicketPS', {
+                            item: this.item,
+                            ticketType: TICKET_TYPE.PSCREATION
+                          });
+                        }
+                  }>
                     <View style={{flex : 1, flexDirection: 'row', backgroundColor : subscribeColor,justifyContent: 'center', alignItems: 'center'}}>
                       <View style={{flex:0.8, paddingLeft: 5, péddingRight: 5, justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: Platform.OS === 'ios' ? ifIphoneX() ?  14 : 12 : 14, color: generalFontColor}}>
@@ -490,19 +550,19 @@ class FLTicket extends React.Component {
                             PROTECTION COUPON
                         </Text>         
                       </View>
-                      <View style={{flex: 0.5, flexDirection: 'row',justifyContent: 'center', alignItems: 'center', padding:0}}>
-                        <View style={{flex: 0.4, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
-                          <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 16}}>
+                      <View style={{flex: 0.5, flexDirection: 'row',justifyContent: 'flex-start', alignItems: 'center', paddingLeft : 5}}>
+                        <View style={{ borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
+                          <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 16, marginLeft: 5}} >
                             {this. _getBarrierPhoenixTitle()}
                           </Text>
                         </View>
-                        <View style={{flex: 0.4, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
-                          <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9}}>
-                            {this._getBarrierAirbagTitle()}
+                        <View style={{marginLeft : 5, paddingTop : 2, paddingBottom: 2, paddingLeft: 5, paddingRight: 5, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderRadius :4}}>
+                          <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9, textAlign: 'center'}}>
+                            {this._getBarrierAirbagTitle().replace(' ','\n')}
                           </Text>
                         </View>
                       </View>
-                      <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', marginLeft:10}}>
+                      <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center', marginLeft:10}}>
                           <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9,paddingTop:4}}>
                             {this._getDegressivityCallableTitle()}
                           </Text>
@@ -542,8 +602,10 @@ class FLTicket extends React.Component {
                       </TouchableOpacity>                    
           
 
-                      <TouchableOpacity onPress={() => alert('Ouverture de la TS indic')}
-                                      style={{flex : 0.33, paddingLeft: 10, paddingRight: 10,marginLeft: 3,marginRight: 3, backgroundColor: '#C0C0C0', borderRadius: 2, height: 20, justifyContent: 'center', alignItems: 'center'}}>
+                      <TouchableOpacity onPress={() => {
+                                            alert('Ouverture de la TS indic');
+                                          }}
+                                        style={{flex : 0.33, paddingLeft: 10, paddingRight: 10,marginLeft: 3,marginRight: 3, backgroundColor: '#C0C0C0', borderRadius: 2, height: 20, justifyContent: 'center', alignItems: 'center'}}>
                           <Text style={{fontFamily: FLFontFamily, fontSize: 16, fontWeight : '400'}}>
                             TS indic
                           </Text>
@@ -551,7 +613,10 @@ class FLTicket extends React.Component {
                       </TouchableOpacity>       
         
                   
-                     <TouchableOpacity onPress={() => alert('Ouverture de la TS indic')}
+                     <TouchableOpacity onPress={() => {
+                                            console.log(this.item);
+                                             alert('Ouverture de la TS indic');
+                                      }}
                                       style={{flex : 0.33, paddingLeft: 10, paddingRight: 10, marginLeft: 3,marginRight: 3, backgroundColor: '#C0C0C0', borderRadius: 2, height: 20, justifyContent: 'center', alignItems: 'center'}}>
                           <Text style={{fontFamily: FLFontFamily, fontSize: 16, fontWeight : '400'}}>
                             Descriptif
@@ -588,4 +653,15 @@ const styles = StyleSheet.create({
   })
 
 
-export default FLTicket;
+  const condition = authUser => !!authUser;
+
+  const composedWithNav = compose(
+    withAuthorization(condition),
+     withNavigation,
+     withUser
+   );
+   
+   //export default HomeScreen;
+export default hoistStatics(composedWithNav)(FLTemplate);
+
+//export default FLTemplate;

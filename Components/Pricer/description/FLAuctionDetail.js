@@ -30,10 +30,10 @@ export class FLAuctionDetail extends Component{
         obj["value"] = "APE";
         obj["label"] = "Appel Public à l'Epargne";
         this.auctionType.push(obj);
-        obj = {};
-        obj["value"] = "IP";
-        obj["label"] = "Indicatif";
-        this.auctionType.push(obj);
+        //obj = {};
+        //obj["value"] = "IP";
+        //obj["label"] = "Indicatif";
+        //this.auctionType.push(obj);
     }
 
 

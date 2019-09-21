@@ -183,7 +183,7 @@ class Firebase {
                         //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
                         alert('ERREUR RECUPERATION DES INFOS USER', '' + error);
                       }) */
-                      console.log("AUTHUSER : " + authUser.idToken)
+                      
                       // merge auth and db user
                       authUser = {
                         uid: authUser.uid,

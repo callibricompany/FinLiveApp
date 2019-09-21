@@ -98,28 +98,6 @@
       ]
     },
     {
-      "name": "barrierPhoenix",
-      "title" : "Protection des coupons",
-      "description": [
-        {
-        "short_description": "Influence",
-        "long_description":"Choisissez un seuil de paiement de coupons inférieur à celui des rappels : cela augemente la probabilité de paiement des coupons; en contrepartie d'un niveau moins élevé."
-        },        
-        {
-          "short_description": "Vérification",
-          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
-        },
-        {
-          "short_description": "Risques",
-          "long_description":"Le changement de seuil des coupons n'améliore pas la protection du capital."
-        },
-        {
-          "short_description": "Illustration",
-          "long_description":""
-        }
-      ]
-    },
-    {
       "name": "freq",
       "title" : "Fréquence",
       "description": [
@@ -134,6 +112,28 @@
         {
           "short_description": "Risques",
           "long_description":"Les risques de non rappel et de risque en capital augmentent si la fréquence du produit est faible"
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
+      "name": "barrierPhoenix",
+      "title" : "Protection des coupons",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Choisissez un seuil de paiement de coupons inférieur à celui des rappels : cela augemente la probabilité de paiement des coupons; en contrepartie d'un niveau moins élevé."
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Adaptez cette sécurité avec le profil de risque attendu."
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"Le changement de seuil des coupons n'améliore pas la protection du capital."
         },
         {
           "short_description": "Illustration",

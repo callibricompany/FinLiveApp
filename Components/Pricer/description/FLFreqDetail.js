@@ -54,7 +54,7 @@ export class FLFreqDetail extends Component{
                         >
                           {this.freq.map((type, i) => {
 
-
+                          //console.log(this.state.currentChoice + " : "+ type.value);
                           return (
                             <RadioButton labelHorizontal={true} key={i} >
               

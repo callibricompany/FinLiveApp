@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, ActivityIndicator, TouchableOpacity, Text, Platform} from 'react-native'; 
+import { View, StyleSheet, Image, ActivityIndicator, TouchableOpacity, Text, Platform, Alert} from 'react-native'; 
 import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 
 import { FLFlatList } from '../SearchBar/searchBarAnimation';
@@ -7,6 +7,7 @@ import { FLFlatList } from '../SearchBar/searchBarAnimation';
 import { withUser } from '../../Session/withAuthentication';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
+
 
 import Dimensions from 'Dimensions';
 
@@ -21,9 +22,9 @@ import {  globalSyle,
   FLFontFamilyBold
 } from '../../Styles/globalStyle';
 
-import FLTicket from '../commons/FLTicket'
+import FLTemplate from '../commons/FLTemplate';
 
-import * as TICKET_TYPE from '../../constants/ticket'
+import * as TEMPLATE_TYPE from '../../constants/template';
 
 
 
@@ -41,6 +42,7 @@ class TabHome extends React.PureComponent {
   
       this.state = {
         scrollTo : this.props.marginSearch,
+        refreshing : false,
         
       };
 
@@ -48,19 +50,20 @@ class TabHome extends React.PureComponent {
     }
   
     componentWillReceiveProps (props) {
-
-      this.setState({ scrollTo: props.marginSearch});
+     
+      this.setState({ scrollTo: props.marginSearch, refreshing : false });
     }
 
     _renderTicket = ( item , id) => {
 
           return (
             
-              <FLTicket id={id} 
+              <FLTemplate id={id} 
                         item={item} 
                         userOrg={this.props.userOrg} 
                         filters={this.props.filtersHomePage}
                         categories={this.props.allInfo.categories}
+                        templateType={item.template}
               />
           )
     }
@@ -75,7 +78,8 @@ class TabHome extends React.PureComponent {
                 //style={styles.wrapper}
                 scrollTo={this.state.scrollTo}
                 contentContainerStyle={styles.wrapper}
-                data={this.props.homePage}
+                data={this.props.filtersHomePage["category"] === 'PSFAVORITES' ? this.props.favorites : this.props.homePage}
+                //data={this.props.homePage}
                 //renderItem={this._renderRow}
                 keyExtractor={(item) => {
                   let key = typeof item.data['id'] === 'undefined' ? item.data['code'] : item.data['id'];
@@ -87,15 +91,35 @@ class TabHome extends React.PureComponent {
                 )}
                 ListFooterComponent={() => {
                   return (
-                    <View style={{height : 150}}>
+                    <TouchableOpacity onPress={() => {
+                             Alert.alert("FinLive SAS","Copyright ©")
+                        }}
+                        style={{height : 150}}>
                       <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
-                    </View>
+                    </TouchableOpacity>
                   );
                 }}
+                /*ListHeaderComponent={() => {
+                  
+                  return (
+                    this.state.refreshing ?
+                      <ActivityIndicator style={{height: 80}} size={"small"} /> : <View/>
+              
+                  );
+                }}*/
 
+                //refreshing={this.state.refreshing}
+                /*onRefresh={() => {
+                  console.log("Est rafraichi");
+                  
+                  //this.setState({ refreshing: true }, () => this.props.getUserAllInfo());
+                  this.setState({ refreshing: true });
+                }}*/
+                
               />
             </View>
-     
+    
+  
   
           </View>
 
