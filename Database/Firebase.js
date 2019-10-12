@@ -13,7 +13,7 @@ import { sortResults } from '../Utils/convertFresh'
 
 import * as ROLES from '../constants/roles';
 
-import { getUserAllInfo } from '../API/APIAWS';
+
 
 const dataForge = require('data-forge');
 
@@ -169,20 +169,6 @@ class Firebase {
                         phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
                       }    
                       
-                    
-                      //on recupere les infos du serveur
-                      //console.log("LANCEMENT RECUP USER DTAS : "+ idTokenUser );
-                      
-                      /*getUserAllInfo(idTokenUser)
-                      .then((userDatas) => {
-                        //console.log("BELLE RECUP DES USER DATAS : "+ userDatas["data"]);
-                        //console.log(userDatas.length);
-                        //this.onRegisterSuccess();
-                      })
-                      .catch(error => {
-                        //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
-                        alert('ERREUR RECUPERATION DES INFOS USER', '' + error);
-                      }) */
                       
                       // merge auth and db user
                       authUser = {
@@ -197,7 +183,7 @@ class Firebase {
                         roles : roles,
                         idToken : idTokenUser
                       };
-                      console.log("USER :  ", authUser.email);
+                      //console.log("USER :  ", authUser.email);
 
                       next(authUser);
                   }, function(error) {
@@ -261,18 +247,46 @@ class Firebase {
   }
   
   //charge tous les sous-jacents
-  getUnderlyingList() {
+  getUsersList() {
       return new Promise((resolve, reject) => {
 
-        this.db.collection("parameters").doc("FLDatas").collection("underlying").get()
-        .then((querySnapshot) => {
-          resolve(querySnapshot);
+        this.db.collection("users").get()
+        .then((users) => {
+          let result =[];
+          users.forEach((user) => {
+            u = user.data();
+            u.id = user.id;
+            result.push(u);
+          });
+          
+          resolve(result);
         })
         .catch((error) => {
           console.log("Erreur retrour requete : " + error);
           reject(error);
         }); 
       });
+  }
+
+    //charge tous les sous-jacents
+    updateTable(tableName, docId, fieldName, newFieldValue) {
+      return new Promise((resolve, reject) => {
+
+        var ref = this.db.collection(tableName).doc(docId);
+        let obj = {};
+        obj[fieldName] = newFieldValue;
+
+       
+        ref.update(obj)
+        .then(function() {
+            resolve("ok");
+        })
+        .catch(function(error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+            reject(error);
+        });
+   });
   }
 
   //where('requester_id', '==', idFresh)

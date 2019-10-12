@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "20190918 - FinLive",
+    "name": "20191008 - FinLive",
     "slug": "FinLiveApp",
     "privacy": "public",
-    "sdkVersion": "32.0.0",
+    "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
       "android"

@@ -57,3 +57,13 @@ export function renderIf(predicate) {
     return predicate ? (isFunction(elemOrThunk) ? elemOrThunk() : elemOrThunk) : null;
   }
 }
+
+export function currencyFormatDE(num, nbDecimals) {
+  return (
+    num
+      .toFixed(nbDecimals) // always two decimal digits
+      .replace('.', ',') // replace decimal point character with ,
+      .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ') 
+      //.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ') + ' €'
+  ) // use . as a separator
+}

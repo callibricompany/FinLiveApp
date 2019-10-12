@@ -4,7 +4,7 @@ import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { globalStyle , tabBackgroundColor, subscribeColor, FLFontFamily} from '../../Styles/globalStyle'
+import { globalStyle , tabBackgroundColor, backgdColor, apeColor, FLFontFamily, subscribeColor} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -22,23 +22,21 @@ const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
 const NAVBAR_HEIGHT = 45;
-//const STATUS_BAR_HEIGHT = Platform.select({ ios: 20, android: 24 });
+//determination de la hauteur des status bar
 const STATUS_BAR_HEIGHT = sizeByDevice(44, 20, StatusBar.currentHeight);
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 
-class BroadcastingScreen extends React.Component {
+class AdminScreen extends React.Component {
  
   constructor(props) {
     super(props);
 
-    //const dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-
+    //utiliser pour dispzarition en-tete
     const scrollAnim = new Animated.Value(0);
     const offsetAnim = new Animated.Value(0);
 
     this.state = {
-      dataSource: data,
 
       //animation barre de recherche
       positionLeft: new Animated.Value(DEVICE_WIDTH), //indicateur si recherche ou pas 
@@ -58,11 +56,18 @@ class BroadcastingScreen extends React.Component {
         0,
         NAVBAR_HEIGHT ,
       ),
+      toto : true,
+      refreshingUsersList : false,
     };
+    this.dataSource = Array(19).fill().map((_, index) => ({id: index}));
+    this.filterOnAir = false;
 
+    //liste de s users
+    this.usersList = [];
+    
   }
 
-
+  
   _clampedScrollValue = 0;
   _offsetValue = 0;
   _scrollValue = 0;
@@ -74,8 +79,20 @@ class BroadcastingScreen extends React.Component {
       );
   }
 
-  componentDidMount() {
 
+  async refreshUsersList () {
+    //chargement des users
+    await this.props.firebase.getUsersList()
+    .then((users) => {
+        this.usersList = users;
+        this.setState({ toto: !this.state.toto, refreshUsersList : false })
+    })
+    .catch((error) => alert(error));
+  }
+
+  componentDidMount() {
+    this.refreshUsersList();
+    
     //StatusBarManager.getHeight(({height}) => console.log("HAUTEUR STATUS BAR : " + height));
     this.state.scrollAnim.addListener(({ value }) => {
       const diff = value - this._scrollValue;
@@ -94,6 +111,8 @@ class BroadcastingScreen extends React.Component {
     this.state.scrollAnim.removeAllListeners();
     this.state.offsetAnim.removeAllListeners();
   }
+
+  
 
   _onScrollEndDrag = () => {
     this._scrollEndTimer = setTimeout(this._onMomentumScrollEnd, 250);
@@ -116,19 +135,50 @@ class BroadcastingScreen extends React.Component {
     }).start();*/
   };
 
-  _renderTicket = (item, id) => {
+  //un utilisateur a été modifié on le met a jour
+  _userUpdated=(idUser, field, newValue) => {
+    let user = this.usersList.filter(({id}) => id === idUser)[0]
+    user[field] = newValue;
+    this.setState({ toto : !this.state.toto });
+  }
+
+  _renderUser = (user, index) => {
+
+    
     return (
-      <ImageBackground key={id} style={styles.row} source={{ uri: item.image }} resizeMode="cover">
-        <Text style={styles.rowText}>{item.title}</Text>
-      </ImageBackground>
+      <View style={[globalStyle.itemTicket, {flexDirection : 'row', width: DEVICE_WIDTH*0.975, borderBottomWidth : 1, borderBottomColor: 'lightgray', height : 50, marginBottom: 5, backgroundColor: user.validated ? 'white' : 'pink'}]}>
+        <View style={{height: 40, width: 40, borderRadius: 40, justifyContent: 'center', alignItems: 'center', backgroundColor:'lavender', margin:5}}>
+           <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 14,  padding: 5}}>
+              {user.independant ? 'I' : null}{user.supervisor ? 'S' : null}{user.admin ? 'A' : null}
+           </Text>
+        </View>
+        <View style={{ flex: 1,justifyContent: 'center'}}>
+           <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 14,  padding: 2}}>
+              {user.firstName} {user.lastName} - <Text style={{fontWeight: '200', fontSize: 12}}>{user.email}</Text>
+           </Text>
+           <Text style={{fontFamily:  FLFontFamily, color : 'gray', fontWeight: '200', fontSize: 12,  padding: 2}}>
+              {user.company} / {user.organization}
+           </Text>
+        </View>
+        <TouchableOpacity style={{width: 40, justifyContent: 'center', alignItems: 'center' }}
+                          onPress={() => {
+                            this.props.navigation.navigate('AdminUser', {
+                              user: user,
+                              updateUser : this._userUpdated
+                            });
+                          }}
+        >
+           <Text style={{fontFamily:  FLFontFamily, color: subscribeColor, fontWeight: '300', fontSize: 13}}>
+              Voir
+           </Text>
+        </TouchableOpacity>
+    </View>
+
     );
-  };
+  }
 
   render() {
     const { clampedScroll } = this.state;
-
-    console.log("RENDER :");
-    console.log(this.state.scrollAnim);
 
     const navbarTranslate = clampedScroll.interpolate({
       inputRange: [0, NAVBAR_HEIGHT ],
@@ -146,19 +196,23 @@ class BroadcastingScreen extends React.Component {
       outputRange: [0, -STATUS_BAR_HEIGHT],
       extrapolate: 'clamp',
     });
-// <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
+
+
     return (
       <SafeAreaView style={{flex : 1, backgroundColor: tabBackgroundColor}}>
 
-      <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH}}>
+      <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH, backgroundColor: backgdColor}}>
         <AnimatedFlatList
-          contentContainerStyle={styles.contentContainer}
-          //dataSource={this.state.dataSource}
-          data={data}
-          renderItem={this._renderRow}
-          keyExtractor={(item) => item.id.toString()}
+          //contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={{alignItems : 'center', marginTop :  20 + NAVBAR_HEIGHT}}
+          //data={this.dataSource}
+          data={this.usersList}
+          extraData={this.state.toto}
+          //renderItem={this._renderRow}
+          keyExtractor={(user) => user.id.toString()}
+          
           renderItem={({item, id}) => (
-            this._renderTicket(item, id)     
+            this._renderUser(item, id)     
           )}
           scrollEventThrottle={1}
           onMomentumScrollBegin={this._onMomentumScrollBegin}
@@ -173,21 +227,29 @@ class BroadcastingScreen extends React.Component {
               <TouchableOpacity onPress={() => {
                       Alert.alert("FinLive SAS","Copyright ©")
                   }}
-                  style={{height : 150, justifyContent: 'center', alignItems: 'center'}}>
+                  style={{height : 100, justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
               </TouchableOpacity>
             );
           }}
+          refreshing={this.state.refreshingUsersList}
+          onRefresh={() => {
+            console.log("Est rafraichi");
+            
+            //this.setState({ refreshing: true }, () => this.props.getUserAllInfo());
+            this.setState({ refreshingUsersList: true }, () => this.refreshUsersList());
+          }}
         />
+ 
 
-        <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
+        <Animated.View style={[styles.navbar, { transform: [{ translateY: this.filterOnAir ? 0 : navbarTranslate }] }]}>
          
         <Animated.View style={{
                   display: 'flex',
                   backgroundColor: tabBackgroundColor,
                   //borderRadius: 3,
                   borderWidth:0,
-                  opacity: navbarOpacity,
+                  opacity: this.filterOnAir ? 1 : navbarOpacity,
                   height: 45,
                   marginTop: 0,
                   width: DEVICE_WIDTH*1,
@@ -196,11 +258,11 @@ class BroadcastingScreen extends React.Component {
                   alignItems: 'center'
                 }}> 
                   <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.925,flexDirection: 'row'}}>   
-                    <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
+                    <View style={{flex:0.9, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
                       <TouchableOpacity onPress={() => {
                                   console.log("qsjhfjhdfjd");
                       }}>
-                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:'white'}}>Test restaus FinLive</Text>    
+                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:'white'}}>Administration</Text>    
                       </TouchableOpacity>
                     </View>   
 
@@ -208,7 +270,7 @@ class BroadcastingScreen extends React.Component {
                          onPress={() => {
                           this.props.navigation.setParams({ hideBottomTabBar : true});
                            this.setState ({ showModalTitle : !this.state.showModalTitle });
-
+                           this.filterOnAir = true;
                             Animated.parallel([
                               Animated.timing(
                                   this.state.positionLeft,
@@ -248,16 +310,7 @@ class BroadcastingScreen extends React.Component {
                             color='white'
                           />
                       </TouchableOpacity>
-                      <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
-                                        onPress={() => {
-                                          alert("Vers ecran des notifs");
-                                        }}> 
-                         <Icon
-                            name='ios-notifications-outline' 
-                            size={25} 
-                            style={{color : 'white'}}
-                          />
-                      </TouchableOpacity>
+     
                     
                   </View>
                   <Animated.View style={{flexDirection:'row', top: 0, width: DEVICE_WIDTH, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
@@ -265,7 +318,7 @@ class BroadcastingScreen extends React.Component {
                           <TouchableOpacity onPress={() => {
                                        //this.setState ({ showModalTitle : !this.state.showModalTitle });
                                        //console.log("SCROLL Y : "+ JSON.stringify(animation.scrollY));
-                                       
+                                       this.filterOnAir = false;
                                        
                                         Animated.parallel([
                                           Animated.timing(
@@ -388,72 +441,10 @@ const composedPricerScreen = compose(
 );
 
 //export default HomeScreen;
-export default hoistStatics(composedPricerScreen)(BroadcastingScreen);
+export default hoistStatics(composedPricerScreen)(AdminScreen);
 
 /*
 
  <Animated.Text style={[styles.title, { opacity: navbarOpacity }]}>
 
  */
-const data = [
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkvHXu_Il/rkvHXu_Il-1100-700.jpg',
-    title: 'Le Brûloir',
-    id :1
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkTnGunIx/rkTnGunIx-1100-700.jpg',
-    title: 'Le Petit Brûloir',
-    id : 2
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/HknxZ9awg/HknxZ9awg-1100-700.jpg',
-    title: 'Oui Mais Non',
-    id : 3
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'PERKO',
-    id : 4
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'Perko',
-    id : 5
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/B1XmNBmLe/B1XmNBmLe-1100-700.jpg',
-    title: 'Café Saint-Henri | Marché Jean-Talon',
-    id : 12
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkvHXu_Il/rkvHXu_Il-1100-700.jpg',
-    title: 'Le Brûloir',
-    id : 6
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkTnGunIx/rkTnGunIx-1100-700.jpg',
-    title: 'Le Petit Brûloir',
-    id : 7
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/HknxZ9awg/HknxZ9awg-1100-700.jpg',
-    title: 'Oui Mais Non',
-    id : 8
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'PERKO',
-    id : 9
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'Perko',
-    id : 10
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/B1XmNBmLe/B1XmNBmLe-1100-700.jpg',
-    title: 'Café Saint-Henri | Marché Jean-Talon',
-    id : 11
-  },
-];

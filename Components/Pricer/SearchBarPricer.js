@@ -55,21 +55,13 @@ export default class SearchBarPricer extends Component {
       }
   }
 
-  blurInputs(stateBar) {
-    if (this.inputSearch !== null && this.inputSearch !== undefined) {
-      //console.log("BLUR BLUR BLUR : "+ stateBar);
-      //console.log("BLUR BLUR BLUR : "+ this.inputSearch);
-    }
-    //this.inputSearch.blur();
-    //this.inputLocation.blur();
-   // this.props.changeInputFocus(false);
-  }
+  
 
   render() {
     const { animation, changeInputFocus, renderTabBar } = this.props;
 
     const transformWrapper = animation.getTransformWrapper(-13, false);
-    const transformSearchBar = animation.getTransformSearchBar(this.blurInputs, animation.stateBar);
+    const transformSearchBar = animation.getTransformSearchBar();
     const opacitySearchBar = animation.getOpacitySearchBar();
     const opacityLocationInput = animation.getOpacityLocationInput();
     const arrowMinimizeStyle = animation.getArrowMinimizeStyle();

@@ -1,21 +1,21 @@
 [
     {
-      "name": "Faible",
+      "name": "Normal",
       "id": 1,
       "color" : "lightgreen"
     },
     {
-      "name": "Moyenne",
+      "name": "Rapide",
       "id": 2,
       "color" : "darkcyan"
     },
     {
-      "name": "Elevée",
+      "name": "Accéléré",
       "id": 3,
       "color" : "lightpink"
     },
     {
-      "name": "Urgente",
+      "name": "Urgent",
       "id": 4,
       "color" : "red"
     }

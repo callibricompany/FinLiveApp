@@ -7,13 +7,13 @@ import NewsList from '../Components/Home/NewsList'
 import NewsDetail from '../Components/Home/NewsDetail'
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
 import PricerScreen from '../Components/Pricer/PricerScreen'
-import FLTicketPS from '../Components/Pricer/FLTicketPS'
+import FLAutocallDetail from '../Components/Pricer/FLAutocallDetail'
 import ProfileScreen from '../Components/ProfileScreen'
-import TicketsList from '../Components/Ticket/TicketsList'
-//import TicketDetail from '../Components/Ticket/TicketDetail'
-import TicketDetail from '../Components/Ticket/SearchScreen'
+import TicketScreen from '../Components/Ticket/TicketScreen'
+import FLTicketDetail from '../Components/Ticket/FLTicketDetail'
 import BroadcastingScreen from '../Components/Broadcast/BroadcastingScreen'
-import AdminScreen from '../Components/AdminScreen'
+import AdminScreen from '../Components/Admin/AdminScreen'
+import AdminUser from '../Components/Admin/AdminUser'
 
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -58,6 +58,7 @@ function labelStyle (focused, tintColor) {
 
     Home: {
       screen: HomeScreen,
+      //screen: NewsList,
     },
     NewsList: {
       screen: NewsList
@@ -68,8 +69,8 @@ function labelStyle (focused, tintColor) {
     NewsDetailWeb : {
       screen: NewsDetailWeb
     },
-    FLTicketPS : {
-      screen : FLTicketPS
+    FLAutocallDetail : {
+      screen : FLAutocallDetail
     }
   }, 
   {
@@ -87,26 +88,20 @@ function labelStyle (focused, tintColor) {
         title: 'Evaluer'
       },
     },
-    FLTicketPS : {
-      screen : FLTicketPS
+    FLAutocallDetail : {
+      screen : FLAutocallDetail
     }
   })
   
   //Ecran ticket
   const TicketScreenStack = createStackNavigator({
     Tickets: {
-      screen: TicketsList,
-      navigationOptions: {
-        title: 'Tickets'
-      }
+      screen: TicketScreen,
     },
-    TicketDetail: {
-      screen: TicketDetail,
-      headerMode: 'none',
-      navigationOptions: {
-        headerVisible: false,
-      }
+    FLTicketDetail : {
+      screen : FLTicketDetail
     }
+
     })
     //Ecran broadcast
     const BroadcastingScreenStack = createStackNavigator({
@@ -132,10 +127,9 @@ function labelStyle (focused, tintColor) {
   const AdminScreenStack = createStackNavigator({
     Admin: {
       screen: AdminScreen,
-      navigationOptions: {
-        title: 'Admin',
-    //    headerVisible: false
-      }
+    },
+    AdminUser : {
+      screen : AdminUser
     }
     })
   
@@ -144,38 +138,7 @@ function labelStyle (focused, tintColor) {
   const TABS = {
       Accueil: {
         screen: HomeScreenStack,
-        navigationOptions: {
-          tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-            return (
-            //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
-            <View  style={{
-                        borderWidth:0,
-                        //borderColor:'rgba(0,0,0,0.2)',
-                        alignItems:'center',
-                        justifyContent:'center',
-                        width:40,
-                        height:40,
-                        backgroundColor:tintColor,
-                        borderRadius:50,
-                      }}
-                  >
-                  <FontAwesomeI
-                  name='home'
-                  size={30}
-                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-              />
-              </View>
-            );
-          },
-          tabBarLabel: ({ focused, tintColor }) => {
-            return (
-              <View style={{alignItems:'center', justifyContent:'center'}}>
-              <Text style={labelStyle(focused,tintColor)}>Accueil</Text>
-              </View>
-            );
-            },
-          //tabBarVisible: false,
-        }
+
       },
       Pricer: {
         screen: PricerScreenStack,
@@ -214,43 +177,6 @@ function labelStyle (focused, tintColor) {
       },
       Tickets: {
         screen: TicketScreenStack,
-        navigationOptions: {
-        
-        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-          return (
-          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
-          <View  style={{
-                      borderWidth:0,
-                      //borderColor:'rgba(0,0,0,0.2)',
-                      alignItems:'center',
-                      justifyContent:'center',
-                      width:40,
-                      height:40,
-                      backgroundColor:tintColor,
-                      borderRadius:50,
-                    }}
-                >
-                {/*<FontAwesomeI
-                name='ticket'
-                size={30}
-                style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-                />*/}
-             <MaterialCommunityIconsI
-                  name='radio-tower'
-                  size={30}
-                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-              />    
-            </View>
-          );
-        },
-        tabBarLabel: ({ focused, tintColor }) => {
-          return (
-            <View style={{alignItems:'center', justifyContent:'center'}}>
-            <Text style={labelStyle(focused,tintColor)}>Live</Text>
-            </View>
-          );
-          }
-        }
       },
       Broadcasting: {
         screen: BroadcastingScreenStack,
@@ -278,7 +204,7 @@ function labelStyle (focused, tintColor) {
               />*/}
                  <Icon 
                       size={30}
-                      name='ios-notifications' 
+                      name='ios-podium' 
                       style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
                     />
               </View>
@@ -287,7 +213,7 @@ function labelStyle (focused, tintColor) {
           tabBarLabel: ({ focused, tintColor }) => {
             return (
               <View style={{alignItems:'center', justifyContent:'center'}}>
-              <Text style={labelStyle(focused,tintColor)}>Alertes</Text>
+              <Text style={labelStyle(focused,tintColor)}>Stats</Text>
               </View>
             );
             }
@@ -418,7 +344,53 @@ function labelStyle (focused, tintColor) {
       tabBarVisible
     }
   }
+  TABS['Tickets'].navigationOptions = ({ navigation }) => {
+    const { state: { routes, index } } = navigation;
+    let tabBarVisible = true;
 
+    if(routes[index].routeName === 'Tickets'){
+      if (typeof routes[index].params !== 'undefined') {
+          tabBarVisible = !routes[index].params['hideBottomTabBar'];
+      }
+      
+    }
+    return {
+ 
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View  style={{
+                      borderWidth:0,
+                      //borderColor:'rgba(0,0,0,0.2)',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      width:40,
+                      height:40,
+                      backgroundColor:tintColor,
+                      borderRadius:50,
+                    }}
+                >
+             <MaterialCommunityIconsI
+                  //name='radio-tower'
+                  name='ticket-outline'
+                  size={30}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
+              />   
+            </View>
+          );
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <View style={{alignItems:'center', justifyContent:'center'}}>
+            <Text style={labelStyle(focused,tintColor)}>Tickets</Text>
+            </View>
+          );
+          },
+        //tabBarVisible: false,
+   
+      tabBarVisible
+    }
+  }
   export function  AppFinLiveTabs (role) {
         let tabs = {};
         if (role === ROLES.ADMIN) {

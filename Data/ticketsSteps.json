@@ -1,0 +1,372 @@
+[
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPDVB",
+    "stepUnsolved": "Définition des besoins",
+    "stepSolved": "Acceptation de la proposition produit",
+    "nextCodeStep": "PPDCC",
+    "freshdeskStep": "Définition des besoins (PPDVB)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPDCC",
+    "stepUnsolved": "Demande de cotation en cours auprès des contreparties",
+    "stepSolved": "Réception des prix de marché",
+    "nextCodeStep": "PPACO",
+    "freshdeskStep": "Demande de cotation en cours auprès des contreparties (PPDCC)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPACO",
+    "stepUnsolved": "Acceptation de la meilleure offre",
+    "stepSolved": "Offre refusée",
+    "nextCodeStep": "PPSDRO",
+    "freshdeskStep": "Acceptation de la meilleure offre (PPACO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPACO",
+    "stepUnsolved": "Acceptation de la meilleure offre",
+    "stepSolved": "Offre acceptée à un prix convenu",
+    "nextCodeStep": "PPFPI",
+    "freshdeskStep": "Acceptation de la meilleure offre (PPACO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPACO",
+    "stepUnsolved": "Acceptation de la meilleure offre",
+    "stepSolved": "Offre échue",
+    "nextCodeStep": "PPSDSE",
+    "freshdeskStep": "Acceptation de la meilleure offre (PPACO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPSDRO",
+    "stepUnsolved": "Suite à donner au refus de l'offre",
+    "stepSolved": "Annuler la demande",
+    "nextCodeStep": "PPDPA",
+    "freshdeskStep": "Suite à donner au refus de l'offre (PPSDRO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPSDRO",
+    "stepUnsolved": "Suite à donner au refus de l'offre",
+    "stepSolved": "Redéfinir mes besoins",
+    "nextCodeStep": "PPDVB",
+    "freshdeskStep": "Suite à donner au refus de l'offre (PPSDRO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPSDSE",
+    "stepUnsolved": "Suite à donner suite à l'échéance de l'offre",
+    "stepSolved": "Redemander une cotation de mon produit",
+    "nextCodeStep": "PPDCC",
+    "freshdeskStep": "Suite à donner suite à l'échéance de l'offre (PPSDSE)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPSDSE",
+    "stepUnsolved": "Suite à donner suite à l'échéance de l'offre",
+    "stepSolved": "Annuler la demande",
+    "nextCodeStep": "PPDPA",
+    "freshdeskStep": "Suite à donner suite à l'échéance de l'offre (PPSDSE)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPFPI",
+    "stepUnsolved": "Fiche produit indicative en cours d'élaboration",
+    "stepSolved": "Fiche produit indicative envoyée",
+    "nextCodeStep": "PPEEC",
+    "freshdeskStep": "Fiche produit indicative en cours d'élaboration (PPFPI)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPEEC",
+    "stepUnsolved": "Envoi d'un email de confirmation",
+    "stepSolved": "Réception de l'Email",
+    "nextCodeStep": "PPAID",
+    "freshdeskStep": "Envoi d'un email de confirmation (PPEEC)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPAID",
+    "stepUnsolved": "Attente des informations de votre dépositaire",
+    "stepSolved": "Informations dépositaire envoyées",
+    "nextCodeStep": "PPOOO",
+    "freshdeskStep": "Attente des informations de votre dépositaire (PPAID)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPOOO",
+    "stepUnsolved": "Passage d'ordre - Ordre d'achat dépositaire - Ordre de marché",
+    "stepSolved": "Ordre traité",
+    "nextCodeStep": "PPFPF",
+    "freshdeskStep": "Passage d'ordre - Ordre d'achat dépositaire - Ordre de marché (PPOOO)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPFPF",
+    "stepUnsolved": "Fiche définitive produit en cours d'élaboration - Rafraichissement du prix - Envoi des documents legaux KIID",
+    "stepSolved": "Fiche produit finale envoyée",
+    "nextCodeStep": "PPCRL",
+    "freshdeskStep": "Fiche définitive produit en cours d'élaboration - Rafraichissement du prix - Envoi des documents legaux KIID (PPFPF)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPCRL",
+    "stepUnsolved": "Confirmation du réglement livraison",
+    "stepSolved": "Réglement livraison confirmé",
+    "nextCodeStep": "PPSUC",
+    "freshdeskStep": "Confirmation du réglement livraison (PPCRL)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPSUC",
+    "stepUnsolved": "Produit traité avec succés",
+    "stepSolved": "",
+    "nextCodeStep": "PPEND",
+    "freshdeskStep": "Produit traité avec succés (PPSUC)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Placement Privé",
+    "codeOperation": "pp",
+    "codeStep": "PPDPA",
+    "stepUnsolved": "Demande de produit annulée",
+    "stepSolved": "",
+    "nextCodeStep": "PPEND",
+    "freshdeskStep": "Demande de produit annulée (PPDPA)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEDVB",
+    "stepUnsolved": "Définition des besoins",
+    "stepSolved": "Acceptation de la proposition produit",
+    "nextCodeStep": "APEDCC",
+    "freshdeskStep": "Définition des besoins (APEDVB)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEDCC",
+    "stepUnsolved": "Demande de cotation en cours auprès des contreparties",
+    "stepSolved": "Réception des prix de marché",
+    "nextCodeStep": "APEACO",
+    "freshdeskStep": "Demande de cotation en cours auprès des contreparties (APEDCC)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEACO",
+    "stepUnsolved": "Acceptation de la meilleure offre",
+    "stepSolved": "Offre refusée",
+    "nextCodeStep": "APESDRO",
+    "freshdeskStep": "Acceptation de la meilleure offre (APEACO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEACO",
+    "stepUnsolved": "Acceptation de la meilleure offre",
+    "stepSolved": "Offre acceptée à un prix convenu",
+    "nextCodeStep": "APEFPI",
+    "freshdeskStep": "Acceptation de la meilleure offre (APEACO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEACO",
+    "stepUnsolved": "Acceptation de la meilleure offre",
+    "stepSolved": "Offre échue",
+    "nextCodeStep": "APESDSE",
+    "freshdeskStep": "Acceptation de la meilleure offre (APEACO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APESDRO",
+    "stepUnsolved": "Suite à donner au refus de l'offre",
+    "stepSolved": "Annuler la demande",
+    "nextCodeStep": "APEDPA",
+    "freshdeskStep": "Suite à donner au refus de l'offre (APESDRO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APESDRO",
+    "stepUnsolved": "Suite à donner au refus de l'offre",
+    "stepSolved": "Redéfinir mes besoins",
+    "nextCodeStep": "APEDVB",
+    "freshdeskStep": "Suite à donner au refus de l'offre (APESDRO)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APESDSE",
+    "stepUnsolved": "Suite à donner suite à l'échéance de l'offre",
+    "stepSolved": "Redemander une cotation de mon produit",
+    "nextCodeStep": "APEDCC",
+    "freshdeskStep": "Suite à donner suite à l'échéance de l'offre (APESDSE)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APESDSE",
+    "stepUnsolved": "Suite à donner suite à l'échéance de l'offre",
+    "stepSolved": "Annuler la demande",
+    "nextCodeStep": "APEDPA",
+    "freshdeskStep": "Suite à donner suite à l'échéance de l'offre (APESDSE)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEFPI",
+    "stepUnsolved": "Fiche produit indicative en cours de rédaction",
+    "stepSolved": "Fiche produit indicative envoyé",
+    "nextCodeStep": "APECAV",
+    "freshdeskStep": "Fiche produit indicative en cours de rédaction (APEFPI)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APECAV",
+    "stepUnsolved": "Contact des assureurs pour validation",
+    "stepSolved": "Accord de principe des assureurs",
+    "nextCodeStep": "APEFPF",
+    "freshdeskStep": "Contact des assureurs pour validation (APECAV)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEFPF",
+    "stepUnsolved": "Fiche définitive produit en cours d'élaboration - Rafraichissement du prix - Envoi des documents legaux KIID",
+    "stepSolved": "Fiche produit définitive envoyé",
+    "nextCodeStep": "APEEXC",
+    "freshdeskStep": "Fiche définitive produit en cours d'élaboration - Rafraichissement du prix - Envoi des documents legaux KIID (APEFPF)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEEXC",
+    "stepUnsolved": "Exclusivité de la campagne",
+    "stepSolved": "Définition de l'exclusivité",
+    "nextCodeStep": "APEEEC",
+    "freshdeskStep": "Exclusivité de la campagne (APEEXC)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEEEC",
+    "stepUnsolved": "Réception d'un ordre ferme par mail",
+    "stepSolved": "Mail recu",
+    "nextCodeStep": "APEAMF",
+    "freshdeskStep": "Réception d'un ordre ferme par mail (APEEEC)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEAMF",
+    "stepUnsolved": "Attente d'accord AMF",
+    "stepSolved": "Accord AMF",
+    "nextCodeStep": "APEDCC",
+    "freshdeskStep": "Attente d'accord AMF (APEAMF)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEDCC",
+    "stepUnsolved": "Diffusion de la campagne auprès de la communauté",
+    "stepSolved": "Campagne broadcasté auprés des membres",
+    "nextCodeStep": "APEESRP",
+    "freshdeskStep": "Diffusion de la campagne auprès de la communauté (APEDCC)",
+    "userTrigger": true
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEESRP",
+    "stepUnsolved": "Enregistrement des souscriptions - Refresh des prix de produits potentiel",
+    "stepSolved": "Campagne achevée",
+    "nextCodeStep": "APECRL",
+    "freshdeskStep": "Enregistrement des souscriptions - Refresh des prix de produits potentiel (APEESRP)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APECRL",
+    "stepUnsolved": "Attente de réglement livraison",
+    "stepSolved": "Livraison réglement confirmé",
+    "nextCodeStep": "APESUC",
+    "freshdeskStep": "Attente de réglement livraison (APECRL)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APESUC",
+    "stepUnsolved": "Campagne achevée avec succès",
+    "stepSolved": "",
+    "nextCodeStep": "APEEND",
+    "freshdeskStep": "Campagne achevée avec succès (APESUC)",
+    "userTrigger": false
+  },
+  {
+    "operation": "Appel public à l'épargne",
+    "codeOperation": "ape",
+    "codeStep": "APEDPA",
+    "stepUnsolved": "Demande de produit annulée",
+    "stepSolved": "",
+    "nextCodeStep": "APEEND",
+    "freshdeskStep": "Demande de produit annulée (APEDPA)",
+    "userTrigger": false
+  }
+]

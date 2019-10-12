@@ -121,11 +121,10 @@ export function ssCreateStructuredProduct (idToken, product) {
 
   Object.keys(product).forEach(key => {
     //console.log(key + "   -   " + product[key]);
-    form.append(key, product[key]);
+    form.append(key, typeof product[key] != 'boolean' ? product[key] : product[key].toString());
   });
 
 
-  //console.log(product);
   //console.log("BOUNDARY : "+form._boundary);
   //var filesuploaded = req.files;
   /*console.log(req.files);
@@ -145,7 +144,7 @@ export function ssCreateStructuredProduct (idToken, product) {
       'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
       //'Accept'      : 'application/json',
       'bearer'      : idToken,
-      'type'        : 'Produit structuré'
+      //'type'        : 'Produit structuré'
     }
   };
 
@@ -154,7 +153,7 @@ export function ssCreateStructuredProduct (idToken, product) {
     (resolve, reject) => {
       axios.post(URL_AWS + '/createTicket', form, axiosConfig)
       .then((response) => {
-        console.log("Succes : " + response);
+        //console.log(response);
         resolve(response)
         //res.render('pages/register',{email: email, isConnected: isConnected});
       })
@@ -165,6 +164,37 @@ export function ssCreateStructuredProduct (idToken, product) {
     });
   }
 
+
+export function ssModifyTicket (idToken, product) {
+
+    var FormData = require('form-data');
+    var form = new FormData();
+  
+
+
+    var axiosConfig = {
+      headers :{
+        //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+        'bearer'      : idToken,
+      }
+    };
+  
+  
+    return new Promise(
+      (resolve, reject) => {
+        axios.post(URL_AWS + '/modifyticket', product, axiosConfig)
+        .then((response) => {
+          //console.log(response);
+          resolve(response)
+          //res.render('pages/register',{email: email, isConnected: isConnected});
+        })
+        .catch(function (error) {
+          console.log("Erreur requete aws (modifyticket): " + error);
+          reject(error)
+        });
+      });
+    }
+  
 export function getUserAllInfoAPI (idToken) {
   var axiosConfig = {
     headers :{

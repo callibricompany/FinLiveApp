@@ -10,6 +10,7 @@ export const tabBackgroundColor = '#597fab'; //'#13223C'; //'whitesmoke';  //gho
 export const generalFontColor = 'white'; //#707070
 
 export const headerTabColor = '#13223C'; //'#749B14';
+export const apeColor = '#749B14';
 export const selectElementTab = '#13223C';//'#87B916';
 export const progressBarColor = '#87B916';
 
@@ -48,22 +49,24 @@ const globalStyle = StyleSheet.create({
       borderBottomWidth : 1,
       height: sizeByDevice(80, 65, 65 - STATUSBAR_HEIGHT),
       marginTop: 0,
+      backgroundColor : 'white',
       //flexWrap: "nowrap",
     },
 
     header_left_view : {
       //marginRight: 0.05*DEVICE_WIDTH, 
       //height: 40, 
-      //width: DEVICE_WIDTH/4,  
+       width: DEVICE_WIDTH/4,  
       //borderRadius: 20,
       justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'transparent',
-      //backgroundColor: 'transparent'
+      alignItems: 'flex-start',
+      
+      //backgroundColor: 'pink',
+      backgroundColor: 'transparent'
     },
     header_center_view : {
       width: DEVICE_WIDTH/2,  
-      backgroundColor: 'pink',
+      //backgroundColor: 'pink',
       justifyContent : 'center',
       alignItems: 'center',
       flexWrap: "nowrap",
@@ -75,7 +78,8 @@ const globalStyle = StyleSheet.create({
       width: DEVICE_WIDTH/4,  
       //borderRadius: 20,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'flex-end',
+      
       //backgroundColor: 'steelblue'
       backgroundColor: 'transparent'
     },
@@ -87,12 +91,12 @@ const globalStyle = StyleSheet.create({
     header_left_text_medium : {
       color: 'black', 
       fontSize:18,
-      fontWeight : '300',
+      fontWeight : '600',
       alignItems : 'flex-start'
     },
     header_center_text_medium : {
-      color: 'black', 
-      fontWeight : '300',
+      color: tabBackgroundColor, 
+      fontWeight : '400',
       fontSize:16,
     },
 
@@ -100,7 +104,7 @@ const globalStyle = StyleSheet.create({
 
     header_icon : { 
       backgroundColor:'transparent',
-      color: 'black'
+      color: tabBackgroundColor,
     },
 
 ///////////////////////////////
@@ -207,6 +211,31 @@ news_detail_image : {
     swipesGestureContainer:{
       height:'100%',
       width:'100%'
+    },
+
+///////////////////////////////
+//        ITEM TEMPLATE TICKET
+/////////////////////////////// 
+    itemTicket: {
+      //height: 150,
+      //backgroundColor: '#fff',
+      marginBottom: 20,
+      shadowColor: 'rgb(75, 89, 101)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.9,
+
+    },
+
+///////////////////////////////
+//        STYLE FLAT LIST
+/////////////////////////////// 
+    wrapperFlatList: {
+      //paddingLeft: 15,
+      //paddingRight: 15,
+      //justifyContent : 'center',
+      alignItems: 'center',
+      marginTop: Platform.OS === 'ios' ? -60+45 : -25+45,
+      
     }
 
     

@@ -11,9 +11,9 @@ import {
 
 export default class SearchBar extends Component {
   blurInputs() {
-    this.inputSearch.blur();
+    //this.inputSearch.blur();
     //this.inputLocation.blur();
-    this.props.changeInputFocus(false);
+    //this.props.changeInputFocus(false);
   }
 
   render() {

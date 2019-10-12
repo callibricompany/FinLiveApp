@@ -19,10 +19,11 @@ export class FLProductDetail extends Component{
         super(props);
 
         this.state = { 
-            currentChoice : STRUCTUREDPRODUCTS.findIndex(obj => obj.id == this.props.initialValue),
+            //currentChoice : STRUCTUREDPRODUCTS.findIndex(obj => obj.id == this.props.initialValue),
+            currentChoice : this.props.initialValue,
 
         }
-        
+
         this.productType = [];
         let obj = {};
         //remplissage type demande
@@ -82,7 +83,11 @@ export class FLProductDetail extends Component{
                                 obj={type}
                                 index={i}
                                 labelHorizontal={true}
-                                onPress={() => console.log()}
+                             onPress={(itemValue) =>{
+                                    //console.log(i +"-ITEM VALUE : "+itemValue);
+                                    this.setState({ currentChoice : this.productType[i].value}, () => {
+                                      this.props.updateValue("type", this.productType[i].value, this.productType[i].label);});
+                                  }}
                                 labelStyle={{fontSize: 16, fontFamily : FLFontFamily, color: 'black', marginTop: 10}}
                                 labelWrapStyle={{}}
 

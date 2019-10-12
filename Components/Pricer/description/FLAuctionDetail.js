@@ -24,11 +24,11 @@ export class FLAuctionDetail extends Component{
         //remplissage type demande
         let obj = {};
         obj["value"] = "PP";
-        obj["label"] = "Placement privé";
+        obj["label"] = "Placement Privé";
         this.auctionType.push(obj);
         obj = {};
         obj["value"] = "APE";
-        obj["label"] = "Appel Public à l'Epargne";
+        obj["label"] = "Appel public à l'épargne";
         this.auctionType.push(obj);
         //obj = {};
         //obj["value"] = "IP";

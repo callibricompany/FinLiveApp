@@ -46,8 +46,7 @@ import { FLAirbagDetail } from './description/FLAirbagDetail';
 import { FLDegressiveDetail } from './description/FLDegressiveDetail';
 
 import { SNAP_POINTS_FROM_TOP } from '../commons/FLBottomPanel';
-import UNDERLYINGS from '../../Data/subCategories.json'
-import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
+
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
 
 import * as TICKET_TYPE from '../../constants/template'
@@ -82,7 +81,7 @@ class TabPricer extends React.PureComponent {
       //console.log("2 : " + SNAP_POINTS_FROM_TOP[2]);
 
       //recuperation de la liste des sous-jacents
-      this.underlyings = this.props.allInfo.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
+      this.underlyings = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
       
 
       this.dataSource = Array(9).fill().map((_, index) => ({id: index}));
@@ -102,6 +101,8 @@ class TabPricer extends React.PureComponent {
         console.log(id + "  :  "+value+"  :  "+valueLabel);
         this.product[id].value = value;
         this.product[id].valueLabel = valueLabel;
+
+
         //mise a jour de produit dans pricerScreen
         this.props.parameterProductUpdated(this.product);
         
@@ -163,11 +164,11 @@ class TabPricer extends React.PureComponent {
   
       let isActivated = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated;
       let isMandatory = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isMandatory;
-      
+      let isLocked = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isLocked; 
 
       return (
         <View style={{flexDirection: 'column',height: (DEVICE_WIDTH*0.925-20)/3 +hShift, width: (DEVICE_WIDTH*0.925-20)/3, marginLeft : id % 3 === 0 ? 0 : 5,  marginRight : (id -2) % 3 === 0 ? 0 : 5, marginBottom: 5, marginTop : marginShift,
-                      backgroundColor: isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue'
+                      backgroundColor: isLocked ? 'pink' : isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue'
                     }}
         >
           <View style={{height: 35, borderBottomWidth : 1, borderBottomColor : 'aliceblue', padding: 2, justifyContent: 'center', alignItems: 'center',flexGrow: 1}}>
@@ -178,42 +179,42 @@ class TabPricer extends React.PureComponent {
           <TouchableOpacity onPress={() => {
               //on souleve ou abaisse le bottom panel si on e-active sinon on desactive le panneau
               //console.log("Current posiion : "+ this.state.bottomPanelPosition);
-              if (isMandatory) {
-                this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[this.state.bottomPanelPosition === SNAP_POINTS_FROM_TOP[2] ? 1 : this.currentParameters === PARAMETERSSTRUCTUREDPRODUCT[id].name ? 2 : 1] });
-              } else {
-                if (this.state.bottomPanelPosition === SNAP_POINTS_FROM_TOP[2]) {
-                  //le panel est en bas et on le remonte et on active le produit
-                  this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
-                  this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated  =true;
-                } else {
-                  //le panel est deja remonte 
-                  //on a appuye sur l'element en cours on cache le panel et on desactive
-                  if (this.currentParameters === PARAMETERSSTRUCTUREDPRODUCT[id].name) {
-                    this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[2] });
-                    //this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated = !isActivated;
+              if (!isLocked) {
+                
+              
+                  if (isMandatory) {
+                    this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[this.state.bottomPanelPosition === SNAP_POINTS_FROM_TOP[2] ? 1 : this.currentParameters === PARAMETERSSTRUCTUREDPRODUCT[id].name ? 2 : 1] });
                   } else {
-                    this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated  =true;
+                    if (this.state.bottomPanelPosition === SNAP_POINTS_FROM_TOP[2]) {
+                      //le panel est en bas et on le remonte et on active le produit
+                      this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                      this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated  =true;
+                    } else {
+                      //le panel est deja remonte 
+                      //on a appuye sur l'element en cours on cache le panel et on desactive
+                      if (this.currentParameters === PARAMETERSSTRUCTUREDPRODUCT[id].name) {
+                        this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[2] });
+                        //this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated = !isActivated;
+                      } else {
+                        this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated  =true;
+                      }
+                    }
                   }
-                }
+      
+                  //on indique quel est le parametre en cours
+                  setTimeout(() => {
+                    this.currentParameters = PARAMETERSSTRUCTUREDPRODUCT[id].name;
+                    //forcage re-render pour bug
+                    this.setState({ toto : !this.state.toto })
+                  }, 100);
+                  
+
+                  //mise a jour de produit dans pricerScreen
+                  this.props.parameterProductUpdated(this.product);
+
+                  //on indique qu'un refresh est necesssire
+                  //this.props.needToRefresh();
               }
-  
-              //on indique quel est le parametre en cours
-              setTimeout(() => {
-                this.currentParameters = PARAMETERSSTRUCTUREDPRODUCT[id].name;
-                //forcage re-render pour bug
-                this.setState({ toto : !this.state.toto })
-               }, 100);
-              
-
-              //mise a jour de produit dans pricerScreen
-              this.props.parameterProductUpdated(this.product);
-
-              //on indique qu'un refresh est necesssire
-              //this.props.needToRefresh();
-            
-
-
-              
             }} 
             style={{height: hShift + 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, paddingTop: 7, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}
           >

@@ -43,11 +43,6 @@ import botImage from '../../assets/bot.png'
 
 import { searchProducts } from '../../API/APIAWS';
 
-import UNDERLYINGS from '../../Data/subCategories.json'
-import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
-
-import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
-
 import Dimensions from 'Dimensions';
 
 
@@ -82,7 +77,7 @@ class PricerScreen extends React.Component {
       currentTab: 'tabPricerParameters',
       routes: [
         { key: 'tabPricerParameters', title: 'Sur-mesure' },
-        { key: 'tabPricerResults', title: 'Résultats' },
+        { key: 'tabPricerResults', title: 'Propositions' },
         { key: 'tabPricerUF', title: 'Par' }
       ],
       messageLoading : this.initialMessageLoading,
@@ -96,10 +91,11 @@ class PricerScreen extends React.Component {
     this.product = {
       'typeAuction': {
         'value': 'PP',
-        'valueLabel': 'Placement privé',
+        'valueLabel': 'Placement Privé',
         'defaultValueLabel': 'Optimisé',
         'title': 'TYPE DE DEMANDE',
         'isActivated': true,
+        'isLocked': false,
         'isMandatory': true,
       },
       'type': {
@@ -108,6 +104,7 @@ class PricerScreen extends React.Component {
         'defaultValueLabel': 'Optimisé',
         'title': 'CHOIX DU PRODUIT',
         'isActivated': false,
+        'isLocked': false,
         'isMandatory': false,
       },
       'underlying': {
@@ -116,6 +113,7 @@ class PricerScreen extends React.Component {
         'defaultValueLabel': 'Optimisé',
         'title': 'SOUS-JACENT',
         'isActivated': true,
+        'isLocked': false,
         'isMandatory': false,
       },
       'maturity': {
@@ -124,6 +122,7 @@ class PricerScreen extends React.Component {
         'defaultValueLabel': 'Optimisé',
         'title': 'MATURITE',
         'isActivated': true,
+        'isLocked': false,
         'isMandatory': false,
       },
       'barrierPDI': {
@@ -132,22 +131,25 @@ class PricerScreen extends React.Component {
         'defaultValueLabel': 'Optimisé',
         'title': 'PROTECTION DU CAPITAL',
         'valueLabel': Numeral(0.6).format('0%'),
+        'isLocked': false,
         'isMandatory': false,
       },
       'freq': {
         'value': "1Y",
-        'isActivated': false,
+        'isActivated': true,
         'defaultValueLabel': 'Optimisé',
         'title': 'FREQUENCE',
         'valueLabel': '1 an',
+        'isLocked': false,
         'isMandatory': false,
       },
       'barrierPhoenix': {
-        'value': 1,
+        'value': 0.8,
         'isActivated': false,
         'defaultValueLabel': 'Optimisé',
-        'valueLabel': Numeral(1).format('0%'),
+        'valueLabel': Numeral(0.8).format('0%'),
         'title': 'PROTECTION DES COUPONS',
+        'isLocked': false,
         'isMandatory': false,
       },
       'airbagLevel': {
@@ -156,6 +158,7 @@ class PricerScreen extends React.Component {
         'defaultValueLabel': 'Optimisé',
         'valueLabel': 'Aucun airbag',
         'title': 'EFFET AIRBAG',
+        'isLocked': false,
         'isMandatory': false,
       },
 
@@ -166,6 +169,7 @@ class PricerScreen extends React.Component {
         'defaultValueLabel': 'Optimisé',
         'valueLabel': 'Pas de dégressivité',
         'title': 'DEGRESSIVITE',
+        'isLocked': false,
         'isMandatory': false,
       },
       'isMemory': {
@@ -175,6 +179,7 @@ class PricerScreen extends React.Component {
         'valueLabel': '',
         'title': 'EFFET MEMOIRE',
         'isMandatory': false,
+        'isLocked': false,
       },
       'isPDIUS': {
         'value': false,
@@ -183,6 +188,7 @@ class PricerScreen extends React.Component {
         'valueLabel': '',
         'title': 'AMERICAIN',
         'isMandatory': false,
+        'isLocked': false,
       },
 
       //pas de choix pour le user
@@ -249,7 +255,25 @@ class PricerScreen extends React.Component {
     let criteria = {};
     this.product.underlying.isActivated ? criteria['underlying'] = this.product.underlying.value : null;
     this.product.freq.isActivated ? criteria['freqAutocall'] = this.product.freq.value : null;
-    this.product.type.isActivated ? criteria['product'] = [this.product.type.value] : null;
+    /*if (this.product.type.isActivated) {
+      if (this.product.type.value === 'incrementalAutocall') {
+        criteria['isIncremental'] = true;
+      }
+      if (this.product.type.value === 'memoryPhoenix') {
+        criteria['isMemory'] = true;
+      }
+      if (this.product.type.value === 'classicPhoenix') {
+        criteria['isMemory'] = false;
+        criteria['isIncremental'] = false;
+        criteria['barrierPhoenix'] = [0, 1];
+      }
+      if (this.product.type.value === 'airbagAutocall') {
+        criteria['isMemory'] = false;
+        criteria['barrierPhoenix'] = [1, 1];
+        criteria['isIncremental'] = this.product.type.value === 'classicAutocall' ? false : true;
+      }
+    }*/
+    //this.product.type.isActivated ? criteria['product'] = [this.product.type.value] : null;
     console.log(criteria);
     
     //criteria['maturity'] = ["3Y", "5Y", "8Y"];
@@ -257,9 +281,8 @@ class PricerScreen extends React.Component {
       .then(token => {
         searchProducts(token, criteria)
           .then((data) => {
-            //console.log("USER CREE AVEC SUCCES DANS ZOHO");
             this.setState({ messageLoading : this.eleborateMessageLoading('Réception et analyse des prix')});
-            console.log(data[1]);
+            //console.log(data[1]);
             this.interpolateBestProducts(data);
             //console.log(data);
             //this.onRegisterSuccess();
@@ -656,13 +679,13 @@ class PricerScreen extends React.Component {
 
                         //on fait le tour des maturite et on ajoute les manquantes
                         allMatDate.forEach((mat) => {
-                          //console.log(mat + "  :   " + f(mat));
+                          console.log(mat + "  :   " + f(mat));
                           if (mat >= this.product.maturity.value[0] && mat <= this.product.maturity.value[1]) {
                             d10 = d9.head(1);
                             matToChange = d9.head(1).getSeries('maturity').toArray().toString();
                             d10 = d10.transformSeries({
                               maturity: value => mat + "Y",
-                              price: value => f(mat) + this.product.UF.value + this.product.UFAssoc.value,
+                              price: value => f(mat) + this.product.UF.value + this.product.UFAssoc.value + (this.product.typeAuction.value === 'PP' ? 0 : 0.005),
                               //il faut reconstituer le code
                               code: value => value.replace('_M:' + matToChange, '_M:' + mat + "Y")
                             });
@@ -693,7 +716,7 @@ class PricerScreen extends React.Component {
       price: value => value,
     });*/
 
-    let dfPrint2 = new dataForge.DataFrame(interpolatedProducts);
+    let dfPrint2 = new dataForge.DataFrame(df);
     dfPrint2 = dfPrint2.subset(["product", "coupon", "maturity", "price", "code"]);
     //dfPrint = dfPrint.dropSeries(['code','currency','strike','strikeDate', 'finalDate','startDate','endDate','swapPrice','levelAutocall','spreadAutocall','spreadPDI','gearingPDI','spreadBarrier','Vega', 'couponAutocall','couponPhoenix']);
     console.log(dfPrint2.toString()); 
@@ -732,6 +755,9 @@ class PricerScreen extends React.Component {
                     coupons = d9.getSeries('coupon').toArray();
                     prix = d9.getSeries('price').toArray();
                     points = [];
+                    console.log("Coupons et prix for : " + mat);
+                    console.log(coupons);
+                    console.log(prix);
                     coupons.map((x, i) => points[i] = [prix[i], coupons[i]]);
                     f = interpolator(points);
                     CPN = f(0);
@@ -776,9 +802,14 @@ class PricerScreen extends React.Component {
     //dfPrint = dfPrint.dropSeries(['code','currency','strike','strikeDate', 'finalDate','startDate','endDate','swapPrice','levelAutocall','spreadAutocall','spreadPDI','gearingPDI','spreadBarrier','Vega', 'couponAutocall','couponPhoenix']);
     console.log(dfPrint.toString());
     interpolatedProducts = interpolatedProducts.orderByDescending(row => row.coupon);
-    /*df = df.generateSeries({
-     SomeNewColumn: row => 'bonjour'
-    });*/
+
+    //on rajoute comme info les UF
+    interpolatedProducts = interpolatedProducts.generateSeries({
+     UF: row => this.product.UF.value,
+     UFAssoc : row => this.product.UFAssoc.value,
+     couponPhoenix : row => row.coupon,
+     cf_cpg_choice : row => this.product.typeAuction.valueLabel,
+    });
     this.bestProducts = interpolatedProducts.toArray();
     //console.log(this.bestProducts[0]);
     await setTimeout(() => {
@@ -789,8 +820,41 @@ class PricerScreen extends React.Component {
 
   //parameter du produit changé et donc updaté
   parameterProductUpdated = (productParameters) => {
-
+    //console.log(productParameters);
     this.product = productParameters;
+
+    //on délocke tout
+    Object.keys(this.product).forEach((p) => {
+      //console.log(this.product[p].value);
+      this.product[p].isLocked = false;
+      this.product[p].defaultValueLabel = 'Optimisé';
+    });
+
+    //on active ou desactive certains parametres 
+    if (this.product['type'].isActivated) {
+      if (this.product['type'].value.includes('Phoenix')){ //effet airbag, degressivite desactive
+        this.product['airbagLevel'].isLocked = true;
+        this.product['airbagLevel'].defaultValueLabel = 'Non compatible';
+        this.product['degressiveStep'].isLocked = true;
+        this.product['degressiveStep'].defaultValueLabel = 'Non compatible';
+      } else if (this.product['type'].value.includes('Autocall')) {
+        this.product['barrierPhoenix'].isLocked = true;
+        this.product['barrierPhoenix'].defaultValueLabel = 'Non compatible';
+      }
+    } else {
+      if (this.product['barrierPhoenix'].isActivated) {
+        this.product['airbagLevel'].isLocked = true;
+        this.product['airbagLevel'].defaultValueLabel = 'Non compatible';
+        this.product['degressiveStep'].isLocked = true;
+        this.product['degressiveStep'].defaultValueLabel = 'Non compatible';
+      } else if (this.product['airbagLevel'].isActivated || this.product['degressiveStep'].isActivated) {
+        this.product['barrierPhoenix'].isLocked = true;
+        this.product['barrierPhoenix'].defaultValueLabel = 'Non compatible';
+      }
+    } 
+
+
+
     //this.needToRefresh();
 
 
@@ -897,7 +961,7 @@ class PricerScreen extends React.Component {
         <TouchableOpacity style={[tabStyle(this.state.index === 1), { width: (DEVICE_WIDTH - 50) / 2 }]}
           onPress={() => this._handleIndexChange(1)}>
           <Text style={[texTabStyle(this.state.index === 1)]}>
-            Résultats
+            Propositions
                                               </Text>
         </TouchableOpacity>
         <TouchableOpacity style={[tabStyle(this.state.index === 2), { width: 50 }]}

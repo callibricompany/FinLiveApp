@@ -4,7 +4,7 @@ import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { globalStyle , tabBackgroundColor, subscribeColor, FLFontFamily} from '../../Styles/globalStyle'
+import { globalStyle , tabBackgroundColor, backgdColor, apeColor, FLFontFamily, headerTabColor} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -14,6 +14,9 @@ import { compose, hoistStatics } from 'recompose';
 
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
+import FLTicketTemplateAPE  from './FLTicketTemplateAPE';
+import FLTicketTemplatePP  from './FLTicketTemplatePP';
+
 import Dimensions from 'Dimensions';
 
 
@@ -22,23 +25,21 @@ const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
 const NAVBAR_HEIGHT = 45;
-//const STATUS_BAR_HEIGHT = Platform.select({ ios: 20, android: 24 });
+//determination de la hauteur des status bar
 const STATUS_BAR_HEIGHT = sizeByDevice(44, 20, StatusBar.currentHeight);
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 
-class BroadcastingScreen extends React.Component {
+class TicketScreen extends React.Component {
  
   constructor(props) {
     super(props);
 
-    //const dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-
+    //utiliser pour dispzarition en-tete
     const scrollAnim = new Animated.Value(0);
     const offsetAnim = new Animated.Value(0);
 
     this.state = {
-      dataSource: data,
 
       //animation barre de recherche
       positionLeft: new Animated.Value(DEVICE_WIDTH), //indicateur si recherche ou pas 
@@ -59,10 +60,11 @@ class BroadcastingScreen extends React.Component {
         NAVBAR_HEIGHT ,
       ),
     };
-
+    //this.dataSource = Array(19).fill().map((_, index) => ({id: index}));
+    this.filterOnAir = false;
   }
 
-
+  
   _clampedScrollValue = 0;
   _offsetValue = 0;
   _scrollValue = 0;
@@ -116,19 +118,31 @@ class BroadcastingScreen extends React.Component {
     }).start();*/
   };
 
-  _renderTicket = (item, id) => {
-    return (
-      <ImageBackground key={id} style={styles.row} source={{ uri: item.image }} resizeMode="cover">
-        <Text style={styles.rowText}>{item.title}</Text>
-      </ImageBackground>
-    );
-  };
+  _renderTicket = (item, index) => {
+    let type = item['currentStep'][0].codeOperation;
+    //let type = 'ape';
+    //console.log(item);
+    switch (type) {
+      case 'ape' : 
+        return <FLTicketTemplateAPE ticket={item} />
+      case 'pp' : 
+        return <FLTicketTemplatePP ticket={item} />
+      default :
+        return (
+            <View style={[globalStyle.itemTicket, {flexDirection : 'column', width: DEVICE_WIDTH*0.925, borderBottomWidth : 1, height : 50}]}>
+                <View style={{backgroundColor: type === 'ape' ? apeColor : headerTabColor }}>
+                  <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 16, color: 'white', padding: 5}}>
+                      {item['subject']}
+                  </Text>
+                </View>
+            </View>
+          );
+    }
+
+  }
 
   render() {
     const { clampedScroll } = this.state;
-
-    console.log("RENDER :");
-    console.log(this.state.scrollAnim);
 
     const navbarTranslate = clampedScroll.interpolate({
       inputRange: [0, NAVBAR_HEIGHT ],
@@ -146,15 +160,19 @@ class BroadcastingScreen extends React.Component {
       outputRange: [0, -STATUS_BAR_HEIGHT],
       extrapolate: 'clamp',
     });
+
+    //console.log(this.props.tickets);
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
       <SafeAreaView style={{flex : 1, backgroundColor: tabBackgroundColor}}>
 
-      <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH}}>
+      <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH, backgroundColor: backgdColor}}>
         <AnimatedFlatList
-          contentContainerStyle={styles.contentContainer}
-          //dataSource={this.state.dataSource}
-          data={data}
+          //contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={{alignItems : 'center', marginTop :  20 + NAVBAR_HEIGHT}}
+          //data={this.dataSource}
+          data={this.props.tickets}
+          //data={data}
           renderItem={this._renderRow}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({item, id}) => (
@@ -173,21 +191,21 @@ class BroadcastingScreen extends React.Component {
               <TouchableOpacity onPress={() => {
                       Alert.alert("FinLive SAS","Copyright ©")
                   }}
-                  style={{height : 150, justifyContent: 'center', alignItems: 'center'}}>
+                  style={{height : 100, justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
               </TouchableOpacity>
             );
           }}
         />
 
-        <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
+        <Animated.View style={[styles.navbar, { transform: [{ translateY: this.filterOnAir ? 0 : navbarTranslate }] }]}>
          
         <Animated.View style={{
                   display: 'flex',
-                  backgroundColor: tabBackgroundColor,
+                  backgroundColor: 'white',
                   //borderRadius: 3,
                   borderWidth:0,
-                  opacity: navbarOpacity,
+                  opacity: this.filterOnAir ? 1 : navbarOpacity,
                   height: 45,
                   marginTop: 0,
                   width: DEVICE_WIDTH*1,
@@ -200,7 +218,7 @@ class BroadcastingScreen extends React.Component {
                       <TouchableOpacity onPress={() => {
                                   console.log("qsjhfjhdfjd");
                       }}>
-                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:'white'}}>Test restaus FinLive</Text>    
+                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:tabBackgroundColor}}>Mes tickets</Text>    
                       </TouchableOpacity>
                     </View>   
 
@@ -208,7 +226,7 @@ class BroadcastingScreen extends React.Component {
                          onPress={() => {
                           this.props.navigation.setParams({ hideBottomTabBar : true});
                            this.setState ({ showModalTitle : !this.state.showModalTitle });
-
+                           this.filterOnAir = true;
                             Animated.parallel([
                               Animated.timing(
                                   this.state.positionLeft,
@@ -245,7 +263,7 @@ class BroadcastingScreen extends React.Component {
                           <MaterialIcons
                             name='search' 
                             size={25} 
-                            color='white'
+                            color={tabBackgroundColor}
                           />
                       </TouchableOpacity>
                       <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
@@ -255,7 +273,7 @@ class BroadcastingScreen extends React.Component {
                          <Icon
                             name='ios-notifications-outline' 
                             size={25} 
-                            style={{color : 'white'}}
+                            style={{color : tabBackgroundColor}}
                           />
                       </TouchableOpacity>
                     
@@ -265,7 +283,7 @@ class BroadcastingScreen extends React.Component {
                           <TouchableOpacity onPress={() => {
                                        //this.setState ({ showModalTitle : !this.state.showModalTitle });
                                        //console.log("SCROLL Y : "+ JSON.stringify(animation.scrollY));
-                                       
+                                       this.filterOnAir = false;
                                        
                                         Animated.parallel([
                                           Animated.timing(
@@ -388,72 +406,10 @@ const composedPricerScreen = compose(
 );
 
 //export default HomeScreen;
-export default hoistStatics(composedPricerScreen)(BroadcastingScreen);
+export default hoistStatics(composedPricerScreen)(TicketScreen);
 
 /*
 
  <Animated.Text style={[styles.title, { opacity: navbarOpacity }]}>
 
  */
-const data = [
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkvHXu_Il/rkvHXu_Il-1100-700.jpg',
-    title: 'Le Brûloir',
-    id :1
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkTnGunIx/rkTnGunIx-1100-700.jpg',
-    title: 'Le Petit Brûloir',
-    id : 2
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/HknxZ9awg/HknxZ9awg-1100-700.jpg',
-    title: 'Oui Mais Non',
-    id : 3
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'PERKO',
-    id : 4
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'Perko',
-    id : 5
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/B1XmNBmLe/B1XmNBmLe-1100-700.jpg',
-    title: 'Café Saint-Henri | Marché Jean-Talon',
-    id : 12
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkvHXu_Il/rkvHXu_Il-1100-700.jpg',
-    title: 'Le Brûloir',
-    id : 6
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkTnGunIx/rkTnGunIx-1100-700.jpg',
-    title: 'Le Petit Brûloir',
-    id : 7
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/HknxZ9awg/HknxZ9awg-1100-700.jpg',
-    title: 'Oui Mais Non',
-    id : 8
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'PERKO',
-    id : 9
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'Perko',
-    id : 10
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/B1XmNBmLe/B1XmNBmLe-1100-700.jpg',
-    title: 'Café Saint-Henri | Marché Jean-Talon',
-    id : 11
-  },
-];

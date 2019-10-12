@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleProvider, Container } from 'native-base'
-import { Text } from 'react-native'
-import { Font } from 'expo';
+import { Text, YellowBox } from 'react-native'
+import * as Font from 'expo-font';
 
 import getTheme from './native-base-theme/components'
 import material from './native-base-theme/variables/commonColor'
@@ -18,6 +18,11 @@ import Navigation from './Navigation/Navigation'
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    YellowBox.ignoreWarnings(['Setting a timer']);
+
+
+
     this.state = {
       loading : true,
     };

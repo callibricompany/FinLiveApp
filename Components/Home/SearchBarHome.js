@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Font } from 'expo';
+import * as Font from 'expo-font';
 import { Icon, Button } from 'native-base'
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 import { getAllUnderlying } from '../../Utils';
@@ -130,28 +130,19 @@ export default class SearchBarHome extends Component {
 
 
 
-  blurInputs(stateBar) {
-    if (this.inputSearch !== null && this.inputSearch !== undefined) {
-      //console.log("BLUR BLUR BLUR : "+ stateBar);
-      //console.log("BLUR BLUR BLUR : "+ this.inputSearch);
-    }
-    //this.inputSearch.blur();
-    //this.inputLocation.blur();
-   // this.props.changeInputFocus(false);
-  }
 
   render() {
     const { animation, changeInputFocus, renderTabBar } = this.props;
 
     let transformWrapper = animation.getTransformWrapper();
-    const transformSearchBar = animation.getTransformSearchBar(this.blurInputs, animation.stateBar);
+    const transformSearchBar = animation.getTransformSearchBar();
     let opacitySearchBar = animation.getOpacitySearchBar(this.state.showModalTitle);
     const opacityLocationInput = animation.getOpacityLocationInput();
     const arrowMinimizeStyle = animation.getArrowMinimizeStyle();
   
     let subCategories = this.state.selectedCategory.subCategory;
 
-    //console.log("TRANSFORMSEARCHBAR : "+ JSON.stringify(transformSearchBar));
+    //console.log("TRANSFORMSEARCHBAR : "+ this.state.showModalTitle);
     return (
       <Animated.View style={[styles.wrapper, this.state.showModalTitle ? transformWrapper : transformSearchBar]}>
         <Modal
@@ -352,10 +343,11 @@ export default class SearchBarHome extends Component {
           <View style={styles.searchContainer}>
             <Animated.View style={[opacitySearchBar, {
                   display: 'flex',
-                  backgroundColor: tabBackgroundColor,
+                  backgroundColor: 'white',
                   //borderRadius: 3,
                   borderWidth:0,
-                  
+                  //borderBottomWidth: 1,
+                  //borderBottomColor: tabBackgroundColor,
                   height: 45,
                   marginTop: 0,
                   width: DEVICE_WIDTH*1,
@@ -364,16 +356,16 @@ export default class SearchBarHome extends Component {
                   alignItems: 'center'
                 }]}> 
                   <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.925,flexDirection: 'row'}}>   
-                    <View style={{flex:0.9, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
+                    <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
                       <TouchableOpacity onPress={() => {
                                   console.log("qsjhfjhdfjd");
                       }}>
-                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 30, color:'white'}}>F i n L i v e</Text>    
+                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 30, color: headerTabColor}}>F i n L i v e</Text>    
                       </TouchableOpacity>
                     </View>   
 
-                    <View style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}> 
-                      <TouchableOpacity onPress={() => {
+                    <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
+                         onPress={() => {
                           this.props.manageVisibilityTabBar(true);
                            this.setState ({ showModalTitle : !this.state.showModalTitle });
                            if (parseInt(JSON.stringify(animation.scrollY)) === 0) {
@@ -418,10 +410,20 @@ export default class SearchBarHome extends Component {
                           <MaterialIcons
                             name='search' 
                             size={25} 
-                            color='white'
+                            color={headerTabColor}
                           />
                       </TouchableOpacity>
-                    </View>
+                      <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
+                                        onPress={() => {
+                                          alert("Vers ecran des notifs");
+                                        }}> 
+                         <Icon
+                            name='ios-notifications-outline' 
+                            size={25} 
+                            style={{color : headerTabColor}}
+                          />
+                      </TouchableOpacity>
+                    
                   </View>
                   <Animated.View style={{flexDirection:'row', top: 0, width: DEVICE_WIDTH, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
                       <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
@@ -498,45 +500,45 @@ export default class SearchBarHome extends Component {
           //renderTabBar()
         }
         <Animated.View style={ { flexDirection:'row' , borderBottomWidth: 4, borderBottomColor : backgdColor,alignSelf: 'center', height: this.state.categoryHeight, width: DEVICE_WIDTH, borderWidth: 0, borderColor: 'black'}}>     
-                      <View style={{flex: 0.0375, backgroundColor: tabBackgroundColor}}>
+                      <View style={{flex: 0.0375, backgroundColor: 'white'}}>
                       </View>
-                      <View style={{ borderWidth:0, flex:0.4625, backgroundColor: this.state.showModalCategory ? headerTabColor : tabBackgroundColor}}>
+                      <View style={{ borderWidth:0, flex:0.4625, backgroundColor: this.state.showModalCategory ? headerTabColor : 'white'}}>
                         { this.state.showModalTitle ?<TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalCategory : true})}>  
-                            <View style={{  flexDirection: 'row',flex:1, backgroundColor: this.state.showModalCategory ? headerTabColor : tabBackgroundColor}}>
+                            <View style={{  flexDirection: 'row',flex:1, backgroundColor: this.state.showModalCategory ? headerTabColor : 'white'}}>
                                 <View style={{flexWrap: 'wrap',flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>
                               
-                                  <Text style={{paddingLeft: 5,flexWrap: 'wrap',fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 12, color: generalFontColor}}>
+                                  <Text style={{paddingLeft: 5,flexWrap: 'wrap',fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 12, color: headerTabColor}}>
                                       {this.state.selectedCategory.categoryName.toUpperCase()}
                                   </Text>
                                   
                                 </View>
                                 <View style={{flex:0.3, justifyContent : 'center', alignItems: 'center'}}>
                                   
-                                  <Icon name={this.state.showModalCategory ? "ios-arrow-up" :"ios-arrow-down"}  style={{color : this.state.showModalCategory ? tabBackgroundColor : 'white'}}/>
+                                  <Icon name={this.state.showModalCategory ? "ios-arrow-up" :"ios-arrow-down"}  style={{color : this.state.showModalCategory ? 'white' : headerTabColor}}/>
                                 
                                 </View> 
                             </View>
                           </TouchableOpacity> : null }
                         </View>
-                        <View style={{ flex:0.4625, backgroundColor: this.state.showModalSubCategory ? headerTabColor : tabBackgroundColor}}>
+                        <View style={{ flex:0.4625, backgroundColor: this.state.showModalSubCategory ? headerTabColor : 'white'}}>
                         { this.state.showModalTitle ? <TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalSubCategory : true})}>
-                            <View style={{ flexDirection: 'row',flex:1,  backgroundColor: this.state.showModalSubCategory ? headerTabColor : tabBackgroundColor}}>
+                            <View style={{ flexDirection: 'row',flex:1,  backgroundColor: this.state.showModalSubCategory ? headerTabColor : 'white'}}>
                                 <View style={{flexWrap: 'wrap',paddingLeft: 3, flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>  
                                 
-                                  <Text style={{flexWrap: 'wrap',fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: generalFontColor}}>
+                                  <Text style={{flexWrap: 'wrap',fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: headerTabColor}}>
                                     {this.state.selectedSubCategory.subCategoryName.toUpperCase()}
                                   </Text>
                                 
                                 </View>
                                 <View style={{flex:0.3, justifyContent : 'center', alignItems: 'center'}}>
                                   
-                                    <Icon name={this.state.showModalSubCategory ? "ios-arrow-up" :"ios-arrow-down"}   style={{color : this.state.showModalSubCategory ? tabBackgroundColor : 'white'}}/>
+                                    <Icon name={this.state.showModalSubCategory ? "ios-arrow-up" :"ios-arrow-down"}   style={{color : this.state.showModalSubCategory ? 'white' : headerTabColor}}/>
                                   
                                 </View>
                             </View>
                           </TouchableOpacity> : null }
                         </View>
-                        <View style={{flex: 0.0375, backgroundColor: tabBackgroundColor}}>
+                        <View style={{flex: 0.0375, backgroundColor: 'white'}}>
                         </View>
                       </Animated.View> 
       </Animated.View>
@@ -557,7 +559,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     //zIndex: 99,
-    backgroundColor: tabBackgroundColor,
+    backgroundColor: 'white',
     width: '100%',
     //overflow: 'hidden',
     paddingBottom: 0, //10,

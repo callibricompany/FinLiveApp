@@ -11,7 +11,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import Dimensions from 'Dimensions';
 
-import {  globalSyle, 
+import {  globalStyle, 
   generalFontColor, 
   tabBackgroundColor,
   headerTabColor,
@@ -22,14 +22,9 @@ import {  globalSyle,
   FLFontFamilyBold
 } from '../../Styles/globalStyle';
 
-import FLTemplate from '../commons/FLTemplate';
+import FLTemplateAutocall from '../Pricer/FLTemplateAutocall';
 
 import * as TEMPLATE_TYPE from '../../constants/template';
-
-
-
-
-
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
@@ -50,7 +45,7 @@ class TabHome extends React.PureComponent {
     }
   
     componentWillReceiveProps (props) {
-     
+      console.log("RECEIVE PROPS HOME : "+ props.marginSearch);
       this.setState({ scrollTo: props.marginSearch, refreshing : false });
     }
 
@@ -58,11 +53,11 @@ class TabHome extends React.PureComponent {
 
           return (
             
-              <FLTemplate id={id} 
+              <FLTemplateAutocall id={id} 
                         item={item} 
                         userOrg={this.props.userOrg} 
                         filters={this.props.filtersHomePage}
-                        categories={this.props.allInfo.categories}
+                        categories={this.props.categories}
                         templateType={item.template}
               />
           )
@@ -70,14 +65,14 @@ class TabHome extends React.PureComponent {
 
 
     render() {
-      console.log(JSON.stringify(this.props.filtersHomePage));
+      //console.log(JSON.stringify(this.props.filtersHomePage));
       return (
           <View style={{marginTop :  Platform.OS === 'android' ? -25 : 0}}>
             <View>
               <FLFlatList
                 //style={styles.wrapper}
                 scrollTo={this.state.scrollTo}
-                contentContainerStyle={styles.wrapper}
+                contentContainerStyle={globalStyle.wrapperFlatList}
                 data={this.props.filtersHomePage["category"] === 'PSFAVORITES' ? this.props.favorites : this.props.homePage}
                 //data={this.props.homePage}
                 //renderItem={this._renderRow}
@@ -127,16 +122,7 @@ class TabHome extends React.PureComponent {
     }
   }
 
-  const styles = StyleSheet.create({
-    wrapper: {
-      //paddingLeft: 15,
-      //paddingRight: 15,
-      //justifyContent : 'center',
-      alignItems: 'center',
-      marginTop: Platform.OS === 'ios' ? -60+45 : -25+45,
-      
-    }
-  })
+
 const composedWithNav = compose(
     //withAuthorization(condition),
      withNavigation,

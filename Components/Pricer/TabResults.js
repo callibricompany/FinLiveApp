@@ -33,11 +33,9 @@ import {  globalSyle,
   FLFontFamilyBold
 } from '../../Styles/globalStyle';
 
-import FLTemplate from '../commons/FLTemplate'
+import FLTemplateAutocall from './FLTemplateAutocall'
 
-import UNDERLYINGS from '../../Data/subCategories.json'
-import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json'
-import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
+
 
 import * as TEMPLATE_TYPE from '../../constants/template'
 
@@ -69,7 +67,7 @@ class TabResults extends React.PureComponent {
       //console.log('id : ' +id);
       return (
   
-      <FLTemplate id={id} item={item} templateType={TEMPLATE_TYPE.LIST} isGoodToShow={this.state.isGoodToShow}/>
+      <FLTemplateAutocall id={id} item={item} templateType={TEMPLATE_TYPE.LIST} isGoodToShow={this.state.isGoodToShow}/>
       
       );
     }

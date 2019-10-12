@@ -23,8 +23,7 @@ import SearchBarHome from './SearchBarHome';
 import TabNews from './TabNews';
 import TabHome from './TabHome';
 
-import CATEGORIES from '../../Data/categories.json'
-import SUBCATEGORIES from '../../Data/subCategories.json'
+
 
 //import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -85,10 +84,10 @@ const initialLayout = {
       //console.log(CATEGORIES);
       await this.props.getUserAllInfo();
      
-      //console.log(this.props.allInfo.favorites);
+     
       //creation de l aliste des categories 
       //console.log("Passage homescrrenn");
-      //console.log(this.props.allInfo.categories);
+    
       //console.log("PASSEE E EE E  E E E E E  E E E E E E E E EE E  E E E EE E E E E E  E");
       //toto = {...this.props.categories};
       //console.log(this.props.categories);
@@ -135,7 +134,7 @@ const initialLayout = {
     _renderHeader = (animation, canJumpToTab) => props => (
       <SearchBarHome
         animation={animation}
-        categories={this.props.allInfo.categories}
+        categories={this.props.categories}
         userOrg={this.props.userOrg}
 
         changeMarginSearch={(marginSearch) => {
@@ -253,8 +252,15 @@ const initialLayout = {
                 </View>
           }
       return(
-            <SafeAreaView style={{backgroundColor: tabBackgroundColor}}>
-           
+            <SafeAreaView style={{backgroundColor: 'white'}}>
+                   { Platform.OS === 'android' && 
+                     <StatusBar
+                      translucent={false}
+                      //backgroundColor={'#45688e'}
+                      backgroundColor={'white'}
+                      barStyle={'light-content'}
+                      animated={false}
+                      /> }
             {render}
 
             </SafeAreaView>

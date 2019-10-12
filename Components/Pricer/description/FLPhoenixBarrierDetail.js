@@ -41,8 +41,8 @@ export class FLPhoenixBarrierDetail extends Component{
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
                     <FLSlider2
-                          min={60}
-                          max={100}
+                          min={40}
+                          max={90}
                           step={5}
                           //value={this.state.product['UF'].value*100}
                           value={(this.state.barrier)*100}

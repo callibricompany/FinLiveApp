@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import { Icon } from 'native-base';
-import {  globalSyle, 
+import {  
     generalFontColor, 
     tabBackgroundColor,
     headerTabColor,
@@ -9,7 +9,10 @@ import {  globalSyle,
     progressBarColor,
     subscribeColor,
     FLFontFamily,
-    FLFontFamilyBold
+    FLFontFamilyBold,
+    apeColor,
+    globalStyle,
+    backgdColor
  } from '../../Styles/globalStyle'
 
 import Dimensions from 'Dimensions';
@@ -49,7 +52,44 @@ import FREQUENCYLIST from '../../Data/frequencyList.json'
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
-class FLTemplate extends React.Component {
+
+Object.equals = function( x, y ) {
+  if ( x === y ) return true;
+    // if both x and y are null or undefined and exactly the same
+
+  if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
+    // if they are not strictly equal, they both need to be Objects
+
+  if ( x.constructor !== y.constructor ) return false;
+    // they must have the exact same prototype chain, the closest we can do is
+    // test there constructor.
+
+  for ( var p in x ) {
+    if ( ! x.hasOwnProperty( p ) ) continue;
+      // other properties were tested using x.constructor === y.constructor
+
+    if ( ! y.hasOwnProperty( p ) ) return false;
+      // allows to compare x[ p ] and y[ p ] when set to undefined
+
+    if ( x[ p ] === y[ p ] ) continue;
+      // if they have the same strict value or identity then they are equal
+
+    if ( typeof( x[ p ] ) !== "object" ) return false;
+      // Numbers, Strings, Functions, Booleans must be strictly equal
+
+    if ( ! Object.equals( x[ p ],  y[ p ] ) ) return false;
+      // Objects and Arrays must be tested recursively
+  }
+
+  for ( p in y ) {
+    if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
+      // allows x[ p ] to be set to undefined
+  }
+  return true;
+}
+
+
+class FLTemplateAutocall extends React.Component {
 
 
   constructor(props) {
@@ -68,7 +108,8 @@ class FLTemplate extends React.Component {
 
     //type de tycket
     this.type = this.props.templateType;
-
+    //console.log(this.type);
+    
     //copie des datas au format correct
     if (!this.props.item.hasOwnProperty('data')) {
       //reconstruction de l'objet style envoie dans homepage
@@ -90,8 +131,12 @@ class FLTemplate extends React.Component {
       this.item['toFavorites'] = toFavorites;
       
     } else {
-
+      //tant que Pierre ne rajoute l'UF dans le calcul sur serveur on le rajoute
       this.item = this.props.item;
+
+      this.item.data['UF'] = 0.03;
+      this.item.data['UFAssoc'] = 0.001;
+      this.item.data['cf_cpg_choice'] = "Placement Privé";
     }
 
    
@@ -102,7 +147,7 @@ class FLTemplate extends React.Component {
   }
 
   componentWillReceiveProps (props) {
-    //console.log("Prop received in FLTemplate : " + props.isGoodToShow);
+    //console.log("Prop received in FLTemplateAutocall : " + props.isGoodToShow);
     typeof props.isGoodToShow !== 'undefined' ? this.setState({ isGoodToShow : props.isGoodToShow }) : null;
     typeof props.filters !== 'undefined' ? this.updateFilters(props.filters) : null;
   }
@@ -164,7 +209,7 @@ class FLTemplate extends React.Component {
 
     //determine le nom du produit
   _getProductTypeName() {
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
       let name = '[PDT]';
       
       if (product.hasOwnProperty('product')) {        
@@ -180,7 +225,7 @@ class FLTemplate extends React.Component {
 
     //determine la frequence du produit
   _getFrequencyName() {
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
       let name = '[FREQ]';
       
       if (product.hasOwnProperty('freqAutocall')) {        
@@ -197,8 +242,7 @@ class FLTemplate extends React.Component {
     //determine le nom du sous
   _getUnderlyingName() {
       let name = '[UDL]';
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
-      //this.type === TEMPLATE_TYPE.APE ? console.log(product) : null;
+      let product = this.item.data;
       
       if (product.hasOwnProperty('underlying')) {        
           name = product.hasOwnProperty('underlyingName') ? product.underlyingName : product.underlying;
@@ -211,8 +255,8 @@ class FLTemplate extends React.Component {
   _getMaturityName() {
       let name = '[MTY]';
 
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
-      //this.type === TEMPLATE_TYPE.APE ? console.log(product) : null;
+      let product = this.item.data;
+      
       
       if (product.hasOwnProperty('maturity')) {        
           name = product.maturity.substring(0,product.maturity.length-1)
@@ -242,7 +286,7 @@ class FLTemplate extends React.Component {
   _getBarrierPDITitle() {
       let name = '[XX]';
 
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
       
       if (product.hasOwnProperty('barrierPDI')) {        
           name = Numeral(product.barrierPDI-1).format('0%');
@@ -256,7 +300,7 @@ class FLTemplate extends React.Component {
   _getBarrierPDITypeTitle() {
       let name = 'Protection européenne';
       
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
 
       if (product.hasOwnProperty('isPDIUS')) {  
         if (product.isPDIUS) {      
@@ -272,7 +316,7 @@ class FLTemplate extends React.Component {
       let name = '[XX]';
 
 
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
 
       if (product.hasOwnProperty('barrierPhoenix')) {  
         
@@ -287,7 +331,7 @@ class FLTemplate extends React.Component {
     _getBarrierAirbagTitle () {
       let name = '[ABG]';
 
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
 
       if (product.hasOwnProperty('airbagLevel') && product.hasOwnProperty('levelAutocall') && product.hasOwnProperty('barrierPDI')) {  
         let PDI = product.barrierPDI;
@@ -311,7 +355,7 @@ class FLTemplate extends React.Component {
     _getDegressivityCallableTitle () {
       let name = '[DGS]';
       
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
 
       if (product.hasOwnProperty('degressiveStep')) { 
         if(product.degressiveStep === 0 ) {
@@ -328,7 +372,7 @@ class FLTemplate extends React.Component {
     //renvoie le coupon annualisé
     _getCouponTitle () {
       let name = '[CPN]';
-      let product = this.type === TEMPLATE_TYPE.LIST ? this.item.data : this.item.data.product;
+      let product = this.item.data;
 
       if (product.hasOwnProperty('coupon')) {  
         name = Numeral(product.coupon).format('0.00%');
@@ -372,7 +416,7 @@ class FLTemplate extends React.Component {
       let title = null;
       //si on est en train de traiter le produit
       if (this.type === TEMPLATE_TYPE.BROADCAST || this.type === TEMPLATE_TYPE.APE) {
-        title = <View style={{backgroundColor: this.type === TEMPLATE_TYPE.BROADCAST ? headerTabColor : '#749B14'}}>
+        title = <View style={{backgroundColor: this.type === TEMPLATE_TYPE.BROADCAST ? headerTabColor : apeColor}}>
                   <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 16, color: 'white', padding: 5}}>
                     {typePlacement.toUpperCase()}
                     {organization !== '' ? '\n' + organization : null}
@@ -397,10 +441,10 @@ class FLTemplate extends React.Component {
 
 
       let title =   <View style={{borderWidth:0, flex: 0.55, marginTop: Platform.OS === 'ios' ? -2 : -5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                        <Text style={{paddingTop: 2, fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: generalFontColor}}>
+                        <Text style={{paddingTop: 2, fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: tabBackgroundColor}}>
                           {typeProduit}  {maturite}
                         </Text>
-                        <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: generalFontColor}}>
+                        <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: tabBackgroundColor}}>
                           {underlying}  / {frequency}
                         </Text>
                     </View>
@@ -465,32 +509,117 @@ class FLTemplate extends React.Component {
       return name;
     }
 
+    //revoie le descriptif du produit autocall
+    _getAutocallCarac () {
+      
+      return (
+        <View style={{flexDirection: 'row',  paddingTop:10, paddingBottom: 15, backgroundColor: 'white'}}>
+          <View style={{flex: 0.4, flexDirection : 'column', borderWidth: 0}}>
+            <View style={{flex: 0.3, justifyContent: 'center', alignItems: 'center', margin:5}}>
+              <Text style={{fontFamily: FLFontFamily, fontWeight:'600', fontSize: 10, color: 'black'}}>
+                  PROTECTION CAPITAL
+              </Text>         
+            </View>
+            <View style={{flex: 0.5, justifyContent: 'center', alignItems: 'center', padding:0}}>
+
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 16, color: 'red'}}>
+                {this._getBarrierPDITitle()}
+                </Text>
+              </View>
+            </View>
+            <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center', marginLeft:5}}>
+                <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9,paddingTop:4}}>
+                  {this._getBarrierPDITypeTitle()}
+                </Text>
+            </View>
+          </View>
+          <View style={{flex: 0.4, flexDirection : 'column', borderWidth: 0, justifyContent: 'center'}}>
+            <View style={{flex: 0.3, borderWidth: 0,justifyContent: 'flex-start', alignItems: 'flex-start', margin:5, marginLeft: 10}}>
+                <Text style={{fontFamily: FLFontFamily, fontWeight:'600', fontSize: 10, color: 'black'}}>
+                    PROTECTION COUPON
+                </Text>         
+              </View>
+              <View style={{flex: 0.5, flexDirection: 'row',justifyContent: 'flex-start', alignItems: 'center', paddingLeft : 5}}>
+                <View style={{ borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 16, marginLeft: 5}} >
+                    {this. _getBarrierPhoenixTitle()}
+                  </Text>
+                </View>
+                <View style={{marginLeft : 5, paddingTop : 2, paddingBottom: 2, paddingLeft: 5, paddingRight: 5, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderRadius :4}}>
+                  <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9, textAlign: 'center'}}>
+                    {this._getBarrierAirbagTitle().replace(' ','\n')}
+                  </Text>
+                </View>
+              </View>
+              <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center', marginLeft:10}}>
+                  <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9,paddingTop:4}}>
+                    {this._getDegressivityCallableTitle()}
+                  </Text>
+              </View>
+
+          </View>
+          <View style={{flex: 0.2, flexDirection : 'column', borderWidth: 0, justifyContent: 'center'}}>
+            <View style={{flex: 0.3, borderWidth: 0,justifyContent: 'flex-start', alignItems: 'flex-start', margin:5, marginLeft: 10}}>
+              <Text style={{fontFamily: FLFontFamily, fontWeight:'600', fontSize: 10, color: 'black'}}>
+                COUPON
+              </Text>         
+            </View>
+            <View style={{flex: 0.5, justifyContent: 'flex-end', alignItems: 'center'}}>
+              <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 20, color: 'limegreen'}}>
+                {this._getCouponTitle()}
+              </Text>
+            </View>
+            <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9}}>
+                équiv. annuel
+              </Text>
+            </View>
+
+          </View>
+      </View>
+
+      );
+
+    }
 
     render () {
-
+      if (this.type === TEMPLATE_TYPE.AUTOCALL_CARAC) {
+        console.log("AUTOCALL CARACTERISTICS");
+        return this._getAutocallCarac();
+      }
       if (this.isFiltered) {
         return null;
       }
 
-        return (
-            <View opacity={this.state.isGoodToShow ? 1 : 0.1} style={[styles.item, {flexDirection : 'column', width: DEVICE_WIDTH*0.925, borderBottomWidth : 1}]}>
+      //check if it is in favorites
+      let isFavorite = false;
+      this.props.favorites.forEach((fav) => {
+        if (Object.equals(fav.data, this.item.data)) {
+          //isFavorite = this.item.isFavorite && this.item.toFavorites.active;
+          isFavorite = true;
+        }
+      });
+      //remise a jour de l'objet item en fonction de ce qui a été trouve dans favorites
+      this.item.isFavorite = isFavorite;
+      this.item.toFavorites.active = isFavorite;
+
+      return (
+            <View opacity={this.state.isGoodToShow ? 1 : 0.1} style={[globalStyle.itemTicket, {flexDirection : 'column', width: DEVICE_WIDTH*0.975, borderBottomWidth : 0, borderColor : 'rgb(75, 89, 101)'}]}>
                 {this._getTitleTicket()}
-              <View style={{flex : 0.25, flexDirection : 'row', backgroundColor: tabBackgroundColor}}>
+              <View style={{flex : 0.25, flexDirection : 'row', backgroundColor: 'white',borderTopLeftRadius: 5}}>
                   <TouchableOpacity style={{flex : 0.10, justifyContent: 'center', alignItems: 'center', margin: 1}}
                                     onPress={() => {
                                       this.props.setFavorite(this.item)
                                       .then((fav) => {
-                                        this.item = fav;
-                                        
-                                        console.log("Mise en Favori OK :");
+                                        this.item = fav;                                    
                                         //console.log(fav);
-                                        //this.item.isFavorite = !this.item.isFavorite;
-                                        this.setState({ toto: !this.state.toto })
+                                        //this.setState({ toto: !this.state.toto })
                                       })
                                       .catch((error) => console.log("Erreur de mise en favori : " + error));
                                     }}
                   >
-                    <Icon  size={5} style={{ color : 'darkred'}} name={this.item.isFavorite ? 'ios-star' : 'ios-star-outline'} />
+                    <Icon  size={5} style={{ color : 'darkred'}} name={isFavorite ? 'ios-star' : 'ios-star-outline'} />
                   </TouchableOpacity>
                   
                     {this._getTitleProduct()}
@@ -499,13 +628,13 @@ class FLTemplate extends React.Component {
                         onPress={() => {
                           //envoi du produit
                           console.log("TYPE : " +this.type);
-                          this.props.navigation.navigate('FLTicketPS', {
+                          this.props.navigation.navigate('FLAutocallDetail', {
                             item: this.item,
                             ticketType: TICKET_TYPE.PSCREATION
                           });
                         }
                   }>
-                    <View style={{flex : 1, flexDirection: 'row', backgroundColor : subscribeColor,justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={{flex : 1, flexDirection: 'row', backgroundColor : subscribeColor,justifyContent: 'center', alignItems: 'center',borderTopRightRadius: 5}}>
                       <View style={{flex:0.8, paddingLeft: 5, péddingRight: 5, justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: Platform.OS === 'ios' ? ifIphoneX() ?  14 : 12 : 14, color: generalFontColor}}>
                           {this._getActionTitle().toUpperCase()}
@@ -523,71 +652,7 @@ class FLTemplate extends React.Component {
 
                 {this._getBroadcastSubject()}
 
-                <View style={{flex: 0.6, flexDirection: 'row', marginTop:10, marginBottom: 15}}>
-                  <View style={{flex: 0.4, flexDirection : 'column', borderWidth: 0}}>
-                    <View style={{flex: 0.3, justifyContent: 'center', alignItems: 'center', margin:5}}>
-                       <Text style={{fontFamily: FLFontFamily, fontWeight:'600', fontSize: 10, color: 'black'}}>
-                          PROTECTION CAPITAL
-                       </Text>         
-                    </View>
-                    <View style={{flex: 0.5, justifyContent: 'center', alignItems: 'center', padding:0}}>
-    
-                      <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 16, color: 'red'}}>
-                         {this._getBarrierPDITitle()}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center', marginLeft:5}}>
-                        <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9,paddingTop:4}}>
-                           {this._getBarrierPDITypeTitle()}
-                        </Text>
-                    </View>
-                  </View>
-                  <View style={{flex: 0.4, flexDirection : 'column', borderWidth: 0, justifyContent: 'center'}}>
-                    <View style={{flex: 0.3, borderWidth: 0,justifyContent: 'flex-start', alignItems: 'flex-start', margin:5, marginLeft: 10}}>
-                        <Text style={{fontFamily: FLFontFamily, fontWeight:'600', fontSize: 10, color: 'black'}}>
-                            PROTECTION COUPON
-                        </Text>         
-                      </View>
-                      <View style={{flex: 0.5, flexDirection: 'row',justifyContent: 'flex-start', alignItems: 'center', paddingLeft : 5}}>
-                        <View style={{ borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
-                          <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 16, marginLeft: 5}} >
-                            {this. _getBarrierPhoenixTitle()}
-                          </Text>
-                        </View>
-                        <View style={{marginLeft : 5, paddingTop : 2, paddingBottom: 2, paddingLeft: 5, paddingRight: 5, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderRadius :4}}>
-                          <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9, textAlign: 'center'}}>
-                            {this._getBarrierAirbagTitle().replace(' ','\n')}
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center', marginLeft:10}}>
-                          <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9,paddingTop:4}}>
-                            {this._getDegressivityCallableTitle()}
-                          </Text>
-                      </View>
-
-                  </View>
-                  <View style={{flex: 0.2, flexDirection : 'column', borderWidth: 0, justifyContent: 'center'}}>
-                    <View style={{flex: 0.3, borderWidth: 0,justifyContent: 'flex-start', alignItems: 'flex-start', margin:5, marginLeft: 10}}>
-                      <Text style={{fontFamily: FLFontFamily, fontWeight:'600', fontSize: 10, color: 'black'}}>
-                        COUPON
-                      </Text>         
-                    </View>
-                    <View style={{flex: 0.5, justifyContent: 'flex-end', alignItems: 'center'}}>
-                      <Text style={{fontFamily: FLFontFamily, fontWeight:'500', fontSize: 20, color: 'limegreen'}}>
-                        {this._getCouponTitle()}
-                      </Text>
-                    </View>
-                    <View style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}>
-                      <Text style={{fontFamily: FLFontFamily, fontWeight:'200', fontSize: 9}}>
-                        équiv. annuel
-                      </Text>
-                    </View>
-
-                  </View>
-                </View>
+                  {this._getAutocallCarac()}
 
                 {this._getBroadcastResume()}
 
@@ -632,26 +697,6 @@ class FLTemplate extends React.Component {
 }
 
 
-const styles = StyleSheet.create({
-    wrapper: {
-      //paddingLeft: 15,
-      //paddingRight: 15,
-      //justifyContent : 'center',
-      alignItems: 'center',
-      marginTop: Platform.OS === 'ios' ? -60+45 : -25+45,
-      
-    },
-    item: {
-      //height: 150,
-      backgroundColor: '#fff',
-      marginBottom: 20,
-      shadowColor: 'rgb(75, 89, 101)',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-
-    }
-  })
-
 
   const condition = authUser => !!authUser;
 
@@ -662,6 +707,6 @@ const styles = StyleSheet.create({
    );
    
    //export default HomeScreen;
-export default hoistStatics(composedWithNav)(FLTemplate);
+export default hoistStatics(composedWithNav)(FLTemplateAutocall);
 
-//export default FLTemplate;
+//export default FLTemplateAutocall;

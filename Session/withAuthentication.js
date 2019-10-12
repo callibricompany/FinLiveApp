@@ -6,6 +6,7 @@ import { withFirebase } from '../Database';
 import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites } from '../API/APIAWS';
 
 
+
 const withAuthentication = Component => {
   class WithAuthentication extends React.Component {
     constructor(props) {
@@ -16,7 +17,7 @@ const withAuthentication = Component => {
 
         //donnees statiques
         tickets : [],
-        getAllTickets : () => this.getAllTickets(),
+        addTicket : (ticket) => this.addTicket(ticket),
 
         //chargé au départ
         allInfo : [],
@@ -25,15 +26,15 @@ const withAuthentication = Component => {
         //la homepage
         homePage : [],
         userOrg : [],
-        favorites : [],
+        categories : [],
         //toFavorites
+        favorites : [],
         setFavorite : (obj) => this.setFavorite(obj),
 
         //les filtres a appliquer sur la home page
         filtersHomePage : [],
         setFiltersHomePage : (filters) => this.setFiltersHomePage(filters),
 
-        toto: true,
       };
 
       
@@ -76,9 +77,11 @@ const withAuthentication = Component => {
                 //console.log("Passage de withAuth");
                 this.setState({ allInfo: userDatas, 
                                 homePage : JSON.parse(JSON.stringify(userDatas.homePage)),
+                                categories : userDatas.categories,
                                 userOrg : userDatas.userOrg,
-                                favorites : userDatas.favorites});
-                console.log(this.state.favorites);
+                                favorites : userDatas.favorites,
+                                tickets : userDatas.userTickets});
+                //console.log(userDatas.userTickets);
                 resolve("ok");
     
               })
@@ -98,28 +101,19 @@ const withAuthentication = Component => {
     }
 
 
-    //add it to HomePage
-    manageFavoriteList(obj) {
-      console.log("On recherche dans les liste des favoris si existe");
-      console.log(obj);
-     
 
-      
-
-    }
 
     //chargement des favoris depuis le serveur
-    async getUserFavorites() {
+   getUserFavorites=() => {
       return new Promise((resolve, reject) => {
         this.props.firebase.doGetIdToken()
         .then(token => {
               getUserFavorites(token)
               .then((data) => {
                 //console.log("reception : " + JSON.stringify(userDatas.categories));
-                //console.log("Passage de withAuth");
-                this.setState({ favorites : data});
-                
-                resolve("ok");
+                console.log("Nombre de favoris : " + data.length);
+                this.setState({ favorites : data}, () => resolve("ok"));
+
     
               })
               .catch(error => {
@@ -144,9 +138,7 @@ const withAuthentication = Component => {
         
         //check if it's in favorites object 
         console.log(obj);
-        let alreadyInFavorites = this.state.favorites.includes(obj);
-
-        console.log("Déja dans les favoris : " + alreadyInFavorites);
+  
         //console.log(this.item.data);
         let favoriteToSend = JSON.parse(JSON.stringify(obj));
         favoriteToSend.toFavorites.active = !favoriteToSend.toFavorites.active;
@@ -156,23 +148,19 @@ const withAuthentication = Component => {
         .then(token => {
               setFavoriteAPI(token, favoriteToSend)
               .then((data) => {
-                console.log( " mis en favori ok : " + data.isFavorite);
+                console.log( "Mis en favori ok : " + data.isFavorite);
 
-                if (alreadyInFavorites && !data.isFavorite) {
-                  //il faut le retirer de la liste
-                }
-                if (alreadyInFavorites && !data.isFavorite) {
-                  //il faut l'ajouter a la liste
-                  this.setState({ favorites : this.state.favorites.push(data)});
-                }
 
+                this.getUserFavorites()
+                .then(() => resolve(data))
+                .catch((error) => reject(error));
                 //this.manageFavoriteList(data);
                 //on va l'ajoueter ou l'enlever de laliste des favoris
                 //this.getUserFavorites()
                 //.then(() => resolve(data))
                 //.catch((error) => reject(error));
                 //this.setState({ toto : !this.state.toto });
-                resolve(data);
+                //resolve(data);
 
               })
               .catch(error => {
@@ -230,17 +218,10 @@ const withAuthentication = Component => {
 
 
 
-    getAllTickets() {
-      this.ticketListener = this.props.firebase.onTicketListenner(
-        tickets => {
-          console.log("Chargement tickets ok");
-          this.setState({ tickets });
-        },
-        () => {
-          console.log("Chargement tickets KO");
-          this.setState({ tickets: null });
-        }, this.state.authUser.codeTS
-      );
+    addTicket(ticket) {
+      let t = this.state.tickets;
+      t.unshift(ticket);
+      this.setState({ tickets : t});
     }
 
 

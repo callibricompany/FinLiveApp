@@ -1,5 +1,5 @@
 import React from 'react';
-import Expo from 'expo';
+import * as Font from 'expo-font';
 
 import { withFirebase } from '../Database';
 import { withNavigation } from 'react-navigation';

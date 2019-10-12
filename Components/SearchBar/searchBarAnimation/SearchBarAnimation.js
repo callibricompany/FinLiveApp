@@ -244,7 +244,7 @@ export default class SearchBarAnimation {
   };
 
   getTransformWrapper(toValue=0, useMinClamp = true) {
-      //console.log("TRANSFORM WRAPPER: " + this.minClamp);
+      console.log("TRANSFORM WRAPPER: " + toValue);
       let clampMinValue = this.minClamp;
       if (!useMinClamp) {
         clampMinValue = 0;
@@ -269,8 +269,8 @@ export default class SearchBarAnimation {
 
   }
 
-  getTransformSearchBar(blurFunction, stateBarGiven) {
-    blurFunction(stateBarGiven);
+  getTransformSearchBar() {
+    //blurFunction(stateBarGiven);
     
     //this.topPartHeight = this.topPartHeight -9;
    /* return {
@@ -301,6 +301,28 @@ export default class SearchBarAnimation {
           this.scrollY.interpolate({
           inputRange: [0, this.topPartHeight],
           outputRange: [0, 0],
+          extrapolate: 'clamp',
+        })
+       )
+      }]
+    };
+  }
+
+  getTransformSearchBarTicket(blurFunction, stateBarGiven) {
+    blurFunction(stateBarGiven);
+    
+    //this.topPartHeight = this.topPartHeight -9;
+    return {
+      transform: [{
+        translateY: Animated.add(
+          this.actionAnimated.interpolate({
+            inputRange: [0, this.maxActionAnimated],
+            outputRange: [0, -this.topPartHeight + this.arrowHeight],
+            extrapolate: 'clamp',
+          }),
+          this.scrollY.interpolate({
+          inputRange: [0, this.topPartHeight],
+          outputRange: [0, this.topPartHeight - this.arrowHeight],
           extrapolate: 'clamp',
         })
        )
