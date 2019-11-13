@@ -22,7 +22,7 @@ export class FLMaturityDetail extends Component{
             toto : true,
         }
 
-        console.log("MATS 0 : "+this.state.maturities);
+        //console.log("MATS 0 : "+this.state.maturities);
     }
 
 

@@ -1,21 +1,21 @@
 [
     {
-      "name": "Normal",
+      "name": "normale",
       "id": 1,
       "color" : "lightgreen"
     },
     {
-      "name": "Rapide",
+      "name": "rapide",
       "id": 2,
       "color" : "darkcyan"
     },
     {
-      "name": "Accéléré",
+      "name": "accélérée",
       "id": 3,
       "color" : "lightpink"
     },
     {
-      "name": "Urgent",
+      "name": "urgente",
       "id": 4,
       "color" : "red"
     }

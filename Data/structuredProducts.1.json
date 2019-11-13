@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Autocall",
+    "class": "FIN",
+    "id": "classicAutocall",
+    "icon":"AU",
+    "comments" : "L'autocal classique blablablablabal"
+  },
+  {
+    "name": "Autocall incrémental",
+    "class": "FIN",
+    "id": "incrementalAutocall",
+    "icon":"AI",
+    "comments" : "L'autocall incrémental blablablablabal"
+   }, 
+  {
+   "name": "Autocall airbag",
+   "class": "FIN",
+   "id": "airbagAutocall",
+   "icon":"AA",
+   "comments" : "L'autocall airbag blablablablabal"
+  },
+  {
+    "name": "Phoenix",
+    "class": "FIN",
+    "id": "classicPhoenix",
+    "icon":"PH",
+    "comments" : "Le Phoenix blablablablabal"
+  },
+  {
+    "name": "Phoenix mémoire",
+    "class": "FIN",
+    "id": "memoryPhoenix",
+    "icon":"PM",
+    "comments" : "Le phoenix mémoire blablablablabal"
+  },
+  {
+    "name": "Reverse convertible",
+    "class": "FIN",
+    "id": "reverse",
+    "icon":"RC",
+    "comments" : "La reverse convertible blablablablabal"
+  }
+]

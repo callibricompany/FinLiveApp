@@ -52,26 +52,6 @@
   {
     "operation": "Placement Privé",
     "codeOperation": "pp",
-    "codeStep": "PPSDRO",
-    "stepUnsolved": "Suite à donner au refus de l'offre",
-    "stepSolved": "Annuler la demande",
-    "nextCodeStep": "PPDPA",
-    "freshdeskStep": "Suite à donner au refus de l'offre (PPSDRO)",
-    "userTrigger": true
-  },
-  {
-    "operation": "Placement Privé",
-    "codeOperation": "pp",
-    "codeStep": "PPSDRO",
-    "stepUnsolved": "Suite à donner au refus de l'offre",
-    "stepSolved": "Redéfinir mes besoins",
-    "nextCodeStep": "PPDVB",
-    "freshdeskStep": "Suite à donner au refus de l'offre (PPSDRO)",
-    "userTrigger": true
-  },
-  {
-    "operation": "Placement Privé",
-    "codeOperation": "pp",
     "codeStep": "PPSDSE",
     "stepUnsolved": "Suite à donner suite à l'échéance de l'offre",
     "stepSolved": "Redemander une cotation de mon produit",
@@ -222,26 +202,6 @@
   {
     "operation": "Appel public à l'épargne",
     "codeOperation": "ape",
-    "codeStep": "APESDRO",
-    "stepUnsolved": "Suite à donner au refus de l'offre",
-    "stepSolved": "Annuler la demande",
-    "nextCodeStep": "APEDPA",
-    "freshdeskStep": "Suite à donner au refus de l'offre (APESDRO)",
-    "userTrigger": true
-  },
-  {
-    "operation": "Appel public à l'épargne",
-    "codeOperation": "ape",
-    "codeStep": "APESDRO",
-    "stepUnsolved": "Suite à donner au refus de l'offre",
-    "stepSolved": "Redéfinir mes besoins",
-    "nextCodeStep": "APEDVB",
-    "freshdeskStep": "Suite à donner au refus de l'offre (APESDRO)",
-    "userTrigger": true
-  },
-  {
-    "operation": "Appel public à l'épargne",
-    "codeOperation": "ape",
     "codeStep": "APESDSE",
     "stepUnsolved": "Suite à donner suite à l'échéance de l'offre",
     "stepSolved": "Redemander une cotation de mon produit",
@@ -369,4 +329,4 @@
     "freshdeskStep": "Demande de produit annulée (APEDPA)",
     "userTrigger": false
   }
-]
+ ]

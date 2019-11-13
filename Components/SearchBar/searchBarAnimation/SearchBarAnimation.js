@@ -244,7 +244,7 @@ export default class SearchBarAnimation {
   };
 
   getTransformWrapper(toValue=0, useMinClamp = true) {
-      console.log("TRANSFORM WRAPPER: " + toValue);
+      //console.log("TRANSFORM WRAPPER: " + toValue);
       let clampMinValue = this.minClamp;
       if (!useMinClamp) {
         clampMinValue = 0;

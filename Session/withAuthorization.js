@@ -42,7 +42,7 @@ const withAuthorization = condition => Component => {
                 //this.props.navigation.push('Login');
                 this.props.navigation.navigate('Login');
             } else {
-                console.log("with AUTHORIZATION  : " + authUser.name);
+                //console.log("with AUTHORIZATION  : " + authUser.name);
                 if (!authUser.roles.includes(ROLES.VALIDATED)) {
                   //this.props.navigation.navigate('WaitingRoom');
                   this.props.navigation.navigate('WaitingRoom', {

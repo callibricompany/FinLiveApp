@@ -22,8 +22,8 @@ import {  globalStyle,
   FLFontFamilyBold
 } from '../../Styles/globalStyle';
 
-import FLTemplateAutocall from '../Pricer/FLTemplateAutocall';
-
+import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
+import { CAutocall } from '../../Classes/Products/CAutocall';
 import * as TEMPLATE_TYPE from '../../constants/template';
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -40,27 +40,108 @@ class TabHome extends React.PureComponent {
         refreshing : false,
         
       };
+   
 
+    this.allProducts = this.props.homePage;
+    //console.log(this.allProducts[0]);
+   /* this.allProducts.forEach((product) => {
+      //console.log(product);
+      switch(product.template) {
+          case 'PSLIST' :
+            product['obj'] = new CAutocall(product.data);
+            break;
+          default : break;
+      }
+    });*/
+    //le produit-ticket est filtre ou pas
+    this.isFiltered = false;
       
     }
   
     componentWillReceiveProps (props) {
-      console.log("RECEIVE PROPS HOME : "+ props.marginSearch);
+      //console.log("RECEIVE PROPS HOME : "+ props.marginSearch);
       this.setState({ scrollTo: props.marginSearch, refreshing : false });
+      typeof props.filters !== 'undefined' ? this.updateFilters(props.filters) : null;
     }
 
-    _renderTicket = ( item , id) => {
 
-          return (
-            
-              <FLTemplateAutocall id={id} 
-                        item={item} 
-                        userOrg={this.props.userOrg} 
-                        filters={this.props.filtersHomePage}
-                        categories={this.props.categories}
-                        templateType={item.template}
+    //va aider pour savoir si on affiche ou pas 
+    updateFilters(filters) {
+      
+      /*this.isFiltered = false;
+      if (filters.hasOwnProperty('filterText') && String(filters['filterText']) !== '') {
+        //console.log("pass : "+filters['filterText'])
+        //construit une chaine de caractere avec tous mots clés
+        let description = this._getProductTypeName() +
+                          this._getFrequencyName() +
+                          this._getUnderlyingName() +
+                          this._getMaturityName() +
+                          this._getBarrierPDITitle() +
+                          this._getBarrierPDITypeTitle() +
+                          this._getBarrierPhoenixTitle() +
+                          this._getBarrierAirbagTitle() +
+                          this._getDegressivityCallableTitle() +
+                          this._getCouponTitle() +
+                          this._getOrganization() +
+                          this._getTypePlacement() +
+                          this.item["data"]["code"];
+
+        description.toLowerCase().includes(String(filters['filterText']).toLowerCase()) ? this.isFiltered = false : this.isFiltered = true;
+      } else if (filters.length !== 0) {
+        if (filters["subcategory"].codeSubCategory !== "PS") {   //on montre pas tout
+          if (filters["subcategory"].subCategoryHead) { // c('st PSACTIONS ou PSINDICES qui est choisi
+            filters["subcategory"].codeSubCategory !== this.item['category'] ? this.isFiltered = true : null;
+          } else if (filters["subcategory"].groupingHead) {//c'est un secteur qui a été choisi
+            //on recuepere toutes les actions du secteurs
+            let underlyings = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
+            this.sectorList = [];
+            this.isFiltered = true;
+            underlyings.filter(obj => obj.groupingName === filters["subcategory"].groupingName).forEach((value) => {
+              //console.log(JSON.stringify(value));
+              value.underlyingCode === this.item['code'] ? this.isFiltered = false : null;
+            });
+          } else { //c'est donc un sous-jacent final
+            filters["subcategory"].underlyingCode !== this.item['code'] ? this.isFiltered = true : null;
+          }
+        }
+
+        //on filtre ensuite les favoris
+        if (filters["category"] === "PSFAVORITES") {
+          //console.log("Item favori : " + this.item['isFavorite']);
+          this.item['isFavorite'] === false ? this.isFiltered = true : null;
+        }
+      }*/
+    }
+
+  _handleFavorite=(index) => {
+    console.log(index);
+      console.log(this.allProducts[index]);
+      this.props.setFavorite(this.allProducts[index])
+      .then((fav) => {
+        this.allProducts[index] = fav;                                    
+        //console.log(fav);
+        //this.setState({ isFavorite: this.allProducts[index].isFavorite })
+      })
+      .catch((error) => console.log("Erreur de mise en favori : " + error));
+  } 
+
+
+  _renderTicket = ( item , index) => {   
+ //       let objProduct = item.obj;
+ //       console.log(objProduct.parle());
+ //       console.log(objProduct.crie());
+        
+        switch(item.template) {
+          case 'PSLIST' : return (
+              <FLTemplateAutocall 
+                  object={item}
+                  filters={this.props.filtersHomePage}
               />
-          )
+            );
+          default : return null;
+        }
+
+
     }
 
 
@@ -73,7 +154,7 @@ class TabHome extends React.PureComponent {
                 //style={styles.wrapper}
                 scrollTo={this.state.scrollTo}
                 contentContainerStyle={globalStyle.wrapperFlatList}
-                data={this.props.filtersHomePage["category"] === 'PSFAVORITES' ? this.props.favorites : this.props.homePage}
+                data={this.props.filtersHomePage["category"] === 'PSFAVORITES' ? this.props.favorites : this.allProducts }
                 //data={this.props.homePage}
                 //renderItem={this._renderRow}
                 keyExtractor={(item) => {
@@ -81,8 +162,8 @@ class TabHome extends React.PureComponent {
                   return key.toString();
                 }}
                 tabRoute={this.props.route.key}
-                renderItem={({item, id}) => (
-                  this._renderTicket(item, id)     
+                renderItem={({item, index}) => (
+                  this._renderTicket(item, index)    
                 )}
                 ListFooterComponent={() => {
                   return (
@@ -90,7 +171,7 @@ class TabHome extends React.PureComponent {
                              Alert.alert("FinLive SAS","Copyright ©")
                         }}
                         style={{height : 150}}>
-                      <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
+                      <Text style={{fontFamily : 'FLFontTitle'}}>F i n L i v e</Text>
                     </TouchableOpacity>
                   );
                 }}

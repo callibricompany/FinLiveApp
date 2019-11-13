@@ -60,7 +60,9 @@ export class FLSlider2 extends Component{
                                 maximumValue={this.props.max}
                                 step={this.props.step}
                                 value={this.state.value}
-                                minimumTrackTintColor={tabBackgroundColor}
+                                maximumTrackTintColor={tabBackgroundColor}
+                                minimumTrackTintColor={'lightgray'}
+                                thumbTintColor={tabBackgroundColor}
                                 onSlidingComplete={(value) => {
                                     //console.log("CHANGE : "+value);
                                     //this.setState({value : val});

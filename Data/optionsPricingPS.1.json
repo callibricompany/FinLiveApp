@@ -1,5 +1,37 @@
 [
   {
+    "name": "typeAuction",
+    "title" : "Demande",
+    "description": [
+      {
+      "short_description": "Choix",
+      "long_description": "Indiquez s'il s'agit d'un placement privé ou d'un APE"
+      }       
+    ]
+  },
+  {
+    "name": "type",
+    "title" : "Produit",
+    "description": [
+      {
+      "short_description": "Influence",
+      "long_description":"Le produit choisi reflète le profil de risque de votre client. Il offrira plus ou moins de rendement en fonction du risque pris. Consultez les rubriques d'aide pour consulter les fiches descriptives de chacun de nos produits et leurs argumentaires commerciaux facilement transférables à vos clients."
+      },        
+      {
+        "short_description": "Vérification",
+        "long_description":"Etudiez et validez le profil de risque du produit choisi avec votre client."
+      },
+      {
+        "short_description": "Risques",
+        "long_description":"Choisir un produit peut entrainer une lourde perte de capital"
+      },
+      {
+        "short_description": "Illustration",
+        "long_description":""
+      }
+    ]
+  },
+  {
       "name": "underlying",
       "title" : "Sous-jacent",
       "description": [
@@ -44,6 +76,28 @@
       ]
     },
     {
+      "name": "barrierPDI",
+      "title" : "Protection du capital",
+      "description": [
+        {
+        "short_description": "Influence",
+        "long_description":"Votre coupon sera d'autant plus faible que votre protection sera élévée"
+        },        
+        {
+          "short_description": "Vérification",
+          "long_description":"Validez auprès de votre client la compréhension de la notion de perte potentielle de capital "
+        },
+        {
+          "short_description": "Risques",
+          "long_description":"En cas de troubles sur le marché, la perte en capital peut s'avérer sévère. Adaptez opportunement son niveau d'activation."
+        },
+        {
+          "short_description": "Illustration",
+          "long_description":""
+        }
+      ]
+    },
+    {
       "name": "freq",
       "title" : "Fréquence",
       "description": [
@@ -67,7 +121,7 @@
     },
     {
       "name": "barrierPhoenix",
-      "title" : "OPTIONS COUPONS",
+      "title" : "Protection des coupons",
       "description": [
         {
         "short_description": "Influence",
@@ -89,11 +143,11 @@
     },
     {
       "name": "airbagLevel",
-      "title" : "OPTIONS AUTOCALL",
+      "title" : "Effet airbag",
       "description": [
         {
         "short_description": "Influence",
-        "long_description":"L'effet airbag permet de récupérer l'ensemble des coupons si la barrière de perte en capital n'est pas activée. Cette protection a un coût : un coupon plus faible. Baisser le seuil de rappel à chaque période augmentent les chances de rappel du produit. Le coupon payé sera donc moindre. En contrepartie la prise de risque sur le capital sera aussi plus faible."
+        "long_description":"L'effet airbag permet de récupérer l'ensemble des coupons si la barrière de perte en capital n'est pas activée. Cette protection a un coût : un coupon plus faible."
         },        
         {
           "short_description": "Vérification",
@@ -101,34 +155,34 @@
         },
         {
           "short_description": "Risques",
-          "long_description":"L'effet airbag n'améliore pas la protection du capital. Un produit dont le seuil de rappel reste à 100% a moins de chance d'être rappelé. Le risque de perte de capital est plus élevé."
+          "long_description":"L'effet airbag n'améliore pas la protection du capital."
         },
         {
           "short_description": "Illustration",
           "long_description":""
         }
       ]
-    },
+    }, 
     {
-      "name": "barrierPDI",
-      "title" : "Protection du capital",
+      "name": "degressiveStep",
+      "title" : "Dégressivité seuil de rappel",
       "description": [
         {
         "short_description": "Influence",
-        "long_description":"Votre coupon sera d'autant plus faible que votre protection sera élévée"
+        "long_description":"Baisser le seuil de rappel à chaque période augment les chances de rappel du produit. Le coupon payé sera donc moindre. En contrepartie la prise de risque sur le capital sera aussi plus faible. "
         },        
         {
           "short_description": "Vérification",
-          "long_description":"Validez auprès de votre client la compréhension de la notion de perte potentielle de capital "
+          "long_description":"Adaptez cette dégressivité avec le profil de risque attendu."
         },
         {
           "short_description": "Risques",
-          "long_description":"En cas de troubles sur le marché, la perte en capital peut s'avérer sévère. Adaptez opportunement son niveau d'activation."
+          "long_description":"Un produit dont le seuil de rappel reste à 100% a moins de chance d'être rappelé. Le risque de perte de capital est plus élevé."
         },
         {
           "short_description": "Illustration",
           "long_description":""
         }
       ]
-    }
+    }   
   ]

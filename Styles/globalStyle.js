@@ -22,6 +22,22 @@ export const FLFontFamilyBold = Platform.OS !== 'ios' ? 'notoserif' :'Papyrus';
 export const backgdColor = '#edeef0';
 export const backgdColorPricerParameter = 'snow';
 
+
+
+
+
+export function setFont ( weight, size, color='black', family='FLFontFamily', verticalAlign='center') {
+  return {
+    fontWeight : weight,
+    fontSize: sizeByDevice(size +2, size, DEVICE_WIDTH < 350  && size > 12 ? size - 4 : size ) ,
+    fontFamily : family,
+    color,
+    textAlignVertical : verticalAlign
+  }
+}
+
+
+
 const globalStyle = StyleSheet.create({
 
 
@@ -33,6 +49,7 @@ const globalStyle = StyleSheet.create({
       backgroundColor: '#edeef0'//'#F9FAFC' //#edeef0
       //backgroundColor:'linen'
   },
+
 
 
 
@@ -236,6 +253,15 @@ news_detail_image : {
       alignItems: 'center',
       marginTop: Platform.OS === 'ios' ? -60+45 : -25+45,
       
+    },
+
+    templateIcon : {
+      paddingLeft: 5,
+      paddingRight : 5,
+      paddingTop: 3,
+      paddingBottom : 3, 
+      justifyContent: 'center',
+      alignItems: 'center'
     }
 
     

@@ -30,7 +30,7 @@ import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
 import * as TEMPLATE_TYPE from '../../constants/template'
-import * as TICKET_TYPE from '../../constants/ticket'
+
 
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
@@ -630,7 +630,7 @@ class FLTemplateAutocall extends React.Component {
                           console.log("TYPE : " +this.type);
                           this.props.navigation.navigate('FLAutocallDetail', {
                             item: this.item,
-                            ticketType: TICKET_TYPE.PSCREATION
+                            //ticketType: TICKET_TYPE.PSCREATION
                           });
                         }
                   }>

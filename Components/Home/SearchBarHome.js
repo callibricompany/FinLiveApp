@@ -78,8 +78,7 @@ export default class SearchBarHome extends Component {
 
 
     this.state = {
-      //font 
-      fontLoaded : false, 
+
 
       //hide or show category and sub-category if searchtext is showed
       categoryHeight : new Animated.Value(45),
@@ -117,7 +116,7 @@ export default class SearchBarHome extends Component {
       //this.keyboardDidHideListener.remove();
   }
 
-  async componentDidMount() {
+  /*async componentDidMount() {
     await Font.loadAsync({
       'FLFontTitle': require('../../assets/fonts/Typo_Round_Regular_Demo.otf'),
     });
@@ -125,7 +124,7 @@ export default class SearchBarHome extends Component {
     this.setState({ fontLoaded: true });
 
     //console.log(this.props.categories)
-  }
+  }*/
 
 
 
@@ -360,7 +359,7 @@ export default class SearchBarHome extends Component {
                       <TouchableOpacity onPress={() => {
                                   console.log("qsjhfjhdfjd");
                       }}>
-                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 30, color: headerTabColor}}>F i n L i v e</Text>    
+                        <Text style={{paddingLeft : 5,fontFamily: 'FLFontTitle' , fontWeight:'200', fontSize : 30, color: headerTabColor}}>F i n L i v e</Text>    
                       </TouchableOpacity>
                     </View>   
 

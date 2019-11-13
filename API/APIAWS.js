@@ -193,8 +193,48 @@ export function ssModifyTicket (idToken, product) {
           reject(error)
         });
       });
-    }
+}
   
+
+export function getConversation (firebase, idTicket) {
+
+    var FormData = require('form-data');
+    var form = new FormData();
+
+    var ticket={};
+    ticket['idTicket'] = String(idTicket);
+    
+ 
+  
+  
+    return new Promise(
+      (resolve, reject) => {
+
+        firebase.doGetIdToken()
+        .then(token => {
+
+            var axiosConfig = {
+              headers :{
+                //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+                'bearer'      : token,
+              }
+            };
+            
+            axios.post(URL_AWS + '/getConversation', ticket, axiosConfig)
+            .then((response) => {
+              //console.log(response);
+              resolve(response)
+              //res.render('pages/register',{email: email, isConnected: isConnected});
+            })
+            .catch(function (error) {
+              console.log("Erreur requete aws (getConversation): " + error);
+              reject(error)
+            });
+        })
+        .catch((error) => reject(error));
+
+      });
+}
 export function getUserAllInfoAPI (idToken) {
   var axiosConfig = {
     headers :{
@@ -266,13 +306,17 @@ export function setFavoriteAPI (idToken, obj) {
         //res.render('pages/register',{email: email, isConnected: isConnected});
       })
       .catch(function (error) {
-        console.log("Erreur requete aws : " + error);
+        console.log("Erreur requete prix : " + error);
         reject(error)
       });
     });
 }
 
-export function searchProducts (idToken, criteria) {
+
+/**************************************
+          RECHERCHE DES AUTOCALLS
+*/
+export function searchProducts (firebase, criteria) {
 
   var FormData = require('form-data');
   var form = new FormData();
@@ -282,31 +326,35 @@ export function searchProducts (idToken, criteria) {
     form.append(key, criteria[key]);
   });
   
-
-  var axiosConfig = {
-    headers :{
-      //'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Type': 'application/json; charset=utf-8',
-      //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
-      'Accept'      : 'application/json',
-      'bearer'      : idToken,
-      //'type'        : 'Produit structuré'
-    }
-  };
-
-
   return new Promise(
     (resolve, reject) => {
-      axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
-      .then((response) => {
-        console.log("Succes demande prix : " + response.data.length);
-        resolve(response.data)
-        //res.render('pages/register',{email: email, isConnected: isConnected});
+
+      firebase.doGetIdToken()
+      .then(token => {
+
+          var axiosConfig = {
+            headers :{
+              //'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json; charset=utf-8',
+              //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+              'Accept'      : 'application/json',
+              'bearer'      : token,
+              //'type'        : 'Produit structuré'
+            }
+          };
+
+          axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
+          .then((response) => {
+            console.log("Succes demande prix : " + response.data.length);
+            resolve(response.data)
+            //res.render('pages/register',{email: email, isConnected: isConnected});
+          })
+          .catch(function (error) {
+            console.log("Erreur requete prix aws : " + error);
+            reject(error)
+          });
       })
-      .catch(function (error) {
-        console.log("Erreur requete prix aws : " + error);
-        reject(error)
-      });
+      .catch((error) => reject(error));
     });
   }
 

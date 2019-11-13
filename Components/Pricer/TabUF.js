@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Platform, Switch} from 'react-native'; 
-import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
+import { View, ScrollView, StyleSheet, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Platform, TextInput} from 'react-native'; 
+import { Thumbnail, Label, Item, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 
@@ -18,12 +18,14 @@ import localization from 'moment/locale/fr'
 
 import { FLSlider2 } from '../../Components/commons/FLSlider2'
 
+import Feather from 'react-native-vector-icons/Feather';
+
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
 import Dimensions from 'Dimensions';
 
-import {  globalSyle, 
+import {  setFont, 
   generalFontColor, 
   tabBackgroundColor,
   headerTabColor,
@@ -38,9 +40,19 @@ import {  globalSyle,
 
 
 
+
+
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
+
+const minusIcon = (isMinusDisabled, touchableDisabledColor, touchableColor) => {
+  return <Feather name='minus' size={20} color={isMinusDisabled ? touchableDisabledColor : touchableColor} />
+};
+
+const plusIcon = (isPlusDisabled, touchableDisabledColor, touchableColor) => {
+  return <Feather name='plus' size={20} color={isPlusDisabled ? touchableDisabledColor : touchableColor} />
+};
 
 class TabUF extends React.PureComponent {
   
@@ -54,7 +66,7 @@ class TabUF extends React.PureComponent {
       };
 
     }
-  
+
 
     componentWillReceiveProps(props) {
       this.setState({ nimporte : !this.state.nimporte});
@@ -68,12 +80,89 @@ class TabUF extends React.PureComponent {
           contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: Platform.OS === 'ios' ? 35 : 35 }}
                 tabRoute={this.props.route.key}
           >
+              <View style={{marginTop :-200}}>
+                    <TextInput
+                          style={[setFont('600', 50), {height: 0 }]}
+                          ref={(input) => { this.UFTextInput = input; }}
+                          keyboardType={'numeric'}
+                          returnKeyType={'done'}
+                          clearButtonMode={'while-editing'}
+                          onFocus={() => this.setState({ UF: 0})}
+                          onChangeText={(e) => {
+                                this.setState({ UF :  e === '' ? 0 : Numeral(e).value()/100}, () => {
+                                  this.props.needToRefresh();
+                                  this.props.updateUF(this.state.UF, this.state.UFAssoc);
+                                });              
+                          }}
+                          //value={this.state.UF === 0 ? '' : ''+Number(this.state.UF*100)}
+                          //value={this.state.UF === 0 ? '' : ''+Number.parseFloat(this.state.UF*100).toFixed(2)}
+                        />
+                        <TextInput
+                          style={setFont('600', 36)}
+                          ref={(input) => { this.UFAssocTextInput = input; }}
+                          keyboardType={'numeric'}
+                          returnKeyType={'done'}
+                          clearButtonMode={'while-editing'}
+                          onFocus={() => this.setState({ UFAssoc: 0})}
+                          onChangeText={(e) => {
+                            //console.log("NUMERAL : " + Numeral(e).value());
+                                this.setState({ UFAssoc :  e === '' ? 0 : Numeral(e).value()/100}, () => {
+                                  this.props.needToRefresh();
+                                  this.props.updateUF(this.state.UF, this.state.UFAssoc);
+                                });              
+                          }}
+                          //value={this.state.UF === 0 ? '' : ''+Number(this.state.UF*100)}
+                          //value={this.state.UFAssoc === 0 ? '' : ''+Numeral(this.state.UFAssoc).format('0.00%')}
+                        />
 
+              </View>
 
-              <View style={{marginTop: 30, borderWidth: 0}}>
-                      <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 18, color: 'black', marginBottom : 20}}>
-                          Votre commission : { Numeral(this.state.UF).format('0.00 %')}
+              <View style={{flexDirection: 'column', width : DEVICE_WIDTH*0.7, marginTop: 200, borderWidth: 0}}>
+                <View>
+                      <Text style={[setFont('400', 18), {marginBottom : 20}]}>
+                          Votre commission 
                       </Text>
+                </View>
+                <TouchableOpacity style={{marginTop: 10, flexDirection: 'row', backgroundColor: 'white',  justifyContent: 'center', alignItems: 'flex-start'}}
+                                  onPress={() => {
+                                    this.UFTextInput.focus(); 
+                                  }}>              
+                   <Text style={setFont('bold', 50)}>{ Numeral(this.state.UF).format('0.00 %')}</Text>
+                </TouchableOpacity> 
+              </View>
+              <View style={{flexDirection: 'column', width : DEVICE_WIDTH*0.7, marginTop: 100, borderWidth: 0}}>
+                <View>
+                      <Text style={[setFont('400', 14), {marginBottom : 20}]}>
+                          Pour votre association 
+                      </Text>
+                </View>
+                <TouchableOpacity style={{ flexDirection: 'row', backgroundColor: 'white',  justifyContent: 'center', alignItems: 'flex-start'}}
+                                  onPress={() => {
+                                    this.UFAssocTextInput.focus(); 
+                                  }}>              
+                   
+                   <Text style={setFont('bold', 36)}>{ Numeral(this.state.UFAssoc).format('0.00 %')}</Text>
+                </TouchableOpacity> 
+              </View>
+          </ScrollView>
+
+      );
+    }
+  }
+
+
+const composedWithNav = compose(
+    //withAuthorization(condition),
+     withNavigation,
+   );
+   
+   //export default HomeScreen;
+export default hoistStatics(composedWithNav)(TabUF);
+
+/*
+
+
+
                       <FLSlider2
                           min={0}
                           max={6}
@@ -100,10 +189,9 @@ class TabUF extends React.PureComponent {
                           }}
                           single={true}
                         />
-                      <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 16, color: 'black', marginTop : 60, marginBottom : 20}}>
-                          Pour votre association : { Numeral(this.state.UFAssoc).format('0.00 %')}
-                      </Text>
-                      <FLSlider2
+
+
+                          <FLSlider2
                           min={0}
                           max={2}
                           step={0.05}
@@ -128,21 +216,5 @@ class TabUF extends React.PureComponent {
                           }}
                           single={true}
                         />
-              </View>
-              <View style={{height: 150}}>
-              </View>
-          </ScrollView>
 
-      );
-    }
-  }
-
-
-const composedWithNav = compose(
-    //withAuthorization(condition),
-     withNavigation,
-   );
-   
-   //export default HomeScreen;
-export default hoistStatics(composedWithNav)(TabUF);
-
+*/

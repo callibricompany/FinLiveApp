@@ -83,7 +83,7 @@ export class FLProductDetail extends Component{
                                 obj={type}
                                 index={i}
                                 labelHorizontal={true}
-                             onPress={(itemValue) =>{
+                                onPress={(itemValue) =>{
                                     //console.log(i +"-ITEM VALUE : "+itemValue);
                                     this.setState({ currentChoice : this.productType[i].value}, () => {
                                       this.props.updateValue("type", this.productType[i].value, this.productType[i].label);});

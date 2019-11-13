@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Platform, Switch} from 'react-native'; 
-import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { FLScrollView } from '../SearchBar/searchBarAnimation';
 import FLBottomPanel from '../commons/FLBottomPanel'
@@ -13,7 +12,8 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import * as Progress from 'react-native-progress';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import SwitchSelector from "react-native-switch-selector";
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
@@ -26,7 +26,8 @@ import 'numeral/locales/fr'
 import Dimensions from 'Dimensions';
 
 import {  globalSyle, 
-  generalFontColor, 
+  backgdColor,
+  setFont, 
   tabBackgroundColor,
   headerTabColor,
   selectElementTab,
@@ -48,12 +49,13 @@ import { FLDegressiveDetail } from './description/FLDegressiveDetail';
 import { SNAP_POINTS_FROM_TOP } from '../commons/FLBottomPanel';
 
 import PARAMETERSSTRUCTUREDPRODUCT from '../../Data/optionsPricingPS.json'
+import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json';
 
 import * as TICKET_TYPE from '../../constants/template'
 import { isNull } from 'util';
 
 
-
+import Carousel from 'react-native-snap-carousel';
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -65,16 +67,22 @@ class TabPricer extends React.PureComponent {
     constructor(props) {
       super(props);
 
+      //current product parameter used for bootom panel
+      this.currentParameters = 'typeAuction';
+      this.product = this.props.product;
+
+
+      let productSelected = STRUCTUREDPRODUCTS.filter(({id}) => id === this.product['type'].value)[0];
       this.state = {
         toto : true,
+        needToRefresh : !this.props.isGoodToShow,
         
+        currentProductIndex : STRUCTUREDPRODUCTS.indexOf(productSelected),
+
         //position du bottomPanel
         bottomPanelPosition : SNAP_POINTS_FROM_TOP[2],
       };
 
-      //current product parameter used for bootom panel
-      this.currentParameters = 'typeAuction';
-      this.product = this.props.product;
 
       //console.log("0 : " + SNAP_POINTS_FROM_TOP[0]);
       //console.log("1 : " + SNAP_POINTS_FROM_TOP[1]);
@@ -84,14 +92,16 @@ class TabPricer extends React.PureComponent {
       this.underlyings = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
       
 
-      this.dataSource = Array(9).fill().map((_, index) => ({id: index}));
+      //mise en place des carrés
+      this.dataSource = Array(6).fill().map((_, index) => ({id: index}));
     }
   
     //on recoit les props a nouveau
     componentWillReceiveProps (props) {
       //console.log("PROPS RECEIVED");
       this.product = props.product;
-      
+
+      this.setState({ needToRefresh : !props.isGoodToShow});
       //pour rafraichir l'affichage
       this.setState({toto : !this.state.toto})
     }
@@ -111,6 +121,7 @@ class TabPricer extends React.PureComponent {
         }*/
 
         //on indique qu'un refresh est necesssire
+    
         this.props.needToRefresh();
     }
 
@@ -129,6 +140,14 @@ class TabPricer extends React.PureComponent {
       //this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[2] });
     }
 
+
+    _displayProductList = ({ item }) => {
+	    return (
+              <View style={{ justifyContent : 'center', alignItems: 'center', borderWidth:0}}>
+	              <Text numberOfLines={2} style={[setFont('400', 16, item.isLocked ? 'gray' : 'black'), {textAlign: 'center', textAlignVertical: 'center'}]}>{item.name}</Text>
+	           </View>
+	    )
+	}
     _renderFLBottomPanel=() => {
       switch (this.currentParameters) {
         case 'typeAuction' : return  <FLAuctionDetail updateValue={this._updateValue} initialValue={this.product['typeAuction'].value}/>
@@ -136,9 +155,9 @@ class TabPricer extends React.PureComponent {
         case 'underlying' : return  <FLUnderlyingDetail underlyings={this.underlyings} updateValue={this._updateValue} initialValue={this.product['underlying'].value}/>
         case 'maturity' : return  <FLMaturityDetail updateValue={this._updateValue} initialValue={this.product['maturity'].value}/>
         case 'barrierPDI' : return  <FLPDIDetail updateValue={this._updateValue} initialValue={this.product['barrierPDI'].value}/>
-        case 'barrierPhoenix' : return  <FLPhoenixBarrierDetail updateValue={this._updateValue} initialValue={this.product['barrierPhoenix'].value}/>
-        case 'freq' : return  <FLFreqDetail updateValue={this._updateValue} initialValue={this.product['freq'].value}/>
-        case 'airbagLevel' : return  <FLAirbagDetail updateValue={this._updateValue} initialValue={this.product['airbagLevel'].value}/>
+        case 'barrierPhoenix' : return  <FLPhoenixBarrierDetail updateValue={this._updateValue} initialValueBP={this.product['barrierPhoenix'].value} initialValueIM={this.product['isMemory'].value}/>
+        case 'freq' : return  <FLFreqDetail updateValue={this._updateValue} initialValueFreq={this.product['freq'].value} initialValueNNCP={this.product['nncp'].value}/>
+        case 'airbagLevel' : return  <FLAirbagDetail updateValue={this._updateValue} initialValueAB={this.product['airbagLevel'].value} initialValueDS={this.product['degressiveStep'].value} initialValueII={this.product['isIncremental'].value}/>
         case 'degressiveStep' : return  <FLDegressiveDetail updateValue={this._updateValue} initialValue={this.product['degressiveStep'].value}/>
 
         default : return  <View>
@@ -161,14 +180,33 @@ class TabPricer extends React.PureComponent {
 
     
       let valueLabel = this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated ? this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].valueLabel : this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].defaultValueLabel;
-  
+      if (this.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated) {
+        if (PARAMETERSSTRUCTUREDPRODUCT[id].name === 'freq' ) {
+            let nncp = this.product['nncp'].valueLabel
+            valueLabel = valueLabel + '\n\n1er rappel : ' + nncp;
+        } else if (PARAMETERSSTRUCTUREDPRODUCT[id].name === 'airbagLevel' ) {
+          let ii = this.product['isIncremental'].valueLabel;
+          let ds = this.product['degressiveStep'].valueLabel;
+          valueLabel = valueLabel + '\n'+ ii  + '\n'+ ds;
+        } else if (PARAMETERSSTRUCTUREDPRODUCT[id].name === 'barrierPhoenix' ) {
+          let im = this.product['isMemory'].valueLabel;
+          valueLabel = valueLabel + '\n'+ im;
+        }
+        
+      }
       let isActivated = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isActivated;
       let isMandatory = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isMandatory;
       let isLocked = this.props.product[PARAMETERSSTRUCTUREDPRODUCT[id].name].isLocked; 
 
       return (
-        <View style={{flexDirection: 'column',height: (DEVICE_WIDTH*0.925-20)/3 +hShift, width: (DEVICE_WIDTH*0.925-20)/3, marginLeft : id % 3 === 0 ? 0 : 5,  marginRight : (id -2) % 3 === 0 ? 0 : 5, marginBottom: 5, marginTop : marginShift,
-                      backgroundColor: isLocked ? 'pink' : isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue'
+        <View style={{flexDirection: 'column',
+                      height: (DEVICE_WIDTH*0.925-20)/3 +hShift, 
+                      width: (DEVICE_WIDTH*0.925-20)/3, 
+                      marginLeft : id % 3 === 0 ? 0 : 5,  
+                      marginRight : (id -2) % 3 === 0 ? 0 : 5, 
+                      marginBottom: 5, marginTop : marginShift,
+                      backgroundColor: isLocked ? 'pink' : isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue',
+                      borderRadius : 4
                     }}
         >
           <View style={{height: 35, borderBottomWidth : 1, borderBottomColor : 'aliceblue', padding: 2, justifyContent: 'center', alignItems: 'center',flexGrow: 1}}>
@@ -221,7 +259,7 @@ class TabPricer extends React.PureComponent {
              <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: 'white', textAlign: 'center'}}>
               {valueLabel}
             </Text>
-            {PARAMETERSSTRUCTUREDPRODUCT[id].name === 'barrierPDI'? <Text style={{marginTop: 25, fontFamily: FLFontFamily, fontWeight: '300', fontSize: 10, color: 'midnightblue', textAlign: 'center'}}>Barrière européenne</Text> : null}
+            {PARAMETERSSTRUCTUREDPRODUCT[id].name === 'barrierPDI'? <Text style={[setFont('300', 10, 'white'), {marginTop: 25, textAlign: 'center'}]}>Barrière européenne</Text> : null}
           </TouchableOpacity>
           
         </View>
@@ -229,18 +267,58 @@ class TabPricer extends React.PureComponent {
     }
 
     render() {
-      //console.log("RENDER TAB PRICER");
+      
       return (
-  /*        <FLScrollView 
-          contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: Platform.OS === 'ios' ? -60+35 : -25+35 }}
-                tabRoute={this.props.route.key}
-          > */
-          <View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 0 }}>
-           
-       
-              <View style={{marginTop: 10, marginBottom: Platform.OS === 'ios' ? 10 : 10 , borderWidth: 0}}>
+         <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: Platform.OS === 'ios' ? 5 : -25+35 }}> 
+          {/*<View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 0 }}>*/}  
+                  <View style={{width: DEVICE_WIDTH*0.95}}>
+                      <SwitchSelector
+                        initial={0}
+                        onPress={obj => {
+                          
+                          this._updateValue("typeAuction", obj.value, obj.label);
+                          //this.setState({ gender: value });
+                        }}
+                        textColor={tabBackgroundColor} 
+                        selectedColor={'white'}
+                        buttonColor={tabBackgroundColor}
+                        borderColor={tabBackgroundColor}
+                        returnObject={true}
+                        hasPadding
+                        options={[
+                          { label: "Placement Privé", value: "PP" , customIcon: <Ionicons name="ios-contact" style={{paddingRight: 5, color : this.props.product['typeAuction'].value === 'PP' ? 'white' : tabBackgroundColor}} size={20} />}, 
+                          { label: "Appel public à l'épargne", value: "APE", customIcon: <Ionicons name="ios-contacts" style={{paddingRight: 5, color :  this.props.product['typeAuction'].value === 'APE' ? 'white' : tabBackgroundColor}} size={20} />} 
+                        ]}
+                      />
+                  </View>
+                  <View style={{ height : 80, alignItems:'center', justifyContent:'center', marginTop: 10, marginBottom : 10}}>
+                        <Ionicons name="md-arrow-dropdown"  size={20} style={{color : tabBackgroundColor}}/>
+                        <Carousel
+                            ref={'carousel'}
+                            data={STRUCTUREDPRODUCTS}
+                            renderItem={this._displayProductList.bind(this)}
+                            sliderWidth={0.85*DEVICE_WIDTH*0.95}
+                            itemWidth={0.8*DEVICE_WIDTH/3}
+                            //itemHeight={400}
+                            //sliderHeight={120}
+                            //slideStyle={{backgroundColor: 'pink', height : 100, borderWidth: 2}}
+                            //containerCustomStyle={{ backgroundColor : 'green', justifyContent: 'center'}}
+                            //contentContainerCustomStyle={{ backgroundColor : 'red'}}
+                            firstItem={this.state.currentProductIndex}
+                            onSnapToItem={(currentProductIndex) => {
+                              //console.log(STRUCTUREDPRODUCTS[this.state.currentProductIndex]);
+                              if (!STRUCTUREDPRODUCTS[currentProductIndex].isLocked) {
+                                this.setState({ currentProductIndex }, () => this._updateValue("type", STRUCTUREDPRODUCTS[this.state.currentProductIndex].id,STRUCTUREDPRODUCTS[this.state.currentProductIndex].name))
+                              } else {
+                                this.refs['carousel'].snapToItem(this.state.currentProductIndex);
+                              }
+                            }}
+                        />
+                        <Ionicons name="md-arrow-dropup"  size={20} style={{color : tabBackgroundColor}}/>
+                  </View>
+
                   <FlatList
-                    contentContainerStyle={{}}
+                    contentContainerStyle={{flex: 1}}
                     data={this.dataSource}
                     //renderItem={this._renderRow}
                     keyExtractor={(item) => item.id.toString()}
@@ -251,11 +329,26 @@ class TabPricer extends React.PureComponent {
               
                     )}
                   />
-              <View style={{flex : 1, height: 150}}>
-                
-              </View>
-              </View>
 
+              <View style={{  width : DEVICE_WIDTH*0.925, backgroundColor: backgdColor,  justifyContent: 'center', alignItems: 'center'}}>
+
+  
+                  {
+                    this.state.needToRefresh ? 
+                    <TouchableOpacity style={{ width : DEVICE_WIDTH*0.925, backgroundColor: subscribeColor, borderRadius: 4, height: 40, justifyContent: 'center', alignItems: 'center' }}
+                      onPress={() => this.props.launchPricing()}>
+                      <Text style={{ paddingLeft: 12, paddingRight: 12, fontFamily: FLFontFamily, fontWeight: '300', fontSize: 14, color: 'white' }}>
+                        ELABORER MES PRODUITS
+                      </Text>
+                    </TouchableOpacity>
+                      : <View style={{ height: 40, justifyContent: 'center', alignItems: 'flex-start' }}>
+                          <Text style={{ paddingLeft: 10, fontFamily: FLFontFamily, fontWeight: '200', fontSize: 12, color: 'black' }}>
+                          
+                          </Text>
+                        </View>
+                  }
+
+              </View>
                <FLBottomPanel position={this.state.bottomPanelPosition} 
                               snapChange={this._snapChange} 
                               renderFLBottomPanel={this._renderFLBottomPanel()} 
@@ -264,7 +357,7 @@ class TabPricer extends React.PureComponent {
                               isActivated={this.product[this.currentParameters].isActivated}
                 />
              
-          </View>
+          </ScrollView>
 
       );
     }

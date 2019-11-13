@@ -47,7 +47,7 @@ const withAuthentication = Component => {
       
       this.listener = this.props.firebase.onAuthUserListener(
         authUser => {
-          console.log("didMount Authentication ok");
+          console.log("didMount Authentication : " + authUser.firstName + " " +authUser.name + " ("+authUser.company+" / "+ authUser.organization+")");
           this.setState({ authUser });
         },
         () => {
@@ -81,7 +81,9 @@ const withAuthentication = Component => {
                                 userOrg : userDatas.userOrg,
                                 favorites : userDatas.favorites,
                                 tickets : userDatas.userTickets});
-                //console.log(userDatas.userTickets);
+                
+                let toto = [...new Set(userDatas.homePage.map(x => x.category))];
+                console.log(toto);
                 resolve("ok");
     
               })

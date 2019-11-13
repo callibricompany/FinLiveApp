@@ -1,44 +1,26 @@
 [
   {
-    "name": "Autocall",
-    "class": "FIN",
-    "id": "classicAutocall",
-    "icon":"AU",
-    "comments" : "L'autocal classique blablablablabal"
-  },
-  {
-    "name": "Autocall incrémental",
-    "class": "FIN",
-    "id": "incrementalAutocall",
-    "icon":"AI",
-    "comments" : "L'autocall incrémental blablablablabal"
-   }, 
-  {
-   "name": "Autocall airbag",
+   "name": "Autocall",
    "class": "FIN",
-   "id": "airbagAutocall",
-   "icon":"AA",
-   "comments" : "L'autocall airbag blablablablabal"
+   "isLocked": false,
+   "id": "autocall"
   },
   {
     "name": "Phoenix",
     "class": "FIN",
-    "id": "classicPhoenix",
-    "icon":"PH",
-    "comments" : "Le Phoenix blablablablabal"
-  },
-  {
-    "name": "Phoenix mémoire",
-    "class": "FIN",
-    "id": "memoryPhoenix",
-    "icon":"PM",
-    "comments" : "Le phoenix mémoire blablablablabal"
+    "isLocked": false,
+    "id": "phoenix"
   },
   {
     "name": "Reverse convertible",
     "class": "FIN",
-    "id": "reverse",
-    "icon":"RC",
-    "comments" : "La reverse convertible blablablablabal"
+    "isLocked": true,
+    "id": "reverse"
+  },
+  {
+    "name": "Capital garanti",
+    "class": "FIN",
+    "isLocked": true,
+    "id": "vanilla"
   }
 ]

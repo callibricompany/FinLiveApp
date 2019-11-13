@@ -11,6 +11,7 @@ import {
     FLFontFamily,
     FLFontFamilyBold,
     apeColor,
+    setFont,
     globalStyle
  } from '../../Styles/globalStyle'
 
@@ -25,24 +26,26 @@ import { compose, hoistStatics } from 'recompose';
 
 import { convertFresh } from '../../Utils/convertFresh';
 
+import {  CPPTicket } from '../../Classes/Tickets/CPPTicket';
+
 import Svg, { Polyline } from 'react-native-svg';
 
-import { ssModifyTicket } from '../../API/APIAWS';
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr';
 
-import FLTemplateAutocall  from '../Pricer/FLTemplateAutocall';
+import FLTemplateAutocall  from '../commons/Autocall/FLTemplateAutocall';
 
-import TICKET_STEPS from '../../Data/ticketsSteps.json'
+import WORKFLOW from '../../Data/workflow.json'
 import PRIORITY from '../../Data/priorityFD.json';
-import STATUS from '../../Data/statusFD.json';
+
 
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import * as TEMPLATE_TYPE from '../../constants/template';
 import * as TICKET_TYPE from '../../constants/ticket';
+import { getCurrentFrame } from 'expo/build/AR';
 
 
 
@@ -59,20 +62,21 @@ class FLTicketTemplatePP extends React.Component {
     super(props);
 
     this.ticket = this.props.ticket;
-    this.product = convertFresh(this.ticket['custom_fields']);
+    this.ticket['data'] = convertFresh(this.ticket['custom_fields']);
     console.log(this.ticket);
-    //console.log(this.product);
+    
+    this.ticketObj = new CPPTicket(this.ticket);
+
     //determination de l'étape 
-    this.step = TICKET_STEPS.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].codeStep)[0];
+    this.step = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].codeStep)[0];
 
     //determination de l'étape  suivante
-    this.nextStep = TICKET_STEPS.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].nextCodeStep)[0];
+    this.nextStep = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].nextCodeStep)[0];
     
     //priorite FD
     this.priority = PRIORITY.filter(({id}) => id === this.ticket.priority)[0];
     
-    //statut FD
-    this.status = STATUS.filter(({id}) => id === this.ticket.status)[0];
+
 
 
     this.state = {
@@ -87,7 +91,11 @@ class FLTicketTemplatePP extends React.Component {
   componentWillReceiveProps (props) {
 
   }
+  
 
+  componentWillUpdate() {
+    console.log("component will update e");
+  }
  
 
 
@@ -110,23 +118,31 @@ class FLTicketTemplatePP extends React.Component {
     let arrowW = DEVICE_WIDTH*0.925*0.6;
     let arrowW2 = 3*arrowW/5;
     return (
-      <View style={[globalStyle.itemTicket, {flexDirection : 'column', width: DEVICE_WIDTH*0.925, borderBottomWidth : 1,}]}>
-          <TouchableOpacity style={{backgroundColor:  headerTabColor  }}
-                                  onPress={() => {
-                                    this.props.navigation.navigate('FLTicketDetail', {
-                                      ticket: this.ticket,
-                                      product : this.product
-                                    });
-                                  }}>
-            <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 16, color: 'white', paddingTop: 5, paddingLeft :5}}>
-                {this.ticket['subject']}
-            </Text>
-            <Text style={{fontFamily:  FLFontFamily, fontWeight: '200', fontSize: 13, color: 'white', padding:5}}>
-                Placement privé : {this.ticket['type']}
-            </Text>
-          </TouchableOpacity>
+      <View style={[globalStyle.itemTicket, {flexDirection : 'column', backgroundColor:  tabBackgroundColor, width: DEVICE_WIDTH*0.975, borderBottomWidth : 1, borderWidth: 0, borderColor:'transparent', borderTopLeftRadius: 15}]}>
+         <View style={{flexDirection: 'row'}}>
+            <View style={{ flex: 0.8, position : "relative", zIndex:0 , paddingLeft : 20}}>
+              <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 18, color: 'white', paddingTop: 5, paddingLeft :5}}>
+                  {this.ticket['subject']}
+              </Text>
+              <Text style={{fontFamily:  FLFontFamily, fontWeight: '200', fontSize: 14, color: 'white', padding:5}}>
+                  Placement privé : {this.ticket['type']}
+              </Text>
+            </View>
+            <TouchableOpacity style={{flex : 0.2, backgroundColor: subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
+                                    onPress={() => {
+                                      this.props.navigation.navigate('FLTicketDetail', {
+                                        ticket: this.ticket,
+
+                                      });
+                                                  }}
+                  >
+                    <Text style={setFont('600', 14, 'white')}>
+                      VOIR >
+                    </Text>   
+              </TouchableOpacity>
+          </View>
           <View>
-            <FLTemplateAutocall item={this.product} templateType={TEMPLATE_TYPE.AUTOCALL_CARAC} />
+            <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_CARAC} />
           </View>
           <View style={{ marginTop : 0, backgroundColor: 'white'}}>
 
@@ -135,7 +151,7 @@ class FLTicketTemplatePP extends React.Component {
                 <Polyline
                   points= {Math.trunc(0.05*arrowW)+",0  " + Math.trunc(0.88*arrowW)+",0 "+Math.trunc(arrowW)+",25 "+Math.trunc(0.87*arrowW)+",50 "+Math.trunc(0.05*arrowW)+",50 "+Math.trunc(0.12*arrowW)+",25 "+Math.trunc(0.05*arrowW)+",0"}
                   //points="20,0 200,0 220,25 200,50 20,50 30,25 20,0"
-                  fill="green"
+                  fill="none"
                   stroke="green"
                   strokeWidth="1"
                 />
@@ -153,14 +169,14 @@ class FLTicketTemplatePP extends React.Component {
           </View>
           <View style={{flexDirection: 'row', backgroundColor: 'transparent', marginTop: -60,}}>
                   <View style={{flex: 0.6}}>
-                    <Text style={{width: arrowW*0.8, height:50, top : 10, left: 0.07*DEVICE_WIDTH, textAlignVertical: 'center', fontFamily:  FLFontFamily, color: 'white',  fontWeight: '200', fontSize: 12}}>
+                    <Text style={[setFont('200', 12, 'green'), {width: arrowW*0.8, height:50, top : 10, left: 0.07*DEVICE_WIDTH, textAlignVertical: 'center'}]}>
                       {this.step.stepUnsolved}
                     </Text>
                   </View>
                   <TouchableOpacity style={{flex : 0.4,  borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}
                                                    onPress={() => {
                                                   if (this.step.userTrigger) {
-                                                    this.setState({ isLoading : true });
+                                                    /*this.setState({ isLoading : true });
                                                     this.props.firebase.doGetIdToken()
                                                     .then(token => {
                                                     
@@ -171,27 +187,28 @@ class FLTicketTemplatePP extends React.Component {
                                                       productToSend['type'] = this.ticket.type;
                                                       productToSend['cf_cpg_choice'] = this.ticket.currentStep[0].operation;
                                                       productToSend['cf_step_pp'] = this.ticket.currentStep[0].nextCodeStep;
-                                                      console.log(productToSend);
+                                                      //console.log(productToSend);
                                                       ssModifyTicket(token, productToSend)
                                                       .then((data) => {
                                                         //console.log("USER CREE AVEC SUCCES DANS ZOHO");
-                                                        
-                                                        console.log("SUCCES CREATION TICKET : ");
-                                                        console.log(data);
                                                         
                                                         this.ticket = data.data;
                                                         console.log("TICKET MIS A JOUR");
                                                         this.setState({ isLoading : false});
                                                       })
                                                       .catch(error => {
-                                                        console.log("ERREUR CREATION TICKET: " + error);
+                                                        console.log("ERREUR UPDATE TICKET: " + error);
                                                         this.setState({ isLoading : false });
                                                         
                                                       }) 
                                                     })
                                                     .catch((error) => {
                                                       this.setState({ isLoading : false });
-                                                    }); 
+                                                    }); */
+                                                    this.props.navigation.navigate('FLTicketDetail', {
+                                                        ticket: this.ticket,
+                                                        showModalResponse : true
+                                                      });
                                                   } else {
                                                       /*Alert.alert(
                                                         'Vous attendez actuellement une réponse',
@@ -224,7 +241,7 @@ class FLTicketTemplatePP extends React.Component {
           <View style={{flexDirection: 'row',backgroundColor:  'whitesmoke' , borderTopWidth :0,}}>
             <View style={{flex:0.3, borderRightWidth : 0, justifyContent: 'center'}}>
               <Text style={{fontFamily:  FLFontFamily,  fontWeight: '300', fontSize: 12, padding : 2}}>
-                  Interlocuteur : {'\n'}{this.ticket['requester_id']}
+                  Interlocuteur : {'\n'}{this.ticketObj.getAgentName()}
               </Text>
             </View>
             <View style={{flex:0.45, justifyContent: 'center'}}>
@@ -237,15 +254,15 @@ class FLTicketTemplatePP extends React.Component {
               </Text>
             </View>
             <View style={{flex:0.25, flexDirection : 'column',borderWidth : 0, justifyContent: 'center'}}>
-              <View style={{flex: 0.5, backgroundColor : this.priority.color}}>
-                <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 10, paddingTop : 2, paddingLeft : 2}}>
-                    Priorité {this.priority.name}
+              <View style={{flex: 0.5, backgroundColor : this.ticketObj.getPriority().color, justifyContent : 'center', alignItems: 'center'}}>
+                <Text style={[setFont('400', 10),  {paddingTop : 2, paddingLeft : 2}]}>
+                    {this.ticketObj.getPriority().name.toUpperCase()}
                 </Text>
               </View>
-              <View style={{flex: 0.5, backgroundColor: this.status.color}}>
+              <View style={{flex: 0.5, backgroundColor: this.ticketObj.getStatus().color, justifyContent : 'center', alignItems: 'center'}}>
 
-                <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 10, paddingTop : 2, paddingLeft : 2}}>
-                    Statut {this.status.name}
+                <Text style={[setFont('400', 10), { paddingTop : 2, paddingLeft : 2}]}>
+                    {this.ticketObj.getStatus().name}
                 </Text>
               </View>
             </View>

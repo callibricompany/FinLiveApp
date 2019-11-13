@@ -33,7 +33,7 @@ import {  globalSyle,
   FLFontFamilyBold
 } from '../../Styles/globalStyle';
 
-import FLTemplateAutocall from './FLTemplateAutocall'
+import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
 
 
 
@@ -67,7 +67,7 @@ class TabResults extends React.PureComponent {
       //console.log('id : ' +id);
       return (
   
-      <FLTemplateAutocall id={id} item={item} templateType={TEMPLATE_TYPE.LIST} isGoodToShow={this.state.isGoodToShow}/>
+              <FLTemplateAutocall object={item} isGoodToShow={this.state.isGoodToShow} />
       
       );
     }
@@ -97,8 +97,8 @@ class TabResults extends React.PureComponent {
                     )}
                     ListFooterComponent={() => {
                       return (
-                        <View style={{height : 150}}>
-                          <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
+                        <View style={{height : 150, alignItems: 'center'}}>
+                          <Text style={{fontFamily : 'FLFontTitle'}}>F i n L i v e</Text>
                         </View>
                       );
                     }}

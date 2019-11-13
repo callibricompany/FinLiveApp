@@ -11,7 +11,7 @@ import { ssCreateStructuredProduct } from '../../API/APIAWS';
 
 import { tabBackgroundColor, FLFontFamily, generalFontColor, subscribeColor } from '../../Styles/globalStyle';
 
-import FLPanel from '../commons/FLPanel';
+
 
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';

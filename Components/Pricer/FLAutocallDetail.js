@@ -13,7 +13,6 @@ import { ssCreateStructuredProduct } from '../../API/APIAWS';
 import { tabBackgroundColor, FLFontFamily, generalFontColor, subscribeColor,
           headerTabColor } from '../../Styles/globalStyle';
 
-import FLPanel from '../commons/FLPanel';
 
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -24,7 +23,7 @@ import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE} from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../Utils';
 import Dimensions from 'Dimensions';
 
 import * as TICKET_TYPE from '../../constants/ticket'
@@ -34,42 +33,9 @@ import FREQUENCYLIST from '../../Data/frequencyList.json'
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
+import { CAutocall } from '../../Classes/Products/CAutocall';
 
 
-Object.equals = function( x, y ) {
-  if ( x === y ) return true;
-    // if both x and y are null or undefined and exactly the same
-
-  if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
-    // if they are not strictly equal, they both need to be Objects
-
-  if ( x.constructor !== y.constructor ) return false;
-    // they must have the exact same prototype chain, the closest we can do is
-    // test there constructor.
-
-  for ( var p in x ) {
-    if ( ! x.hasOwnProperty( p ) ) continue;
-      // other properties were tested using x.constructor === y.constructor
-
-    if ( ! y.hasOwnProperty( p ) ) return false;
-      // allows to compare x[ p ] and y[ p ] when set to undefined
-
-    if ( x[ p ] === y[ p ] ) continue;
-      // if they have the same strict value or identity then they are equal
-
-    if ( typeof( x[ p ] ) !== "object" ) return false;
-      // Numbers, Strings, Functions, Booleans must be strictly equal
-
-    if ( ! Object.equals( x[ p ],  y[ p ] ) ) return false;
-      // Objects and Arrays must be tested recursively
-  }
-
-  for ( p in y ) {
-    if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
-      // allows x[ p ] to be set to undefined
-  }
-  return true;
-}
 
 
 class FLAutocallDetail extends React.Component {
@@ -84,12 +50,15 @@ class FLAutocallDetail extends React.Component {
       }
 
       
-      this.ticketType =  this.props.navigation.getParam('ticketType', '...');
+      //this.ticketType =  this.props.navigation.getParam('ticketType', '...');
+      console.log(this.item);
 
-
+      //l'objet autocall Classe
+      this.autocall = new CAutocall(this.item['data']);
 
       //recuperation du nom du produit
-      this.productName = STRUCTUREDPRODUCTS.filter(obj => obj.id === this.item['data'].product)[0];
+      //this.productName = STRUCTUREDPRODUCTS.filter(obj => obj.id === this.item['data'].product)[0];
+
       //recuperation de la liste des sous-jacents
       let underlyings = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
       this.underlying = underlyings[underlyings.findIndex(udl => udl.underlyingCode === this.item['data'].underlying)].subCategoryName;
@@ -182,7 +151,7 @@ class FLAutocallDetail extends React.Component {
     static navigationOptions = ({ navigation }) => {
     //static navigationOptions = {
       let item = navigation.getParam('item', '...');
-      let productName = STRUCTUREDPRODUCTS.filter(obj => obj.id === item['data'].product)[0];
+      //let productName = STRUCTUREDPRODUCTS.filter(obj => obj.id === item['data'].product)[0];
  
       const { params } = navigation.state;
       return {
@@ -304,7 +273,7 @@ class FLAutocallDetail extends React.Component {
       //check if it is in favorites
       let isFavorite = false;
       this.props.favorites.forEach((fav) => {
-        if (Object.equals(fav.data, this.item.data)) {
+        if (isEqual(fav.data, this.item.data)) {
           //isFavorite = this.item.isFavorite && this.item.toFavorites.active;
           isFavorite = true;
         }
@@ -342,7 +311,7 @@ class FLAutocallDetail extends React.Component {
                 let y = evt.nativeEvent.pageY;
                 //si on a clické en dehors du module view cidessous on ferme le modal
                 let verifX = x < DEVICE_WIDTH*0.1  || x > DEVICE_WIDTH*0.9 ? true : false;
-                let verifY = y < DEVICE_HEIGHT*0.3  || y > DEVICE_HEIGHT*0.7 ?true : false;
+                let verifY = y < DEVICE_HEIGHT*0.15  || y > DEVICE_HEIGHT*0.55 ?true : false;
                 if (verifX || verifY) {
                   this.setState({showModalDescription : false})
                 }
@@ -360,7 +329,7 @@ class FLAutocallDetail extends React.Component {
                     //borderRadius:10,
                     width: DEVICE_WIDTH*0.8,
                     height: DEVICE_HEIGHT*0.4,
-                    top:  DEVICE_HEIGHT*0.3,
+                    top:  DEVICE_HEIGHT*0.15,
                     left : DEVICE_WIDTH*0.1,
 
                 }}
@@ -393,7 +362,7 @@ class FLAutocallDetail extends React.Component {
                                       .then(token => {
                                       
                                         let productToSend = JSON.parse(JSON.stringify(this.item['data']));
-                                        productToSend['subject'] = this.productName.name  + " " + this.maturity + " sur " + this.underlying + " / "  + this._getFrequencyName().toLowerCase();
+                                        productToSend['subject'] = this.autocall.getProductName()  + " " + this.maturity + " sur " + this.underlying + " / "  + this._getFrequencyName().toLowerCase();
                                         //productToSend['description'] = "C'est pour mon client le plus important";
                                         productToSend['type'] = 'Produit structuré';
                                         productToSend['department'] = 'FIN';
@@ -450,7 +419,7 @@ class FLAutocallDetail extends React.Component {
                 
                 <View style={{borderWidth:0, flex: 0.75, marginTop: Platform.OS === 'ios' ? -2 : -5, justifyContent: 'center', alignItems: 'flex-start'}}>
                         <Text style={{paddingTop: 2, fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: generalFontColor}}>
-                          {this.productName.name}  {this.maturity}
+                          {this.autocall.getProductName()}  {this.maturity}
                         </Text>
                         <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: generalFontColor}}>
                           {this.underlying}  / {this._getFrequencyName().toLowerCase()}
@@ -488,7 +457,7 @@ class FLAutocallDetail extends React.Component {
                           placeholderTextColor={'lightgray'}
                           underlineColorAndroid={'#fff'}
                           autoCorrect={false}
-                          keyboardType={'decimal-pad'}
+                          keyboardType={'numeric'}
                           returnKeyType={'done'}
                           onFocus={() => {
                             
