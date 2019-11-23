@@ -4,7 +4,7 @@ import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'reac
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 
-import { globalStyle, tabBackgroundColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
 
 
 

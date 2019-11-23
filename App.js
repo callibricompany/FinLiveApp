@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleProvider, Container } from 'native-base'
-import { Text, YellowBox } from 'react-native'
+import { Text, YellowBox, ImageBackground, StyleSheet } from 'react-native'
 import * as Font from 'expo-font';
 
 import getTheme from './native-base-theme/components'
@@ -13,6 +13,7 @@ import Dimensions from 'Dimensions';
 
 import Application from './Components/Login/Application'
 import Navigation from './Navigation/Navigation'
+import bgSrc from './assets/LogoWithText.png';
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -36,6 +37,12 @@ class App extends React.Component {
     await Font.loadAsync({
       'FLFontFamily': require('./assets/fonts/Arial.ttf'),
       'FLFontTitle': require('./assets/fonts/Typo_Round_Regular_Demo.otf'),
+      'Light' : require('./assets/fonts/roboto/Roboto-Light.ttf'),
+      'Regular' : require('./assets/fonts/roboto/Roboto-Regular.ttf'),
+      'Thin' : require('./assets/fonts/roboto/Roboto-Thin.ttf'),
+      'Bold' : require('./assets/fonts/roboto/Roboto-Bold.ttf'),
+      
+
     });
 
     this.setState({ loading: false });  
@@ -47,7 +54,11 @@ class App extends React.Component {
   render() {
     if (this.state.loading) {
       return (
-          <Text>Ca charge ...</Text>
+        <ImageBackground
+          source={bgSrc}
+          style={styles.picture}
+          resizeMode="contain"
+        />
       );
     }
     //console.log("RENDER APP");
@@ -67,18 +78,21 @@ class App extends React.Component {
   }
 }
 
+const styles = StyleSheet.create({
+
+  picture: {
+    flex: 1,
+    top: 0, left: 0, right: 0, bottom: 0,
+    //opacity: 0.15,
+    position: "absolute",
+    backgroundColor : 'white',
+    width: null,
+    height: null,
+    //resizeMode: 'cover',
+  },
+});
 
 export default App;
-/*
-      <FirebaseContext.Provider value={new Firebase()}>
-      <UserProvider>
-        <StyleProvider  style={getTheme(material)}>  
-        <Container>
-           <Navigation/>
-        </Container>
-        </StyleProvider>
-      </UserProvider>
-      </FirebaseContext.Provider>
-*/
+
 
 

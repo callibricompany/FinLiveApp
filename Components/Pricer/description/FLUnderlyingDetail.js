@@ -6,7 +6,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 
-import { globalStyle, tabBackgroundColor, selectElementTab, FLFontFamily, backgdColorPricerParameter } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, selectElementTab, FLFontFamily, backgdColorPricerParameter } from '../../../Styles/globalStyle'
 
 
 
@@ -145,7 +145,7 @@ export class FLUnderlyingDetail extends React.Component{
 
         let pickerDropDownButton = Platform.OS === 'ios' ?            
                                         <View style={{marginLeft : 5, flex : 0.1, height: 50, borderWidth : 0, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                <Icon name="arrow-dropdown-circle" style={{ color: tabBackgroundColor, fontSize: 25 }} />   
+                                                <Icon name="arrow-dropdown-circle" style={{ color: blueFLColor, fontSize: 25 }} />   
                                         </View>
                                         : null;
 
@@ -160,7 +160,7 @@ export class FLUnderlyingDetail extends React.Component{
                            <SafeAreaView/>}
                         selectedValue={this.state.currentSector}
                         style={{height: 50,  borderWidth:0}}
-                        //iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: tabBackgroundColor, fontSize: 25 }} />}
+                        //iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: blueFLColor, fontSize: 25 }} />}
                         //mode={"dropdown"}
                         //prompt={"Choisissez votre sous-jacent"}
                         iosHeader="Secteur : "

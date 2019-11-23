@@ -4,7 +4,7 @@ import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { globalStyle , tabBackgroundColor, backgdColor, apeColor, FLFontFamily, headerTabColor} from '../../Styles/globalStyle'
+import { globalStyle , blueFLColor, backgdColor, apeColor, FLFontFamily, headerTabColor} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -164,7 +164,7 @@ class TicketScreen extends React.Component {
     //console.log(this.props.tickets);
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
-      <SafeAreaView style={{flex : 1, backgroundColor: tabBackgroundColor}}>
+      <SafeAreaView style={{flex : 1, backgroundColor: blueFLColor}}>
 
       <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH, backgroundColor: backgdColor}}>
         <AnimatedFlatList
@@ -218,7 +218,7 @@ class TicketScreen extends React.Component {
                       <TouchableOpacity onPress={() => {
                                   console.log("qsjhfjhdfjd");
                       }}>
-                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:tabBackgroundColor}}>Mes tickets</Text>    
+                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:blueFLColor}}>Mes tickets</Text>    
                       </TouchableOpacity>
                     </View>   
 
@@ -263,7 +263,7 @@ class TicketScreen extends React.Component {
                           <MaterialIcons
                             name='search' 
                             size={25} 
-                            color={tabBackgroundColor}
+                            color={blueFLColor}
                           />
                       </TouchableOpacity>
                       <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
@@ -273,7 +273,7 @@ class TicketScreen extends React.Component {
                          <Icon
                             name='ios-notifications-outline' 
                             size={25} 
-                            style={{color : tabBackgroundColor}}
+                            style={{color : blueFLColor}}
                           />
                       </TouchableOpacity>
                     

@@ -4,7 +4,7 @@ import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { globalStyle , tabBackgroundColor, subscribeColor, FLFontFamily} from '../../Styles/globalStyle'
+import { globalStyle , blueFLColor, subscribeColor, FLFontFamily} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -148,7 +148,7 @@ class BroadcastingScreen extends React.Component {
     });
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
-      <SafeAreaView style={{flex : 1, backgroundColor: tabBackgroundColor}}>
+      <SafeAreaView style={{flex : 1, backgroundColor: blueFLColor}}>
 
       <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH}}>
         <AnimatedFlatList
@@ -184,7 +184,7 @@ class BroadcastingScreen extends React.Component {
          
         <Animated.View style={{
                   display: 'flex',
-                  backgroundColor: tabBackgroundColor,
+                  backgroundColor: blueFLColor,
                   //borderRadius: 3,
                   borderWidth:0,
                   opacity: navbarOpacity,

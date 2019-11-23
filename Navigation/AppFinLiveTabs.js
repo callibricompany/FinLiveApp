@@ -19,7 +19,7 @@ import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Icon } from 'native-base'
 
-import { tabBackgroundColor, FLFontFamily } from '../Styles/globalStyle';
+import { blueFLColor, FLFontFamily } from '../Styles/globalStyle';
 
 import { withUser } from '../Session/withAuthentication';
 
@@ -28,7 +28,7 @@ import * as ROLES from '../constants/roles';
 
 const tabIconFocused = 'white';
 //const tabIconNonFocused = '#C8D1DB';
-const tabIconNonFocused = tabBackgroundColor;
+const tabIconNonFocused = blueFLColor;
 
 
 
@@ -37,7 +37,7 @@ function labelStyle (focused, tintColor) {
       couleur = tintColor }
     else {
        //couleur = '#707070' }
-       couleur = tabBackgroundColor }
+       couleur = blueFLColor }
   
     
     return {

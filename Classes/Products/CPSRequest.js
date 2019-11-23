@@ -228,7 +228,7 @@ export class CPSRequest extends CRequest {
 
 
     setRequestFromCAutocall (autocall) {
-      console.log("SOUS JACENT : " + autocall.getUnderlyingTicker());
+      //console.log("SOUS JACENT : " + autocall.getUnderlyingTicker());
       this.autocall = autocall;
       p = {
         'typeAuction': {

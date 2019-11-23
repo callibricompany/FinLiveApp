@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import * as Font from 'expo-font';
-import { Icon, Button } from 'native-base'
+
+import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import IonIcons  from "react-native-vector-icons/Ionicons";
+
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 import { getAllUnderlying } from '../../Utils';
 
@@ -19,16 +20,18 @@ import {
   Dimensions,
   SectionList,
   Easing,
-  Keyboard
+  Keyboard,
+  Image
 } from 'react-native';
 
 import {  globalSyle, 
           generalFontColor, 
-          tabBackgroundColor,
+          blueFLColor,
           headerTabColor,
           selectElementTab,
           FLFontFamily,
-          backgdColor
+          backgdColor,
+          setColor
 } from '../../Styles/globalStyle';
 
 
@@ -81,7 +84,8 @@ export default class SearchBarHome extends Component {
 
 
       //hide or show category and sub-category if searchtext is showed
-      categoryHeight : new Animated.Value(45),
+      //categoryHeight : new Animated.Value(45),
+      categoryHeight : new Animated.Value(0),
       //paddingCategoryHeight : new Animated.Value(50),
       showModalTitle : true,
       
@@ -89,7 +93,8 @@ export default class SearchBarHome extends Component {
       positionLeft: new Animated.Value(DEVICE_WIDTH),
       bgInputTextColor : new Animated.Value(0),
 
-
+      //relatifs au modal de filtre
+      leftPositionCategory : new Animated.Value(0),
       showModalCategory: false,
       selectedCategory : selectedCategory,
 
@@ -150,8 +155,20 @@ export default class SearchBarHome extends Component {
             visible={this.state.showModalCategory}
             onRequestClose={() => {
               console.log('Modal has been closed');
-            }
-            }>
+            }}
+            onShow={() => {
+              console.log("showsjhdjshd");
+              Animated.timing(
+                    this.state.leftPositionCategory,
+                      {
+                        toValue: DEVICE_WIDTH*0.5,
+                        duration : 1000,
+                        easing: Easing.elastic(),
+                        speed : 1
+                      }
+              ).start();
+            }}
+        >
             <View 
               style={{flex:1, backgroundColor:'transparent'}} 
               onStartShouldSetResponder={() => true}
@@ -162,17 +179,26 @@ export default class SearchBarHome extends Component {
                 let x = evt.nativeEvent.pageX;
                 let y = evt.nativeEvent.pageY;
                 //si on a clické en dehors du module view cidessous on ferme le modal
-                let verifX = x < DEVICE_WIDTH*0.0375  || x > DEVICE_WIDTH*0.9625 ? true : false;
+                let verifX = x < DEVICE_WIDTH*0.0  || x > DEVICE_WIDTH*0.5 ? true : false;
                 let departY =  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
                              animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111)-4: sizeByDevice(86, 86-23, 42)-4;
                 let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5) ? true : false;
                 if (verifX || verifY) {
-                  this.setState({showModalCategory : false})
+                  Animated.spring(
+                    this.state.leftPositionCategory,
+                      {
+                        toValue: 0,
+                        duration : 500,
+                        //easing: Easing.elastic(),
+                        speed : 1
+                      }
+                   ).start();
+                   this.setState({showModalCategory : false});
                 }
               }}
 
             >
-                  <View 
+                  <Animated.View 
                     //directionalLockEnabled={true} 
                     //contentContainerStyle={{
                       style={{
@@ -180,11 +206,11 @@ export default class SearchBarHome extends Component {
                         borderWidth :1,
                         borderColor : headerTabColor,
                         //borderRadius:10,
-                        width: DEVICE_WIDTH*0.925,
+                        width: this.state.leftPositionCategory,
                         height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5),
-                        top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
-                                  animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) - 30-4: sizeByDevice(86, 86-23, 42)-4,
-                        left : DEVICE_WIDTH*0.075/2,
+                        top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(125, 125-23, 83) -30-4: 
+                                  animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(115, 115-23, 84) - 30-4 : sizeByDevice(86, 86-23, 70)-4,
+                        left : DEVICE_WIDTH*0,
                         //marginTop:DEVICE_HEIGHT*0.15,                       
                         //borderRadius: DEVICE_HEIGHT*0.03,
                         //alignItems: 'absolute'
@@ -241,7 +267,7 @@ export default class SearchBarHome extends Component {
                     })
                   }
                   </ScrollView>
-                </View>
+                </Animated.View>
             </View>
         </Modal>
         <Modal
@@ -346,7 +372,7 @@ export default class SearchBarHome extends Component {
                   //borderRadius: 3,
                   borderWidth:0,
                   //borderBottomWidth: 1,
-                  //borderBottomColor: tabBackgroundColor,
+                  //borderBottomColor: blueFLColor,
                   height: 45,
                   marginTop: 0,
                   width: DEVICE_WIDTH*1,
@@ -354,13 +380,16 @@ export default class SearchBarHome extends Component {
                   justifyContent: 'center',
                   alignItems: 'center'
                 }]}> 
-                  <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.925,flexDirection: 'row'}}>   
-                    <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
-                      <TouchableOpacity onPress={() => {
-                                  console.log("qsjhfjhdfjd");
-                      }}>
-                        <Text style={{paddingLeft : 5,fontFamily: 'FLFontTitle' , fontWeight:'200', fontSize : 30, color: headerTabColor}}>F i n L i v e</Text>    
-                      </TouchableOpacity>
+                  <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.975,flexDirection: 'row'}}>   
+                    <TouchableOpacity style={{flex:0.1, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 3}}
+                                      onPress={() => {
+                                        this.setState({showModalCategory : true});
+                                      }}
+                    >
+                        <IonIcons name={'ios-menu'}  size={25} style={{color: setColor('')}}/> 
+                    </TouchableOpacity>
+                    <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{paddingLeft : 5,fontFamily: 'FLFontTitle' , fontWeight:'200', fontSize : 24, color: blueFLColor}}>F i n L i v e</Text>    
                     </View>   
 
                     <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
@@ -383,7 +412,7 @@ export default class SearchBarHome extends Component {
                                       speed : 1
                                     }
                               ),
-                                Animated.timing(
+                                /*Animated.timing(
                                   this.state.categoryHeight,
                                   {
                                     toValue: 0,
@@ -391,7 +420,7 @@ export default class SearchBarHome extends Component {
                                     easing: Easing.elastic(),
                                     speed : 1
                                   }
-                                )  
+                                )  */
                             ]).start(() => {
                               //force le render avec un changement de state dont on se fiche 
                               //this.setState ({ showModalTitle : !this.state.showModalTitle });
@@ -406,20 +435,10 @@ export default class SearchBarHome extends Component {
                            
 
                         }}>  
-                          <MaterialIcons
-                            name='search' 
+                          <IonIcons
+                            name='ios-search' 
                             size={25} 
-                            color={headerTabColor}
-                          />
-                      </TouchableOpacity>
-                      <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
-                                        onPress={() => {
-                                          alert("Vers ecran des notifs");
-                                        }}> 
-                         <Icon
-                            name='ios-notifications-outline' 
-                            size={25} 
-                            style={{color : headerTabColor}}
+                            color={blueFLColor}
                           />
                       </TouchableOpacity>
                     
@@ -441,7 +460,7 @@ export default class SearchBarHome extends Component {
                                                   speed : 1
                                                 }
                                           ),
-                                            Animated.timing(
+                                            /*Animated.timing(
                                               this.state.categoryHeight,
                                               {
                                                 toValue: 45,
@@ -449,7 +468,7 @@ export default class SearchBarHome extends Component {
                                                 easing: Easing.elastic(),
                                                 speed : 1
                                               }
-                                            )  
+                                            ) */ 
                                         ]).start(() => {
                                               //force le render avec un changement de state dont on se fiche 
                                               this.setState ({ showModalTitle : !this.state.showModalTitle });
@@ -462,8 +481,8 @@ export default class SearchBarHome extends Component {
                                         this.searchText = '';
                                         this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, '');
                               }}>  
-                                <MaterialIcons
-                                      name='arrow-back' 
+                                <IonIcons
+                                      name='md-arrow-back' 
                                       size={22} 
                                       color='lightgray'
                                       style={{paddingLeft: 20}}
@@ -498,7 +517,7 @@ export default class SearchBarHome extends Component {
         {
           //renderTabBar()
         }
-        <Animated.View style={ { flexDirection:'row' , borderBottomWidth: 4, borderBottomColor : backgdColor,alignSelf: 'center', height: this.state.categoryHeight, width: DEVICE_WIDTH, borderWidth: 0, borderColor: 'black'}}>     
+        {/*<Animated.View style={ { flexDirection:'row' , borderBottomWidth: 4, borderBottomColor : backgdColor,alignSelf: 'center', height: this.state.categoryHeight, width: DEVICE_WIDTH, borderWidth: 0, borderColor: 'black'}}>     
                       <View style={{flex: 0.0375, backgroundColor: 'white'}}>
                       </View>
                       <View style={{ borderWidth:0, flex:0.4625, backgroundColor: this.state.showModalCategory ? headerTabColor : 'white'}}>
@@ -540,6 +559,7 @@ export default class SearchBarHome extends Component {
                         <View style={{flex: 0.0375, backgroundColor: 'white'}}>
                         </View>
                       </Animated.View> 
+      */}
       </Animated.View>
     );
   }

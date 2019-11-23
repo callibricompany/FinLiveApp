@@ -5,7 +5,7 @@ import { TabView, TabBar, SceneMap, PagerScroll } from 'react-native-tab-view';
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 
-import { globalStyle, tabBackgroundColor, backgdColor, FLFontFamily, subscribeColor, setFont, headerTabColor } from '../../Styles/globalStyle'
+import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor, setFont, headerTabColor } from '../../Styles/globalStyle'
 
 import { SearchBarProvider } from '../SearchBar/searchBarAnimation';
 import SearchBarPricer from './SearchBarPricer';
@@ -231,14 +231,14 @@ class PricerScreen extends React.Component {
       getLabelText={this._getLabelText}
 
       //indicatorStyle={{backgroundColor: backgdColor, height: 45, width: this.state.currentTab === 'tabPricerUF' ? 50 : (DEVICE_WIDTH -50)/2 , borderWidth: 1}}
-      //style={{zIndex: 1, 'pink': tabBackgroundColor, elevation: 0, height: 45 , justifyContent: 'center'}}
+      //style={{zIndex: 1, 'pink': blueFLColor, elevation: 0, height: 45 , justifyContent: 'center'}}
       style={{ height: 0 }}
       //tabStyle={[this._getTabWidth, {height:100}]}
       //contentContainerStyle={{height:100, DEVICE_WIDTH , borderWidth: 5}}
       //indicatorContainerStyle={{height: 80, width:50, backgroundColor:'pink', borderWidth: 1}}
       //labelStyle={{flexWrap: "nowrap",fontFamily: FLFontFamily, margin: 0, fontWeight: '200'}}
       //labelStyle={{ color:  'black', margin: 0, marginTop: 0, marginBottom: 0, fontWeight: '200', height: 35 }}
-      activeColor={tabBackgroundColor}
+      activeColor={blueFLColor}
       inactiveColor={backgdColor}
       {...props}
     />
@@ -294,7 +294,7 @@ class PricerScreen extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity style={[tabStyle(this.state.index === 2), { width: 50 }]}
           onPress={() => this._handleIndexChange(2)}>
-          <Icon name='ios-settings' size={20} style={{ color: this.state.index === 2 ? tabBackgroundColor : backgdColor }} />
+          <Icon name='ios-settings' size={20} style={{ color: this.state.index === 2 ? blueFLColor : backgdColor }} />
         </TouchableOpacity>
       </View>
       <View style={{ backgroundColor: backgdColor, height: 10 }}>
@@ -353,7 +353,7 @@ class PricerScreen extends React.Component {
     }
 
     return (
-      <SafeAreaView style={{ backgroundColor: tabBackgroundColor }}>
+      <SafeAreaView style={{ backgroundColor: blueFLColor }}>
         {render}
       </SafeAreaView>
     );
@@ -366,7 +366,7 @@ function tabStyle(focused) {
     height: 35,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: focused ? backgdColor : tabBackgroundColor,
+    backgroundColor: focused ? backgdColor : blueFLColor,
   }
 };
 
@@ -377,7 +377,7 @@ function texTabStyle(focused) {
     margin: 0,
     fontWeight: '400',
     fontSize: 16,
-    color: focused ? tabBackgroundColor : backgdColor,
+    color: focused ? blueFLColor : backgdColor,
   }
 };
 

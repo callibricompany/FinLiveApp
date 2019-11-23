@@ -4,7 +4,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { FLSlider2 } from '../../commons/FLSlider2';
 
-import { globalStyle, tabBackgroundColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'

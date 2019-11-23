@@ -27,7 +27,7 @@ import Dimensions from 'Dimensions';
 
 import {  setFont, 
   generalFontColor, 
-  tabBackgroundColor,
+  blueFLColor,
   headerTabColor,
   selectElementTab,
   subscribeColor,

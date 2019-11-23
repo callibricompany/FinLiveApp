@@ -18,7 +18,7 @@ import {
 
 import {  globalSyle, 
           generalFontColor, 
-          tabBackgroundColor,
+          blueFLColor,
           headerTabColor,
           selectElementTab,
           FLFontFamily
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     //zIndex: 99,
-    backgroundColor: tabBackgroundColor,
+    backgroundColor: blueFLColor,
   
     width: '100%',
     //overflow: 'hidden',

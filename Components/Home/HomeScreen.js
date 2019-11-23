@@ -3,7 +3,7 @@ import React from 'react'
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar, Animated, KeyboardAvoidingView} from 'react-native'
 import { Thumbnail, Toast, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
-import { globalStyle , tabBackgroundColor, subscribeColor} from '../../Styles/globalStyle'
+import { globalStyle , blueFLColor, subscribeColor} from '../../Styles/globalStyle'
 
 
 import { FLBadge } from '../commons/FLBadge'
@@ -121,7 +121,7 @@ const initialLayout = {
 
 
       //this.setState({searchTextForNews : filterText === '' ? subCatName : filterText});
-      console.log (JSON.stringify(filters));
+      console.log (filters);
       this.props.setFiltersHomePage(filters);
 
       //test pour supprimer le menu du bas
@@ -159,7 +159,7 @@ const initialLayout = {
                   }
                 }}
                 getLabelText={this._getLabelText}
-                indicatorStyle={{    backgroundColor: tabBackgroundColor, height : 0 }}
+                indicatorStyle={{    backgroundColor: blueFLColor, height : 0 }}
                 style={{ backgroundColor: 'white', elevation: 0, height : 0 }}
                 labelStyle={{ color: 'pink', margin: 0, marginTop: 0, marginBottom: 0, fontWeight: '200', height: 0 }}
                 {...props}
@@ -188,7 +188,11 @@ const initialLayout = {
      
       switch (route.key) {
         case 'tabHome':
-          return <TabHome  route={route} jumpTo={jumpTo} marginSearch={this.state.marginSearch} />;
+          return <TabHome   route={route} 
+                            jumpTo={jumpTo} 
+                            marginSearch={this.state.marginSearch} 
+                            filters={this.props.filtersHomePage}
+                  />;
         //case 'tabNews':
         //  return  <TabNews  route={route} jumpTo={jumpTo} filterNews={this.state.searchTextForNews} />;
         default:
@@ -254,13 +258,17 @@ const initialLayout = {
       return(
             <SafeAreaView style={{backgroundColor: 'white'}}>
                    { Platform.OS === 'android' && 
-                     <StatusBar
-                      translucent={false}
-                      //backgroundColor={'#45688e'}
-                      backgroundColor={'white'}
-                      barStyle={'light-content'}
-                      animated={false}
-                      /> }
+                    <StatusBar
+                    barStyle="light-content"
+                    // dark-content, light-content and default
+                    hidden={false}
+                    //To hide statusBar
+                    backgroundColor='black'
+                    //Background color of statusBar
+                    translucent={false}
+                    //allowing light, but not detailed shapes
+                    networkActivityIndicatorVisible={true}
+                  />}
             {render}
 
             </SafeAreaView>

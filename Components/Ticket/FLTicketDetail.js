@@ -11,7 +11,7 @@ import localization from 'moment/locale/fr'
 
 import {  
   generalFontColor, 
-  tabBackgroundColor,
+  blueFLColor,
   headerTabColor,
   selectElementTab,
   progressBarColor,
@@ -147,7 +147,7 @@ class FLTicketDetail extends React.Component {
   _renderHeaderUnderlying = (section, _, isActive) => {
     //console.log("EST ACTIF : " + isActive);
     return (
-      <View style={{flexDirection : 'row', borderTopLeftRadius: 15, marginTop: 20, backgroundColor:  tabBackgroundColor, width: DEVICE_WIDTH*0.975, marginLeft: DEVICE_WIDTH*0.0125}}>
+      <View style={{flexDirection : 'row', borderTopLeftRadius: 15, marginTop: 20, backgroundColor:  blueFLColor, width: DEVICE_WIDTH*0.975, marginLeft: DEVICE_WIDTH*0.0125}}>
         <View style={{flex : 0.85, paddingLeft : 20,   justifyContent: 'center', alignItems : 'flex-start', borderWidth: 0}}>
             <Text style={[setFont('400', 18, 'white'), {paddingTop: 5, paddingLeft :5}]}>
             {this.ticketObj.getUnderlyingType().toUpperCase()} 
@@ -401,7 +401,7 @@ class FLTicketDetail extends React.Component {
 
 
         <View style={{ marginLeft: DEVICE_WIDTH*0.0125,  width: DEVICE_WIDTH*0.975, borderBottomWidth : 1,justifyContent: 'center', alignItems : 'flex-start', marginTop: 20, borderWidth: 0}}>
-            <View style={{ flexDirection : 'row', width: DEVICE_WIDTH*0.975,backgroundColor:  tabBackgroundColor , borderTopLeftRadius: 15}}>
+            <View style={{ flexDirection : 'row', width: DEVICE_WIDTH*0.975,backgroundColor:  blueFLColor , borderTopLeftRadius: 15}}>
               <View style={{flex: 0.8, paddingBottom: 5, paddingLeft : 20}}>
                   <Text style={[setFont('400', 18, 'white'), {paddingTop: 5, paddingLeft :5}]}>
                     TICKET <Text style={setFont('bold', 20, 'red')}>{Date.now() > this.ticketObj.getFirstAnswerDate() ? 'EN RETARD' : null}</Text>
@@ -493,7 +493,7 @@ class FLTicketDetail extends React.Component {
 
 
 
-        <View style={{marginLeft: DEVICE_WIDTH*0.0125,  width: DEVICE_WIDTH*0.975, backgroundColor:  tabBackgroundColor ,borderBottomWidth : 1,justifyContent: 'center', alignItems : 'flex-start', marginTop: 20, borderWidth: 0, borderTopLeftRadius: 15}}>
+        <View style={{marginLeft: DEVICE_WIDTH*0.0125,  width: DEVICE_WIDTH*0.975, backgroundColor:  blueFLColor ,borderBottomWidth : 1,justifyContent: 'center', alignItems : 'flex-start', marginTop: 20, borderWidth: 0, borderTopLeftRadius: 15}}>
               <View style={{ width: DEVICE_WIDTH*0.975, paddingLeft : 20, justifyContent: 'center'}}>
                 <Text style={[setFont('400', 18, 'white'), {paddingTop: 5, paddingLeft :5}]}>
                   ECHANGES

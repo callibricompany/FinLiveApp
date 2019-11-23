@@ -10,7 +10,7 @@ import Register from '../Components/Login/Register'
 import WaitingRoom from '../Components/Login/WaitingValidationScreen'
 import { AppFinLiveTabs } from './AppFinLiveTabs';
 
-import { tabBackgroundColor, FLFontFamily } from '../Styles/globalStyle';
+import { blueFLColor, FLFontFamily } from '../Styles/globalStyle';
 
 import * as ROLES from '../constants/roles';
 
@@ -21,16 +21,16 @@ const TABS_BAR_OPTIONS = {
     inactiveBackgroundColor: 'white', // Couleur d'arrière-plan des onglets non sélectionnés
     showLabel: true, // On masque les titres
     showIcon: true, // On informe le TabNavigator qu'on souhaite afficher les icônes définis
-    activeTintColor: tabBackgroundColor,//'#85B3D3',
+    activeTintColor: blueFLColor,//'#85B3D3',
     //inactiveTintColor: '#707070',
     inactiveTintColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
     style: {
       backgroundColor: 'white',
-      borderTopColor: tabBackgroundColor,
+      borderTopColor: blueFLColor,
       paddingTop: 10,
-      borderTopWidth: 2,
+      borderTopWidth: 0,
       height: Platform.OS === 'ios' ? 60 : 70,
       //ustifyContent: 'center',
       //alignItems: 'center',

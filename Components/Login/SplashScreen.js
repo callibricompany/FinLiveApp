@@ -3,8 +3,8 @@ import { StyleSheet, View, Text, Dimensions, ImageBackground, Image, StatusBar} 
 import { Button } from 'native-base';
 import { Svg } from "expo";
 
-import bgSrc from '../../assets/splash_transparent.png';
-import { tabBackgroundColor } from '../../Styles/globalStyle';
+import bgSrc from '../../assets/LogoWithText.png';
+
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     top: 0, left: 0, right: 0, bottom: 0,
     //opacity: 0.15,
     position: "absolute",
-    backgroundColor : tabBackgroundColor,
+    backgroundColor : 'white',
     width: null,
     height: null,
     //resizeMode: 'cover',

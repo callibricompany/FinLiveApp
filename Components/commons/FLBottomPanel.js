@@ -11,7 +11,7 @@ import {
 
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
-import { globalStyle, backgdColor, tabBackgroundColor, backgdColorPricerParameter } from '../../Styles/globalStyle'
+import { globalStyle, backgdColor, blueFLColor, backgdColorPricerParameter } from '../../Styles/globalStyle'
 
 
 
@@ -146,7 +146,7 @@ class FLBottomPanel extends React.Component {
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHeaderHandlerStateChange}>
               <Animated.View style={styles.header} >
-               <View style={{width: DEVICE_WIDTH/3, height : HEADER_HEIGHT/5, backgroundColor: tabBackgroundColor, borderRadius: 5}}><Text></Text></View>
+               <View style={{width: DEVICE_WIDTH/3, height : HEADER_HEIGHT/5, backgroundColor: blueFLColor, borderRadius: 5}}><Text></Text></View>
               </Animated.View>
             </PanGestureHandler>
             <PanGestureHandler

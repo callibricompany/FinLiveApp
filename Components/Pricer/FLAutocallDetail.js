@@ -10,7 +10,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import { ssCreateStructuredProduct } from '../../API/APIAWS';
 
-import { tabBackgroundColor, FLFontFamily, generalFontColor, subscribeColor,
+import { blueFLColor, FLFontFamily, generalFontColor, subscribeColor,
           headerTabColor } from '../../Styles/globalStyle';
 
 
@@ -207,7 +207,7 @@ class FLAutocallDetail extends React.Component {
    
     //coupons si Phoenix
     _getCouponPhoenixBloc() {
-      let coupons = <View><View style={{backgroundColor: tabBackgroundColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+      let coupons = <View><View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
         <Text style={{color: 'white'}}>COUPONS</Text>
 
       </View>
@@ -336,7 +336,7 @@ class FLAutocallDetail extends React.Component {
               >
 
 
-                <View style={{flex:0.2, backgroundColor: tabBackgroundColor, alignItems:'center', justifyContent: 'center'}}>
+                <View style={{flex:0.2, backgroundColor: blueFLColor, alignItems:'center', justifyContent: 'center'}}>
                     <Text style={{color: 'white' ,fontFamily: FLFontFamily, fontWeight: '500', fontSize: 14}}>INSTRUCTIONS DE COTATION</Text>
                 </View>
                 <View style={{flex:0.6, backgroundColor: globalStyle.bgColor, alignItems:'flex-start', justifyContent: 'flex-start'}}>
@@ -403,7 +403,7 @@ class FLAutocallDetail extends React.Component {
         </Modal>
       
   
-          <View style={{flexDirection : 'row', backgroundColor: tabBackgroundColor, width : DEVICE_WIDTH*0.925}}>
+          <View style={{flexDirection : 'row', backgroundColor: blueFLColor, width : DEVICE_WIDTH*0.925}}>
                 <TouchableOpacity style={{flex : 0.10, justifyContent: 'center', alignItems: 'center', margin: 1}}
                                   onPress={() => {
                                     this.props.setFavorite(this.item)
@@ -426,7 +426,7 @@ class FLAutocallDetail extends React.Component {
                         </Text>
                 </View>
 
-                <TouchableOpacity style={{flex: 0.15, backgroundColor : tabBackgroundColor,justifyContent: 'center', alignItems: 'center'}} 
+                <TouchableOpacity style={{flex: 0.15, backgroundColor : blueFLColor,justifyContent: 'center', alignItems: 'center'}} 
                       onPress={() => {
                           alert("On va revenir sur le produit");
                 
@@ -497,7 +497,7 @@ class FLAutocallDetail extends React.Component {
 
                 
                 <View style={{flexDirection:'column', borderWidth: 1, marginTop: 10}}>
-                    <View style={{backgroundColor: tabBackgroundColor, borderBottomColor: 'black', borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+                    <View style={{backgroundColor: blueFLColor, borderBottomColor: 'black', borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                      <Text style={{color: 'white'}}>{this.item['data'].cf_cpg_choice.toUpperCase()}</Text>
                     </View>
                     <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
@@ -524,7 +524,7 @@ class FLAutocallDetail extends React.Component {
                         </Text></Text>
                       </View>
                     </View>                  
-                     <View style={{backgroundColor: tabBackgroundColor, borderBottomColor: 'black', borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+                     <View style={{backgroundColor: blueFLColor, borderBottomColor: 'black', borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                      <Text style={{color: 'white'}}>{String('coupon annualisé').toUpperCase()}</Text>
                     </View>
                     <View style={{padding : 5, borderBottomWidth:2}}>
@@ -532,7 +532,7 @@ class FLAutocallDetail extends React.Component {
                           {Numeral(this.item['data'].coupon).format('0.00%')}
                       </Text>
                     </View>    
-                    <View style={{backgroundColor: tabBackgroundColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+                    <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                       <Text style={{color: 'white'}}>DATES IMPORTANTES</Text>
                     </View>
                     <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
@@ -583,7 +583,7 @@ class FLAutocallDetail extends React.Component {
                         </Text>
                       </View>
                     </View>   
-                    <View style={{backgroundColor: tabBackgroundColor, borderBottomColor: 'black', borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+                    <View style={{backgroundColor: blueFLColor, borderBottomColor: 'black', borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                      <Text style={{color: 'white'}}>SOUS-JACENT</Text>
                     </View>
                     <View style={{padding : 5, borderBottomWidth:2}}>
@@ -591,7 +591,7 @@ class FLAutocallDetail extends React.Component {
                           {this.underlying} (code : {this.item['data'].underlying})
                       </Text>
                     </View>   
-                    <View style={{backgroundColor: tabBackgroundColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+                    <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                       <Text style={{color: 'white'}}>PROTECTION DU CAPITAL</Text>
                     </View>
                     <View style={{borderBottomWidth: 1, padding: 3}}>
@@ -623,7 +623,7 @@ class FLAutocallDetail extends React.Component {
                         </Text>
                       </View>
                     </View>
-                    <View style={{backgroundColor: tabBackgroundColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+                    <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                       <Text style={{color: 'white'}}>RAPPELS</Text>
     
                     </View>

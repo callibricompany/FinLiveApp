@@ -44,7 +44,7 @@ export class CAutocall extends CProduct {
     let desc = this.getProductName() +
     this.getFrequencyAutocallTitle() +
     this.getFullUnderlyingName() +
-    this.getUnderlyingName() +
+    this.getUnderlyingTicker() +
     this.getMaturityName() +
     this.getBarrierPDI() +
     this.getBarrierPhoenix() +
@@ -102,25 +102,30 @@ export class CAutocall extends CProduct {
 
     return name;
   }
-  //determine le nom du sous
-  getUnderlyingName() {
-    let name = '[UDL]';
-    
-    if (this.product.hasOwnProperty('underlying')) {        
-        name = this.product.hasOwnProperty('underlyingName') ? this.product.underlyingName : this.product.underlying;
-    }
 
-    return name;
-}
+
+
 
   //renvoie le nom long du sous jacent
-  getFullUnderlyingName(categories) {
+  getFullUnderlyingName(categories='') {
+    if (categories === '') {
+        let name = '[UDL]';
+      
+        if (this.product.hasOwnProperty('underlying')) {        
+            name = this.product.hasOwnProperty('underlyingName') ? this.product.underlyingName : this.product.underlying;
+        }
+    
+        return name;
+    }
+
     if (this.underLyingName === '[UDL]') {
       let underlyings = categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
       this.underLyingName = underlyings[underlyings.findIndex(udl => udl.underlyingCode === this.product.underlying)].subCategoryName;
     }
     return this.underLyingName;
   }
+
+
 
   //retourne le nom commercial du produit
   getProductName() {
@@ -244,7 +249,7 @@ export class CAutocall extends CProduct {
 
   //renvoie si airbag ou semi-airbag
   getAirbagTitle() {
-    let name = '';
+    let name = 'Non airbag';
 
     if (this.isAirbag()) {
       name = 'Airbag';

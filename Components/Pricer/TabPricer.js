@@ -28,7 +28,7 @@ import Dimensions from 'Dimensions';
 import {  globalSyle, 
   backgdColor,
   setFont, 
-  tabBackgroundColor,
+  blueFLColor,
   headerTabColor,
   selectElementTab,
   subscribeColor,
@@ -93,7 +93,7 @@ class TabPricer extends React.PureComponent {
       
 
       //mise en place des carrés
-      this.dataSource = Array(6).fill().map((_, index) => ({id: index}));
+      this.dataSource = Array(7).fill().map((_, index) => ({id: index}));
     }
   
     //on recoit les props a nouveau
@@ -205,7 +205,7 @@ class TabPricer extends React.PureComponent {
                       marginLeft : id % 3 === 0 ? 0 : 5,  
                       marginRight : (id -2) % 3 === 0 ? 0 : 5, 
                       marginBottom: 5, marginTop : marginShift,
-                      backgroundColor: isLocked ? 'pink' : isMandatory ? tabBackgroundColor : isActivated ? tabBackgroundColor : 'lightsteelblue',
+                      backgroundColor: isLocked ? 'pink' : isMandatory ? blueFLColor : isActivated ? blueFLColor : 'lightsteelblue',
                       borderRadius : 4
                     }}
         >
@@ -279,20 +279,20 @@ class TabPricer extends React.PureComponent {
                           this._updateValue("typeAuction", obj.value, obj.label);
                           //this.setState({ gender: value });
                         }}
-                        textColor={tabBackgroundColor} 
+                        textColor={blueFLColor} 
                         selectedColor={'white'}
-                        buttonColor={tabBackgroundColor}
-                        borderColor={tabBackgroundColor}
+                        buttonColor={blueFLColor}
+                        borderColor={blueFLColor}
                         returnObject={true}
                         hasPadding
                         options={[
-                          { label: "Placement Privé", value: "PP" , customIcon: <Ionicons name="ios-contact" style={{paddingRight: 5, color : this.props.product['typeAuction'].value === 'PP' ? 'white' : tabBackgroundColor}} size={20} />}, 
-                          { label: "Appel public à l'épargne", value: "APE", customIcon: <Ionicons name="ios-contacts" style={{paddingRight: 5, color :  this.props.product['typeAuction'].value === 'APE' ? 'white' : tabBackgroundColor}} size={20} />} 
+                          { label: "Placement Privé", value: "PP" , customIcon: <Ionicons name="ios-contact" style={{paddingRight: 5, color : this.props.product['typeAuction'].value === 'PP' ? 'white' : blueFLColor}} size={20} />}, 
+                          { label: "Appel public à l'épargne", value: "APE", customIcon: <Ionicons name="ios-contacts" style={{paddingRight: 5, color :  this.props.product['typeAuction'].value === 'APE' ? 'white' : blueFLColor}} size={20} />} 
                         ]}
                       />
                   </View>
                   <View style={{ height : 80, alignItems:'center', justifyContent:'center', marginTop: 10, marginBottom : 10}}>
-                        <Ionicons name="md-arrow-dropdown"  size={20} style={{color : tabBackgroundColor}}/>
+                        <Ionicons name="md-arrow-dropdown"  size={20} style={{color : blueFLColor}}/>
                         <Carousel
                             ref={'carousel'}
                             data={STRUCTUREDPRODUCTS}
@@ -314,7 +314,7 @@ class TabPricer extends React.PureComponent {
                               }
                             }}
                         />
-                        <Ionicons name="md-arrow-dropup"  size={20} style={{color : tabBackgroundColor}}/>
+                        <Ionicons name="md-arrow-dropup"  size={20} style={{color : blueFLColor}}/>
                   </View>
 
                   <FlatList

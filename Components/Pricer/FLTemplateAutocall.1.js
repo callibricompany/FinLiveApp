@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react
 import { Icon } from 'native-base';
 import {  
     generalFontColor, 
-    tabBackgroundColor,
+    blueFLColor,
     headerTabColor,
     selectElementTab,
     progressBarColor,
@@ -441,10 +441,10 @@ class FLTemplateAutocall extends React.Component {
 
 
       let title =   <View style={{borderWidth:0, flex: 0.55, marginTop: Platform.OS === 'ios' ? -2 : -5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                        <Text style={{paddingTop: 2, fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: tabBackgroundColor}}>
+                        <Text style={{paddingTop: 2, fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: blueFLColor}}>
                           {typeProduit}  {maturite}
                         </Text>
-                        <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: tabBackgroundColor}}>
+                        <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 14, color: blueFLColor}}>
                           {underlying}  / {frequency}
                         </Text>
                     </View>

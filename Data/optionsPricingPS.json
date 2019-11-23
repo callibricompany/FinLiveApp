@@ -1,5 +1,15 @@
 [
   {
+    "name": "typeAuction",
+    "title" : "Demande",
+    "description": [
+      {
+      "short_description": "Choix",
+      "long_description": "Indiquez s'il s'agit d'un placement privé ou d'un APE"
+      }       
+    ]
+  },
+  {
       "name": "underlying",
       "title" : "Sous-jacent",
       "description": [

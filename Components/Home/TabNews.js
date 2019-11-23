@@ -11,7 +11,7 @@ import { compose, hoistStatics } from 'recompose';
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
-import { globalStyle , tabBackgroundColor, FLFontFamily} from '../../Styles/globalStyle'
+import { globalStyle , blueFLColor, FLFontFamily} from '../../Styles/globalStyle'
 import Dimensions from 'Dimensions';
 
 

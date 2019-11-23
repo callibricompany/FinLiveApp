@@ -1,25 +1,27 @@
 import React from 'react';
-import { View, StyleSheet, Image, ActivityIndicator, TouchableOpacity, Text, Platform, Alert} from 'react-native'; 
-import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
+import { View, FlatList, StyleSheet, Image, ActivityIndicator, TouchableOpacity, Text, Platform, Alert} from 'react-native'; 
 
-import { FLFlatList } from '../SearchBar/searchBarAnimation';
+
+import { FLScrollView } from '../SearchBar/searchBarAnimation';
 
 import { withUser } from '../../Session/withAuthentication';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 
+import RobotBlink from "../../assets/svg/robotBlink.svg";
 
 import Dimensions from 'Dimensions';
 
 import {  globalStyle, 
   generalFontColor, 
-  tabBackgroundColor,
+  blueFLColor,
   headerTabColor,
   selectElementTab,
   progressBarColor,
   subscribeColor,
   FLFontFamily,
-  FLFontFamilyBold
+  FLFontFamilyBold,
+  setFont
 } from '../../Styles/globalStyle';
 
 import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
@@ -38,28 +40,29 @@ class TabHome extends React.PureComponent {
       this.state = {
         scrollTo : this.props.marginSearch,
         refreshing : false,
-        
+
+        filteredFeaturedProducts : [],
       };
    
-
-    this.allProducts = this.props.homePage;
-    //console.log(this.allProducts[0]);
-   /* this.allProducts.forEach((product) => {
-      //console.log(product);
-      switch(product.template) {
-          case 'PSLIST' :
-            product['obj'] = new CAutocall(product.data);
-            break;
-          default : break;
-      }
-    });*/
-    //le produit-ticket est filtre ou pas
-    this.isFiltered = false;
+      
+      
+      //console.log(this.allProducts[0]);
+    /* this.allProducts.forEach((product) => {
+        //console.log(product);
+        switch(product.template) {
+            case 'PSLIST' :
+              product['obj'] = new CAutocall(product.data);
+              break;
+            default : break;
+        }
+      });*/
+      //le produit-ticket est filtre ou pas
+      this.isFiltered = false;
       
     }
   
     componentWillReceiveProps (props) {
-      //console.log("RECEIVE PROPS HOME : "+ props.marginSearch);
+      console.log("RECEIVE PROPS HOME : "+ props.filters);
       this.setState({ scrollTo: props.marginSearch, refreshing : false });
       typeof props.filters !== 'undefined' ? this.updateFilters(props.filters) : null;
     }
@@ -67,7 +70,23 @@ class TabHome extends React.PureComponent {
 
     //va aider pour savoir si on affiche ou pas 
     updateFilters(filters) {
-      
+      //filtre sur les featured
+      this.isFiltered = false;
+      if (filters.hasOwnProperty('filterText') && String(filters['filterText']) !== '') {
+        this.isFiltered = true;
+
+        let newData = [];
+        this.props.homePage.forEach((product) => {
+          //verifier son type
+          if (product.template === 'PSLIST') { //c'est un autocall
+            let autocall = new CAutocall(product.data) 
+            if (autocall.getDescription().toLowerCase().includes(String(filters['filterText']).toLowerCase())) {
+              newData.push(product);
+            }
+          }
+        })
+        this.setState({ filteredFeaturedProducts : newData});
+      }
       /*this.isFiltered = false;
       if (filters.hasOwnProperty('filterText') && String(filters['filterText']) !== '') {
         //console.log("pass : "+filters['filterText'])
@@ -113,8 +132,8 @@ class TabHome extends React.PureComponent {
       }*/
     }
 
-  _handleFavorite=(index) => {
-    console.log(index);
+  /*_handleFavorite=(index) => {
+      console.log(index);
       console.log(this.allProducts[index]);
       this.props.setFavorite(this.allProducts[index])
       .then((fav) => {
@@ -123,19 +142,16 @@ class TabHome extends React.PureComponent {
         //this.setState({ isFavorite: this.allProducts[index].isFavorite })
       })
       .catch((error) => console.log("Erreur de mise en favori : " + error));
-  } 
+  } */
 
 
   _renderTicket = ( item , index) => {   
- //       let objProduct = item.obj;
- //       console.log(objProduct.parle());
- //       console.log(objProduct.crie());
-        
+   
         switch(item.template) {
           case 'PSLIST' : return (
               <FLTemplateAutocall 
                   object={item}
-                  filters={this.props.filtersHomePage}
+                  width={0.9}
               />
             );
           default : return null;
@@ -146,58 +162,85 @@ class TabHome extends React.PureComponent {
 
 
     render() {
-      //console.log(JSON.stringify(this.props.filtersHomePage));
+ 
+      console.log(this.props.userOrg);
       return (
-          <View style={{marginTop :  Platform.OS === 'android' ? -25 : 0}}>
-            <View>
-              <FLFlatList
-                //style={styles.wrapper}
-                scrollTo={this.state.scrollTo}
-                contentContainerStyle={globalStyle.wrapperFlatList}
-                data={this.props.filtersHomePage["category"] === 'PSFAVORITES' ? this.props.favorites : this.allProducts }
-                //data={this.props.homePage}
-                //renderItem={this._renderRow}
-                keyExtractor={(item) => {
-                  let key = typeof item.data['id'] === 'undefined' ? item.data['code'] : item.data['id'];
-                  return key.toString();
-                }}
-                tabRoute={this.props.route.key}
-                renderItem={({item, index}) => (
-                  this._renderTicket(item, index)    
-                )}
-                ListFooterComponent={() => {
-                  return (
-                    <TouchableOpacity onPress={() => {
-                             Alert.alert("FinLive SAS","Copyright ©")
-                        }}
-                        style={{height : 150}}>
-                      <Text style={{fontFamily : 'FLFontTitle'}}>F i n L i v e</Text>
-                    </TouchableOpacity>
-                  );
-                }}
-                /*ListHeaderComponent={() => {
-                  
-                  return (
-                    this.state.refreshing ?
-                      <ActivityIndicator style={{height: 80}} size={"small"} /> : <View/>
-              
-                  );
-                }}*/
+      <FLScrollView style={{marginTop :  Platform.OS === 'android' ? -45 : -45}}>
 
-                //refreshing={this.state.refreshing}
-                /*onRefresh={() => {
-                  console.log("Est rafraichi");
-                  
-                  //this.setState({ refreshing: true }, () => this.props.getUserAllInfo());
-                  this.setState({ refreshing: true });
-                }}*/
-                
-              />
-            </View>
-    
+       <View style={{marginLeft : DEVICE_WIDTH*0.025, alignItems : 'flex-start', borderWidth:0}}>
+          <Text style={setFont('400', 20, 'black', 'FLFontFamily')}>
+            Tickets en cours >
+          </Text>
+          <RobotBlink width={300} height={300} />
+        </View>
+
+        <View style={{marginTop: 20, marginLeft : DEVICE_WIDTH*0.025, alignItems : 'flex-start', borderWidth:0}}>
+          <Text style={setFont('400', 20, 'black', 'FLFontFamily')}>
+            Nos recommandations
+          </Text>
+        </View>
+
+        <FlatList
+          //style={styles.wrapper}
+          //scrollTo={this.state.scrollTo}
+          contentContainerStyle={{marginTop:10, marginBottom:5}}
+          data={this.props.filtersHomePage["category"] === 'PSFAVORITES' ? this.props.favorites 
+                                                                          : (this.isFiltered) ? this.state.filteredFeaturedProducts
+                                                                                              : this.props.homePage 
+               }
+          horizontal={true}
+          renderItem={({item, index}) => (
+            this._renderTicket(item, index)    
+          )}
+          //tabRoute={this.props.route.key}
+          keyExtractor={(item) => {
+            let key = typeof item.data['id'] === 'undefined' ? item.data['code'] : item.data['id'];
+            return key.toString();
+          }}
+          
+        />
+            
+        <View style={{marginTop: 20, marginLeft : DEVICE_WIDTH*0.025, alignItems : 'flex-start', borderWidth:0}}>
+          <Text style={setFont('400', 20, 'black', 'FLFontFamily')}>
+            Meilleurs coupons par sous-jacent
+          </Text>
+        </View>
+        <FlatList
+          //style={styles.wrapper}
+          //scrollTo={this.state.scrollTo}
+          contentContainerStyle={{marginTop:10, marginBottom:5}}
+          data={this.props.filtersHomePage["category"] === 'PSFAVORITES' ? this.props.favorites 
+                                                                          : (this.isFiltered) ? this.state.filteredFeaturedProducts
+                                                                                              : this.props.homePage 
+               }
+          horizontal={true}
+          renderItem={({item, index}) => {
+            switch(item.template) {
+              case 'PSLIST' : return (
+                  <FLTemplateAutocall 
+                      object={item}
+                      width={0.6}
+                  />
+                );
+              default : return null;
+            }    
+          }}
+          //tabRoute={this.props.route.key}
+          keyExtractor={(item) => {
+            let key = typeof item.data['id'] === 'undefined' ? item.data['code'] : item.data['id'];
+            return key.toString();
+          }}
+          
+        />
   
-  
-          </View>
+        <TouchableOpacity 
+                    onPress={() => {
+                          Alert.alert("FinLive SAS","Copyright ©")
+                    }}
+                    style={{height : 150, alignItems: 'center', marginTop: 100}}>
+                  <Text style={{fontFamily : 'FLFontTitle'}}>F i n L i v e</Text>
+        </TouchableOpacity>
+      </FLScrollView>
 
       );
     }

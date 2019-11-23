@@ -4,7 +4,7 @@ import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'reac
 
 import { FLSlider2 } from '../../commons/FLSlider2';
 
-import { setFont, tabBackgroundColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { setFont, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'

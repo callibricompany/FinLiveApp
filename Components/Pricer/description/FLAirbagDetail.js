@@ -6,7 +6,7 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-
 import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
-import { globalStyle, tabBackgroundColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -67,13 +67,13 @@ export class FLAirbagDetail extends Component{
             </View>
           </TouchableWithoutFeedback>
           <View style={{flexDirection: 'row', marginTop: 20}}>
-            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center', borderBottomWidth: 3, borderBottomColor: tabBackgroundColor, backgroundColor: 'white'}}>
+            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center', borderBottomWidth: 3, borderBottomColor: blueFLColor, backgroundColor: 'white'}}>
               <Text style={[setFont('600', 14), {textAlign : 'center', textAlignVertical: 'center'}]}>AIRBAG</Text>
             </View>
             <View style={{flex : 0.1, alignItems:'center'}}>
               
             </View>
-            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center',borderBottomWidth: 3, borderBottomColor: tabBackgroundColor, backgroundColor: 'white'}}>
+            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center',borderBottomWidth: 3, borderBottomColor: blueFLColor, backgroundColor: 'white'}}>
               <Text style={[setFont('600', 14), {textAlign : 'center', textAlignVertical: 'center'}]}>STEPDOWN</Text>
             </View>
           </View>

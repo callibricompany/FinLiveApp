@@ -6,33 +6,49 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
 
-export const tabBackgroundColor = '#597fab'; //'#13223C'; //'whitesmoke';  //ghostwhite   //#45688e
+export const blueFLColor = '#5980AB';//'#597fab'; //'#13223C'; //'whitesmoke';  //ghostwhite   //#45688e
 export const generalFontColor = 'white'; //#707070
+export const subscribeColor = '#00B6FF'; //#71CCF1
+export const lightBlueFLColor = '#9BB0CB';
+export const lightGrayFLColor = '#CFD9E5';
+export const backgdColor = '#edeef0';
 
 export const headerTabColor = '#13223C'; //'#749B14';
 export const apeColor = '#749B14';
 export const selectElementTab = '#13223C';//'#87B916';
 export const progressBarColor = '#87B916';
 
-export const subscribeColor = '#00B6FF'; //#71CCF1
+
 
 export const FLFontFamily = Platform.OS !== 'ios' ? 'sans-serif-condensed' :'Arial';
 export const FLFontFamilyBold = Platform.OS !== 'ios' ? 'notoserif' :'Papyrus';
 
-export const backgdColor = '#edeef0';
+
 export const backgdColorPricerParameter = 'snow';
 
 
 
 
 
-export function setFont ( weight, size, color='black', family='FLFontFamily', verticalAlign='center') {
+export function setFont ( weight, size, color='black', family='Light', verticalAlign='center') {
+  //'FLFontFamily'
   return {
     fontWeight : weight,
-    fontSize: sizeByDevice(size +2, size, DEVICE_WIDTH < 350  && size > 12 ? size - 4 : size ) ,
+    //fontSize: sizeByDevice(size +2, size, DEVICE_WIDTH < 350  && size > 12 ? size - 4 : size ) ,
+    fontSize: sizeByDevice(size +2, size, DEVICE_WIDTH < 321 ? size - 2 : size) ,
     fontFamily : family,
     color,
     textAlignVertical : verticalAlign
+  }
+}
+
+export function setColor(color='blueFLColor') {
+  switch(color) {
+    case 'blue' : return blueFLColor;
+    case 'light' : return lightBlueFLColor;
+    case 'gray' : return lightGrayFLColor;
+    case 'turquoise' : return subscribeColor;
+    default : return blueFLColor
   }
 }
 
@@ -62,7 +78,7 @@ const globalStyle = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      borderBottomColor : tabBackgroundColor,
+      borderBottomColor : blueFLColor,
       borderBottomWidth : 1,
       height: sizeByDevice(80, 65, 65 - STATUSBAR_HEIGHT),
       marginTop: 0,
@@ -112,7 +128,7 @@ const globalStyle = StyleSheet.create({
       alignItems : 'flex-start'
     },
     header_center_text_medium : {
-      color: tabBackgroundColor, 
+      color: blueFLColor, 
       fontWeight : '400',
       fontSize:16,
     },
@@ -121,7 +137,7 @@ const globalStyle = StyleSheet.create({
 
     header_icon : { 
       backgroundColor:'transparent',
-      color: tabBackgroundColor,
+      color: blueFLColor,
     },
 
 ///////////////////////////////
@@ -243,17 +259,6 @@ news_detail_image : {
 
     },
 
-///////////////////////////////
-//        STYLE FLAT LIST
-/////////////////////////////// 
-    wrapperFlatList: {
-      //paddingLeft: 15,
-      //paddingRight: 15,
-      //justifyContent : 'center',
-      alignItems: 'center',
-      marginTop: Platform.OS === 'ios' ? -60+45 : -25+45,
-      
-    },
 
     templateIcon : {
       paddingLeft: 5,

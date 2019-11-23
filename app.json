@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "20191111 bis - FinLive",
+    "name": "20191120 bis - FinLive",
     "slug": "FinLiveApp",
     "privacy": "public",
     "sdkVersion": "35.0.0",
@@ -12,9 +12,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash_transparent.png",
+      "image": "./assets/LogoWithText.png",
       "resizeMode": "contain",
-      "backgroundColor": "#597fab"
+      "backgroundColor": "#FFFFFF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -26,8 +26,12 @@
       "supportsTablet": true
     },
     "androidStatusBar": {
-      "backgroundColor": "#597fab"
+      "backgroundColor": "#FFFFFF"
     },
-    "description": ""
+    "description": "",
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "sourceExts": ["js", "jsx", "ts", "tsx", "svg"]
+    }
   }
 }

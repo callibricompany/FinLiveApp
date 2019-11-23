@@ -1,14 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal, Alert} from 'react-native';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 
+import RobotBlink from "../../../assets/svg/robotBlink.svg";
+
 import {  
     generalFontColor, 
-    tabBackgroundColor,
+    blueFLColor,
     headerTabColor,
     selectElementTab,
     progressBarColor,
@@ -19,7 +21,8 @@ import {
     backgdColorPricerParameter,
     globalStyle,
     backgdColor,
-    setFont
+    setFont,
+    setColor
  } from '../../../Styles/globalStyle'
 
 import Dimensions from 'Dimensions';
@@ -53,8 +56,8 @@ import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 
 
-
-
+import { Dropdown } from 'react-native-material-dropdown';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -70,16 +73,22 @@ class FLTemplateAutocall extends React.Component {
     this.state = {
 
       isGoodToShow : typeof this.props.isGoodToShow !== 'undefined' ? this.props.isGoodToShow : true,
-      editMode : false,
+      isEditable : false,
       showModalUpdate : false,
-      currentParameter: '',
+      typeTemplate: this.props.hasOwnProperty('width') ? this.props.width === 0.9 ? 'FULL' : 'SHORT' : 'FULL',
       messageLoading: '',
       toto : true,
 
     }
+
+    //largeur de la cartouche sur l'ecran
+    this.screenWidth = (this.props.hasOwnProperty('width') ? this.props.width : 0.975)*DEVICE_WIDTH;
+
     //console.log(this.props.object);
+
     //type de tycket
     this.type = this.props.templateType;
+
     this.object= {};
     //copie des datas au format correct
     if (!this.props.object.hasOwnProperty('data')) {
@@ -123,171 +132,29 @@ class FLTemplateAutocall extends React.Component {
     this.autocall = new CAutocall(this.data);
     this.autocallResult = new CAutocall(this.data);
 
+    this.request = new CPSRequest();
+    this.request.setRequestFromCAutocall(this.autocall);
+
     //console.log(this.autocall);
     //console.log(this.data);
     //le produit-ticket est filtre ou pas
     this.isFiltered = false;
   }
 
+
   componentWillReceiveProps (props) {
     //console.log("Prop received in FLTemplateAutocall : " + props.data);
     typeof props.isGoodToShow !== 'undefined' ? this.setState({ isGoodToShow : props.isGoodToShow }) : null;
-    typeof props.filters !== 'undefined' ? this.updateFilters(props.filters) : null;
-  }
-
-
-  //va aider pour savoir si on affiche ou pas 
-  updateFilters(filters) {
-    
-
-    this.isFiltered = false;
-    if (filters.hasOwnProperty('filterText') && String(filters['filterText']) !== '') {
-      //console.log("pass : "+filters['filterText'])
-      //construit une chaine de caractere avec tous mots clés
-      let description = this.autocall.getDescription();
-      
-      description.toLowerCase().includes(String(filters['filterText']).toLowerCase()) ? this.isFiltered = false : this.isFiltered = true;
-    } else if (filters.length !== 0) {
-      if (filters["subcategory"].codeSubCategory !== "PS") {   //on montre pas tout
-        if (filters["subcategory"].subCategoryHead) { // c('st PSACTIONS ou PSINDICES qui est choisi
-          filters["subcategory"].codeSubCategory !== this.object['category'] ? this.isFiltered = true : null;
-        } else if (filters["subcategory"].groupingHead) {//c'est un secteur qui a été choisi
-          //on recuepere toutes les actions du secteurs
-          let underlyings = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
-          this.sectorList = [];
-          this.isFiltered = true;
-          underlyings.filter(obj => obj.groupingName === filters["subcategory"].groupingName).forEach((value) => {
-            //console.log(JSON.stringify(value));
-            value.underlyingCode === this.object['code'] ? this.isFiltered = false : null;
-          });
-        } else { //c'est donc un sous-jacent final
-          filters["subcategory"].underlyingCode !== this.object['code'] ? this.isFiltered = true : null;
-        }
-      }
-
-      //on filtre ensuite les favoris
-      if (filters["category"] === "PSFAVORITES") {
-        //console.log("Item favori : " + this.object['isFavorite']);
-        this.object['isFavorite'] === false ? this.isFiltered = true : null;
-      }
-    }
-  }
-
-
-
-
- _getAutocallCaracTemplate() {
-
    
-   return (
-    <View style={{flex : 0.55, flexDirection : 'row', backgroundColor: 'white', paddingTop:5, width: DEVICE_WIDTH*0.975-4 }}>
-      <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
-        <TouchableOpacity style={{height: 30, justifyContent: 'flex-start', alignItems: 'center', padding: 2, borderColor : 'red', borderWidth : this.state.editMode ? 1 : 0}}
-                                onPress={() => {
-                                  if (!this.state.editMode)
-                                    return;
-                                  
-                                  this.setState({ showModalUpdate : true , currentParameter : "barrierPDI"});
-                                }}
-        >
-          <Text style={[setFont('bold', 10, 'black', 'FLFontFamily', 'top'), {textAlign: 'center'}]}>
-              PROTECTION CAPITAL
-          </Text>         
-        </TouchableOpacity>
-        <View style={{justifyContent: 'center', alignItems: 'center', padding: 2, backgroundColor : (this.state.editMode && this.request.isUpdated('barrierPDI')) ? 'red' : 'transparent'}}>
-            <Text style={setFont('500', 16, (this.state.editMode && this.request.isUpdated('barrierPDI')) ? 'white' : 'red')}>
-            { Numeral((this.state.editMode ? this.request.getValue('barrierPDI') : this.autocall.getBarrierPDI()) - 1).format('0%')}
-            </Text>
-        </View>
-        <View style={{justifyContent: 'center', alignItems: 'center', padding: 2}}>
-            <Text style={setFont('200', 9)}>
-              européen
-            </Text>
-        </View>
-      </View>    
-      <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
-        <TouchableOpacity style={{height: 30, justifyContent: 'flex-start', alignItems: 'center', padding: 2, borderColor : 'red', borderWidth : this.state.editMode ? 1 : 0 }}
-                          onPress={() => {
-                            if (!this.state.editMode)
-                              return;
-                            
-                            this.setState({ showModalUpdate : true , currentParameter : "barrierPhoenix"});
-                          }}
-        >
-        <Text style={[setFont('bold', 10, 'black', 'FLFontFamily', 'top'), {textAlign: 'center'}]}>
-              PROTECTION COUPON
-          </Text>         
-        </TouchableOpacity>
-        <View style={{justifyContent: 'center', alignItems: 'center', padding: 2, paddingBottom: 4,backgroundColor : (this.state.editMode && this.request.isUpdated('barrierPhoenix')) ? 'red' : 'transparent'}}>
-            <Text style={setFont('500', 16, (this.state.editMode && this.request.isUpdated('barrierPhoenix')) ? 'white' : 'green')}>
-            { Numeral((this.state.editMode ? this.request.getValue('barrierPhoenix') : this.autocall.getBarrierPhoenix())-1).format('0%')}
-            </Text>
-        </View>
-        <View style={{ justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={setFont('200', 9)}>
-              {Numeral(this.autocall.getCouponTitle()*this.autocall.getFrequencyPhoenixNumber()/12).format('0.00%')} {this.autocall.getFrequencyPhoenixTitle().toLowerCase()} 
-            </Text>
-        </View>
-        <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor : (this.state.editMode && this.request.isUpdated('isMemory')) ? 'red' : 'transparent'}}>
-            <Text style={setFont('200', 9, (this.state.editMode && this.request.isUpdated('isMemory')) ? 'white' : 'black')}>
-              {this.state.editMode ? (this.request.getValue('isMemory') ? 'effet mémoire': '') : (this.autocall.isPhoenixMemory() ? 'effet mémoire' : '')} {this.autocall.getAirbagTitle()}
-            </Text>
-        </View>
-        <View style={{ justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={setFont('200', 9)}>
-            {this.autocall.isIncremental() ? ' incrémental ' : ''}
-            </Text>
-        </View>
-      </View>   
-      <View style={{flex: 0.33, flexDirection : 'column', padding: 5}}>
-        <TouchableOpacity style={{height: 30, justifyContent: 'flex-start', alignItems: 'center', padding: 2, borderColor : 'red', borderWidth : this.state.editMode ? 1 : 0}}
-                                  onPress={() => {
-                                    if (!this.state.editMode)
-                                      return;
-                                    
-                                    this.setState({ showModalUpdate : true , currentParameter : "airbagLevel"});
-                                  }}
-        >
-          <Text style={[setFont('bold', 10, 'black', 'FLFontFamily', 'top'), {textAlign: 'center'}]}>
-              RAPPELS DU PRODUIT
-          </Text>         
-        </TouchableOpacity>
-        <View style={{justifyContent: 'center', alignItems: 'center', padding: 2}}>
-            <Text style={setFont('500', 16, 'green')}>
-            { Numeral(this.autocall.getAutocallLevel()-1).format('0%')}  <Text style={setFont('200', 9, 'green')}>{this.autocall.getDegressiveStep() === 0 ? '' : ('stepdown ' + Numeral(this.autocall.getDegressiveStep()).format('0%') +' / an')}
-            </Text></Text>
-        </View>
-        <TouchableOpacity style={{flexDirection: 'column',justifyContent: 'center', alignItems: 'stretch', borderColor : 'red', borderWidth : this.state.editMode ? 1 : 0 }}
-                          onPress={() => {
-                            if (!this.state.editMode)
-                              return;
-                            
-                            this.setState({ showModalUpdate : true , currentParameter : "freq"});
-                          }}
-        >
-          <View style={{paddingTop :2, alignItems: 'center', backgroundColor : (this.state.editMode && this.request.isUpdated('freq')) ? 'red' : 'transparent'}}>
-            <Text style={setFont('200', 9 , (this.state.editMode && this.request.isUpdated('freq')) ? 'white' : 'black')}>
-              {this.state.editMode  ? this.autocallResult.getCouponAutocall() !== 0 ? Numeral(this.autocallResult.getCouponAutocall()).format('0.00%')  : ''
-                                    : this.autocall.getCouponAutocall() !== 0 ? Numeral(this.autocall.getCouponAutocall()).format('0.00%')  : ''} {this.state.editMode ?  this.request.getValue('freq') : this.autocall.getFrequencyAutocallTitle().toLowerCase()} 
-            </Text>
-          </View>
-          <View style={{alignItems: 'center', backgroundColor : (this.state.editMode && this.request.isUpdated('nncp')) ? 'red' : 'transparent'}}>
-            <Text style={setFont('200', 9, (this.state.editMode && this.request.isUpdated('nncp')) ? 'white': 'black')}>
-              1er rappel {this.state.editMode ?  this.request.getNNCPLabel() : this.autocall.getNNCPLabel()}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>                                             
-    </View>
-   )
- }
+  }
+ 
+
+
 
 _renderRecalculateProduct() {
         //on est en train de recalcler le produit
-        if (this.state.messageLoading !== '') {
-          return (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white'}}>
-                  <AnimatedProgressWheel 
+        /*
+                          <AnimatedProgressWheel 
                       size={60} 
                       width={4} 
   
@@ -302,6 +169,11 @@ _renderRecalculateProduct() {
                   <View style={{marginTop: 20}}>
                     <Text style={setFont('300', 14, 'white')}>{this.state.messageLoading}</Text>
                   </View>
+                  */
+        if (this.state.messageLoading !== '') {
+          return (
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white'}}>
+                  <RobotBlink width={200} height={200} />
                 </View>
           );
         } 
@@ -309,43 +181,7 @@ _renderRecalculateProduct() {
 
  _renderModalUpdate ()  {
    let render = null;
-  switch (this.state.currentParameter) {
-    //case 'typeAuction' : return  <FLAuctionDetail updateValue={this._updateValue} initialValue={this.product['typeAuction'].value}/>
-    //case 'type' : return  <FLProductDetail updateValue={this._updateValue} initialValue={this.product['type'].value}/>
-    //case 'underlying' : return  <FLUnderlyingDetail underlyings={this.underlyings} updateValue={this._updateValue} initialValue={this.product['underlying'].value}/>
-    //case 'maturity' : return  <FLMaturityDetail updateValue={this._updateValue} initialValue={this.product['maturity'].value}/>
-    case 'barrierPDI' :     render =   <FLPDIDetail updateValue={this._updateValue} initialValue={this.state.editMode ? this.request.getValue('barrierPDI') : this.autocall.getBarrierPDI()}/>
-                            break;
-    case 'barrierPhoenix' : render =  <FLPhoenixBarrierDetail updateValue={this._updateValue} 
-                                                              initialValueBP={this.state.editMode ? this.request.getValue('barrierPhoenix') : this.autocall.getBarrierPhoenix()} 
-                                                              initialValueIM={this.state.editMode ? this.request.getValue('isMemory') : this.autocall.isPhoenixMemory()}
-                                      />
-                            break;
-    case 'freq' :           render = <FLFreqDetail updateValue={this._updateValue} 
-                                                  initialValueFreq={this.state.editMode ? this.request.getValue('freq') : this.autocall.getFrequencyAutocall()} 
-                                                  initialValueNNCP={this.state.editMode ? this.request.getValue('nncp') : this.autocall.getNNCP()} 
-                                      />
-                            break;
-    case 'UF'   :          render =  <FLUFDetail updateValue={this._updateValue} 
-                                          initialValueUF={this.state.editMode ? this.request.getValue('UF') : this.autocall.getUF()} 
-                                          initialValueUFAssoc={this.state.editMode ? this.request.getValue('UFAssoc') : this.autocall.getUFAssoc()} 
-                                      />
-                            break;
-    case 'UFAssoc' :        render =  <FLUFDetail updateValue={this._updateValue} 
-                                          initialValueUF={this.state.editMode ? this.request.getValue('UF') : this.autocall.getUF()} 
-                                          initialValueUFAssoc={this.state.editMode ? this.request.getValue('UFAssoc') : this.autocall.getUFAssoc()} 
-                                      />
-                            break;   
-    case 'airbagLevel' :    render = <FLAirbagDetail updateValue={this._updateValue} 
-                                                     initialValueAB={this.autocall.getAirbagCode()} 
-                                                     initialValueDS={this.autocall.getDegressiveStep()} 
-                                                     initialValueII={this.autocall.isIncremental()}
-                                      />
-                            break;
-    //case 'degressiveStep' : return  <FLDegressiveDetail updateValue={this._updateValue} initialValue={this.product['degressiveStep'].value}/>
 
-    default : break;
-  }
 
    return (
    
@@ -399,7 +235,7 @@ _renderRecalculateProduct() {
                                       borderTopRightRadius : 10,
                                       borderTopLeftRadius : 10,}} 
                     >
-                      <View style={{width: DEVICE_WIDTH/3, height : 4, backgroundColor: tabBackgroundColor}}><Text></Text></View>
+                      <View style={{width: DEVICE_WIDTH/3, height : 4, backgroundColor: blueFLColor}}><Text></Text></View>
                     </View>
                     <View style={{flex:0.1 , flexDirection: 'row',justifyContent: 'center',alignItems: 'flex-start', borderWidth: 0}}>
                           <View  style={{flex : 0.15, justifyContent: 'center',alignItems: 'flex-end', borderWidth: 0}}>
@@ -407,7 +243,7 @@ _renderRecalculateProduct() {
                           </View>
                           <View style={{flex : 0.7, justifyContent: 'center',alignItems: 'center', borderWidth: 0}}>
                                 <Text style={[setFont('600', 21), { textAlign: 'center'}]}>
-                                  {this.state.editMode ? this.request.getTitle(this.state.currentParameter) : null}
+                                  AIDE
                                 </Text>
                           </View>
                           <TouchableOpacity  style={{flex : 0.15, justifyContent: 'center',alignItems: 'center', borderWidth: 0}}
@@ -431,27 +267,666 @@ _renderRecalculateProduct() {
 _updateValue=(id, value, valueLabel) =>{
   console.log(id + "  :  "+value+"  :  "+valueLabel);
   this.request.setCriteria(id, value, valueLabel);
-  this.setState({ toto: this.state.toto });
-  /*this.product[id].value = value;
-  this.product[id].valueLabel = valueLabel;
-
-
-  //mise a jour de produit dans pricerScreen
-  this.props.parameterProductUpdated(this.product);
-  
-
-  this.props.needToRefresh();*/
 }
 
- render () {
+_recalculateProduct(){
+  this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true});
+  searchProducts(this.props.firebase, this.request.getCriteria())
+  .then((data) => {
+    this.setState({ messageLoading : 'Réception et analyse des prix' });
 
-      if (this.type === TEMPLATE_TYPE.AUTOCALL_CARAC) {
-        return this._getAutocallCaracTemplate();
-      }
+    autocall = interpolateBestProducts(data, this.request);
+
+    if (autocall.length === 1){
+      console.log(autocall);
+      this.autocallResult.updateProduct(autocall[0]);
+      //this.request.setRequestFromCAutocall(this.autocallResult);
+    } else if (autocall.length === 0) {
+      alert("Pas résultat possible.\nModifiez vos critères.");
+    }
+
+    this.setState({ messageLoading : '', isGoodToShow : true});
+  
+  })
+  .catch(error => {
+    console.log("ERREUR recup prix: " + error);
+    alert('ERREUR calcul des prix', '' + error);
+    this.setState({ isLoading : false , messageLoading : ''});
+  });
+}
+
+_renderHeaderShortTemplate() {
+
+  return (
+
+                <View style={{
+                              paddingLeft : 20,  
+                              backgroundColor: setColor('blue'), 
+                              borderTopLeftRadius: 10, 
+                              borderTopRightRadius: 10, 
+                              flexDirection: 'row',
+                              //paddingTop: 5,
+                              //paddingBottom: 5,
+                              }}
+                >                                                    
+                  <View style={{flex : 0.85, flexDirection: 'column', justifyContent: 'center' , paddingTop: 3, paddingBottom: 3}}>
+                    <View>
+                      <Text style={setFont('400', 18, 'white')}>
+                        {this.autocall.getProductName()} 
+                      </Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+
+                        <Text style={setFont('400', 18, 'white')}>   
+                           {this.autocall.getFullUnderlyingName(this.props.categories)}
+                        </Text>   
+                    </View>
+                  </View>
+                  <TouchableOpacity style={{flex : 0.15,  justifyContent: 'center', alignItems: 'center',backgroundColor: setColor('turquoise'), borderTopRightRadius: 10}}
+                                    onPress={() => {
+                                      this.props.navigation.navigate('FLAutocallDetail', {
+                                        item: this.object,
+                                        //ticketType: TICKET_TYPE.PSCREATION
+                                      })
+                                    }}
+                  >
+                      <Text style={setFont('300', 20, 'white', 'Regular')}>></Text>
+                  </TouchableOpacity>
+                </View>
+  
+  );
+}
+
+_renderHeaderFullTemplate() {
+
+  return (
+          <View style={{flex : 0.35, flexDirection : 'row'}}>
+                <View style={{
+                              flex : 0.6, 
+                              flexDirection : 'column', 
+                              paddingLeft : 20,  
+                              backgroundColor: blueFLColor, 
+                              borderTopLeftRadius: 10, 
+                              //borderRadius: 14,
+                              borderBottomWidth :  0,
+                              borderColor : 'red',
+
+                              }}
+                >                                                    
+                  <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
+                    <View>
+                      <Text style={setFont('400', 18, 'white')}>
+                        {this.autocallResult.getProductName()} 
+                      </Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+                      <View>
+                        <Text style={setFont('400', 18, 'white')}>   
+                           {this.autocallResult.getFullUnderlyingName(this.props.categories)} {' -  '}
+                        </Text>   
+                      </View>
+                      <View style={{ flexDirection: 'row', borderWidth: 0}}>
+                          <View style={{ borderWidth: 0, paddingLeft : 15, alignItems: 'center', justifyContent: 'center',}}>
+                            <MaterialCommunityIconsIcon name={"calendar"}  size={15} style={{color: 'white'}}/> 
+                          </View>
+                          <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                            <Text style={setFont('400', 18, 'white', 'Light')}>
+                               {'  ' + this.autocallResult.getMaturityName()}
+                            </Text>
+                          </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
+                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
+                    <Text style={setFont('400', 24, this.state.messageLoading !== '' ? 'black' : 'green')} numberOfLines={1}>
+                        { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCouponTitle()).format('0.00%')}
+                        <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
+                    </Text>  
+                  </View> 
+                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor: this.request.isUpdated() ? 'green' : subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
+                                                   onPress={() => {
+                                                    //envoi du produit
+                                          
+                                                      if (this.request.isUpdated()) {
+                                                          //on va recalculer le produit
+                                                            //console.log("AVANT LACEMENT CALCUL");
+                                                            /*this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true});
+                                                            searchProducts(this.props.firebase, this.request.getCriteria())
+                                                            .then((data) => {
+                                                              this.setState({ messageLoading : 'Réception et analyse des prix' });
+                                                
+                                                              autocall = interpolateBestProducts(data, this.request);
+
+                                                              if (autocall.length === 1){
+                                                                console.log(autocall);
+                                                                this.autocallResult.updateProduct(autocall[0]);
+                                                                //this.request.setRequestFromCAutocall(this.autocallResult);
+                                                              }
+
+                                                              this.setState({ messageLoading : '', isGoodToShow : true});
+                                                            
+                                                            })
+                                                            .catch(error => {
+                                                              console.log("ERREUR recup prix: " + error);
+                                                              alert('ERREUR calcul des prix', '' + error);
+                                                              this.setState({ isLoading : false , messageLoading : ''});
+                                                            });*/
+
+                                                            Alert.alert(
+                                                              'Votre choix :',
+                                                              "Concernant l'ancien produit et le nouveau : ",
+                                                              [
+                                                                {
+                                                                  text: 'Garder les deux', 
+                                                                  onPress: () => console.log('Ask me later pressed')
+                                                                },
+                                                                {
+                                                                  text: "Revenir au produit initial",
+                                                                  onPress: () => {
+                                                                    this.autocallResult = new CAutocall(this.data);
+
+                                                                    this.request = new CPSRequest();
+                                                                    this.request.setRequestFromCAutocall(this.autocall);
+                                                                    //console.log('Cancel Pressed');
+                                                                    this.setState({ toto: !this.state.toto });
+                                                                  },
+                                                                  style: 'cancel',
+                                                                },
+                                                                {
+                                                                  text: 'Ne garder que le nouveau', 
+                                                                  onPress: () => {
+                                                                    this.request = new CPSRequest();
+                                                                    this.request.setRequestFromCAutocall(this.autocallResult);
+                                                                    this.autocall = this.autocallResult;
+                                                                    this.setState({ toto: !this.state.toto });
+                                                                  }, 
+                                                                  style: 'cancel',},
+                                                              ],
+                                                              {cancelable: true},
+                                                            );
+                                                        
+                                                      } else {
+                                                        this.props.navigation.navigate('FLAutocallDetail', {
+                                                          item: this.object,
+                                                          //ticketType: TICKET_TYPE.PSCREATION
+                                                        })
+                                                      }
+                                                  }}
+                  >
+                    <Text style={setFont('400', 14, 'white')}>
+                    { (this.request.isUpdated() ?  'VALIDER' : 'VOIR >')}
+                    </Text>   
+                  </TouchableOpacity>
+                </View>
+
+              </View>
+  
+  );
+}
+
+_renderAutocallFullTemplate() {
+
+  //remplissage des dropdown
+  let dataPhoenixBarrier = ['-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
+  let dataPDIBarrier = ['-70%','-65%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
+  let dataNNCP = ['1 an','2 ans','3 ans'];
+  let dataFreqAutocall = ['Mensuel','Trimestriel','Semestriel','Annuel'];
+
+  return (
+   <View style={{flex : 0.55, flexDirection : 'row', backgroundColor: 'white', paddingTop:5 }}>
+     <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
+       <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
+         <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]}>
+          {String('protection \ncapital').toUpperCase()}
+         </Text>         
+       </View>
+       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"shield"}  size={18} style={{color: setColor(this.request.isUpdated('barrierPDI') ? 'turquoise' : 'light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
+              <ModalDropdown
+                //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                textStyle={setFont('500', 16, (this.request.isUpdated('barrierPDI')) ? setColor('turquoise'): setColor('light'), 'Bold')}
+                dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                  onSelect={(index, value) => {
+                    this._updateValue('barrierPDI', Math.round(100*(Numeral(value).value() +1))/100, value);
+                    this._recalculateProduct();
+
+                }}
+                adjustFrame={(f) => {
+                  return {
+                    width: DEVICE_WIDTH/3,
+                    height: Math.min(DEVICE_HEIGHT/3, dataPDIBarrier.length * 40),
+                    left : f.left,
+                    right : f.right,
+                    top: f.top,
+                  }
+                }}
+                defaultIndex={dataPDIBarrier.indexOf(Numeral(this.autocallResult.getBarrierPDI() - 1).format('0%'))}
+                defaultValue={Numeral(this.autocallResult.getBarrierPDI()- 1).format('0%')}
+                options={dataPDIBarrier}
+              />
+            </View>
+        </View>
+
+ 
+       <View style={{justifyContent: 'center', alignItems: 'center', padding: 2, borderWidth: 0, paddingTop: 10}}>
+           <Text style={setFont('200', 11, 'black', 'Regular')}>
+             européen
+           </Text>
+       </View>
+     </View>    
+     <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
+       <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
+        <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
+             {String('protection coupon').toUpperCase()}
+         </Text>         
+       </View>
+       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"shield-half-full"}  size={18} style={{color: this.request.isUpdated('barrierPhoenix') ? setColor('turquoise') : setColor('light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center',  alignItems: 'stretch', padding: 2 }}>
+              <ModalDropdown
+                    //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                    textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
+                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                    dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                      onSelect={(index, value) => {
+                        this._updateValue('barrierPhoenix', Math.round(100*(Numeral(value).value() +1))/100, value);
+                        this._recalculateProduct();
+
+                    }}
+                    adjustFrame={(f) => {
+                      return {
+                        width: DEVICE_WIDTH/3,
+                        height: Math.min(DEVICE_HEIGHT/3, dataPhoenixBarrier.length * 40),
+                        left : f.left,
+                        right : f.right,
+                        top: f.top,
+                      }
+                    }}
+                    defaultIndex={dataPhoenixBarrier.indexOf(Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%'))}
+                    defaultValue={Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}
+                    options={dataPhoenixBarrier}
+                />
+            </View>
+       </View>
+
+       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderWidth: 0, paddingTop: 10}}>
+          <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+            <MaterialCommunityIconsIcon name={"ticket-percent"}  size={18} style={{color: this.request.isUpdated() ? setColor('turquoise') : setColor('light')}}/> 
+          </View>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2, paddingBottom: 4,backgroundColor : (this.request.isUpdated('barrierPhoenix')) ? 'red' : 'transparent'}}>
+             <Text style={[setFont('200', 11, this.request.isUpdated() ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]}>
+              {Numeral(this.autocallResult.getCouponTitle()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} {this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} 
+            </Text>
+          </View>
+       </View>
+
+       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"memory"}  size={18} style={{color: setColor('light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2, backgroundColor : (this.request.isUpdated('barrierPhoenix')) ? 'red' : 'transparent'}}>
+                <Text style={[setFont('200', 11), {textAlign: 'center'}]}>
+                  {(this.request.getValue('isMemory') ? 'effet mémoire': 'non mémoire')}
+                </Text>
+            </View>
+       </View>
+       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"airbag"}  size={18} style={{color: setColor('light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2, backgroundColor : (this.request.isUpdated('barrierPhoenix')) ? 'red' : 'transparent'}}>
+                <Text style={[setFont('200', 11), {textAlign: 'center'}]}>
+                   {this.autocall.getAirbagTitle()}
+                </Text>
+            </View>
+       </View>
+
+     </View>   
+     <View style={{flex: 0.33, flexDirection : 'column', padding: 5}}>
+       <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
+         <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]}>
+             RAPPELS DU PRODUIT
+         </Text>         
+       </View>
+       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center'}}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"gavel"}  size={18} style={{color: setColor('light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center',  alignItems: 'stretch', padding: 2, backgroundColor : (this.request.isUpdated('barrierPhoenix')) ? 'red' : 'transparent'}}>
+              <Text style={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? 'white' : setColor('light'), 'Bold'), {textAlign: 'center'}]}>
+               { Numeral(this.autocallResult.getAutocallLevel()).format('0%')}
+              </Text>
+            </View>
+       </View>
+       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', paddingTop: 10 }}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"trending-down"}  size={18} style={{color: setColor('light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2, backgroundColor : (this.request.isUpdated('barrierPhoenix')) ? 'red' : 'transparent'}}>
+                <Text style={[setFont('200', 11), {textAlign: 'center'}]}>
+                    {this.autocall.getDegressiveStep() === 0 ? 'sans stepdown' : ('stepdown ' + Numeral(this.autocall.getDegressiveStep()).format('0%') +' / an')}
+                </Text>
+            </View>
+       </View>
+       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: setColor('light')}}/> 
+            </View>
+             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  backgroundColor : (this.request.isUpdated('freq')) ? 'red' : 'transparent'}}>
+                <ModalDropdown
+                        //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                        //textStyle={setFont('500', 9, (this.request.isUpdated('nncp')) ? 'white' : 'black', 'Regular')}
+                        dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                        dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                          onSelect={(index, value) => {
+                            let f = '1Y';
+                            switch(dataFreqAutocall.indexOf(value)){
+                              case 0 : 
+                                f = '1M';
+                                break;
+                              case 1 :
+                                f = '3M';
+                                break;
+                              case 2 : 
+                                f = '6M';
+                                break;
+                              case 3 : 
+                                f = '1Y';
+                                break;
+                              default : break;
+                            }
+                            this._updateValue('freq', f, value);
+                            this._recalculateProduct();
+
+                        }}
+                        adjustFrame={(f) => {
+                          return {
+                            width: DEVICE_WIDTH/3,
+                            height: Math.min(DEVICE_HEIGHT/3, dataFreqAutocall.length * 40),
+                            left : f.left,
+                            right : f.right,
+                            top: f.top,
+                          }
+                        }}
+                        defaultIndex={dataFreqAutocall.indexOf(this.request.getValue('freq'))}
+                        //defaultValue={'1er rappel dans ' + this.request.getNNCPLabel()}
+                        options={dataFreqAutocall}
+                    >
+                      <Text style={setFont('200', 11 , (this.request.isUpdated('freq')) ? 'white' : 'black')}>
+                        {this.autocall.getCouponAutocall() !== 0 ? Numeral(this.autocall.getCouponAutocall()).format('0.00%')  : ''} {this.autocallResult.getFrequencyAutocallTitle().toLowerCase()} 
+                      </Text>
+                    </ModalDropdown>
+              </View>
+      </View>
+      <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"clock-start"}  size={18} style={{color: setColor('light')}}/> 
+            </View>
+             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  backgroundColor : (this.request.isUpdated('freq')) ? 'red' : 'transparent'}}>
+             <ModalDropdown
+                //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                //textStyle={setFont('500', 9, (this.request.isUpdated('nncp')) ? 'white' : 'black', 'Regular')}
+                dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                  onSelect={(index, value) => {
+                    let nncp = 12;
+                    switch(dataNNCP.indexOf(value)){
+                      case 0 : 
+                        nccp = 12;
+                        break;
+                      case 1 :
+                        nccp = 24;
+                        break;
+                      case 2 : 
+                        nccp = 36;
+                        break;
+                      default : break;
+                    }
+                    this._updateValue('nncp', nccp, value);
+                    this._recalculateProduct();
+
+                }}
+                adjustFrame={(f) => {
+                  return {
+                    width: DEVICE_WIDTH/3,
+                    height: Math.min(DEVICE_HEIGHT/3, dataNNCP.length * 40),
+                    left : f.left,
+                    right : f.right,
+                    top: f.top,
+                  }
+                }}
+                defaultIndex={dataNNCP.indexOf(this.request.getValue('nncp'))}
+                //defaultValue={'1er rappel dans ' + this.request.getNNCPLabel()}
+                options={dataNNCP}
+            >
+                      <Text style={setFont('200', 11 , (this.request.isUpdated('freq')) ? 'white' : 'black')}>
+                        {this.request.getNNCPLabel()}
+                      </Text>
+                    </ModalDropdown>
+              </View>
+      </View>
+     </View>                                             
+   </View>
+  )
+}
+
+_renderAutocallShortTemplate() {
+
+  
+
+  return (
+   <View style={{flexDirection : 'row', backgroundColor: 'white', paddingTop:1}}>
+     <View style={{flex : 0.7, flexDirection : 'column', padding: 10, borderWidth: 0}}>
+        <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"gavel"}  size={15} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{ Numeral(this.autocallResult.getAutocallLevel()).format('0%')} </Text>
+                </View>
+            </View>
+            <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
+                </View>
+            </View>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={this.request.getValue('barrierPhoenix') === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{this.request.getValue('barrierPhoenix') === 1  ? this.autocall.getAirbagTitle() : Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}</Text>
+                </View>
+            </View>
+            { this.request.getValue('isMemory') ? 
+                  <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
+                      <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                        <MaterialCommunityIconsIcon name={"memory"}  size={15} style={{color: setColor('light')}}/>
+                      </View>
+                      <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                          <Text style={setFont('300', 12, 'black', 'Light')}>{(this.request.getValue('isMemory') ? 'mémoire': 'non mémoire')} </Text>
+                      </View>
+                  </View>
+              : null
+            }
+        </View>
+        <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"shield"}  size={15} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{Numeral(this.request.getValue('barrierPDI') - 1).format('0%')}</Text>
+                </View>
+            </View>
+            <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                    <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocall.getMaturityName()} </Text>
+                </View>
+            </View>
+        </View>
+     </View>
+     <View style={{flex : 0.3,  padding: 5, alignItems: 'center', justifyContent: 'center'}}>
+        <Text style={setFont('400', 16, 'green')} numberOfLines={1}>        
+            { Numeral(this.autocallResult.getCouponTitle()).format('0.00%')}
+        </Text>
+        <Text style={setFont('200', 12)}>p.a.</Text>   
+     </View>   
+  </View>
+  )
+}
+
+_renderFooterShortTemplate(isFavorite) {
+  //remplisaaage des dropdown
+  return (
+           <View style={{flex : 0.10, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', padding :3, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+                <TouchableOpacity style={{flex : 0.33, justifyContent: 'center', alignItems: 'center'}} 
+                                  onPress={() => {
+                                    if (this.request.isUpdated()) {
+                                      alert('Valider votre produit avant de le mettre en favori');
+                                      return;
+                                    }
+                                    //this.props.handleFavorite(this.props.index, !this.state.isFavorite);
+                                    this.props.setFavorite(this.object)
+                                    .then((fav) => {
+                                      this.object  = fav;                                    
+                                      console.log("fav : "+fav.isFavorite);
+                                      console.log("this.props.object : "+this.object.isFavorite);
+                                      this.setState({ isFavorite: fav.isFavorite })
+                                    })
+                                    .catch((error) => console.log("Erreur de mise en favori : " + error));
+                                  }}
+                >
+                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor(this.request.isUpdated() ? 'gray' : 'light')}/>
+                </TouchableOpacity>
+
+   
+                <TouchableOpacity style={{flex : 0.33, justifyContent: 'center', alignItems: 'center'}} >
+                  <Ionicons name="md-help" size={20} style={{color: setColor('light')}}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={{flex : 0.34, justifyContent: 'center', alignItems: 'center'}} 
+                                  onPress={() => {
+                                    
+                                   
+                                  }}
+                 >
+                 
+                  <FontAwesome name={"gears"}  size={20} style={{color: setColor('light')}}/> 
+                </TouchableOpacity>   
+                
+              </View>
+
+  );
+}
+
+
+_renderFooterFullTemplate(isFavorite) {
+  //remplisaaage des dropdown
+  let dataUF = Array(61).fill().map((_, index) => (Numeral(index/1000).format('0.00%')));
+  return (
+    <View style={{flex : 0.10, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
+                                  onPress={() => {
+                                    if (this.request.isUpdated()) {
+                                      alert('Valider votre produit avant de le mettre en favori');
+                                      return;
+                                    }
+                                    //this.props.handleFavorite(this.props.index, !this.state.isFavorite);
+                                    this.props.setFavorite(this.object)
+                                    .then((fav) => {
+                                      this.object  = fav;                                    
+                                      console.log("fav : "+fav.isFavorite);
+                                      console.log("this.props.object : "+this.object.isFavorite);
+                                      this.setState({ isFavorite: fav.isFavorite })
+                                    })
+                                    .catch((error) => console.log("Erreur de mise en favori : " + error));
+                                  }}
+                >
+                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor(this.request.isUpdated() ? 'gray' : 'light')}/>
+                </TouchableOpacity>
+                <View style={[{flex : 0.2}, globalStyle.templateIcon]}>
+                  <FontAwesome name={"microphone-slash"}  size={20} style={{color: setColor('gray')}}/> 
+                </View>
+   
+                <View style={[{flex : 0.2}, globalStyle.templateIcon]}>              
+                 <ModalDropdown
+                  ref={'UF'}
+                  dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                  dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                    onSelect={(index, value) => {
+                      this._updateValue('UF', Math.round(1000*(Numeral(value).value()))/1000, value);
+                      this._recalculateProduct();
+
+                    }}
+                    adjustFrame={(f) => {
+                      return {
+                        width: DEVICE_WIDTH/3,
+                        height: Math.min(DEVICE_HEIGHT/3, dataUF.length * 40),
+                        left : f.left,
+                        right : f.right,
+                        top: f.top,
+                      }
+                    }}
+                    onDropdownWillShow={() => {
+                      let idx = dataUF.indexOf(Numeral(this.request.getValue('UF')).format('0.00%'));
+                      this.refs['UF'].select(idx);
+                      //this.refs['UF'].scrollTo({animated: true}, 100);
+                    }}
+                    defaultIndex={dataUF.indexOf(Numeral(this.request.getValue('UF')).format('0.00%'))}
+                    //defaultValue={Numeral(this.request.getValue('UF') - 1).format('0%')}
+                    //defaultValue={''}
+
+                    options={dataUF}
+                  >
+                    <MaterialCommunityIconsIcon name={"margin"} size={20} style={{color: setColor('light')}}/>
+                  </ModalDropdown>
+                </View>
+                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]}>
+                  <Ionicons name="md-help" size={20} style={{color: setColor('light')}}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
+                                  onPress={() => {
+                                    
+                                   
+                                  }}
+                 >
+                 
+                  <FontAwesome name={"gears"}  size={20} style={{color: setColor('light')}}/> 
+                </TouchableOpacity>   
+                
+              </View>
+
+  );
+}
+
+
+
+render () {
       //on affiche ou pas
       if (this.isFiltered) {
         return null;
       }
+      if (this.type === TEMPLATE_TYPE.AUTOCALL_CARAC) {
+        return this._renderAutocallFullTemplate();
+      }
+
 
 
 
@@ -467,214 +942,29 @@ _updateValue=(id, value, valueLabel) =>{
       this.object.isFavorite = isFavorite;
       this.object.toFavorites.active = isFavorite;
 
-      
       return (
             <View opacity={this.state.isGoodToShow ? 1 : 0.1} style={{flexDirection : 'column', 
-                                                                      width: DEVICE_WIDTH*0.975, 
-                                                                      //height: 200,
-                                                                      //backgroundColor: tabBackgroundColor,
-                                                                      borderBottomWidth : this.state.editMode ? 2 : 0,
-                                                                      marginBottom: 20,
+                                                                      width: this.screenWidth, 
+                                                                      marginLeft : 0.025*DEVICE_WIDTH,
                                                                       shadowColor: 'rgb(75, 89, 101)',
                                                                       shadowOffset: { width: 0, height: 2 },
                                                                       shadowOpacity: 0.9,
-                                                                      borderWidth : this.state.editMode ? 2 : 1,
-                                                                      borderColor : this.state.editMode ? 'red' : 'white',
-                                                                      borderTopLeftRadius: 15,
+                                                                      borderWidth :  1,
+                                                                      borderColor : 'white',
+                                                                      //borderTopLeftRadius: 15,
+                                                                      borderRadius: 10,
                                                                       //overflow: "hidden",
                                                                     }}
             >
 
-            {this._renderModalUpdate()}
-              <View style={{flex : 0.35, flexDirection : 'row'}}>
-                <TouchableOpacity style={{
-                              flex : 0.6, 
-                              flexDirection : 'column', 
-                              paddingLeft : 20,  
-                              backgroundColor: this.state.editMode ? 'white' : tabBackgroundColor, 
-                              borderTopLeftRadius: 15, 
-                              borderBottomWidth : this.state.editMode ? 1 : 0,
-                              borderColor : 'red',
-                              borderRightWidth : this.state.editMode ? 1 : 0,
-                              //borderRightColor : 'red',
-                              }}
-                              onPress={() => {
+                {this._renderModalUpdate()}
 
-                              }}
-                >                                                    
-                  <View style={{flex : 0.6, justifyContent: 'center' }}>
-                      <Text style={setFont('400', 20, this.state.editMode ? 'black' : 'white')}>
-                        {this.autocall.getProductName()} {this.autocall.getMaturityName()}
-                      {/*</Text>                                                
-                  </View>
-                  <View style={{flex : 0.4,}}>
-                      <Text style={setFont('400', 16, 'white')}>*/}
-                       {' '}sur {this.autocall.getFullUnderlyingName(this.props.categories)}
-                    </Text>   
-                  </View>
-                </TouchableOpacity>
-                <View style={{flex : 0.4, flexDirection : 'column', backgroundColor: tabBackgroundColor,borderWidth: 0, height: 60}}>
-                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white'}}>
-                    <Text style={setFont('600', 24, 'green')} numberOfLines={1}>
-                        { this.state.editMode ? (this.request.isUpdated() ? '[XX]' : Numeral(this.autocallResult.getCouponTitle()).format('0.00%')) : Numeral(this.autocall.getCouponTitle()).format('0.00%')}<Text style={setFont('200', 12)}> p.a.</Text>   
-                    </Text>  
-                  </View> 
-                  <TouchableOpacity style={{flex : 0.5, backgroundColor: (this.state.editMode) ? this.request.isUpdated() ? 'red' : 'green' : subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
-                                                   onPress={() => {
-                                                    //envoi du produit
-                                                    if (this.state.editMode) {
-                                                      if (this.request.isUpdated()) {
-                                                          //on va recalculer le produit
-                                                            //console.log("AVANT LACEMENT CALCUL");
-                                                            this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true});
-                                                            searchProducts(this.props.firebase, this.request.getCriteria())
-                                                            .then((data) => {
-                                                              this.setState({ messageLoading : 'Réception et analyse des prix' });
-                                                
-                                                              autocall = interpolateBestProducts(data, this.request);
+                {this.state.typeTemplate === 'FULL' ? this._renderHeaderFullTemplate() : this._renderHeaderShortTemplate()}
 
-                                                              if (autocall.length === 1){
-                                                                console.log(autocall);
-                                                                this.autocallResult.updateProduct(autocall[0]);
-                                                                this.request.setRequestFromCAutocall(this.autocallResult);
-                                                              }
-                                                              
-                                                              this.setState({ messageLoading : '', isGoodToShow : true});
-                                                            
-                                                            })
-                                                            .catch(error => {
-                                                              console.log("ERREUR recup prix: " + error);
-                                                              alert('ERREUR calcul des prix', '' + error);
-                                                              this.setState({ isLoading : false , messageLoading : ''});
-                                                            });
-                                                          } else { //on valide
-                                                            this.setState({ editMode: false });
-                                                          }
-                                                          
-                                                    } else {
-                                                      this.props.navigation.navigate('FLAutocallDetail', {
-                                                        item: this.object,
-                                                        //ticketType: TICKET_TYPE.PSCREATION
-                                                      })
-                                                    }
-                                                  }}
-                  >
-                    <Text style={setFont('600', 14, 'white')}>
-                    { (this.state.editMode) ? this.request.isUpdated() ? 'RECALCULER' : 'VALIDER' : 'TRAITER >'}
-                    </Text>   
-                  </TouchableOpacity>
-                </View>
+                {this.state.messageLoading === '' ? this.state.typeTemplate === 'FULL' ? this._renderAutocallFullTemplate() : this._renderAutocallShortTemplate()
+                                                  : this._renderRecalculateProduct()}
 
-              </View>
-              {/*this.state.editMode  ?  <View>
-                                         <View style={{flexDirection : 'row',  paddingLeft:5, paddingTop:5,  justifyContent:'flex-start', alignItems:'center', backgroundColor:'white'}}>
-                                              <View style={{paddingLeft: 10}}>
-                                                <Text style={setFont('300', 12)}>Sous-Jacent : </Text>
-                                              </View>
-                                              <View style={{borderWidth: 1, borderColor : 'red', padding: 5}}>
-                                                <Text style={setFont('300', 12)}>
-                                                {this.autocall.getUnderlyingName()}
-                                                </Text>
-                                              </View>
-                                          </View>
-                                          <View style={{flexDirection : 'row',  padding:5, justifyContent:'flex-start', alignItems:'center', backgroundColor:'white'}}>
-                                              <View style={{paddingLeft: 10}}>
-                                                <Text style={setFont('300', 12)}>Maturité : </Text>
-                                              </View>
-                                              <View style={{borderWidth: 1, borderColor : 'red', padding: 5}}>
-                                                <Text style={setFont('300', 12)}>
-                                                {this.autocall.getMaturityName()}
-                                                </Text>
-                                              </View>
-                                              <View style={{paddingLeft: 10}}>
-                                                <Text style={setFont('300', 12)}>Fréquence de rappel : </Text>
-                                              </View>
-                                              <View style={{borderWidth: 1, borderColor : 'red', padding: 5}}>
-                                                <Text style={setFont('300', 12)}>
-                                                {this.autocall.getFrequencyAutocallTitle()}
-                                                </Text>
-                                              </View>
-                                          </View>
-                                      </View>
-                                      : null 
-              */}
-                {this.state.messageLoading === '' ? this._getAutocallCaracTemplate() : this._renderRecalculateProduct()}
-                {this.state.editMode  ?  <View style={{flexDirection : 'row',  padding:5, justifyContent:'flex-start', alignItems:'center', backgroundColor:'white'}}>
-                                            <View style={{paddingLeft: 10}}>
-                                              <Text style={setFont('300', 12)}>Rétro : </Text>
-                                            </View>
-                                            <TouchableOpacity style={{borderWidth: 1, borderColor : 'red', padding: 5, backgroundColor : (this.state.editMode && this.request.isUpdated('UF')) ? 'red' : 'transparent'}}
-                                                                            onPress={() => {
-                                                                              if (!this.state.editMode)
-                                                                                return;
-                                                                              
-                                                                              this.setState({ showModalUpdate : true , currentParameter : "UF"});
-                                                                            }}
-                                            >
-                                              <Text style={setFont('300', 12, (this.state.editMode && this.request.isUpdated('UF')) ? 'white' : 'black')}>
-                                               {Numeral((this.state.editMode) ? this.request.getValue('UF') : this.autocall.getUF()).format('0.00%')}
-                                              </Text>
-                                            </TouchableOpacity>
-                                            <View style={{ paddingLeft: 10}}>
-                                              <Text style={setFont('300', 12)}>    Association : </Text>
-                                            </View>
-                                            <TouchableOpacity style={{borderWidth: 1, borderColor : 'red', padding: 5, backgroundColor : (this.state.editMode && this.request.isUpdated('UFAssoc')) ? 'red' : 'transparent'}}
-                                                                            onPress={() => {
-                                                                              if (!this.state.editMode)
-                                                                                return;
-                                                                              
-                                                                              this.setState({ showModalUpdate : true , currentParameter : "UFAssoc"});
-                                                                            }}
-                                            >
-                                              <Text style={setFont('300', 12, (this.state.editMode && this.request.isUpdated('UFAssoc')) ? 'white' : 'black')}>
-                                              {Numeral((this.state.editMode) ? this.request.getValue('UFAssoc') : this.autocall.getUFAssoc()).format('0.00%')}
-                                              </Text>
-                                            </TouchableOpacity>
-                                         </View>
-                                      : null 
-                }
-              <View style={{flex : 0.10, flexDirection : 'row', borderTopWidth : 1, paddingTop : 5, backgroundColor: 'white'}}>
-                <TouchableOpacity style={[{flex : 0.25}, globalStyle.templateIcon]} 
-                                  onPress={() => {
-                                    if (this.state.editMode) {
-                                      alert('Valider votre produit avant de le mettre en favori');
-                                      return;
-                                    }
-                                    //this.props.handleFavorite(this.props.index, !this.state.isFavorite);
-                                    this.props.setFavorite(this.object)
-                                    .then((fav) => {
-                                      this.object  = fav;                                    
-                                      console.log("fav : "+fav.isFavorite);
-                                      console.log("this.props.object : "+this.object.isFavorite);
-                                      this.setState({ isFavorite: fav.isFavorite })
-                                    })
-                                    .catch((error) => console.log("Erreur de mise en favori : " + error));
-                                  }}
-                >
-                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={this.state.editMode ? 'lightgray' : 'black'}/>
-                </TouchableOpacity>
-                <TouchableOpacity style={[{flex : 0.25}, globalStyle.templateIcon]} 
-                                  onPress={() => {
-                                    //on passe en mode edition
-                                    this.setState({ editMode : !this.state.editMode });
-                                    this.request = new CPSRequest();
-                                    this.request.setRequestFromCAutocall(this.autocall);
-                                  }}>
-                  <FontAwesome name={"gears"}  size={20} style={{color: this.state.editMode ? 'red' : 'black'}}/> 
-                </TouchableOpacity>
-                <TouchableOpacity style={[{flex : 0.25}, globalStyle.templateIcon]} 
-                                  onPress={() => {
-                                    //envoi du produit
-                                    alert("En développement : ouverture de la fiche produit généré automatiquement");
-                                  }}
-                 >
-                  <Text >Fiche</Text>
-                </TouchableOpacity>      
-                <TouchableOpacity style={[{flex : 0.25}, globalStyle.templateIcon]} >
-                  <Ionicons name="md-help" size={20} />
-                </TouchableOpacity>
-              </View>
-
+                {this.state.typeTemplate === 'FULL' ? this._renderFooterFullTemplate(isFavorite) : this._renderFooterShortTemplate(isFavorite)}
             </View>
         );
     }

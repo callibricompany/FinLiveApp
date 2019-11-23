@@ -25,7 +25,7 @@ import Dimensions from 'Dimensions';
 
 import {  globalSyle, 
   generalFontColor, 
-  tabBackgroundColor,
+  blueFLColor,
   headerTabColor,
   selectElementTab,
   subscribeColor,
@@ -81,7 +81,11 @@ class TabResults extends React.PureComponent {
                 tabRoute={this.props.route.key}
           >
     
-
+              <View>
+                <Text>
+                  Alouette
+                </Text>
+              </View>
               <View style={{marginTop: 10, borderWidth: 0}}>
                   <FlatList
                     //style={{alignItems : 'center'}}

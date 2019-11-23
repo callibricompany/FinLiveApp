@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react
 import { Icon } from 'native-base';
 import {  
     generalFontColor, 
-    tabBackgroundColor,
+    blueFLColor,
     headerTabColor,
     selectElementTab,
     progressBarColor,

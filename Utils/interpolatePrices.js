@@ -11,16 +11,16 @@ function print(df, tab) {
 
 function getBumps(type, vega, maturity, nominal) {
     //on renorme les bumps vega avec la maturite
-    bump = maturity * Math.abs(vega) / 10;
+    bump = maturity * Math.abs(0.8*vega) / 10;
 
     //estimation CC vendeur emetteur
-    bump = 1.7 * bump;
+    bump = 1.5 * bump;
     return bump;
     //return 0;
 }
 
 function getFLMargin(nominal) {
-    return 0.002;
+    return 0.000;
 }
 
 export function interpolatePDI (df, pdi) {

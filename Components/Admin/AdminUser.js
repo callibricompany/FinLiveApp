@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import { ssCreateStructuredProduct } from '../../API/APIAWS';
 
-import { tabBackgroundColor, FLFontFamily, generalFontColor, subscribeColor } from '../../Styles/globalStyle';
+import { blueFLColor, FLFontFamily, generalFontColor, subscribeColor } from '../../Styles/globalStyle';
 
 
 
@@ -118,7 +118,7 @@ class AdminUser extends React.Component {
           <ScrollView style={{flexDirection: 'column',borderWidth: 0, width: DEVICE_WIDTH*0.95}}>
              
             <View style={{flexDirection:'column', borderWidth: 1, marginTop: 10}}>   
-              <View style={{backgroundColor: tabBackgroundColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+              <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                 <Text style={{color: 'white'}}>COORDONEES</Text>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
@@ -193,7 +193,7 @@ class AdminUser extends React.Component {
                   </Text>
                 </View>
               </View>
-              <View style={{backgroundColor: tabBackgroundColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+              <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                 <Text style={{color: 'white'}}>RÔLES</Text>
               </View>
               <View style={{flexDirection : 'column', borderBottomWidth: 1}}>
@@ -241,7 +241,7 @@ class AdminUser extends React.Component {
                 </View>
 
               </View>
-              <View style={{backgroundColor: tabBackgroundColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+              <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                 <Text style={{color: 'white'}}>IDENTICATION</Text>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>

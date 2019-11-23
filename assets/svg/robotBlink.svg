@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 2000 2000" style="enable-background:new 0 0 2000 2000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#597FAB;}
+
+	#rightOko
+	{
+		-webkit-animation: blink 3s forwards infinite;
+		        animation: blink 3s forwards infinite;
+	}
+
+	#rightYho
+	{
+		-webkit-animation: move1 1s forwards infinite;
+		        animation: move1 1s forwards infinite;
+	}
+	#leftYho
+	{
+		-webkit-animation: move2 0.8s forwards infinite .1s;
+		        animation: move2 0.8s forwards infinite .1s;
+	}
+
+	@-webkit-keyframes blink{
+		0%, 40%{
+			-webkit-transform: scaleY(1);
+			        transform: scaleY(1);
+			-webkit-transform-origin: 50% 45%;
+			        transform-origin: 50% 45%;
+		}
+		50%{
+			-webkit-transform: scaleY(0.1);
+			        transform: scaleY(0.1);
+			-webkit-transform-origin: 50% 45%;
+			        transform-origin: 50% 45%;
+		}
+		60%, 100%{
+			-webkit-transform: scaleY(1);
+			        transform: scaleY(1);
+			-webkit-transform-origin: 50% 45%;
+			        transform-origin: 50% 45%;
+		}
+
+	}
+
+	@keyframes blink{
+		0%, 40%{
+			-webkit-transform: scaleY(1);
+			        transform: scaleY(1);
+			-webkit-transform-origin: 50% 45%;
+			        transform-origin: 50% 45%;
+		}
+		50%{
+			-webkit-transform: scaleY(0.1);
+			        transform: scaleY(0.1);
+			-webkit-transform-origin: 50% 45%;
+			        transform-origin: 50% 45%;
+		}
+		60%, 100%{
+			-webkit-transform: scaleY(1);
+			        transform: scaleY(1);
+			-webkit-transform-origin: 50% 45%;
+			        transform-origin: 50% 45%;
+		}
+
+	}
+
+	@-webkit-keyframes move1{
+
+			0%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		50%{
+		-webkit-transform: rotate(5deg) translateY(1%);
+		        transform: rotate(5deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		100%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);	
+			-webkit-transform-origin: 50% 30%;	
+			        transform-origin: 50% 30%;
+		}
+
+	}
+
+	@keyframes move1{
+
+			0%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		50%{
+		-webkit-transform: rotate(5deg) translateY(1%);
+		        transform: rotate(5deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		100%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);	
+			-webkit-transform-origin: 50% 30%;	
+			        transform-origin: 50% 30%;
+		}
+
+	}
+
+	@-webkit-keyframes move2{
+
+			0%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		50%{
+		-webkit-transform: rotate(-5deg) translateY(1%);
+		        transform: rotate(-5deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		100%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);	
+			-webkit-transform-origin: 50% 30%;	
+			        transform-origin: 50% 30%;
+		}
+
+	}
+
+	@keyframes move2{
+
+			0%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		50%{
+		-webkit-transform: rotate(-5deg) translateY(1%);
+		        transform: rotate(-5deg) translateY(1%);
+			-webkit-transform-origin: 50% 30%;
+			        transform-origin: 50% 30%;
+		}
+		100%{
+			-webkit-transform: rotate(0deg) translateY(1%);
+			        transform: rotate(0deg) translateY(1%);	
+			-webkit-transform-origin: 50% 30%;	
+			        transform-origin: 50% 30%;
+		}
+
+	}
+
+</style>
+<g>
+	<g>
+		<path id="rightYho" class="st0" d="M911.17,682.55l-54.33-97.86c13.97-15.64,17.27-38.99,6.51-58.35
+			c-13.58-24.47-44.43-33.29-68.9-19.71c-24.47,13.58-33.29,44.43-19.7,68.9c10.75,19.37,32.32,28.92,52.97,25.33l45.31,81.61
+			C886.46,682.53,898.05,682.62,911.17,682.55z"/>
+		<path id="leftYho" class="st0" d="M1114.43,682.55l45.26-81.53c20.66,3.59,42.22-5.96,52.97-25.33
+			c13.58-24.47,4.76-55.31-19.71-68.9c-24.47-13.58-55.31-4.76-68.9,19.71c-10.75,19.37-7.45,42.72,6.51,58.35l-54.25,97.72
+			C1089.38,682.42,1102,682.61,1114.43,682.55z"/>
+		<path id="robotBody" class="st0" d="M882.71,682.52h-140.4c-40.61,0-73.83,33.22-73.83,73.83v65.93
+			c-36.82,1.16-66.59,31.62-66.59,68.71v63.7c0,37.09,29.77,67.55,66.59,68.71v65.93c0,40.61,33.22,73.83,73.83,73.83h512.49
+			c40.61,0,73.83-33.22,73.83-73.83v-65.17c0.24,0,0.48,0.02,0.72,0.02c37.82,0,68.77-30.94,68.77-68.77v-63.7
+			c0-37.82-30.94-68.77-68.77-68.77c-0.24,0-0.48,0.02-0.72,0.02v-66.61c0-40.61-33.22-73.83-73.83-73.83h-140.4 M1076.31,682.52
+			H920.79 M1247.58,922.83c0,74.05-60.59,134.64-134.64,134.64H884.16c-74.05,0-134.64-60.59-134.64-134.64v0
+			c0-74.05,60.59-134.64,134.64-134.64h228.78C1186.99,788.2,1247.58,848.78,1247.58,922.83L1247.58,922.83z"/>
+			<g id="rightOko">
+		<path id="" class="st0" d="M922.55,850.45h-43.43c-5.57,0-10.13,4.56-10.13,10.13v88.31c0,5.57,4.56,10.13,10.13,10.13
+			h43.43c5.57,0,10.13-4.56,10.13-10.13v-88.31C932.68,855.01,928.12,850.45,922.55,850.45z"/>
+
+		</g>
+		<path id="leftOko" class="st0" d="M1117.99,850.45h-43.43c-5.57,0-10.13,4.56-10.13,10.13v88.31c0,5.57,4.56,10.13,10.13,10.13
+			h43.43c5.57,0,10.13-4.56,10.13-10.13v-88.31C1128.12,855.01,1123.56,850.45,1117.99,850.45z"/>
+	</g>
+</g>
+</svg>

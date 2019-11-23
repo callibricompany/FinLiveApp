@@ -11,19 +11,25 @@ import {
   Platform,
   Alert,
   Text,
+  TextInput,
   Image
 } from 'react-native';
-import { Thumbnail, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import Dimensions from 'Dimensions';
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
 import { withAuthorization } from '../../Session';
-import splashImage from '../../assets/splash_transparent.png';
+
+import { ifIphoneX } from '../../Utils/';
 
 import { compose, hoistStatics } from 'recompose';
 
+import logoImg from '../../assets/LogoWithoutText.png'
+import { TouchableOpacity, TouchableHighlight } from 'react-native-gesture-handler';
+import { setFont, setColor } from '../../Styles/globalStyle';
 
 // import Signup from './Signup';
 //import Account from './Main'
@@ -47,18 +53,13 @@ class LoginFormBase extends Component {
       loading: false,
       email: '',
       password: '',
-      loggedIn: false
+      loggedIn: false,
+      isOnFocus : false
     }
 
-    this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
   }
-  
-  //focus next text input : putain de galere
-  focusNextField = (id) => {
-    //this.inputs[id].focus();
-    this.inputs[id]._root.focus();
-  }
+
 
 
   //verif si email correct
@@ -131,61 +132,84 @@ class LoginFormBase extends Component {
 
 
   render() {
-    //console.log("RENDER LOGIN : " + this.state.loading)
- 
 
-    // The content of the screen should be inputs for a username, password and submit button.
-    // If we are loading then we display an ActivityIndicator.
-    const content = this.state.loading ?
-    <View style={styles.style_activityIndicator}>
-    <ActivityIndicator size="large"/>
-    </View> :
-        <View style={{flex: 1}}>
-            <ImageBackground
-                style={styles.picture} 
-                //source={{uri: 'https://picsum.photos/g/400/600?random'}}
-                //source={splashImage} 
-                backgroundColor="#F9FAFC"
+    if (this.state.loading) {
+      return (
+        <View style={styles.style_activityIndicator}>
+        <ActivityIndicator size="large"/>
+        </View>
+        );
+    }
+
+  
+    return (
+        <View style={{width: DEVICE_WIDTH*0.9, marginLeft:0.05*DEVICE_WIDTH, height: DEVICE_HEIGHT, flexDirection: 'column', justifyContent:'center',alignItems: 'center', borderWidth: 0}}>
+          <View style={{flex :0.35, marginTop : ifIphoneX(45, 10), zIndex: 99}}>
+            <Image
+              source={logoImg}
+              style={{  opacity: this.state.isOnFocus ? 0.1 : 0.3,
+                        //position: "absolute",
+                        width: DEVICE_WIDTH,
+                        height: DEVICE_HEIGHT*0.35,
+                        resizeMode: 'cover'
+                }}
+              resizeMode="contain"
             />
-            
-     
-            <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
-            <ScrollView keyboardShouldPersistTaps="always">
-             <View style={styles.container}>
-                   <Image style={styles.picture} source={splashImage} />
-                </View>
-                <View style={styles.container}>
-                    <InputGroup>
-                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                        <Icon name="ios-mail" style={{color : "black"}}/>
-                        <Input
-                        //onChangeText={(text) => this.setState({email: text})}
-                        onChangeText={e => {this.setState({ email: e })}}
-                        value={this.state.email.toLowerCase()}
-                        keyboardType='email-address'
-                        clearButtonMode="always"
-                        placeholder={"Adresse mail"} 
-                        blurOnSubmit={ false }
-                        onSubmitEditing={() => {
-                          this.focusNextField('password');
-                        }}
-                        returnKeyType={ "next" }
-                        ref={ input => {
-                          this.inputs['email'] = input;
-                        }}
+          </View>
+          <KeyboardAvoidingView behavior={'padding'} style={{ flex: 0.65 , width: 0.9*DEVICE_WIDTH}}>  
+            <ScrollView keyboardShouldPersistTaps={"always"}>
+                <View style={{flexDirection: 'row', marginTop: 25, borderBottomWidth: 1, borderBottomColor : setColor('gray')}} >
+                  <View style={{padding : 5}}>
+                        <Ionicons name="ios-mail" style={{color : setColor('light')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft : 5}}>
+                        <TextInput
+                          //onChangeText={(text) => this.setState({email: text})}
+                          onChangeText={e => {
+                            //let email = String(e).toLocaleLowerCase();
+                            this.setState({ email : e});
+                          }}
+                          value={this.state.email}
+                          keyboardType='email-address'
+                          clearButtonMode="always"
+                          placeholder={"Adresse mail"} 
+                          blurOnSubmit={ false }
+                          onBlur={() => {
+                            //console.log(this.state.email);
+                            this.setState({ email: this.state.email.toLowerCase(), isOnFocus: false });
+                          }}
+                          onFocus={() => {
+                            this.setState({ isOnFocus : true });
+                            //console.log("focus");
+                          }}
+                          onSubmitEditing={() => {
+                            this.inputs['password'].focus();
+                          }}
+                          returnKeyType={ "next" }
+                          ref={ input => {
+                            this.inputs['email'] = input;
+                          }}
+                          style={setFont('400', 14, 'black', 'Regular')}
                         />
                         
-                    </Item>
-                    </InputGroup>
-                
-                    <InputGroup>
-                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                        <Icon name="ios-unlock"  style={{color : "black"}}/>
-                        <Input
+                  </View>
+                </View>
+                <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
+                  <View style={{padding : 5}}>
+                        <Ionicons name="ios-unlock" style={{color : setColor('light')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
+                    <TextInput
                         onChangeText={e => {this.setState({ password: e })}}
                         //value={this.state.password}
+                        onBlur={() => {
+                          this.setState({ isOnFocus: false });
+                        }}
+                        onFocus={() => {
+                          this.setState({ isOnFocus : true });
+                        }}
                         secureTextEntry={true}
-                        clearButtonMode="always"
+                        clearButtonMode={"always"}
                         placeholder={"Mot de passe"} 
                         //onSubmitEditing={() => this.login()}
                         blurOnSubmit={ true }
@@ -194,53 +218,35 @@ class LoginFormBase extends Component {
                           this.inputs['password'] = input;
                         }}
                         />
-                    </Item>
-                    </InputGroup>
-                    
-             
-            </View>
-            <View style={styles.container}>
-               {/* <ButtonSubmit 
-                    onPress={this.login} 
-                    onCheckEmail={this.checkEmailValidity.bind(this)}
-                    text={'SE CONNECTER'}
-               />*/}
-                <Button  
-                    style={{backgroundColor : '#85B3D3', width: 0.9*DEVICE_WIDTH, justifyContent:'center', alignItems: 'center',marginLeft: 0.05*DEVICE_WIDTH}}
-                    onPress={this.login}
-                    >
-                        <Text style={styles.text_button}>SE CONNECTER</Text>
-                </Button>
-            </View>
-            <View style={styles.container_buttons}>
-                <Button light  
-                    style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center',marginRight: 5, height : 50}}
-                    onPress={this.goToRegister}
-                    >
+                  </View>
+                </View>
+            
+                <TouchableOpacity  
+                  style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}
+                  onPress={this.login}
+                  >
+                      <Text style={[setFont('600', 22, 'white', 'Bold'), {padding: 5}]}>SE CONNECTER</Text>
+                </TouchableOpacity>
+          
+                <View  style={{flexDirection: 'row', justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}>
+                  <TouchableOpacity   
+                      style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center',marginRight: 5, height : 50}}
+                      onPress={this.goToRegister}
+                  >
                         <Text style={styles.text_button}>Créer un compte</Text>
-                </Button>
-                <Button light 
-                    style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center', marginLeft: 5, height : 50}}
-                    onPress={this.goToPasswordRecovery}
-                >
-                        <Text style={styles.text_button}>Identifiants{'\n'}perdus</Text>
-                </Button>
-            </View>
-           
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                      style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center', marginLeft: 5, height : 50}}
+                      onPress={this.goToPasswordRecovery}
+                  >
+                          <Text style={styles.text_button}>Identifiants{'\n'}perdus</Text>
+                  </TouchableOpacity>
+                </View>
             </ScrollView>
             </KeyboardAvoidingView>
         </View>
-        ;
+    );
 
-    
-        return (
-            //<SafeAreaView style={{flex: 1}}>
-            <View style={{flex: 1}}>
-                {content}
-                </View>
-           
-            //</SafeAreaView>
-        );
   }
 
 
@@ -248,14 +254,7 @@ class LoginFormBase extends Component {
 
 
 const styles = StyleSheet.create({
-    container: {
-        paddingTop: 100,
-        //marginTop: STATUSBAR_HEIGHT,
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        
-    },
+
     style_activityIndicator: {
       flex: 9,
       flexDirection:'row',
@@ -270,24 +269,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         fontSize: 40,
       },
-    picture: {
-          //flex: 1,
-          top: DEVICE_HEIGHT/5, left: 0, right: 0, bottom: 0,
-          opacity: 0.1,
-          position: "absolute",
-          width: DEVICE_WIDTH,
-          height: 4*DEVICE_HEIGHT/5,
-          resizeMode: 'cover',
-        },
-    container_buttons: {
-            flex: 1,
-            paddingTop:30,
-            paddingBottom: 60,
-           // top: -95,
-            // width: 0.2*DEVICE_WIDTH,
-            flexDirection: 'row',
-            justifyContent: 'center',
-          },
+
     text_button: {
             color: 'black',
             backgroundColor: 'transparent',
@@ -311,7 +293,4 @@ const composed = compose(
   withAuthorization,
   
  );
- 
- //export default HomeScreen;
- //export default hoistStatics(composed)(Login2);
- //export default withAuthorization(Login2);
+

@@ -61,7 +61,7 @@ const withAuthentication = Component => {
 
     //enregistre les filtres 
     setFiltersHomePage (filters) {
-      
+      //console.log(filters);
       this.setState({ filtersHomePage : filters});
     }
 
@@ -84,6 +84,7 @@ const withAuthentication = Component => {
                 
                 let toto = [...new Set(userDatas.homePage.map(x => x.category))];
                 console.log(toto);
+                //console.log(userDatas.userTickets);
                 resolve("ok");
     
               })

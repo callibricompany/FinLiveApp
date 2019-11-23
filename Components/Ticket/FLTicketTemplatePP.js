@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, ActivityIndicator, Alert} from 'react-native';
-import { Icon } from 'native-base';
 import {  
     generalFontColor, 
-    tabBackgroundColor,
+    blueFLColor,
     headerTabColor,
     selectElementTab,
     progressBarColor,
@@ -118,7 +117,7 @@ class FLTicketTemplatePP extends React.Component {
     let arrowW = DEVICE_WIDTH*0.925*0.6;
     let arrowW2 = 3*arrowW/5;
     return (
-      <View style={[globalStyle.itemTicket, {flexDirection : 'column', backgroundColor:  tabBackgroundColor, width: DEVICE_WIDTH*0.975, borderBottomWidth : 1, borderWidth: 0, borderColor:'transparent', borderTopLeftRadius: 15}]}>
+      <View style={[globalStyle.itemTicket, {flexDirection : 'column', backgroundColor:  blueFLColor, width: DEVICE_WIDTH*0.975, borderBottomWidth : 1, borderWidth: 0, borderColor:'transparent', borderTopLeftRadius: 15}]}>
          <View style={{flexDirection: 'row'}}>
             <View style={{ flex: 0.8, position : "relative", zIndex:0 , paddingLeft : 20}}>
               <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 18, color: 'white', paddingTop: 5, paddingLeft :5}}>

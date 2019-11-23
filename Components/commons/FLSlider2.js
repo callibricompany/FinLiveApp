@@ -6,7 +6,7 @@ import Slider from "react-native-slider";
 import { FLItemSlider } from './FLItemSlider';
 
 
-import { tabBackgroundColor } from '../../Styles/globalStyle';
+import { blueFLColor } from '../../Styles/globalStyle';
 
 export class FLSlider2 extends Component{
 
@@ -60,9 +60,9 @@ export class FLSlider2 extends Component{
                                 maximumValue={this.props.max}
                                 step={this.props.step}
                                 value={this.state.value}
-                                maximumTrackTintColor={tabBackgroundColor}
+                                maximumTrackTintColor={blueFLColor}
                                 minimumTrackTintColor={'lightgray'}
-                                thumbTintColor={tabBackgroundColor}
+                                thumbTintColor={blueFLColor}
                                 onSlidingComplete={(value) => {
                                     //console.log("CHANGE : "+value);
                                     //this.setState({value : val});

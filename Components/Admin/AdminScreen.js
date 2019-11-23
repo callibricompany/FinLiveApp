@@ -4,7 +4,7 @@ import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { globalStyle , tabBackgroundColor, backgdColor, apeColor, FLFontFamily, subscribeColor} from '../../Styles/globalStyle'
+import { globalStyle , blueFLColor, backgdColor, apeColor, FLFontFamily, subscribeColor} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -199,7 +199,7 @@ class AdminScreen extends React.Component {
 
 
     return (
-      <SafeAreaView style={{flex : 1, backgroundColor: tabBackgroundColor}}>
+      <SafeAreaView style={{flex : 1, backgroundColor: blueFLColor}}>
 
       <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH, backgroundColor: backgdColor}}>
         <AnimatedFlatList
@@ -246,7 +246,7 @@ class AdminScreen extends React.Component {
          
         <Animated.View style={{
                   display: 'flex',
-                  backgroundColor: tabBackgroundColor,
+                  backgroundColor: blueFLColor,
                   //borderRadius: 3,
                   borderWidth:0,
                   opacity: this.filterOnAir ? 1 : navbarOpacity,
