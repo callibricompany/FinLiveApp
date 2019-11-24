@@ -1,26 +1,14 @@
 [
   {
-   "name": "Autocall",
-   "class": "FIN",
-   "isLocked": false,
-   "id": "autocall"
+    "name": "Athena",
+    "class": "FIN",
+    "isLocked": false,
+    "id": "autocall"
   },
   {
     "name": "Phoenix",
     "class": "FIN",
     "isLocked": false,
     "id": "phoenix"
-  },
-  {
-    "name": "Reverse convertible",
-    "class": "FIN",
-    "isLocked": true,
-    "id": "reverse"
-  },
-  {
-    "name": "Capital garanti",
-    "class": "FIN",
-    "isLocked": true,
-    "id": "vanilla"
   }
 ]

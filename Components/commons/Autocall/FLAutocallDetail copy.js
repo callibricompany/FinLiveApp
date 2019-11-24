@@ -5,35 +5,35 @@ import { Icon, Button, Input} from 'native-base'
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
-import { globalStyle } from '../../Styles/globalStyle'
+import { globalStyle } from '../../../Styles/globalStyle'
 import { FontAwesome } from '@expo/vector-icons';
 
-import { ssCreateStructuredProduct } from '../../API/APIAWS';
+import { ssCreateStructuredProduct } from '../../../API/APIAWS';
 
 import { blueFLColor, FLFontFamily, generalFontColor, subscribeColor,
-          headerTabColor } from '../../Styles/globalStyle';
+          headerTabColor } from '../../../Styles/globalStyle';
 
 
-import { withAuthorization } from '../../Session';
+import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
-import { withUser } from '../../Session/withAuthentication';
+import { withUser } from '../../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../../Utils';
 import Dimensions from 'Dimensions';
 
-import * as TICKET_TYPE from '../../constants/ticket'
+import * as TICKET_TYPE from '../../../constants/ticket'
 import STRUCTUREDPRODUCTS from '../../Data/structuredProducts.json';
 import FREQUENCYLIST from '../../Data/frequencyList.json'
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
-import { CAutocall } from '../../Classes/Products/CAutocall';
+import { CAutocall } from '../../../Classes/Products/CAutocall';
 
 
 
@@ -45,13 +45,16 @@ class FLAutocallDetail extends React.Component {
   
       this.item = this.props.navigation.getParam('item', '...');
 
+      this.autocall = this.props.navigation.getParam('autocall', '...');
+      console.log(this.autocall.getProductName());
+
       if (!this.item['data'].hasOwnProperty('cf_cpg_choice')){
         this.item['cf_cpg_choice'] = 'Placement privé';
       }
 
       
       //this.ticketType =  this.props.navigation.getParam('ticketType', '...');
-      console.log(this.item);
+      //console.log(this.item);
 
       //l'objet autocall Classe
       this.autocall = new CAutocall(this.item['data']);

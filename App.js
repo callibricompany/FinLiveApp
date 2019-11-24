@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleProvider, Container } from 'native-base'
-import { Text, YellowBox, ImageBackground, StyleSheet } from 'react-native'
+import { Text, YellowBox, ImageBackground, StyleSheet, Platform } from 'react-native'
 import * as Font from 'expo-font';
 
 import getTheme from './native-base-theme/components'
@@ -30,7 +30,7 @@ class App extends React.Component {
     this.state = {
       loading : true,
     };
-    console.log("WIDTH : "+ DEVICE_WIDTH+ "   HEIGHT : "+DEVICE_HEIGHT);
+    console.log(Platform.OS + "  -> WIDTH : "+ DEVICE_WIDTH+ "   HEIGHT : "+DEVICE_HEIGHT);
   }
  
   async componentDidMount() {
