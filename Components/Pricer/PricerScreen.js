@@ -46,7 +46,7 @@ import Dimensions from 'Dimensions';
 
 
 import PRICES from '../../Data/20190517.json';
-import FREQUENCYLIST from '../../Data/frequencyList.json'
+
 
 const Spline = require('cubic-spline');
 var polynomial = require('everpolate').polynomial;

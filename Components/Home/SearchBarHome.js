@@ -150,7 +150,7 @@ export default class SearchBarHome extends Component {
     return (
       <Animated.View style={[styles.wrapper, this.state.showModalTitle ? transformWrapper : transformSearchBar]}>
         <Modal
-            animationType="fade"
+            animationType="none"
             transparent={true}
             visible={this.state.showModalCategory}
             onRequestClose={() => {
@@ -180,8 +180,8 @@ export default class SearchBarHome extends Component {
                 let y = evt.nativeEvent.pageY;
                 //si on a clické en dehors du module view cidessous on ferme le modal
                 let verifX = x < DEVICE_WIDTH*0.0  || x > DEVICE_WIDTH*0.5 ? true : false;
-                let departY =  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
-                             animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111)-4: sizeByDevice(86, 86-23, 42)-4;
+                let departY =  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 80) -30-4: 
+                             animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 70)-4: sizeByDevice(86, 86-23, 1)-4;
                 let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5) ? true : false;
                 if (verifX || verifY) {
                   Animated.spring(
@@ -208,8 +208,8 @@ export default class SearchBarHome extends Component {
                         //borderRadius:10,
                         width: this.state.leftPositionCategory,
                         height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5),
-                        top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(125, 125-23, 83) -30-4: 
-                                  animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(115, 115-23, 84) - 30-4 : sizeByDevice(86, 86-23, 70)-4,
+                        top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(125, 125-23, 80) -30-4: 
+                                  animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(115, 115-23, 70) - 30-4 : sizeByDevice(86, 86-23, 1)-4,
                         left : DEVICE_WIDTH*0,
                         //marginTop:DEVICE_HEIGHT*0.15,                       
                         //borderRadius: DEVICE_HEIGHT*0.03,

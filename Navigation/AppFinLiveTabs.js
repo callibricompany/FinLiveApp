@@ -7,7 +7,8 @@ import NewsList from '../Components/Home/NewsList'
 import NewsDetail from '../Components/Home/NewsDetail'
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
 import PricerScreen from '../Components/Pricer/PricerScreen'
-import FLAutocallDetail from '../Components/Pricer/FLAutocallDetail'
+import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
+import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
 import ProfileScreen from '../Components/ProfileScreen'
 import TicketScreen from '../Components/Ticket/TicketScreen'
 import FLTicketDetail from '../Components/Ticket/FLTicketDetail'
@@ -69,8 +70,8 @@ function labelStyle (focused, tintColor) {
     NewsDetailWeb : {
       screen: NewsDetailWeb
     },
-    FLAutocallDetail : {
-      screen : FLAutocallDetail
+    FLAutocallDetailHome : {
+      screen : FLAutocallDetailHome
     }
   }, 
   {
@@ -88,8 +89,8 @@ function labelStyle (focused, tintColor) {
         title: 'Evaluer'
       },
     },
-    FLAutocallDetail : {
-      screen : FLAutocallDetail
+    FLAutocallDetailPricer : {
+      screen : FLAutocallDetailPricer
     }
   })
   
@@ -142,38 +143,6 @@ function labelStyle (focused, tintColor) {
       },
       Pricer: {
         screen: PricerScreenStack,
-        navigationOptions: {
-          tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-            return (
-            //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
-            <View  style={{
-                        borderWidth:0,
-                        //borderColor:'rgba(0,0,0,0.2)',
-                        alignItems:'center',
-                        justifyContent:'center',
-                        width:40,
-                        height:40,
-                        backgroundColor:tintColor,
-                        borderRadius:40,
-                      }}
-                  >
-                  <FontAwesomeI
-                  name='euro'
-                  size={30}
-                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-              />
-              </View>
-            );
-          },
-          tabBarLabel: ({ focused, tintColor }) => {
-            return (
-              <View style={{alignItems:'center', justifyContent:'center'}}>
-              <Text style={labelStyle(focused,tintColor)}>Evaluer</Text>
-              </View>
-            );
-            },
-            //tabBarVisible : false
-        }
       },
       Tickets: {
         screen: TicketScreenStack,
@@ -300,7 +269,10 @@ function labelStyle (focused, tintColor) {
     //console.log("NAVIGATION.js: "+routes[index].routeName);
     //console.log("NAVIGATION.js : "+ navigation.getParam('hideBottomTabBar'));
     //console.log(JSON.stringify(navigation));
-    if(routes[index].routeName === 'Home'){
+    //console.log("HOMEEEEEBAR : " + routes[index].routeName);
+    //console.log(routes[index].params);
+    
+    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'){
       if (typeof routes[index].params !== 'undefined') {
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params);
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params['hideBottomTabBar']);
@@ -383,6 +355,55 @@ function labelStyle (focused, tintColor) {
           return (
             <View style={{alignItems:'center', justifyContent:'center'}}>
             <Text style={labelStyle(focused,tintColor)}>Tickets</Text>
+            </View>
+          );
+          },
+        //tabBarVisible: false,
+   
+      tabBarVisible
+    }
+  }
+
+
+  TABS['Pricer'].navigationOptions = ({ navigation }) => {
+    const { state: { routes, index } } = navigation;
+    let tabBarVisible = true;
+    //console.log("TOOOLLLLBAR : " + routes[index].routeName);
+    //console.log(routes[index].params);
+    if(routes[index].routeName === 'FLAutocallDetailPricer'){
+      if (typeof routes[index].params !== 'undefined') {
+          tabBarVisible = !routes[index].params['hideBottomTabBar'];
+      }
+    }
+    return {
+ 
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View  style={{
+                      borderWidth:0,
+                      //borderColor:'rgba(0,0,0,0.2)',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      width:40,
+                      height:40,
+                      backgroundColor:tintColor,
+                      borderRadius:50,
+                    }}
+                >
+             <FontAwesomeI
+                  //name='radio-tower'
+                  name='euro'
+                  size={30}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
+              />   
+            </View>
+          );
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <View style={{alignItems:'center', justifyContent:'center'}}>
+            <Text style={labelStyle(focused,tintColor)}>Evaluer</Text>
             </View>
           );
           },
