@@ -176,9 +176,9 @@ class FLBottomPanel extends React.Component {
                               }}>
                               <FontAwesome name={this.props.isActivated ? "toggle-on" :  "toggle-off"}  size={30} style={{color : "#85B3D3"}}/> 
                             </TouchableOpacity>
-                            <View style={{flex : 0.7, justifyContent: 'center',alignItems: 'center', borderWidth: 0}}>
-                                  <Text style={{fontSize: 21, fontWeight: '600', fontFamily : 'FLFontFamily', textAlign: 'center'}}>
-                                 {this.props.renderTitle}
+                            <View style={{flex : 0.7, justifyContent: 'center', alignItems: 'center', borderWidth: 0}}>
+                                  <Text style={{fontSize: 20, fontWeight: '600', fontFamily : 'FLFontFamily', textAlign: 'center'}}>
+                                      {this.props.renderTitle}
                                   </Text>
                             </View>
                             <TouchableOpacity  style={{flex : 0.15, justifyContent: 'flex-start',alignItems: 'center', borderWidth: 0, paddingTop: 10, paddingBottom: 10}}

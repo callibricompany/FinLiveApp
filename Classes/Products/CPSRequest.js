@@ -52,7 +52,7 @@ export class CPSRequest extends CRequest {
         },
         'barrierPDI': {
           'value': 0.6,
-          'isActivated': false,
+          'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'title': 'CAPITAL',
           'valueLabel': Numeral(0.6-1).format('0%'),
@@ -65,11 +65,22 @@ export class CPSRequest extends CRequest {
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'title': 'FREQUENCE DE RAPPEL',
-          'valueLabel': 'anuelle',
+          'valueLabel': 'annuelle',
           'isLocked': false,
           'isMandatory': false,
           'icon' : 'alarm-multiple',
         },
+        'autocallLevel': {
+          'value': 1,
+          'isActivated': true,
+          'defaultValueLabel': 'Optimisé',
+          'title': 'NIVEAU DE RAPPEL',
+          'valueLabel': Numeral(1).format('0%'),
+          'isLocked': true,
+          'isMandatory': true,
+          'icon' : 'gavel',
+        },
+        
         'barrierPhoenix': {
           'value': 0.8,
           'isActivated': true,

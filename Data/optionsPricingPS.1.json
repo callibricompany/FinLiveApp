@@ -103,7 +103,7 @@
       "description": [
         {
         "short_description": "Influence",
-        "long_description":"Une fréquence de rappel plus élevé augmente les chances de rappel et dimunue ainsi celle de risque surson capital. Le coupon sera d'autant moins élevé. Vous pouvez également choisir de ne pas rappeler votre produit pendant un an, cela permet d'améliorer votre coupon"
+        "long_description":"Une fréquence de rappel plus élevé augmente les chances de rappel et dimunue ainsi celle de risque surson capital. Le coupon sera d'autant moins élevé. Vous pouvez également choisir de ne pas rappeler votre produit pendant une certaine période, cela permet d'améliorer votre coupon"
         },        
         {
           "short_description": "Vérification",

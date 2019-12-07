@@ -133,6 +133,38 @@ export class FLFreqDetail extends Component{
                     </TouchableWithoutFeedback>                 
                 </View>
               </View>
+
+              <View style={{marginTop : 20, borderTopWidth : 1}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      {'\n'}Influence
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Une fréquence de rappel plus élevé augmente les chances de rappel et dimunue ainsi celle de risque surson capital. Le coupon sera d'autant moins élevé. Vous pouvez également choisir de ne pas rappeler votre produit pendant une certaine période, cela permet d'améliorer votre coupon
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Vérification
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Vérifiez les durées minimales du produit, elles doivent être compatibles avec son enveloppe juridique.
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Risques
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Les risques de non rappel et de risque en capital augmentent si la fréquence du produit est faible.
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Illustration
+                    </Text>
+   
+              </View>
+
             </View>
         );
     }
