@@ -78,6 +78,16 @@ const initialLayout = {
     /*static navigationOptions = {
       header: null
     }*/
+    componentDidMount() {
+      this._navListener = this.props.navigation.addListener('didFocus', () => {
+        //StatusBar.setBarStyle('light-content');
+        //or
+        StatusBar.setBarStyle('dark-content')
+      });
+    }
+    componentWillUnmount() {
+      this._navListener.remove();
+    }
 
     async componentWillMount () {
       
@@ -259,7 +269,7 @@ const initialLayout = {
             <SafeAreaView style={{backgroundColor: 'white'}}>
                    { Platform.OS === 'android' && 
                     <StatusBar
-                    barStyle="light-content"
+                    barStyle= "light-content"
                     // dark-content, light-content and default
                     hidden={false}
                     //To hide statusBar

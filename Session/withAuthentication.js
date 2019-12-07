@@ -98,7 +98,7 @@ const withAuthentication = Component => {
                   ...new Set(userDatas.homePage.map(x => x.category))
                 ];
                 console.log(toto);
-                //console.log(userDatas.categories);
+                //console.log(userDatas.favorites);
                 resolve("ok");
               })
               .catch(error => {

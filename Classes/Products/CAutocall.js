@@ -5,11 +5,20 @@ import { CProduct } from "./CProduct";
 import FREQUENCYLIST from "../../Data/frequencyList.json";
 
 export class CAutocall extends CProduct {
-  constructor(product) {
-    super(product); // appelle le constructeur parent avec le paramètre
+  constructor(autocall) {
+    super(autocall); // appelle le constructeur parent avec le paramètre
 
     this.setProductName();
     this.underLyingName = "[UDL]";
+  }
+
+
+
+  updateProduct(product) {
+    console.log("CAutocall : ");
+    super.updateProduct(product);
+    console.log("CAutocall apres super : ");
+    this.setProductName();
   }
 
   //determination du nom du produit
@@ -36,8 +45,11 @@ export class CAutocall extends CProduct {
         this.product["product"] = "phoenix";
       } else {
         //c'est un autocall
-        this.product["product"] = "autocall";
+        this.product["product"] = "athena";
       }
+    } else if (this.product["product"] === 'autocall') {
+        //c'est un autocall on lui change de nom
+        this.product["product"] = "athena";
     }
   }
 
@@ -121,10 +133,41 @@ export class CAutocall extends CProduct {
 
     //if (this.underLyingName === "[UDL]") {
       let underlyings = categories.filter(({ codeCategory }) => codeCategory === "PS")[0].subCategory;
-      this.underLyingName =underlyings[underlyings.findIndex(udl => udl.underlyingCode === this.product.underlying)].subCategoryName;
-    //}
+
+      let index = underlyings.findIndex(udl => udl.underlyingCode === this.product.underlying);
+      if (index !== -1) {
+        this.underLyingName =underlyings[underlyings.findIndex(udl => udl.underlyingCode === this.product.underlying)].subCategoryName;
+      } else {
+        this.underLyingName = "[UDL]";
+      }
+   
     return this.underLyingName;
   }
+
+
+  //retourne le nom commercial du produit
+  getProductTypeName() {
+    let name = this.product.product;
+    if (name.toLowerCase().includes("reverse")) {
+      name = "Réverse convertible";
+    } else if (name.toLowerCase().includes("autocall") || name.toLowerCase().includes("athena")  || name.toLowerCase().includes("athéna")) {
+
+        name = "Athéna";
+      
+    } else if (name.toLowerCase().includes("phoenix")) {
+        name = "Phoenix";
+
+    }
+
+    /*let ps = STRUCTUREDPRODUCTS.filter(({id}) => id === name);
+      if (ps.length !== 0) {
+        name = ps[0].name;
+        if (name === )
+      }*/
+
+    return name;
+  }
+
 
   //retourne le nom commercial du produit
   getProductName() {

@@ -37,11 +37,16 @@ class App extends React.Component {
     await Font.loadAsync({
       'FLFontFamily': require('./assets/fonts/Arial.ttf'),
       'FLFontTitle': require('./assets/fonts/Typo_Round_Regular_Demo.otf'),
+
       'Light' : require('./assets/fonts/roboto/Roboto-Light.ttf'),
       'Regular' : require('./assets/fonts/roboto/Roboto-Regular.ttf'),
       'Thin' : require('./assets/fonts/roboto/Roboto-Thin.ttf'),
       'Bold' : require('./assets/fonts/roboto/Roboto-Bold.ttf'),
       
+      //'Light-i' : require('./assets/fonts/roboto/Roboto-LightItalic.ttf'),
+      //'Regular-i' : require('./assets/fonts/roboto/Roboto-MediumItalic.ttf'),
+      //'Thin-i' : require('./assets/fonts/roboto/Roboto-ThinItalic.ttf'),
+      //'Bold-i' : require('./assets/fonts/roboto/Roboto-BoldItalic.ttf'),
 
     });
 

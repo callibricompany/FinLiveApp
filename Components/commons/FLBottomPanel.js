@@ -131,7 +131,7 @@ class FLBottomPanel extends React.Component {
         maxDurationMs={100000}
         ref={this.masterdrawer}
         maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
-        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+        <View style={[StyleSheet.absoluteFillObject, {zIndex: 99, }]} pointerEvents="box-none">
           <Animated.View
             style={[
               StyleSheet.absoluteFillObject,
@@ -170,7 +170,7 @@ class FLBottomPanel extends React.Component {
                     scrollEventThrottle={1}>
   
                         <View style={{flex:0.1 , flexDirection: 'row',justifyContent: 'center',alignItems: 'flex-start', borderWidth: 0}}>
-                            <TouchableOpacity  style={{flex : 0.15, justifyContent: 'center',alignItems: 'flex-end', borderWidth: 0}}
+                            <TouchableOpacity  style={{flex : 0.15, justifyContent: 'center',alignItems: 'flex-end', borderWidth: 0, paddingTop : 10}}
                                 onPress={() => {
                                   this.props.activateParameter(!this.props.isActivated);
                               }}>
@@ -181,8 +181,8 @@ class FLBottomPanel extends React.Component {
                                  {this.props.renderTitle}
                                   </Text>
                             </View>
-                            <View  style={{flex : 0.15, justifyContent: 'center',alignItems: 'flex-start', borderWidth: 0}}>
-                               <TouchableOpacity onPress={() => {
+                            <TouchableOpacity  style={{flex : 0.15, justifyContent: 'flex-start',alignItems: 'center', borderWidth: 0, paddingTop: 10, paddingBottom: 10}}
+                                onPress={() => {
                                        Animated.spring(this._translateYOffset, {
                                         //velocity: velocityY,
                                         tension: 68,
@@ -194,7 +194,6 @@ class FLBottomPanel extends React.Component {
                                     }}>
                                   <Icon name="md-close"  style={{color : "#85B3D3"}}/>
                               </TouchableOpacity>
-                            </View>
                         </View>
 
                         {this.props.isActivated ? this.props.renderFLBottomPanel : null}

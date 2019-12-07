@@ -59,7 +59,7 @@ import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 import { Dropdown } from 'react-native-material-dropdown';
 import ModalDropdown from 'react-native-modal-dropdown';
 
-import STRUCTUREDPRODUCTS from '../../../Data/structuredProducts.json';
+
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
@@ -76,21 +76,31 @@ class FLTemplateAutocall extends React.Component {
       isGoodToShow : typeof this.props.isGoodToShow !== 'undefined' ? this.props.isGoodToShow : true,
       isEditable : typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : false,
       showModalUpdate : false,
-      typeTemplate: this.props.hasOwnProperty('width') ? this.props.width === 0.9 ? 'FULL' : 'SHORT' : 'FULL',
       messageLoading: '',
       toto : true,
-
     }
 
-    //largeur de la cartouche sur l'ecran
-    this.screenWidth = (this.props.hasOwnProperty('width') ? this.props.width : 0.975)*DEVICE_WIDTH;
+    //ensemble des modal dropdown
+    this._dropdown = {};
 
     //console.log(this.props.object);
 
     //type de tycket
-    this.type = this.props.templateType;
+    this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE;
 
-    this.object= {};
+    //largeur de la cartouche sur l'ecran
+    this.screenWidth = 0.975;
+    switch (this.type) {
+      case TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE : this.screenWidth = 0.9; break;
+      case TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE : this.screenWidth = 0.8; break;
+      case TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE : this.screenWidth = 0.6; break;
+      default : this.screenWidth = 0.975; break;
+    }
+    this.screenWidth = this.screenWidth * DEVICE_WIDTH;
+
+
+
+    /*this.object= {};
     //copie des datas au format correct
     if (!this.props.object.hasOwnProperty('data')) {
       //reconstruction de l'objet style envoie dans homepage
@@ -126,19 +136,16 @@ class FLTemplateAutocall extends React.Component {
         this.data['cf_cpg_choice'] = "Placement Privé";
       }
 
-    }
+    }*/
           
     //l'objet autocall Classe
-    this.autocall = new CAutocall(this.data);
-    this.autocallResult = new CAutocall(this.data);
+    this.autocall = new CAutocall(this.props.object);
+    this.autocallResult = new CAutocall(this.props.object);
 
     this.request = new CPSRequest();
     this.request.setRequestFromCAutocall(this.autocall);
 
-    //console.log(this.autocall);
-    //console.log(this.data);
-    //le produit-ticket est filtre ou pas
-    this.isFiltered = false;
+
   }
 
 
@@ -267,6 +274,7 @@ _renderRecalculateProduct() {
 _updateValue=(id, value, valueLabel) =>{
   console.log(id + "  :  "+value+"  :  "+valueLabel);
   this.request.setCriteria(id, value, valueLabel);
+  
 }
 
 _recalculateProduct(){
@@ -281,6 +289,10 @@ _recalculateProduct(){
       //console.log(autocall);
       this.autocallResult.updateProduct(autocall[0]);
       //this.request.setRequestFromCAutocall(this.autocallResult);
+      //this.request = new CPSRequest();
+      //this.request.setRequestFromCAutocall(this.autocallResult);
+      //this.autocall = this.autocallResult;
+      //this.setState({ toto: !this.state.toto });
     } else if (autocall.length === 0) {
       alert("Pas résultat possible.\nModifiez vos critères.");
     }
@@ -325,7 +337,7 @@ _renderHeaderShortTemplate() {
                   <TouchableOpacity style={{flex : 0.15,  justifyContent: 'center', alignItems: 'center',backgroundColor: setColor('turquoise'), borderTopRightRadius: 10}}
                                     onPress={() => {
                                       this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailPricer', {
-                                        item: this.object,
+                                        autocall: this.autocallResult,
                                         //ticketType: TICKET_TYPE.PSCREATION
                                       })
                                     }}
@@ -337,11 +349,51 @@ _renderHeaderShortTemplate() {
   );
 }
 
+_renderHeaderMediumTemplate() {
+
+  return (
+
+                <View style={{
+                              paddingLeft : 20,  
+                              backgroundColor: 'white', 
+                              borderTopLeftRadius: 10, 
+                              borderTopRightRadius: 10, 
+                              borderBottomWidth :1,
+                              borderBottomradius : setColor('gray'),
+                              flexDirection: 'row',
+                              //paddingTop: 5,
+                              //paddingBottom: 5,
+                              }}
+                >                                                    
+                  <View style={{flex : 0.8, flexDirection: 'column', justifyContent: 'center' , paddingTop: 3, paddingBottom: 3}}>
+                    <View>
+                      <Text style={setFont('400', 14)}>
+                        {this.autocall.getProductName()} 
+                      </Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+
+                        <Text style={setFont('400', 14)}>   
+                           {this.autocall.getFullUnderlyingName(this.props.categories)}
+                        </Text>   
+                    </View>
+                  </View>
+                  <View style={{flex : 0.2,  padding: 5, alignItems: 'center', justifyContent: 'center'}}>
+                      <Text style={setFont('400', 16, 'green')} numberOfLines={1}>        
+                          { Numeral(this.autocallResult.getCouponTitle()).format('0.00%')}
+                      </Text>
+                      <Text style={setFont('200', 12)}>p.a.</Text>   
+                  </View>  
+                </View>
+  
+  );
+}
+
 _renderHeaderFullTemplate() {
-  let dataMaturityAutocall = ['1 an','2 ans','3 ans','4 ans','5 ans','6 ans','7 ans','8 ans','9 ans','10 ans'];
+  
   let dataUnderlyingAutocall = this.props.getAllUndelyings();
   //let dataProductName = STRUCTUREDPRODUCTS.map((p) => p.name);
-  let dataProductName = ['Athéna', 'Phoenix', 'Phoenix mémoire'];
+  let dataProductName = ['Athéna', 'Phoenix'];
   
 
   return (
@@ -354,12 +406,18 @@ _renderHeaderFullTemplate() {
                               borderTopLeftRadius: 10, 
                               //borderRadius: 14,
                               borderBottomWidth :  0,
-                              borderColor : 'red',
 
                               }}
                 >                                                    
                   <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
-                    <View>
+                  <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0}}
+                            onPress={() => {
+                              this.state.isEditable ? this._dropdown['type'].show() : null;
+                              
+                            }}
+                            activeOpacity={this.state.isEditable ? 0.2 : 1}
+                    >
+                    <View style={{ borderWidth: 0}}>
                           <ModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
@@ -368,22 +426,25 @@ _renderHeaderFullTemplate() {
                                     onSelect={(index, value) => {
                                       switch (Number(index))  {
                                          case 0 :   //athena
-                                            this._updateValue('type', 'autocall', value);
+                                            this._updateValue('type', 'athena', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             this._updateValue('isIncremental', true, "incremental");
-                                            //this._updateValue('isMemory', true, "Effet mémoire");
+                                            this._updateValue('isMemory', true, "Effet mémoire");
                                             break;
                                          case 1 : 
                                             this._updateValue('type', 'phoenix', value);
                                             this._updateValue('isMemory', false, "non mémoire");
-                                            this._updateValue('degressiveStep', 0, 'sans stepdown');
-                                            this._updateValue('airbagLevel', 'NA', 'Non airbag');
+                                            this.autocallResult.getDegressiveStep() !== 0 ? this._updateValue('degressiveStep', 0, 'sans stepdown'): null;
+                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('airbagLevel', 'NA', 'Non airbag') : null;
+                                            this.autocallResult.getBarrierPhoenix() === 1 ?  this._updateValue('barrierPhoenix', 0.9, "90%") : null;
                                             break;
                                          case 2 : 
                                             this._updateValue('type', 'phoenix', value);
                                             this._updateValue('isMemory', true, "Effet mémoire");
-                                            this._updateValue('degressiveStep', 0, 'sans stepdown');
-                                            this._updateValue('airbagLevel', 'NA', 'Non airbag');
+                                            this._updateValue('barrierPhoenix', 0.9, "90%");
+                                            this.autocallResult.getDegressiveStep() !== 0 ? this._updateValue('degressiveStep', 0, 'sans stepdown'): null;
+                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('airbagLevel', 'NA', 'Non airbag') : null;
+                                            this.autocallResult.getBarrierPhoenix() === 1 ?  this._updateValue('barrierPhoenix', 0.9, "90%") : null;
                                             break;
                                       }
                           
@@ -399,17 +460,31 @@ _renderHeaderFullTemplate() {
                                         top: f.top,
                                       }
                                     }}
-                                    defaultIndex={dataProductName.indexOf(this.autocallResult.getProductName())}
+                                    defaultIndex={dataProductName.indexOf(this.autocallResult.getProductTypeName())}
                                     options={dataProductName}
+                                    ref={component => this._dropdown['type'] = component}
                                     disabled={!this.state.isEditable}
                                 >
-                                  <Text style={setFont('400', 18, this.request.isUpdated('underlying') ? setColor('turquoise') : 'white','Regular')}>
+                                  <Text style={setFont('400', 18, this.request.isUpdated('type') ? setColor('turquoise') : 'white')}>
                                       {this.autocallResult.getProductName()} 
                                   </Text>
                           </ModalDropdown>
-                    </View>
-                    <View style={{flexDirection: 'row'}}>
-                      <View>
+                        </View>
+                        { this.state.isEditable ?
+                          <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center', padding : 2}}>
+                            <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('type') ? setColor('turquoise') : 'white'}}/> 
+                          </View>
+                        : null
+                          }
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flexDirection: 'row'}}
+                            onPress={() => {
+                              this.state.isEditable ? this._dropdown['underlying'].show() : null;
+                              
+                            }}
+                            activeOpacity={this.state.isEditable ? 0.2 : 1}
+                    >
+                    
                             <ModalDropdown
                               //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                               //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
@@ -431,51 +506,22 @@ _renderHeaderFullTemplate() {
                                 }
                               }}
                               defaultIndex={dataUnderlyingAutocall.indexOf(this.autocallResult.getUnderlyingTicker())}
+                              ref={component => this._dropdown['underlying'] = component}
                               options={dataUnderlyingAutocall}
                               disabled={!this.state.isEditable}
                           >
-                            <Text style={setFont('400', 18, this.request.isUpdated('underlying') ? setColor('turquoise') : 'white','Regular')}>
-                                {this.autocallResult.getFullUnderlyingName(this.props.categories)} <Text style={setFont('400', 18, 'white','Regular')}>{' - '}</Text>
+                            <Text style={setFont('400', 18, this.request.isUpdated('underlying') ? setColor('turquoise') : 'white')}>
+                                {this.autocallResult.getFullUnderlyingName(this.props.categories)} <Text style={setFont('400', 18, 'white')}>{''}</Text>
                             </Text>
                           </ModalDropdown>
            
-                      </View>
-                      <View style={{ flexDirection: 'row', borderWidth: 0}}>
-                          <View style={{ borderWidth: 0, paddingLeft : 15, alignItems: 'center', justifyContent: 'center',}}>
-                            <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: this.request.isUpdated('maturity') ? setColor('turquoise') : 'white'}}/> 
-                          </View>
-                          <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                                <ModalDropdown
-                                    //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
-                                    //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
-                                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
-                                    dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
-                                    onSelect={(index, value) => {
-                                        let code = [ Number(index)+1, Number(index) +1 ];
-                          
-                                        this._updateValue('maturity', code, value);
-                                        this._recalculateProduct();
-                                    }}
-                                    adjustFrame={(f) => {
-                                      return {
-                                        width: DEVICE_WIDTH/3,
-                                        height: Math.min(DEVICE_HEIGHT/3, dataMaturityAutocall.length * 40),
-                                        left : f.left,
-                                        right : f.right,
-                                        top: f.top,
-                                      }
-                                    }}
-                                    defaultIndex={this.autocallResult.getMaturityInMonths()/12-1}
-                                    options={dataMaturityAutocall}
-                                    disabled={!this.state.isEditable}
-                                >
-                                  <Text style={setFont('400', 18, this.request.isUpdated('maturity') ? setColor('turquoise') : 'white','Regular')}>
-                                      {'  ' + this.autocallResult.getMaturityName()}
-                                  </Text>
-                                </ModalDropdown>
-                          </View>
-                      </View>
-                    </View>
+                          { this.state.isEditable ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center', padding: 2}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('underlying') ? setColor('turquoise') : 'white'}}/> 
+                            </View>
+                          : null
+                           }
+                    </TouchableOpacity>
                   </View>
                 </View>
                 <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
@@ -485,14 +531,14 @@ _renderHeaderFullTemplate() {
                         <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                     </Text>  
                   </View> 
-                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor: this.request.isUpdated() ? 'green' : subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
+                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
                                                    onPress={() => {
                                                     //envoi du produit
                                           
-                                                      if (this.request.isUpdated()) {
+                                                      /*if (this.request.isUpdated()) {
                                                           //on va recalculer le produit
                                                             //console.log("AVANT LACEMENT CALCUL");
-                                                            /*this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true});
+                                                            this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true});
                                                             searchProducts(this.props.firebase, this.request.getCriteria())
                                                             .then((data) => {
                                                               this.setState({ messageLoading : 'Réception et analyse des prix' });
@@ -512,7 +558,7 @@ _renderHeaderFullTemplate() {
                                                               console.log("ERREUR recup prix: " + error);
                                                               alert('ERREUR calcul des prix', '' + error);
                                                               this.setState({ isLoading : false , messageLoading : ''});
-                                                            });*/
+                                                            });
 
                                                             Alert.alert(
                                                               'Votre choix :',
@@ -547,16 +593,16 @@ _renderHeaderFullTemplate() {
                                                               {cancelable: true},
                                                             );
                                                         
-                                                      } else {
+                                                      } else {*/
                                                         this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailPricer', {
-                                                          item: this.object,
+                                                          autocall: this.autocallResult,
                                                           //ticketType: TICKET_TYPE.PSCREATION
                                                         })
-                                                      }
+                                                      //}
                                                   }}
                   >
                     <Text style={setFont('400', 14, 'white')}>
-                    { (this.request.isUpdated() ?  'VALIDER' : 'VOIR >')}
+                   VOIR >
                     </Text>   
                   </TouchableOpacity>
                 </View>
@@ -569,68 +615,30 @@ _renderHeaderFullTemplate() {
 _renderAutocallFullTemplate() {
 
   //remplissage des dropdown
-  let dataPhoenixBarrier = ['-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
+  let dataPhoenixBarrier = ['-70%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
   let dataPDIBarrier = ['-70%','-65%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
   let dataNNCP = ['1 an','2 ans','3 ans'];
   let dataFreqAutocall = ['Mensuel','Trimestriel','Semestriel','Annuel'];
   let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];
   let dataAirbagAutocall = ['Non Airbag','Semi-Airbag','Airbag'];
   let dataDSAutocall = ['sans stepdown','1% / an','2% / an','3% / an','4% / an','5% / an'];
+  let dataMaturityAutocall = ['1 an','2 ans','3 ans','4 ans','5 ans','6 ans','7 ans','8 ans','9 ans','10 ans'];
 
   return (
    <View style={{flex : 0.55, flexDirection : 'row', backgroundColor: 'white', paddingTop:5 }}>
-     <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
-       <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
-         <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]}>
-          {String('protection \ncapital').toUpperCase()}
-         </Text>         
-       </View>
-       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
-            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-              <MaterialCommunityIconsIcon name={"shield"}  size={18} style={{color: setColor(this.request.isUpdated('barrierPDI') ? 'turquoise' : 'light')}}/> 
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
-              <ModalDropdown
-                //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
-                textStyle={setFont('500', 16, (this.request.isUpdated('barrierPDI')) ? setColor('turquoise'): setColor('light'), 'Bold')}
-                dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
-                dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
-                  onSelect={(index, value) => {
-                    this._updateValue('barrierPDI', Math.round(100*(Numeral(value).value() +1))/100, value);
-                    this._recalculateProduct();
-
-                }}
-                adjustFrame={(f) => {
-                  return {
-                    width: DEVICE_WIDTH/3,
-                    height: Math.min(DEVICE_HEIGHT/3, dataPDIBarrier.length * 40),
-                    left : f.left,
-                    right : f.right,
-                    top: f.top,
-                  }
-                }}
-                defaultIndex={dataPDIBarrier.indexOf(Numeral(this.autocallResult.getBarrierPDI() - 1).format('0%'))}
-                defaultValue={Numeral(this.autocallResult.getBarrierPDI()- 1).format('0%')}
-                options={dataPDIBarrier}
-                disabled={!this.state.isEditable}
-              />
-            </View>
-        </View>
-
- 
-       <View style={{justifyContent: 'center', alignItems: 'center', padding: 2, borderWidth: 0, paddingTop: 10}}>
-           <Text style={setFont('200', 11, 'black', 'Regular')}>
-             européen
-           </Text>
-       </View>
-     </View>    
      <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
        <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
         <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
              {String('protection coupon').toUpperCase()}
          </Text>         
        </View>
-       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+       <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
+                        onPress={() => {
+                          (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1) ? this._dropdown['barrierPhoenix'].show() : null;
+                          
+                        }}
+                        activeOpacity={(this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1)  ? 0.2 : 1}
+       >
             <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"shield-half-full"}  size={18} style={{color: this.request.isUpdated('barrierPhoenix') ? setColor('turquoise') : setColor('light')}}/> 
             </View>
@@ -656,26 +664,38 @@ _renderAutocallFullTemplate() {
                     }}
                     defaultIndex={dataPhoenixBarrier.indexOf(Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%'))}
                     defaultValue={Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}
+                    ref={component => this._dropdown['barrierPhoenix'] = component}
                     options={dataPhoenixBarrier}
-                    disabled={!this.state.isEditable}
+                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'athena' ? true : false : !this.state.isEditable}
                 />
             </View>
-       </View>
+            { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1)   ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('barrierPhoenix') ? setColor('turquoise') : setColor('light')}}/> 
+                            </View>
+                          : null
+            }
+       </TouchableOpacity>
 
        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderWidth: 0, paddingTop: 10}}>
           <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
             <MaterialCommunityIconsIcon name={"ticket-percent"}  size={18} style={{color: this.request.isUpdated() ? setColor('turquoise') : setColor('light')}}/> 
           </View>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2, paddingBottom: 4}}>
-             <Text style={[setFont('200', 11, this.request.isUpdated() ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]}>
+             <Text style={[setFont('200', 11, this.request.isUpdated() ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]} numberOfLines={1}>
               {Numeral(this.autocallResult.getCouponTitle()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} 
               <Text style={setFont('200', 11, this.request.isUpdated('freq') ? setColor('turquoise') : 'black','Regular')}>{' '+ this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
             </Text>
           </View>
        </View>
 
-       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
-            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+       <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'space-between', alignItems: 'center', }}
+                          onPress={() => {
+                                this.state.isEditable ? this._dropdown['isMemory'].show() : null;
+                              }}
+                          activeOpacity={this.state.isEditable ? 0.2 : 1}
+       >
+            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"memory"}  size={18} style={{color: this.request.isUpdated('isMemory') ? setColor('turquoise') : setColor('light')}}/> 
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2 }}>
@@ -700,27 +720,44 @@ _renderAutocallFullTemplate() {
                         }}
                         defaultIndex={this.autocallResult.isPhoenixMemory() ? 0 : 1}
                         defaultValue={dataMemoryAutocall[this.autocallResult.isPhoenixMemory() ? 0 : 1]}
+                        ref={component => this._dropdown['isMemory'] = component}
                         options={dataMemoryAutocall}
                         disabled={!this.state.isEditable}
                     >
                      <Text style={[setFont('200', 11, this.request.isUpdated('isMemory') ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]}>
-                       {this.autocallResult.isPhoenixMemory() ? 'effet mémoire': 'non mémoire'}
+                       {this.autocallResult.isPhoenixMemory() ? 'mémoire': 'sans'}
                      </Text>
                    </ModalDropdown>
             </View>
-      </View>
+            { this.state.isEditable  ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('isMemory') ? setColor('turquoise') : setColor('light')}}/> 
+                            </View>
+                          : null
+            }
+      </TouchableOpacity>
+      { (this.state.isEditable && (this.autocallResult.getBarrierPhoenix() === 1))  ?
+      <TouchableOpacity style={{flexDirection: 'row', flex: 1, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center', }}
+                                    onPress={() => {
+                                      (this.state.isEditable && (this.autocallResult.getBarrierPhoenix() === 1)) ? this._dropdown['airbag'].show() : null;
+                                      
+                                    }}
+                                    activeOpacity={(this.state.isEditable && (this.autocallResult.getBarrierPhoenix() === 1)) ? 0.2 : 1}
+      > 
 
-      <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}> 
-            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}
+
+            >
               <MaterialCommunityIconsIcon name={"airbag"}  size={18} style={{color: this.request.isUpdated('airbagLevel') ? setColor('turquoise') : setColor('light')}}/> 
             </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2}}>
+            <View style={{borderWidth: 0,flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2}}>
                     <ModalDropdown
                         //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                         //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
                         dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
                         dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
                         onSelect={(index, value) => {
+                          
                             var code = 'NA';
                             switch (Number(index))  {
                                 case 1 : code = 'SA'; break;
@@ -740,15 +777,22 @@ _renderAutocallFullTemplate() {
                         }}
                         defaultIndex={this.autocallResult.getAirbagCode() === 'NA' ?  0 : (this.autocallResult.getAirbagCode() === 'SA' ? 1 : 2)}
                         options={dataAirbagAutocall}
-                        disabled={this.state.isEditable ? (this.autocallResult.getCouponPhoenix() === 0 ? false : true) : true}
+                        ref={component => this._dropdown['airbag'] = component}
+                        disabled={this.state.isEditable ? (this.autocallResult.getBarrierPhoenix() === 1 ? false : true) : true}
                     >
                       <Text style={[setFont('200', 11, this.request.isUpdated('airbagLevel') ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]}>
-                        {this.autocall.getAirbagTitle()}
+                        {this.autocallResult.getAirbagTitle()}
                       </Text>
                     </ModalDropdown>
             </View>
-      </View>
- 
+          
+            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('airbagLevel') ? setColor('turquoise') : setColor('light')}}/> 
+            </View>
+
+      </TouchableOpacity>
+      : null
+    }
      </View>   
      <View style={{flex: 0.33, flexDirection : 'column', padding: 5}}>
        <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
@@ -766,42 +810,14 @@ _renderAutocallFullTemplate() {
               </Text>
             </View>
        </View>
-       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', paddingTop: 10 }}>
-            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-              <MaterialCommunityIconsIcon name={"trending-down"}  size={18} style={{color: setColor('light')}}/> 
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2}}>
-                  <ModalDropdown
-                        //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
-                        //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
-                        dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
-                        dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
-                        onSelect={(index, value) => {
-                          console.log("DS : " + index);
-                            this._updateValue('degressiveStep', Number(index), value);
-                            this._recalculateProduct();
-                        }}
-                        adjustFrame={(f) => {
-                          return {
-                            width: DEVICE_WIDTH/3,
-                            height: Math.min(DEVICE_HEIGHT/3, dataDSAutocall.length * 40),
-                            left : f.left,
-                            right : f.right,
-                            top: f.top,
-                          }
-                        }}
-                        defaultIndex={this.autocallResult.getDegressiveStep()}
-                        options={dataDSAutocall}
-                        disabled={this.state.isEditable ? (this.autocallResult.getCouponPhoenix() === 0 ? false : true) : true}
-                    >
-                      <Text style={[setFont('200', 11, this.request.isUpdated('airbagLevel') ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]}>
-                           {this.autocallResult.getDegressiveStep() === 0 ? 'sans stepdown' : (Numeral(this.autocallResult.getDegressiveStep()).format('0%') +' / an')}
-                      </Text>
-                  </ModalDropdown>
-            </View>
-       </View>
-       <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
-            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+       <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'space-between', alignItems: 'center', paddingTop: 10  }}
+                          onPress={() => {
+                            this.state.isEditable  ? this._dropdown['freq'].show() : null;
+                            
+                          }}
+                          activeOpacity={this.state.isEditable ? 0.2 : 1}
+       >
+            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: this.request.isUpdated('freq') ? setColor('turquoise') : setColor('light')}}/> 
             </View>
              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -842,6 +858,7 @@ _renderAutocallFullTemplate() {
                         }}
                         defaultIndex={dataFreqAutocall.indexOf(this.autocallResult.getFrequencyAutocallTitle())}
                         //defaultValue={'1er rappel dans ' + this.request.getNNCPLabel()}
+                        ref={component => this._dropdown['freq'] = component}
                         options={dataFreqAutocall}
                         disabled={!this.state.isEditable}
                     >
@@ -850,8 +867,20 @@ _renderAutocallFullTemplate() {
                       </Text>
                     </ModalDropdown>
               </View>
-      </View>
-      <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+              { this.state.isEditable ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('freq') ? setColor('turquoise') : setColor('light')}}/> 
+                            </View>
+                          : null
+            }
+      </TouchableOpacity>
+      <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
+                        onPress={() => {
+                          this.state.isEditable  ? this._dropdown['nncp'].show() : null;
+                          
+                        }}
+                        activeOpacity={this.state.isEditable ? 0.2 : 1}
+      >
             <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"clock-start"}  size={18} style={{color: this.request.isUpdated('nncp') ? setColor('turquoise') : setColor('light')}}/> 
             </View>
@@ -890,6 +919,7 @@ _renderAutocallFullTemplate() {
                 }}
                 defaultIndex={dataNNCP.indexOf(this.request.getValue('nncp'))}
                 //defaultValue={'1er rappel dans ' + this.request.getNNCPLabel()}
+                ref={component => this._dropdown['nncp'] = component}
                 options={dataNNCP}
                 disabled={!this.state.isEditable}
             >
@@ -897,10 +927,242 @@ _renderAutocallFullTemplate() {
                         {this.request.getNNCPLabel()}
                       </Text>
           </ModalDropdown>
-    </View>
-      </View>
+          </View>
+          { this.state.isEditable ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('nncp') ? setColor('turquoise') : setColor('light')}}/> 
+                            </View>
+                          : null
+            }
+      </TouchableOpacity>
+      { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() === 1)  ?
+      <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center'}}
+                                   onPress={() => {
+                                    (this.state.isEditable && this.autocallResult.getBarrierPhoenix() === 1)  ? this._dropdown['degressiveStep'].show() : null;
+                                    
+                                  }}
+                                  activeOpacity={(this.state.isEditable && this.autocallResult.getBarrierPhoenix() === 1) ? 0.2 : 1}
+       >
+            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'space-between'}}>
+              <MaterialCommunityIconsIcon name={"trending-down"}  size={18} style={{color: setColor('light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2}}>
+                  <ModalDropdown
+                        //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                        //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
+                        dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                        dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                        onSelect={(index, value) => {
+                          console.log("DS : " + index);
+                            this._updateValue('degressiveStep', Number(index), value);
+                            this._recalculateProduct();
+                        }}
+                        adjustFrame={(f) => {
+                          return {
+                            width: DEVICE_WIDTH/3,
+                            height: Math.min(DEVICE_HEIGHT/3, dataDSAutocall.length * 40),
+                            left : f.left,
+                            right : f.right,
+                            top: f.top,
+                          }
+                        }}
+                        defaultIndex={this.autocallResult.getDegressiveStep()}
+                        ref={component => this._dropdown['degressiveStep'] = component}
+                        options={dataDSAutocall}
+                        disabled={this.state.isEditable ? (this.autocallResult.getBarrierPhoenix() === 1 ? false : true) : true}
+                    >
+                      <Text style={[setFont('200', 11, this.request.isUpdated('degressiveStep') ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+                           {this.autocallResult.getDegressiveStep() === 0 ? 'sans stepdown' : (Numeral(this.autocallResult.getDegressiveStep()/100).format('0%') +' / an')}
+                      </Text>
+                  </ModalDropdown>
+            </View>
+
+            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('degressiveStep') ? setColor('turquoise') : setColor('light')}}/> 
+            </View>
+
+       </TouchableOpacity>
+       : null
+      }
      </View>                                             
+     <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
+       <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
+         <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]}>
+          {String('protection \ncapital').toUpperCase()}
+         </Text>         
+       </View>
+       <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
+                        onPress={() => {
+                          this.state.isEditable ? this._dropdown['barrierPDI'].show() : null;
+                          
+                        }}
+                        activeOpacity={this.state.isEditable? 0.2 : 1}
+       >
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"shield"}  size={18} style={{color: setColor(this.request.isUpdated('barrierPDI') ? 'turquoise' : 'light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
+              <ModalDropdown
+                //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                textStyle={setFont('500', 16, (this.request.isUpdated('barrierPDI')) ? setColor('turquoise'): setColor('light'), 'Bold')}
+                dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                  onSelect={(index, value) => {
+                    this._updateValue('barrierPDI', Math.round(100*(Numeral(value).value() +1))/100, value);
+                    this._recalculateProduct();
+
+                }}
+                adjustFrame={(f) => {
+                  return {
+                    width: DEVICE_WIDTH/3,
+                    height: Math.min(DEVICE_HEIGHT/3, dataPDIBarrier.length * 40),
+                    left : f.left,
+                    right : f.right,
+                    top: f.top,
+                  }
+                }}
+                defaultIndex={dataPDIBarrier.indexOf(Numeral(this.autocallResult.getBarrierPDI() - 1).format('0%'))}
+                defaultValue={Numeral(this.autocallResult.getBarrierPDI()- 1).format('0%')}
+                ref={component => this._dropdown['barrierPDI'] = component}
+                options={dataPDIBarrier}
+                disabled={!this.state.isEditable}
+              />
+            </View>
+            { this.state.isEditable ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('barrierPDI') ? setColor('turquoise') : setColor('light')}}/> 
+                            </View>
+                          : null
+            }
+        </TouchableOpacity>
+        <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2, paddingTop : 16}}>
+          <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]}>
+              {String('maturité').toUpperCase()}
+          </Text>         
+       </View>
+        <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center' }}
+                          onPress={() => {
+                            this.state.isEditable ? this._dropdown['maturity'].show() : null;
+                            
+                          }}
+                          activeOpacity={this.state.isEditable? 0.2 : 1}
+        >
+            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+              <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor(this.request.isUpdated('maturity') ? 'turquoise' : 'light')}}/> 
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
+              <ModalDropdown
+                    //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                    //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
+                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                    dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                    onSelect={(index, value) => {
+                        let code = [ Number(index)+1, Number(index) +1 ];
+          
+                        this._updateValue('maturity', code, value);
+                        this._recalculateProduct();
+                    }}
+                    adjustFrame={(f) => {
+                      return {
+                        width: DEVICE_WIDTH/3,
+                        height: Math.min(DEVICE_HEIGHT/3, dataMaturityAutocall.length * 40),
+                        left : f.left,
+                        right : f.right,
+                        top: f.top,
+                      }
+                    }}
+                    defaultIndex={this.autocallResult.getMaturityInMonths()/12-1}
+                    ref={component => this._dropdown['maturity'] = component}
+                    options={dataMaturityAutocall}
+                    disabled={!this.state.isEditable}
+                >
+                  <Text style={setFont('500', 16, (this.request.isUpdated('maturity')) ? setColor('turquoise'): setColor('light'), 'Bold')}>
+                      {this.autocallResult.getMaturityName()}
+                  </Text>
+                </ModalDropdown>
+            </View>
+            { this.state.isEditable ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('maturity') ? setColor('turquoise') : setColor('light')}}/> 
+                            </View>
+                          : null
+            }
+        </TouchableOpacity>
+
+     </View>    
+     
+   
    </View>
+  )
+}
+
+_renderAutocallMediumTemplate() {
+
+  
+
+  return (
+   <View style={{flexDirection : 'row', backgroundColor: 'white', paddingTop:1}}>
+     <View style={{flex : 0.7, flexDirection : 'column', padding: 10, borderWidth: 0}}>
+        <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"gavel"}  size={15} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{ Numeral(this.autocallResult.getAutocallLevel()).format('0%')} </Text>
+                </View>
+            </View>
+            <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
+                </View>
+            </View>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={this.request.getValue('barrierPhoenix') === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{this.request.getValue('barrierPhoenix') === 1  ? this.autocall.getAirbagTitle() : Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}</Text>
+                </View>
+            </View>
+            { this.request.getValue('isMemory') ? 
+                  <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
+                      <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                        <MaterialCommunityIconsIcon name={"memory"}  size={15} style={{color: setColor('light')}}/>
+                      </View>
+                      <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                          <Text style={setFont('300', 12, 'black', 'Light')}>{(this.request.getValue('isMemory') ? 'mémoire': 'non mémoire')} </Text>
+                      </View>
+                  </View>
+              : null
+            }
+        </View>
+        <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"shield"}  size={15} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{Numeral(this.request.getValue('barrierPDI') - 1).format('0%')}</Text>
+                </View>
+            </View>
+            <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
+                <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                  <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor('light')}}/> 
+                </View>
+                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
+                    <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocall.getMaturityName()} </Text>
+                </View>
+            </View>
+        </View>
+     </View>
+ 
+  </View>
   )
 }
 
@@ -989,13 +1251,10 @@ _renderFooterShortTemplate(isFavorite) {
                                       alert('Valider votre produit avant de le mettre en favori');
                                       return;
                                     }
-                                    //this.props.handleFavorite(this.props.index, !this.state.isFavorite);
-                                    this.props.setFavorite(this.object)
-                                    .then((fav) => {
-                                      this.object  = fav;                                    
-                                      console.log("fav : "+fav.isFavorite);
-                                      console.log("this.props.object : "+this.object.isFavorite);
-                                      this.setState({ isFavorite: fav.isFavorite })
+                                    this.props.setFavorite(this.autocallResult.getObject())
+                                    .then((fav) => {                                 
+                                      this.autocallResult.setFavorite(fav);
+                                      this.setState({ toto: !this.state.toto })
                                     })
                                     .catch((error) => console.log("Erreur de mise en favori : " + error));
                                   }}
@@ -1022,6 +1281,18 @@ _renderFooterShortTemplate(isFavorite) {
   );
 }
 
+_renderFooterMediumTemplate(isFavorite) {
+  //remplisaaage des dropdown
+  
+  return (
+           <View style={{ padding: 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+ 
+                
+              </View>
+
+  );
+}
+
 
 _renderFooterFullTemplate(isFavorite) {
   //remplisaaage des dropdown
@@ -1034,22 +1305,21 @@ _renderFooterFullTemplate(isFavorite) {
                                       alert('Valider votre produit avant de le mettre en favori');
                                       return;
                                     }
-                                    //this.props.handleFavorite(this.props.index, !this.state.isFavorite);
-                                    this.props.setFavorite(this.object)
-                                    .then((fav) => {
-                                      this.object  = fav;                                    
-                                      console.log("fav : "+fav.isFavorite);
-                                      console.log("this.props.object : "+this.object.isFavorite);
-                                      this.setState({ isFavorite: fav.isFavorite })
+                                    
+                                    this.props.setFavorite(this.autocallResult.getObject())
+                                    .then((fav) => {                                 
+                                      this.autocallResult.setFavorite(fav);
+                                      this.setState({ toto: !this.state.toto })
                                     })
                                     .catch((error) => console.log("Erreur de mise en favori : " + error));
                                   }}
                 >
                   <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor(this.request.isUpdated() ? 'gray' : 'light')}/>
                 </TouchableOpacity>
-                <View style={[{flex : 0.2}, globalStyle.templateIcon]}>
+                {/*<View style={[{flex : 0.2}, globalStyle.templateIcon]}>
                   <FontAwesome name={"microphone-slash"}  size={20} style={{color: setColor('gray')}}/> 
                 </View>
+                */}
    
                 <View style={[{flex : 0.2}, globalStyle.templateIcon]}>              
                  <ModalDropdown
@@ -1096,6 +1366,19 @@ _renderFooterFullTemplate(isFavorite) {
                  
                   <FontAwesome name={"gears"}  size={20} style={{color: setColor('light')}}/> 
                 </TouchableOpacity>   
+                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
+                                  onPress={() => {
+                                    //on revient au produit initial
+                                    this.autocallResult = new CAutocall(this.data);
+
+                                    this.request = new CPSRequest();
+                                    this.request.setRequestFromCAutocall(this.autocall);
+                                    this.setState({ toto : !this.state.toto });
+                                  }}
+                                  activeOpacity={(this.state.isEditable && this.request.isUpdated())  ? 0.2 : 1}
+                >
+                  <MaterialCommunityIconsIcon name={"undo"} size={20} color={setColor((this.state.isEditable && this.request.isUpdated()) ? 'turquoise' : 'light')}/>
+                </TouchableOpacity>
                 
               </View>
 
@@ -1105,11 +1388,8 @@ _renderFooterFullTemplate(isFavorite) {
 
 
 render () {
-      //on affiche ou pas
-      if (this.isFiltered) {
-        return null;
-      }
-      if (this.type === TEMPLATE_TYPE.AUTOCALL_CARAC) {
+
+      if (this.type === TEMPLATE_TYPE.AUTOCALL_BODY_FULL_TEMPLATE) {
         return this._renderAutocallFullTemplate();
       }
 
@@ -1118,7 +1398,8 @@ render () {
 
       //check if it is in favorites
       let isFavorite = false;
-      this.props.favorites.forEach((fav) => {
+      isFavorite = this.autocallResult.isFavorite(this.props.favorite);
+      /*this.props.favorites.forEach((fav) => {
         if (isEqual(fav.data, this.data)) {
           //isFavorite = this.item.isFavorite && this.item.toFavorites.active;
           isFavorite = true;
@@ -1126,7 +1407,7 @@ render () {
       });
       //remise a jour de l'objet item en fonction de ce qui a été trouve dans favorites
       this.object.isFavorite = isFavorite;
-      this.object.toFavorites.active = isFavorite;
+      this.object.toFavorites.active = isFavorite;*/
 
       return (
             <View opacity={this.state.isGoodToShow ? 1 : 0.1} style={{flexDirection : 'column', 
@@ -1140,17 +1421,27 @@ render () {
                                                                       //borderTopLeftRadius: 15,
                                                                       borderRadius: 10,
                                                                       //overflow: "hidden",
+                                                                      elevation: 10
                                                                     }}
             >
 
                 {this._renderModalUpdate()}
 
-                {this.state.typeTemplate === 'FULL' ? this._renderHeaderFullTemplate() : this._renderHeaderShortTemplate()}
+                {this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE ? this._renderHeaderFullTemplate() 
+                                                                    : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderHeaderMediumTemplate()
+                                                                                                                         : this._renderHeaderShortTemplate()
+                }
 
-                {this.state.messageLoading === '' ? this.state.typeTemplate === 'FULL' ? this._renderAutocallFullTemplate() : this._renderAutocallShortTemplate()
-                                                  : this._renderRecalculateProduct()}
+                {this.state.messageLoading === '' ? this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE ? this._renderAutocallFullTemplate() 
+                                                                                                       : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderAutocallMediumTemplate()
+                                                                                                                                                              : this._renderAutocallShortTemplate()
+                                                  : this._renderRecalculateProduct()
+                }
 
-                {this.state.typeTemplate === 'FULL' ? this._renderFooterFullTemplate(isFavorite) : this._renderFooterShortTemplate(isFavorite)}
+                {this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE ? this._renderFooterFullTemplate(isFavorite) 
+                                                                    : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderFooterMediumTemplate(isFavorite)
+                                                                                                                          : this._renderFooterShortTemplate(isFavorite)
+                }
             </View>
         );
     }

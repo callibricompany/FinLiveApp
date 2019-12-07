@@ -30,7 +30,7 @@ export const backgdColorPricerParameter = 'snow';
 
 
 
-export function setFont ( weight, size, color='black', family='Light', verticalAlign='center') {
+export function setFont ( weight, size, color='black', family='Light') {
   //'FLFontFamily'
   return {
     fontWeight : weight,
@@ -38,7 +38,8 @@ export function setFont ( weight, size, color='black', family='Light', verticalA
     fontSize: sizeByDevice(size +1, size, DEVICE_WIDTH < 321 ? size - 2 : size) ,
     fontFamily : family,
     color,
-    textAlignVertical : verticalAlign
+    textAlignVertical : 'center',
+    //fontStyle : 'italic',
   }
 }
 

@@ -11,9 +11,10 @@ import 'numeral/locales/fr'
 export class CTicket { 
 
     
-    constructor(ticket) {
+    constructor(ticket, userId="") {
       this.ticket = ticket;
-      
+      this.userIdFirestore = userId;
+
       //determination de l'étape 
       this.step = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].codeStep)[0];
 
@@ -30,6 +31,7 @@ export class CTicket {
       switch(ticket.type) {
         case CTicket.TYPE_PS(): 
           this.underlying = new CAutocall(this.ticket.data);
+          this.underlying.setUserId(userId);
           break;
         default : 
           this.underlying = null;
@@ -37,6 +39,16 @@ export class CTicket {
       }
     }
    
+
+  setUserId(userId) {//user Id de firestore
+    this.userIdFirestore = userId;
+
+  }
+  
+  getUserId() {//user Id de firestore
+    return this.userIdFirestore;
+
+  }
 
    static TYPE_PS () {
      return "Produit structuré";

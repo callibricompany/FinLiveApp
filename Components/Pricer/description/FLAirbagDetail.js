@@ -23,7 +23,7 @@ export class FLAirbagDetail extends Component{
         this.state = { 
             currentChoiceAB : this.props.initialValueAB,
             currentChoiceDS : this.props.initialValueDS,
-            currentChoiceII : this.props.initialValueII,
+            //currentChoiceII : this.props.initialValueII,
 
         }
 
@@ -48,7 +48,7 @@ export class FLAirbagDetail extends Component{
     render() {
         return (
           <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, marginTop : 20, borderWidth:0}}>
-          <TouchableWithoutFeedback style={{marginTop: 35}}
+          {/*<TouchableWithoutFeedback style={{marginTop: 35}}
                                     onPress={() => {
                                         this.setState({ currentChoiceII: !this.state.currentChoiceII }, () => {
                                           this.props.updateValue("isIncremental", this.state.currentChoiceII, this.state.currentChoiceII ? 'incrémental' : 'non incrémental');
@@ -65,7 +65,7 @@ export class FLAirbagDetail extends Component{
                 </Text>
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback> */}
           <View style={{flexDirection: 'row', marginTop: 20}}>
             <View style={{flex : 0.45, alignItems:'center', alignItems: 'center', borderBottomWidth: 3, borderBottomColor: blueFLColor, backgroundColor: 'white'}}>
               <Text style={[setFont('600', 14), {textAlign : 'center', textAlignVertical: 'center'}]}>AIRBAG</Text>

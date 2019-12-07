@@ -21,18 +21,7 @@ import RobotBlink from "../../assets/svg/robotBlink.svg";
 
 import Dimensions from "Dimensions";
 
-import {
-  globalStyle,
-  generalFontColor,
-  blueFLColor,
-  headerTabColor,
-  selectElementTab,
-  progressBarColor,
-  subscribeColor,
-  FLFontFamily,
-  FLFontFamilyBold,
-  setFont
-} from "../../Styles/globalStyle";
+import { setFont } from "../../Styles/globalStyle";
 
 import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
 import { CAutocall } from "../../Classes/Products/CAutocall";
@@ -163,7 +152,7 @@ class TabHome extends React.PureComponent {
     switch (item.template) {
       case "PSLIST":
         return (
-          <FLTemplateAutocall object={item} width={0.9} isEditable={true} source={'Home'}/>
+          <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
         );
       default:
         return null;
@@ -251,7 +240,7 @@ class TabHome extends React.PureComponent {
           renderItem={({ item, index }) => {
             switch (item.template) {
               case "PSLIST":
-                return <FLTemplateAutocall object={item} width={0.6} source={'Home'}/>;
+                return <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>;
               default:
                 return null;
             }

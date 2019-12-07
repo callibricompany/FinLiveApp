@@ -169,7 +169,7 @@ class FLTicketDetail extends React.Component {
     let underLyingAction = null;
     switch(this.ticketObj.getUnderlyingType()) {
       case CPPTicket.TYPE_PS() :
-         underLyingDescription = <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_CARAC} />
+         underLyingDescription = <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_BODY_FULL_TEMPLATE} />
          underLyingAction =  <View style={{flex : 0.10, flexDirection : 'row',  backgroundColor: 'white'}}>
                                   <TouchableOpacity style={[{flex : 0.25}, globalStyle.templateIcon]}>
                                     
@@ -392,7 +392,7 @@ class FLTicketDetail extends React.Component {
   
       
 
-//switch(CTicket<FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_CARAC} />
+//switch(CTicket<FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_BODY_FULL_TEMPLATE} />
       let arrowW = DEVICE_WIDTH*0.925*0.6;
       let arrowW2 = 3*arrowW/5;
       return (

@@ -64,7 +64,8 @@ class FLTicketTemplatePP extends React.Component {
     this.ticket['data'] = convertFresh(this.ticket['custom_fields']);
     console.log(this.ticket);
     
-    this.ticketObj = new CPPTicket(this.ticket);
+    this.ticketObj = new CPPTicket(this.ticket, this.props.authUser.uid);
+    
 
     //determination de l'étape 
     this.step = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].codeStep)[0];
@@ -141,7 +142,7 @@ class FLTicketTemplatePP extends React.Component {
               </TouchableOpacity>
           </View>
           <View>
-            <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_CARAC} />
+            <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_BODY_FULL_TEMPLATE} />
           </View>
           <View style={{ marginTop : 0, backgroundColor: 'white'}}>
 

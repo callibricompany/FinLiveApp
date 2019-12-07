@@ -13,19 +13,22 @@ export class CPSRequest extends CRequest {
           'value': 'PP',
           'valueLabel': 'Placement Privé',
           'defaultValueLabel': 'Optimisé',
-          'title': 'TYPE DE DEMANDE',
+          'title': 'AUCTION',
           'isActivated': true,
           'isLocked': false,
           'isMandatory': true,
+          'icon' : 'ios-contact',
+          'icon2' : 'ios-contacts',
         },
         'type': {
-          'value': 'autocall',
-          'valueLabel': 'Autocall',
+          'value': 'athena',
+          'valueLabel': 'Athéna',
           'defaultValueLabel': 'Optimisé',
-          'title': 'CHOIX DU PRODUIT',
+          'title': 'PRODUIT',
           'isActivated': true,
           'isLocked': false,
           'isMandatory': true,
+          'icon': 'beaker-outline',
         },
         'underlying': {
           'value': ['CAC'],
@@ -35,6 +38,7 @@ export class CPSRequest extends CRequest {
           'isActivated': true,
           'isLocked': false,
           'isMandatory': true,
+          'icon' : 'basket-fill',
         },
         'maturity': {
           'value': [8, 10],
@@ -44,71 +48,79 @@ export class CPSRequest extends CRequest {
           'isActivated': true,
           'isLocked': false,
           'isMandatory': false,
+          'icon' : 'calendar',
         },
         'barrierPDI': {
           'value': 0.6,
           'isActivated': false,
           'defaultValueLabel': 'Optimisé',
-          'title': 'PROTECTION DU CAPITAL',
+          'title': 'CAPITAL',
           'valueLabel': Numeral(0.6-1).format('0%'),
           'isLocked': false,
           'isMandatory': false,
+          'icon' : 'shield',
         },
         'freq': {
           'value': "1Y",
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
-          'title': 'FREQUENCE',
-          'valueLabel': '1 an',
+          'title': 'FREQUENCE DE RAPPEL',
+          'valueLabel': 'anuelle',
           'isLocked': false,
           'isMandatory': false,
+          'icon' : 'alarm-multiple',
         },
         'barrierPhoenix': {
           'value': 0.8,
-          'isActivated': false,
+          'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': "Protégé jusqu'à : " + Numeral(-0.2).format('0%'),
-          'title': 'OPTIONS COUPONS',
+          'title': 'COUPONS',
           'isLocked': false,
           'isMandatory': false,
+          'icon' : 'shield-half-full',
         },
         'airbagLevel': {
           'value': "NA", //NA : pas d airbag   SA : semi-airbag   FA : full airbag
-          'isActivated': false,
+          'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': 'Aucun airbag',
-          'title': 'OPTIONS AUTOCALL',
+          'title': 'NIVEAUX DE RAPPELS',
           'isLocked': false,
           'isMandatory': false,
+          'icon' : 'airbag',
         },
         'nncp': {
           'value': 12, //12 mois
-          'isActivated': false,
+          'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': '1 an',
           'title': '1er RAPPEL',
           'isLocked': false,
           'isMandatory': false,
+          'icon' : 'clock-start',
         },
         'isMemory': {
           'value': false,
-          'isActivated': false,
+          'isActivated': true,
           'defaultValueLabel': 'Optimisé',
-          'valueLabel': '',
-          'title': 'EFFET MEMOIRE',
+          'valueLabel': 'Non mémoire',
+          'title': 'MEMOIRE',
           'isMandatory': false,
           'isLocked': false,
+          'icon' : 'memory',
         },
   
         //pas encore d'ecran
         'degressiveStep': {
           'value': 0,
-          'isActivated': false,
+          'isActivated': true,
           'defaultValueLabel': 'Optimisé',
-          'valueLabel': '',
+          'valueLabel': 'Sans stepdown',
           'title': 'DEGRESSIVITE',
           'isLocked': false,
           'isMandatory': false,
+          'icon': 'trending-down',
         },
         'isPDIUS': {
           'value': false,
@@ -146,12 +158,17 @@ export class CPSRequest extends CRequest {
           'value': 0.03,
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
-          'isMandatory': true,
+          'valueLabel': Numeral(0.03).format('0.00%'),
+          'title': 'MARGE',
+          'isMandatory': false,
+          'isLocked': false,
+          'icon': 'margin',
         },
         'UFAssoc': {
           'value': 0.002,
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
+          'valueLabel': Numeral(0.002).format('0.00%'),
           'isMandatory': true,
         },
       };
@@ -160,10 +177,36 @@ export class CPSRequest extends CRequest {
       this.autocall = null;
     }
 
+    isActivated(criteria) {
+      value = false;
+      if (this.product.hasOwnProperty(criteria)) {
+        value = this.product[criteria].isActivated;
+      }
+      return value;
+    }
+    setActivation(criteria, toActivate) {
+      this.product[criteria].isActivated = toActivate;
+    }
+
+    getIcon(criteria) {
+      value = '';
+      if (this.product.hasOwnProperty(criteria)) {
+        value = this.product[criteria].icon;
+      }
+      return value;
+    }
     getValue(criteria) {
       value = 0;
       if (this.product.hasOwnProperty(criteria)) {
         value = this.product[criteria].value;
+      }
+      return value;
+    }
+
+    getValueLabel(criteria) {
+      value = 0;
+      if (this.product.hasOwnProperty(criteria)) {
+        value = this.product[criteria].valueLabel;
       }
       return value;
     }
@@ -199,18 +242,7 @@ export class CPSRequest extends CRequest {
       return isUpdated;
     }
 
-    /*isUpdated() {
-      isUpdated = false;
-      
-      console.log("passe plutot la");
-      for (let k of Object.keys(this.product)) {
-        if (isUpdated === false) {
-          isUpdated = this.product[k].isUpdated;
-        }
-      }
- 
-      return isUpdated;
-    }*/
+
 
       //renvoie le titre en nombre d'annes de non rappel
     getNNCPLabel() {
@@ -414,7 +446,7 @@ export class CPSRequest extends CRequest {
       if (this.product['type'].value.includes('phoenix')){ //effet airbag, degressivite desactive
         this.product['airbagLevel'].isLocked = true;
         this.product['airbagLevel'].defaultValueLabel = 'Non compatible';
-      } else if (this.product['type'].value.includes('autocall')) {
+      } else if (this.product['type'].value.includes('athena')) {
         this.product['barrierPhoenix'].isLocked = true;
         this.product['barrierPhoenix'].defaultValueLabel = 'Non compatible';
       }
@@ -427,10 +459,10 @@ export class CPSRequest extends CRequest {
       criteria['noCallNbPeriod'] =  this.product.freq.isActivated ? this.product.nncp.value : 12;
 
       //autocall
-      criteria['isIncremental'] =  this.product.type.value === 'autocall' ? this.product.isIncremental.value : false;
+      criteria['isIncremental'] =  this.product.type.value === 'athena' ? this.product.isIncremental.value : false;
       
       //gestion du stepdown et du non airbag et barrier coupon
-      if (this.product.type.value === 'autocall') {
+      if (this.product.type.value === 'athena') {
         let ds = this.product.degressiveStep.value;
         let ds_array = [0, 2, 5];
         if (ds_array.indexOf(ds) !== -1) {
@@ -463,7 +495,7 @@ export class CPSRequest extends CRequest {
         if (bdi_array.indexOf(bpdi) !== -1) {
           criteria['barrierPDI'] =  this.product.barrierPDI.value;
           //on voit aussi si airbag est selectionne
-          if (this.product.airbagLevel.isActivated && this.product.type.value === 'autocall' && this.product.airbagLevel.value !== 'NA') {
+          if (this.product.airbagLevel.isActivated && this.product.type.value === 'athena' && this.product.airbagLevel.value !== 'NA') {
             if (this.product.airbagLevel.value === 'FA') {
               criteria['airbagLevel'] =  this.product.barrierPDI.value;
             } else if (this.product.airbagLevel.value === 'SA') {
@@ -478,7 +510,7 @@ export class CPSRequest extends CRequest {
         }
       } else { //on prend le max des PDI max
         criteria['barrierPDI'] =  0.8;
-        if (this.product.airbagLevel.isActivated && this.product.type.value === 'autocall' && this.product.airbagLevel.value !== 'NA') {
+        if (this.product.airbagLevel.isActivated && this.product.type.value === 'athena' && this.product.airbagLevel.value !== 'NA') {
           if (this.product.airbagLevel.value === 'FA') {
             criteria['airbagLevel'] =  0.8;
           } else if (this.product.airbagLevel.value === 'SA') {
@@ -490,7 +522,8 @@ export class CPSRequest extends CRequest {
 
 
       //memoire phoenix
-      criteria['isMemory'] =  this.product.type.value === 'phoenix'  ? this.product.isMemory.value : false;
+      //criteria['isMemory'] =  this.product.type.value === 'phoenix'  ? this.product.isMemory.value : false;
+      criteria['isMemory'] =  this.product.isMemory.value;
       
       return criteria;
     }

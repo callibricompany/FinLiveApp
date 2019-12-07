@@ -14,7 +14,7 @@ class FLAutocallDetailHome extends React.Component {
       super(props);
 
 
-      this.item =  this.props.navigation.getParam('item', '...');
+      this.autocall =  this.props.navigation.getParam('autocall', '...');
 
       
 
@@ -31,7 +31,7 @@ class FLAutocallDetailHome extends React.Component {
 
     render() {
       return (
-          <FLAutocallDetail item={this.item} />
+          <FLAutocallDetail autocall={this.autocall} />
       );
     }
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, ScrollView, StyleSheet, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Platform, Switch} from 'react-native'; 
 
 import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { FLScrollView } from '../SearchBar/searchBarAnimation';
 import FLBottomPanel from '../commons/FLBottomPanel'
@@ -9,6 +10,7 @@ import FLBottomPanel from '../commons/FLBottomPanel'
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
 import { withNavigation } from 'react-navigation';
+import { withAuthorization } from '../../Session';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
@@ -29,7 +31,7 @@ import {  globalSyle,
   backgdColor,
   setFont, 
   blueFLColor,
-  headerTabColor,
+  setColor,
   selectElementTab,
   subscribeColor,
   FLFontFamily,
@@ -91,7 +93,7 @@ class TabPricer extends React.PureComponent {
       //recuperation de la liste des sous-jacents
       this.underlyings = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
       
-
+      
       //mise en place des carrés
       this.dataSource = Array(7).fill().map((_, index) => ({id: index}));
     }
@@ -111,6 +113,11 @@ class TabPricer extends React.PureComponent {
         console.log(id + "  :  "+value+"  :  "+valueLabel);
         this.product[id].value = value;
         this.product[id].valueLabel = valueLabel;
+        //patch is Incremental bijectif avec is Memory
+        if (id === 'isIncremental') {
+          this.product['isMemory'].value = value;
+          this.product['isMemory'].valueLabel = value ? 'Effet mémoire' : 'Non mémoire';
+        }
 
 
         //mise a jour de produit dans pricerScreen
@@ -147,7 +154,7 @@ class TabPricer extends React.PureComponent {
 	              <Text numberOfLines={2} style={[setFont('400', 16, item.isLocked ? 'gray' : 'black'), {textAlign: 'center', textAlignVertical: 'center'}]}>{item.name}</Text>
 	           </View>
 	    )
-	}
+	  }
     _renderFLBottomPanel=() => {
       switch (this.currentParameters) {
         case 'typeAuction' : return  <FLAuctionDetail updateValue={this._updateValue} initialValue={this.product['typeAuction'].value}/>
@@ -205,15 +212,11 @@ class TabPricer extends React.PureComponent {
                       marginLeft : id % 3 === 0 ? 0 : 5,  
                       marginRight : (id -2) % 3 === 0 ? 0 : 5, 
                       marginBottom: 5, marginTop : marginShift,
-                      backgroundColor: isLocked ? 'pink' : isMandatory ? blueFLColor : isActivated ? blueFLColor : 'lightsteelblue',
+                      backgroundColor: isLocked ? 'pink' : isMandatory ? 'white' : isActivated ? 'white' : setColor('gray'),
                       borderRadius : 4
                     }}
         >
-          <View style={{height: 35, borderBottomWidth : 1, borderBottomColor : 'aliceblue', padding: 2, justifyContent: 'center', alignItems: 'center',flexGrow: 1}}>
-             <Text style={{fontFamily: FLFontFamily, fontWeight: '600', fontSize: 12, color: 'white', textAlign: 'center'}}>
-                {PARAMETERSSTRUCTUREDPRODUCT[id].title.toUpperCase()}
-             </Text>
-          </View>
+
           <TouchableOpacity onPress={() => {
               //on souleve ou abaisse le bottom panel si on e-active sinon on desactive le panneau
               //console.log("Current posiion : "+ this.state.bottomPanelPosition);
@@ -254,24 +257,77 @@ class TabPricer extends React.PureComponent {
                   //this.props.needToRefresh();
               }
             }} 
-            style={{height: hShift + 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, paddingTop: 7, justifyContent: 'flex-start', alignItems: 'center',flexGrow: 1}}
+            style={{flexDirection: 'column', height: hShift + 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
           >
-             <Text style={{fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: 'white', textAlign: 'center'}}>
-              {valueLabel}
-            </Text>
-            {PARAMETERSSTRUCTUREDPRODUCT[id].name === 'barrierPDI'? <Text style={[setFont('300', 10, 'white'), {marginTop: 25, textAlign: 'center'}]}>Barrière européenne</Text> : null}
+            <View style={{flexDirection : 'row'}}>
+                <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
+                    <MaterialCommunityIconsIcon name={PARAMETERSSTRUCTUREDPRODUCT[id].icon}  size={30} style={{color: isActivated ? 'black' : setColor('light')}}/> 
+                </View>
+                <View style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}>
+                  <Ionicons name={'ios-more'}  size={14} style={{color: setColor('light')}}/>
+                </View>
+            </View>
+            <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
+                <Text style={[setFont('300', 12), {textAlign: 'left'}]}>
+                  {valueLabel}
+                </Text>
+            </View>
+          {/*PARAMETERSSTRUCTUREDPRODUCT[id].name === 'barrierPDI'? <Text style={[setFont('300', 10, 'white'), {marginTop: 25, textAlign: 'center'}]}>Barrière européenne</Text> : null*/}
           </TouchableOpacity>
-          
+          <View style={{height: 35, borderTopWidth : 1, borderTopColor : setColor('gray'), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+             <Text style={[setFont('300', 12, ), {textAlign: 'center'}]}>
+                {PARAMETERSSTRUCTUREDPRODUCT[id].title.toUpperCase()}
+             </Text>
+          </View>
         </View>
       );
     }
 
+
     render() {
       
       return (
-         <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: Platform.OS === 'ios' ? 5 : -25+35 }}> 
-          {/*<View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 0 }}>*/}  
-                  <View style={{width: DEVICE_WIDTH*0.95}}>
+         <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
+                <FlatList
+                  contentContainerStyle={{flex: 1}}
+                  data={this.dataSource}
+                  //renderItem={this._renderRow}
+                  keyExtractor={(item) => item.id.toString()}
+                  
+                  numColumns={3}
+                  renderItem={({item}) => (
+                    this._renderParameter(item)    
+            
+                  )}
+                />
+               <FLBottomPanel position={this.state.bottomPanelPosition} 
+                              snapChange={this._snapChange} 
+                              renderFLBottomPanel={this._renderFLBottomPanel()} 
+                              renderTitle={this.product[this.currentParameters].title}
+                              activateParameter={this._activateParameter}
+                              isActivated={this.product[this.currentParameters].isActivated}
+                />
+             
+          </ScrollView>
+
+      );
+    }
+  }
+
+const condition = authUser => !!authUser;
+
+const composedWithNav = compose(
+    withAuthorization(condition),
+     withNavigation,
+     withUser
+   );
+   
+   //export default HomeScreen;
+export default hoistStatics(composedWithNav)(TabPricer);
+
+/*
+
+               <View style={{width: DEVICE_WIDTH*0.95}}>
                       <SwitchSelector
                         initial={0}
                         onPress={obj => {
@@ -317,59 +373,4 @@ class TabPricer extends React.PureComponent {
                         <Ionicons name="md-arrow-dropup"  size={20} style={{color : blueFLColor}}/>
                   </View>
 
-                  <FlatList
-                    contentContainerStyle={{flex: 1}}
-                    data={this.dataSource}
-                    //renderItem={this._renderRow}
-                    keyExtractor={(item) => item.id.toString()}
-                    //tabRoute={this.props.route.key}
-                    numColumns={3}
-                    renderItem={({item}) => (
-                      this._renderParameter(item)    
-              
-                    )}
-                  />
-
-              <View style={{  width : DEVICE_WIDTH*0.925, backgroundColor: backgdColor,  justifyContent: 'center', alignItems: 'center'}}>
-
-  
-                  {
-                    this.state.needToRefresh ? 
-                    <TouchableOpacity style={{ width : DEVICE_WIDTH*0.925, backgroundColor: subscribeColor, borderRadius: 4, height: 40, justifyContent: 'center', alignItems: 'center' }}
-                      onPress={() => this.props.launchPricing()}>
-                      <Text style={{ paddingLeft: 12, paddingRight: 12, fontFamily: FLFontFamily, fontWeight: '300', fontSize: 14, color: 'white' }}>
-                        ELABORER MES PRODUITS
-                      </Text>
-                    </TouchableOpacity>
-                      : <View style={{ height: 40, justifyContent: 'center', alignItems: 'flex-start' }}>
-                          <Text style={{ paddingLeft: 10, fontFamily: FLFontFamily, fontWeight: '200', fontSize: 12, color: 'black' }}>
-                          
-                          </Text>
-                        </View>
-                  }
-
-              </View>
-               <FLBottomPanel position={this.state.bottomPanelPosition} 
-                              snapChange={this._snapChange} 
-                              renderFLBottomPanel={this._renderFLBottomPanel()} 
-                              renderTitle={this.product[this.currentParameters].title}
-                              activateParameter={this._activateParameter}
-                              isActivated={this.product[this.currentParameters].isActivated}
-                />
-             
-          </ScrollView>
-
-      );
-    }
-  }
-
-
-const composedWithNav = compose(
-    //withAuthorization(condition),
-     withNavigation,
-     withUser
-   );
-   
-   //export default HomeScreen;
-export default hoistStatics(composedWithNav)(TabPricer);
-
+              */

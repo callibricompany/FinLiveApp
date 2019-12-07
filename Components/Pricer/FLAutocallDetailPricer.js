@@ -10,24 +10,30 @@ import FLAutocallDetail  from '../commons/Autocall/FLAutocallDetail';
 class FLAutocallDetailPricer extends React.Component {
     
 
-      constructor(props) {
-        super(props);
-  
-  
-        this.item =  this.props.navigation.getParam('item', '...');
-  
-        
-  
-        this.props.navigation.setParams({ hideBottomTabBar : true });
+    constructor(props) {
+      super(props);
+
+
+      this.autocall =  this.props.navigation.getParam('autocall', '...');
+
+      
+
+      this.props.navigation.setParams({ hideBottomTabBar : true });
+    }
+
+    static navigationOptions = ({ navigation }) => {
+
+      return ({
+        header : null,
       }
-  
-  
-  
-      render() {
-        return (
-            <FLAutocallDetail item={this.item} />
-        );
-      }
+      );
+  }
+
+    render() {
+      return (
+        <FLAutocallDetail autocall={this.autocall} />
+      );
+    }
   };
   
   const condition = authUser => !!authUser;

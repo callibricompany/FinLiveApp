@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, Platform, extInput, Modal, KeyboardAvoidingView, Keyboard, ActivityIndicator} from 'react-native';
+import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, StyleSheet, Platform, extInput, Modal, KeyboardAvoidingView, Keyboard, ActivityIndicator} from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import Moment from 'moment';
@@ -10,7 +10,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import { ssCreateStructuredProduct } from '../../../API/APIAWS';
 
-import { setFont, setColor } from '../../../Styles/globalStyle';
+import { setFont, setColor , globalStyle } from '../../../Styles/globalStyle';
 
 
 import { withAuthorization } from '../../../Session';
@@ -21,18 +21,26 @@ import { compose, hoistStatics } from 'recompose';
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
+import FLTemplateAutocall from "../Autocall/FLTemplateAutocall";
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../../Utils';
+
+
+import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../../Utils';
 import Dimensions from 'Dimensions';
 
+import * as TEMPLATE_TYPE from '../../../constants/template';
 import * as TICKET_TYPE from '../../../constants/ticket'
 import STRUCTUREDPRODUCTS from '../../../Data/structuredProducts.json';
 import FREQUENCYLIST from '../../../Data/frequencyList.json'
 
+import { CAutocall } from '../../../Classes/Products/CAutocall';
+
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
+const STATUSBAR_HEIGHT =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
 
-import { CAutocall } from '../../../Classes/Products/CAutocall';
+
+
 
 
 
@@ -43,8 +51,8 @@ class FLAutocallDetail extends React.Component {
       super(props);
   
 
-      this.item= this.props.item;
-      this.autocall = new CAutocall(this.item.data);
+      this.autocall= this.props.autocall;
+      //this.autocall = new CAutocall(this.item.data);
 
       this.state = {
 
@@ -57,78 +65,26 @@ class FLAutocallDetail extends React.Component {
       }
       
     }
-
-   
-    //coupons si Phoenix
-    _getCouponPhoenixBloc() {
-      let coupons = <View><View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
-        <Text style={{color: 'white'}}>COUPONS</Text>
-
-      </View>
-      <View style={{flexDirection : 'row', borderBottomWidth: 1, padding: 3}}>
-        <Text style={{fontSize: 12, textAlign: 'justify'}}>
-            {!this.isPhoenix ? 'Si à une date ci-dessous, le niveau du sous-jacent est supérieur ou égal au niveau de rappel alors le coupon de rappel est payé et le produit s\'arrête.' 
-                              : 'Si à une date ci-dessous, le niveau du sous-jacent est supérieur ou égal au niveau de rappel le produit s\'arrête.'}
-        </Text>
-      </View>
-      <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
-        <View style={{flex: 0.33, backgroundColor: 'aliceblue'}}>
-          <Text style={[styles.textProperty, {textAlign: 'center', textAlignVertical: 'center'}]}>
-            DATE
-          </Text>
-
-        </View>
-        <View style={{flex: 0.33,  borderLeftWidth: 1, backgroundColor: 'aliceblue'}}>
-          <Text style={[styles.textProperty, {textAlign: 'center', textAlignVertical: 'center'}]}>
-          NIVEAU
-          </Text>
-        </View>
-        <View style={{flex: 0.33,  borderLeftWidth: 1, backgroundColor: 'aliceblue'}}>
-        <Text style={[styles.textProperty, {textAlign: 'center', textAlignVertical: 'center'}]}>
-          COUPON
-          </Text>
-        </View>
-      </View>
-      </View>
-      
-  
-       return (
-         <View>{coupons}
-         {    this.phoenixDatas.map((obj, i) => {
-            //console.log(i +"  :  "+obj);
-            
-           
-              return (<View key={i} style={{flexDirection : 'row', borderBottomWidth: i === this.phoenixDatas.length - 1 ? 2 : 1}}>
-                <View style={{flex: 0.33}}>
-                  <Text style={[styles.textProperty, {textAlign: 'center'}]}>
-                    {obj["date"].locale('fr',localization).format('ll')}
-                  </Text>
-
-                </View>
-                <View style={{flex: 0.33,  borderLeftWidth: 1}}>
-                  <Text style={[styles.textProperty, {textAlign: 'center'}]}>
-                  {Numeral(obj['level']).format('0%')}
-                  </Text>
-                </View>
-                <View style={{flex: 0.33,  borderLeftWidth: 1}}>
-                  <Text style={[styles.textProperty, {textAlign: 'center'}]}>
-                    {Numeral(obj['coupon']).format('0.00%')}
-                  </Text>
-                </View>
-            </View>)
-          
-          //coupons = coupons + ech;
-          })}
-         </View>
-       );
+    componentDidMount() {
+      if (!isAndroid()) {
+        this._navListener = this.props.navigation.addListener('didFocus', () => {
+          StatusBar.setBarStyle('light-content');
+        });
+      }
     }
-
+    componentWillUnmount() {
+      if (!isAndroid()) {
+       this._navListener.remove();
+      }
+    }
+   
     render() {
-      
+ 
 
       return(
-            <SafeAreaView> 
-              <View style={{height: 100, backgroundColor : setColor('turquoise'), paddingTop : 10, paddingLeft : 10, borderWidth : 0}}>
+            <View style={{flex:1, height: DEVICE_HEIGHT,}}> 
+              
+              <View style={{height: 140 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: setColor(''), paddingTop: STATUSBAR_HEIGHT}}>
                   <TouchableOpacity style={{flexDirection : 'row', borderWidth: 0, padding : 5}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
@@ -136,30 +92,23 @@ class FLAutocallDetail extends React.Component {
                            <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
                       </View>
                       <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
-                           <Text style={setFont('300', 18, 'white', 'Regular')}>Retour</Text>
+                           <Text style={setFont('300', 16, 'white', 'Regular')}>Retour</Text>
                       </View>
                   </TouchableOpacity>
               </View>
               <View style={{
-                            marginTop : -50,
-                            height: 100, 
-                            width: 0.9*DEVICE_WIDTH, 
-                            marginLeft : 0.05*DEVICE_WIDTH,
-                            shadowColor: 'rgb(75, 89, 101)',
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.9,
-                            borderWidth :  1,
-                            borderColor : 'white',
-                            //borderTopLeftRadius: 15,
-                            borderRadius: 10,
-                            //overflow: "hidden",
+                            marginTop : -90 ,
+                            justifyContent : 'center',
+                            alignItems : 'center',
+                            zIndex : 2
                           }}
               >
-                     <Text>jsddhfsjdhf</Text>
+                     <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'}/>
+              </View>
+              <View style={[globalStyle.bgColor, {marginTop : -80 , flex:1}]}>
               </View>
 
-
-            </SafeAreaView>
+            </View>
 
 
       );

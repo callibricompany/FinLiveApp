@@ -404,7 +404,7 @@ export  function interpolateBestProducts(data, request) {
     //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     //        LE PRODUIT
-    df = df.where((row) => product.type.value === row.product).bake();
+    //df = df.where((row) => product.type.value === row.product).bake();
 
      //        LA FREQUENCE
      df = df.where((row) => criteria['freqAutocall'] === row.freqAutocall).bake();    
@@ -413,11 +413,11 @@ export  function interpolateBestProducts(data, request) {
     df = df.where((row) => criteria['noCallNbPeriod'] === row.noCallNbPeriod).bake(); 
 
     //         INCREMENTAL
-    df = df.where((row) => criteria['isIncremental'] === row.isIncremental).bake(); 
+    //df = df.where((row) => criteria['isIncremental'] === row.isIncremental).bake(); 
 
     //         PDI US ou EU
     df = df.where((row) => criteria['isPDIUS'] === row.isPDIUS).bake(); 
-
+    console.log("Taille pendant 1 er filtres simples : " + df.toRows().length);
     //         PHOENIX MEMOIRE
     df = df.where((row) => criteria['isMemory'] === row.isMemory).bake(); 
 

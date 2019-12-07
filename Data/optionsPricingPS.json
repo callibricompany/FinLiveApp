@@ -2,6 +2,7 @@
   {
     "name": "typeAuction",
     "title" : "Demande",
+    "icon" : "account-group",
     "description": [
       {
       "short_description": "Choix",
@@ -12,6 +13,7 @@
   {
       "name": "underlying",
       "title" : "Sous-jacent",
+      "icon" : "basket-fill",
       "description": [
         {
         "short_description": "Influence",
@@ -34,6 +36,7 @@
     {
       "name": "maturity",
       "title" : "Maturité",
+      "icon" : "calendar",
       "description": [
         {
         "short_description": "Influence",
@@ -56,6 +59,7 @@
     {
       "name": "freq",
       "title" : "Fréquence",
+      "icon" : "alarm-multiple",
       "description": [
         {
         "short_description": "Influence",
@@ -78,6 +82,7 @@
     {
       "name": "barrierPhoenix",
       "title" : "OPTIONS COUPONS",
+      "icon" : "shield-half-full",
       "description": [
         {
         "short_description": "Influence",
@@ -100,6 +105,7 @@
     {
       "name": "airbagLevel",
       "title" : "OPTIONS AUTOCALL",
+      "icon" : "airbag",
       "description": [
         {
         "short_description": "Influence",
@@ -122,6 +128,7 @@
     {
       "name": "barrierPDI",
       "title" : "Protection du capital",
+      "icon" : "shield",
       "description": [
         {
         "short_description": "Influence",

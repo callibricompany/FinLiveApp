@@ -7,6 +7,7 @@ import NewsList from '../Components/Home/NewsList'
 import NewsDetail from '../Components/Home/NewsDetail'
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
 import PricerScreen from '../Components/Pricer/PricerScreen'
+import FLResultPricer from '../Components/Pricer/FLResultPricer'
 import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
 import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
 import ProfileScreen from '../Components/ProfileScreen'
@@ -91,6 +92,9 @@ function labelStyle (focused, tintColor) {
     },
     FLAutocallDetailPricer : {
       screen : FLAutocallDetailPricer
+    },
+    FLResultPricer : {
+      screen : FLResultPricer
     }
   })
   

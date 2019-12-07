@@ -42,7 +42,7 @@ export class FLPhoenixBarrierDetail extends Component{
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
                     <FLSlider2
-                          min={-60}
+                          min={-70}
                           max={-10}
                           step={5}
                           //value={this.state.product['UF'].value*100}
@@ -68,7 +68,7 @@ export class FLPhoenixBarrierDetail extends Component{
                 <View style={{height : 40}}>
                   
                 </View>
-                <TouchableWithoutFeedback style={{marginTop: 35}}
+                {/*<TouchableWithoutFeedback style={{marginTop: 35}}
                                     onPress={() => {
                                         this.setState({ isMemory: !this.state.isMemory }, () => {
                                           this.props.updateValue("isMemory", this.state.isMemory, this.state.isMemory ? 'Coupon mémoire' : '');
@@ -85,7 +85,7 @@ export class FLPhoenixBarrierDetail extends Component{
                         </Text>
                     </View>
                     </View>
-                </TouchableWithoutFeedback>
+                                </TouchableWithoutFeedback>*/}
             </View>
         );
     }

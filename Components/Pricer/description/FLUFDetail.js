@@ -35,7 +35,7 @@ export class FLUFDetail extends Component{
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
                     <FLSlider2
                           min={0}
-                          max={8}
+                          max={6}
                           step={0.2}
                           //value={this.state.product['UF'].value*100}
                           value={(this.state.UF)*100}
@@ -46,7 +46,7 @@ export class FLUFDetail extends Component{
                           callback={(value) => {
                               //console.log("MATS : "+ value);
                               this.setState({ UF : (value)/100 }, () => {
-                                this.props.updateValue("UF", this.state.UF, Numeral(this.state.UF).format('0%'));
+                                this.props.updateValue("UF", this.state.UF, Numeral(this.state.UF).format('0.00%'));
                                 
                             });
                             
@@ -61,7 +61,7 @@ export class FLUFDetail extends Component{
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
                     <FLSlider2
                           min={0}
-                          max={8}
+                          max={2}
                           step={0.2}
                           //value={this.state.product['UF'].value*100}
                           value={(this.state.UFAssoc)*100}
@@ -72,7 +72,7 @@ export class FLUFDetail extends Component{
                           callback={(value) => {
                               //console.log("MATS : "+ value);
                               this.setState({ UFAssoc : (value)/100 }, () => {
-                                this.props.updateValue("UFAssoc", this.state.UFAssoc, Numeral(this.state.UFAssoc).format('0%'));
+                                this.props.updateValue("UFAssoc", this.state.UFAssoc, Numeral(this.state.UFAssoc).format('0.00%'));
                                 
                             });
                             
