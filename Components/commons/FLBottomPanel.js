@@ -1,7 +1,7 @@
 import React from 'react'
-import { TouchableOpacity, SafeAreaView ,Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
-import { Icon } from 'native-base';
-import { FontAwesome } from '@expo/vector-icons';
+import { TouchableOpacity, SafeAreaView ,Animated, StyleSheet, Text, View, Dimensions, Image} from 'react-native';
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import {
   PanGestureHandler,
   NativeViewGestureHandler,
@@ -9,11 +9,12 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
-import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, isIphoneX} from '../../Utils';
 
-import { globalStyle, backgdColor, blueFLColor, backgdColorPricerParameter } from '../../Styles/globalStyle'
+import { globalStyle, backgdColor, blueFLColor, backgdColorPricerParameter , setFont, setColor } from '../../Styles/globalStyle'
 
-
+import logo from '../../assets/LogoWithoutText.png';
+import logo_gray from '../../assets/LogoWithoutTex_gray.png';
 
 
 
@@ -25,7 +26,7 @@ const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 const HEADER_HEIGHT = 20;
 //export const SNAP_POINTS_FROM_TOP = [30, DEVICE_HEIGHT * 0.3, sizeByDevice(DEVICE_HEIGHT -260 , DEVICE_HEIGHT - 200 , DEVICE_HEIGHT - 215) ];
-export const SNAP_POINTS_FROM_TOP = [30, DEVICE_HEIGHT * 0.3, DEVICE_HEIGHT - 10 ];
+export const SNAP_POINTS_FROM_TOP = [isIphoneX() ? 80 : 50, DEVICE_HEIGHT * 0.4, DEVICE_HEIGHT - 10 ];
 
 class FLBottomPanel extends React.Component {
  
@@ -137,6 +138,7 @@ class FLBottomPanel extends React.Component {
               StyleSheet.absoluteFillObject,
               {
                 transform: [{ translateY: this._translateY }],
+                opacity: 0.95
               },
             ]}>
             <PanGestureHandler
@@ -169,19 +171,30 @@ class FLBottomPanel extends React.Component {
                     onScrollBeginDrag={this._onRegisterLastScroll}
                     scrollEventThrottle={1}>
   
-                        <View style={{flex:0.1 , flexDirection: 'row',justifyContent: 'center',alignItems: 'flex-start', borderWidth: 0}}>
-                            <TouchableOpacity  style={{flex : 0.15, justifyContent: 'center',alignItems: 'flex-end', borderWidth: 0, paddingTop : 10}}
-                                onPress={() => {
-                                  this.props.activateParameter(!this.props.isActivated);
-                              }}>
-                              <FontAwesome name={this.props.isActivated ? "toggle-on" :  "toggle-off"}  size={30} style={{color : "#85B3D3"}}/> 
-                            </TouchableOpacity>
-                            <View style={{flex : 0.7, justifyContent: 'center', alignItems: 'center', borderWidth: 0}}>
+                        <View style={{flex:0.1 , flexDirection: 'row', justifyContent: 'space-evenly',alignItems: 'flex-start', borderWidth: 0}}>
+                            {!this.props.isMandatory  ?
+                                  <TouchableOpacity style ={{ height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: this.props.isActivated ? setColor('gray') : setColor('turquoise'), borderRadius: 40,  backgroundColor: this.props.isActivated ? 'lightgray' : 'white'}}
+                                                    onPress={() => {
+                                                      this.props.activateParameter(!this.props.isActivated);
+                                                    }}  
+                                  >
+                              
+                                      <View style={{marginTop: 5, alignItems: 'center', justifyContent: 'center'}}>
+                                        <Image style={{width: 50, height: 50, color: 'gray'}} source={this.props.isActivated ? logo_gray : logo} blurRadius={0}/>
+                                      </View>
+                                      
+                                      <View style={{marginTop: 2, alignItems: 'center', justifyContent: 'center'}}>
+                                        <Text style={setFont('400', isIphoneX() ? 10 : 12, this.props.isActivated ? 'gray' : setColor(''), 'Regular')}>{String('optimisé').toUpperCase()}</Text>
+                                      </View>
+                                  </TouchableOpacity>
+                                :  <View style ={{ flex: 0.2}}></View>
+                            }
+                            <View style={{flex : 0.6, justifyContent: 'center', alignItems: 'center', borderWidth: 0}}>
                                   <Text style={{fontSize: 20, fontWeight: '600', fontFamily : 'FLFontFamily', textAlign: 'center'}}>
                                       {this.props.renderTitle}
                                   </Text>
                             </View>
-                            <TouchableOpacity  style={{flex : 0.15, justifyContent: 'flex-start',alignItems: 'center', borderWidth: 0, paddingTop: 10, paddingBottom: 10}}
+                            <TouchableOpacity  style={{flex : 0.2, justifyContent: 'flex-start',alignItems: 'center', borderWidth: 0, paddingTop: 10, paddingBottom: 10}}
                                 onPress={() => {
                                        Animated.spring(this._translateYOffset, {
                                         //velocity: velocityY,
@@ -192,8 +205,8 @@ class FLBottomPanel extends React.Component {
                                       }).start();
                                       this.setState({ lastSnap : SNAP_POINTS_FROM_TOP[2] }, () => this.props.snapChange(this.state.lastSnap))
                                     }}>
-                                  <Icon name="md-close"  style={{color : "#85B3D3"}}/>
-                              </TouchableOpacity>
+                                  <Ionicons name="md-close"  style={{color : setColor('')}} size={40}/>
+                            </TouchableOpacity>
                         </View>
 
                         {this.props.isActivated ? this.props.renderFLBottomPanel : null}

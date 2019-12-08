@@ -3,8 +3,12 @@ import * as TEMPLATE_TYPE from '../../constants/template';
 //classe mere de tous les objets financiers, immos, arts, etc...
 export class CProduct { 
     constructor(product) {
-      
+      this._constructorProduct(product);
 
+
+    }
+    
+    _constructorProduct(product) {
       this.object= {};
       //copie des datas au format correct
       if (!product.hasOwnProperty('data')) {
@@ -14,7 +18,7 @@ export class CProduct {
         this.object['isOrg'] = false;
         this.object['template'] = TEMPLATE_TYPE.LIST;
         this.object['isFavorite'] = false;
-        
+        this.object['data'] = product;
         this.product = product;
        
   
@@ -44,7 +48,16 @@ export class CProduct {
   
       }
     }
-    
+
+
+    updateProduct(product) {
+      this._constructorProduct(product);
+      console.log("CProduct : ");
+      console.log(this.product);
+    }
+
+
+
     //verifie si ce produit est dans la liste des favoris
     isFavorite(favoriteList) {
       /*let isFavorite = false;
@@ -82,11 +95,7 @@ export class CProduct {
       return "Produit financier";
     }
 
-    updateProduct(product) {
-      this.product = product;
-      console.log("CProduct : ");
-      console.log(this.product);
-    }
+
 
     setProductDescription(object) {
 

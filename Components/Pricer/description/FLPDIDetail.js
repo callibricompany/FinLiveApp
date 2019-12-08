@@ -45,7 +45,7 @@ export class FLPDIDetail extends Component{
                           callback={(value) => {
                               //console.log("MATS : "+ value);
                               this.setState({ barrier : (value+100)/100 }, () => {
-                                this.props.updateValue("barrierPDI", this.state.barrier, Numeral(this.state.barrier-1).format('0%'));
+                                this.props.updateValue("barrierPDI", this.state.barrier, "Protégé jusqu'à " + Numeral(this.state.barrier-1).format('0%'));
                                 
                             });
                             
@@ -55,6 +55,37 @@ export class FLPDIDetail extends Component{
                 </View>
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 40}}>
                   <Text style={setFont('400', 12)}>100% du capital protégé jusqu'à une baisse de {Numeral(1 - this.state.barrier).format('0%')} du sous-jacent</Text> 
+                </View>
+
+                <View style={{marginTop : 20, borderTopWidth : 1}}>
+                        <Text style={setFont('400', 14, 'black', 'Regular')}>
+                        {'\n'}Influence
+                        </Text>
+                        <Text style={setFont('300', 12)}>
+                        Votre coupon sera d'autant plus faible que votre protection sera élévée
+                        </Text>
+                </View>
+                <View style={{marginTop : 10, borderTopWidth : 0}}>
+                        <Text style={setFont('400', 14, 'black', 'Regular')}>
+                        Vérification
+                        </Text>
+                        <Text style={setFont('300', 12)}>
+                        Validez auprès de votre client la compréhension de la notion de perte potentielle de capital 
+                        </Text>
+                </View>
+                <View style={{marginTop : 10, borderTopWidth : 0}}>
+                        <Text style={setFont('400', 14, 'black', 'Regular')}>
+                        Risques
+                        </Text>
+                        <Text style={setFont('300', 12)}>
+                        En cas de troubles sur le marché, la perte en capital peut s'avérer sévère. Adaptez opportunement son niveau d'activation.
+                        </Text>
+                </View>
+                <View style={{marginTop : 10, borderTopWidth : 0}}>
+                        <Text style={setFont('400', 14, 'black', 'Regular')}>
+                        Illustration
+                        </Text>
+    
                 </View>
             </View>
         );

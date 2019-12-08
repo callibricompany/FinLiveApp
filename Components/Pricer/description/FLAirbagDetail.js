@@ -6,7 +6,7 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-
 import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
-import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor, setColor} from '../../../Styles/globalStyle'
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -152,6 +152,47 @@ export class FLAirbagDetail extends Component{
                 </TouchableWithoutFeedback>                 
             </View>
           </View>
+
+          <View style={{marginTop : 20, borderTopWidth : 1}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      {'\n'}Influence
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    L'effet airbag permet de récupérer l'ensemble des coupons si la barrière de perte en capital n'est pas activée. Cette protection a un coût : un coupon plus faible.
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Baisser le seuil de rappel à chaque période augment les chances de rappel du produit. Le coupon payé sera donc moindre. En contrepartie la prise de risque sur le capital sera aussi plus faible.
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Vérification
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Adaptez cette sécurité avec le profil de risque attendu.
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Adaptez cette dégressivité avec le profil de risque attendu.
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Risques
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    L'effet airbag n'améliore pas la protection du capital.
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Un produit dont le seuil de rappel reste à 100% a moins de chance d'être rappelé. 
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Illustration
+                    </Text>
+   
+              </View>
+
         </View>
    
         );

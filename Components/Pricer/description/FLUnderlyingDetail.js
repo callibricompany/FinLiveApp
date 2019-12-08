@@ -6,7 +6,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 
-import { globalStyle, blueFLColor, selectElementTab, FLFontFamily, backgdColorPricerParameter } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, selectElementTab, FLFontFamily, backgdColorPricerParameter, setFont, setColor } from '../../../Styles/globalStyle'
 
 
 
@@ -233,6 +233,40 @@ export class FLUnderlyingDetail extends React.Component{
                     {picker}
                     {this.state.possibleUnderlyings.map((underlying, i) =>  this._displayUnderlyingList(underlying, i))}
  
+                    <View style={{marginTop : 20, borderTopWidth : 1}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            {'\n'}Influence
+                            </Text>
+                            <Text style={setFont('300', 12)}>
+                                Le choix du sous-jacent est primordial et influe grandement le niveau de coupon. Les sous-jacents les plus volatiles permettent généralement d'obtenir de meilleurs coupons."
+                            </Text>
+                    </View>
+                    <View style={{marginTop : 10, borderTopWidth : 0}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            Vérification
+                            </Text>
+                            <Text style={setFont('300', 12)}>
+                            Complétez ce choix et votre argumentaire avec des analyses fondamentales que vous trouverez prochainement sur FinLive
+                            </Text>
+                    </View>
+                    <View style={{marginTop : 10, borderTopWidth : 0}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            Risques
+                            </Text>
+                            <Text style={setFont('300', 12)}>
+                            Choisir une action est plus risqué car la valeur est plus susceptible de subir des profits warnings
+                            </Text>
+                    </View>
+                    <View style={{marginTop : 10, borderTopWidth : 0}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            Illustration
+                            </Text>
+        
+                    </View>
+
+                    
+
+
                 <View style={{paddingTop :40}}>
                     <Text style={{fontSize : 12, fontWeight: '600', fontFamily : 'FLFontFamily'}}>
                         F i n L i v e

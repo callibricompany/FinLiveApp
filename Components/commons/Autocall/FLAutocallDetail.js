@@ -30,8 +30,7 @@ import Dimensions from 'Dimensions';
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
 import * as TICKET_TYPE from '../../../constants/ticket'
-import STRUCTUREDPRODUCTS from '../../../Data/structuredProducts.json';
-import FREQUENCYLIST from '../../../Data/frequencyList.json'
+
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 
@@ -52,7 +51,7 @@ class FLAutocallDetail extends React.Component {
   
 
       this.autocall= this.props.autocall;
-      //this.autocall = new CAutocall(this.item.data);
+      //console.log(this.autocall.getObject());
 
       this.state = {
 
@@ -61,7 +60,6 @@ class FLAutocallDetail extends React.Component {
 
         //affchage du modal description avant traiter
         showModalDescription : false,
-
       }
       
     }
@@ -84,7 +82,7 @@ class FLAutocallDetail extends React.Component {
       return(
             <View style={{flex:1, height: DEVICE_HEIGHT,}}> 
               
-              <View style={{height: 140 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: setColor(''), paddingTop: STATUSBAR_HEIGHT}}>
+              <View style={{height: 140 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: setColor(''), paddingTop: isAndroid() ?  0 : STATUSBAR_HEIGHT}}>
                   <TouchableOpacity style={{flexDirection : 'row', borderWidth: 0, padding : 5}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
@@ -97,7 +95,7 @@ class FLAutocallDetail extends React.Component {
                   </TouchableOpacity>
               </View>
               <View style={{
-                            marginTop : -90 ,
+                            marginTop : -100 ,
                             justifyContent : 'center',
                             alignItems : 'center',
                             zIndex : 2
@@ -105,9 +103,13 @@ class FLAutocallDetail extends React.Component {
               >
                      <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'}/>
               </View>
-              <View style={[globalStyle.bgColor, {marginTop : -80 , flex:1}]}>
-              </View>
+              <View style={[globalStyle.bgColor, {marginTop : -100 , flex:1}]}>
+                  <View style={{backgroundColor: 'pink', marginTop : 100}}>
+                    <Text>{this.autocall.getProductName()}</Text>
+                  </View>
 
+
+              </View>
             </View>
 
 

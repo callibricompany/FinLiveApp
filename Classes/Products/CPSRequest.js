@@ -55,7 +55,7 @@ export class CPSRequest extends CRequest {
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'title': 'CAPITAL',
-          'valueLabel': Numeral(0.6-1).format('0%'),
+          'valueLabel': "Protégé jusqu'à " + Numeral(0.6-1).format('0%'),
           'isLocked': false,
           'isMandatory': false,
           'icon' : 'shield',
@@ -83,7 +83,7 @@ export class CPSRequest extends CRequest {
         
         'barrierPhoenix': {
           'value': 0.8,
-          'isActivated': true,
+          'isActivated': false,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': "Protégé jusqu'à : " + Numeral(-0.2).format('0%'),
           'title': 'COUPONS',
@@ -117,7 +117,7 @@ export class CPSRequest extends CRequest {
           'defaultValueLabel': 'Optimisé',
           'valueLabel': 'Non mémoire',
           'title': 'MEMOIRE',
-          'isMandatory': false,
+          'isMandatory': true,
           'isLocked': false,
           'icon' : 'memory',
         },
@@ -171,9 +171,19 @@ export class CPSRequest extends CRequest {
           'defaultValueLabel': 'Optimisé',
           'valueLabel': Numeral(0.03).format('0.00%'),
           'title': 'MARGE',
-          'isMandatory': false,
+          'isMandatory': true,
           'isLocked': false,
           'icon': 'margin',
+        },
+        'coupon': {
+          'value': 0.03,
+          'isActivated': true,
+          'defaultValueLabel': 'Optimisé',
+          'valueLabel': Numeral(0.03).format('0.00%'),
+          'title': 'COUPON MIN',
+          'isMandatory': true,
+          'isLocked': false,
+          'icon': 'ticket-percent',
         },
         'UFAssoc': {
           'value': 0.002,
@@ -186,6 +196,14 @@ export class CPSRequest extends CRequest {
 
       this.updateProduct(p);
       this.autocall = null;
+    }
+   
+    isMandatory(criteria) {
+      value = false;
+      if (this.product.hasOwnProperty(criteria)) {
+        value = this.product[criteria].isMandatory;
+      }
+      return value;
     }
 
     isActivated(criteria) {
@@ -375,7 +393,6 @@ export class CPSRequest extends CRequest {
           'isUpdated': false,
         },
   
-        //pas encore d'ecran
         'degressiveStep': {
           'value': autocall.getDegressivity(),
           'isActivated': true,
@@ -437,6 +454,16 @@ export class CPSRequest extends CRequest {
           'isMandatory': true,
           'isUpdated': false,
           'title': 'RETROCESSIONS'
+        },
+        'coupon': {
+          'value': autocall.getCouponTitle(),
+          'isActivated': true,
+          'defaultValueLabel': 'Optimisé',
+          'valueLabel': Numeral(0.03).format('0.00%'),
+          'title': 'COUPON MIN',
+          'isMandatory': true,
+          'isUpdated': false,
+          'icon': 'ticket-percent',
         },
       };
    

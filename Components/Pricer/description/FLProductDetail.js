@@ -1,12 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
-import { Icon } from 'native-base';
-import Carousel from 'react-native-snap-carousel';
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
-import STRUCTUREDPRODUCTS from '../../../Data/structuredProducts.json';
 
-import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, backgdColor, setFont, setColor, subscribeColor } from '../../../Styles/globalStyle'
 
 
 
@@ -24,78 +20,48 @@ export class FLProductDetail extends Component{
 
         }
 
-        this.productType = [];
-        let obj = {};
-        //remplissage type demande
-        STRUCTUREDPRODUCTS.map((product, i ) => {
-            obj = {};
-            obj["value"] = product.id;
-            obj["label"] = product.name;
-            this.productType.push(obj);
 
-        })
     }
 
-   componentDidMount () {
-
-        //on va sur la valeur du carousel par defaut
-        //this.refs['carousel'].snapToItem(this.state.currentProductIndex);
-
-   }
-    _displayProductList = ({ item }) => {
-	    return (
-                <View style={{flex:1, justifyContent : 'center', alignItems: 'center', borderWidth:0}}>
-	              <Text style={{fontSize:20, textAlign: 'center'}}>{item.name}</Text>
-	           </View>
-	    )
-	}
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', alignItems: 'center', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column',  marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
                     
-                    <RadioForm
-                          formHorizontal={false}
-                          animation={true}
-                        >
-                          {this.productType.map((type, i) => {
-
-
-                          return (
-                            <RadioButton labelHorizontal={true} key={i} >
-              
-                              <RadioButtonInput
-                                obj={type}
-                                index={i}
-                                isSelected={this.state.currentChoice === type.value}
-                                onPress={(itemValue) =>{
-                                  //console.log(i +"-ITEM VALUE : "+itemValue);
-                                  this.setState({ currentChoice : this.productType[i].value}, () => {
-                                    this.props.updateValue("type", this.productType[i].value, this.productType[i].label);});
-                                }}
-                                borderWidth={1}
-                                buttonSize={12}
-                                buttonOuterSize={20}
-                                buttonStyle={{marginTop : 10}}
-                                //buttonWrapStyle={{marginLeft: 10}}
-                              />
-                              <RadioButtonLabel
-                                obj={type}
-                                index={i}
-                                labelHorizontal={true}
-                                onPress={(itemValue) =>{
-                                    //console.log(i +"-ITEM VALUE : "+itemValue);
-                                    this.setState({ currentChoice : this.productType[i].value}, () => {
-                                      this.props.updateValue("type", this.productType[i].value, this.productType[i].label);});
-                                  }}
-                                labelStyle={{fontSize: 16, fontFamily : FLFontFamily, color: 'black', marginTop: 10}}
-                                labelWrapStyle={{}}
-
-                              />
-                              </RadioButton>
-                            );
-                          })}                  
-                    </RadioForm> 
+              <View style={{marginTop : 20, borderTopWidth : 1}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      {'\n'}Influence
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Le produit choisi reflète le profil de risque de votre client. Il offrira plus ou moins de rendement en fonction du risque pris. Consultez les rubriques d'aide pour consulter les fiches descriptives de chacun de nos produits et leurs argumentaires commerciaux facilement transférables à vos clients.
+                    </Text>
+                    <Text style={setFont('300', 12)}>{'\n'}
+                    Athéna : le paiements des coupons intervient au moment du rappel{'\n'}
+                    Phoenix : le coupon est mieux protégé car il peut être payé à un niveau inférieur au niveau de rappel
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Vérification
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Etudiez et validez le profil de risque du produit choisi avec votre client.
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Risques
+                    </Text>
+                    <Text style={setFont('300', 12)}>
+                    Choisir un type de produit peut entrainer une lourde perte de capital
+                    </Text>
+              </View>
+              <View style={{marginTop : 10, borderTopWidth : 0}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                    Illustration
+                    </Text>
+   
+              </View>
             </View>
         );
     }
@@ -103,31 +69,4 @@ export class FLProductDetail extends Component{
 
 }
 
-/*
-                <View style={{alignItems:'center'}}>
 
-                    <Icon name="md-arrow-dropdown"  style={{marginTop: 15, color : "#85B3D3"}}/>
-                    <Carousel
-                        ref={'carousel'}
-                        data={STRUCTUREDPRODUCTS}
-                        renderItem={this._displayProductList.bind(this)}
-                        sliderWidth={DEVICE_WIDTH*0.925}
-                        itemWidth={DEVICE_WIDTH/3}
-                        //itemHeight={400}
-                        //sliderHeight={400}
-                        //slideStyle={{backgroundColor: 'pink', height : 100, borderWidth: 2}}
-                        //containerCustomStyle={{ backgroundColor : 'green'}}
-                        //contentContainerCustomStyle={{ backgroundColor : 'red'}}
-                        firstItem={this.state.currentProductIndex}
-                        onSnapToItem={(currentProductIndex) => {
-                            this.setState({ currentProductIndex }, () => this.props.updateValue("type", STRUCTUREDPRODUCTS[this.state.currentProductIndex].id,STRUCTUREDPRODUCTS[this.state.currentProductIndex].name))
-                        }}
-                    />
-                    <Icon name="md-arrow-dropup"  style={{color : "#85B3D3"}}/>
-                </View>
-                <View style={{paddingTop :40}}>
-                    <Text style={{fontSize : 18}}>
-                        {STRUCTUREDPRODUCTS[this.state.currentProductIndex].comments}
-                    </Text>
-                </View>
-*/

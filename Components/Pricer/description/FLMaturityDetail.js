@@ -5,7 +5,7 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-
 
 import { FLSlider2 } from '../../../Components/commons/FLSlider2';
 
-import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor, setFont, setColor } from '../../../Styles/globalStyle'
 
 
 
@@ -103,6 +103,37 @@ export class FLMaturityDetail extends Component{
                           }}
                           single={true}
                         />
+                </View>
+
+                <View style={{marginTop : 20, borderTopWidth : 1}}>
+                      <Text style={setFont('400', 14, 'black', 'Regular')}>
+                        {'\n'}Influence
+                      </Text>
+                      <Text style={setFont('300', 12)}>
+                      Généralement, plus vous optez pour un produit avec une échéance lointaine, plus votre coupon sera élevé.
+                      </Text>
+                </View>
+                <View style={{marginTop : 10, borderTopWidth : 0}}>
+                      <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      Vérification
+                      </Text>
+                      <Text style={setFont('300', 12)}>
+                      Vérifiez auparavant si l'encapsulage juridique du produit sera compatible à la maturité choisie (par exemple dans une Assurance Vie, la maturité du produit devra être de 8 ans)
+                      </Text>
+                </View>
+                <View style={{marginTop : 10, borderTopWidth : 0}}>
+                      <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      Risques
+                      </Text>
+                      <Text style={setFont('300', 12)}>
+                      La maturité augmentant, le risque de subir les aléas de marché augmentent aussi et le risque de perte en capital également.
+                      </Text>
+                </View>
+                <View style={{marginTop : 10, borderTopWidth : 0}}>
+                      <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      Illustration
+                      </Text>
+    
                 </View>
             </View>
         );

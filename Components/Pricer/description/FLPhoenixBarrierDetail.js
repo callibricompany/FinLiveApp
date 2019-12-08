@@ -65,9 +65,7 @@ export class FLPhoenixBarrierDetail extends Component{
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 40}}>
                   <Text style={{fontSize: 11, fontWeight: '400', fontFamily : FLFontFamily}}>{text}</Text> 
                 </View>
-                <View style={{height : 40}}>
-                  
-                </View>
+  
                 {/*<TouchableWithoutFeedback style={{marginTop: 35}}
                                     onPress={() => {
                                         this.setState({ isMemory: !this.state.isMemory }, () => {
@@ -86,6 +84,37 @@ export class FLPhoenixBarrierDetail extends Component{
                     </View>
                     </View>
                                 </TouchableWithoutFeedback>*/}
+
+                    <View style={{marginTop : 20, borderTopWidth : 1}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            {'\n'}Influence
+                            </Text>
+                            <Text style={setFont('300', 12)}>
+                            Choisissez un seuil de paiement de coupons inférieur à celui des rappels : cela augemente la probabilité de paiement des coupons; en contrepartie d'un niveau moins élevé.
+                            </Text>
+                    </View>
+                    <View style={{marginTop : 10, borderTopWidth : 0}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            Vérification
+                            </Text>
+                            <Text style={setFont('300', 12)}>
+                            Adaptez cette sécurité avec le profil de risque attendu.
+                            </Text>
+                    </View>
+                    <View style={{marginTop : 10, borderTopWidth : 0}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            Risques
+                            </Text>
+                            <Text style={setFont('300', 12)}>
+                            Le changement de seuil des coupons n'améliore pas la protection du capital.
+                            </Text>
+                    </View>
+                    <View style={{marginTop : 10, borderTopWidth : 0}}>
+                            <Text style={setFont('400', 14, 'black', 'Regular')}>
+                            Illustration
+                            </Text>
+        
+                    </View>
             </View>
         );
     }
