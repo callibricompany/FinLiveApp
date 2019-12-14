@@ -1,7 +1,7 @@
 //decrypte un objet autocall
 
 import { CProduct } from "./CProduct";
-
+import Moment from 'moment';
 import FREQUENCYLIST from "../../Data/frequencyList.json";
 
 export class CAutocall extends CProduct {
@@ -104,6 +104,25 @@ export class CAutocall extends CProduct {
     }
 
     return result;
+  }
+
+
+  /////////////////////////
+
+  //      DATES
+
+  /////////////////////////
+
+  getStrikingDate() {
+    return Moment(this.product.date, "YYYYMMDD").toDate();
+  }
+
+  getLastConstatDate() {
+    return Moment(this.product.finaldate, "YYYYMMDD").toDate();
+  }
+
+  isStruck () {
+    return false;
   }
 
   //determine le nom du sous

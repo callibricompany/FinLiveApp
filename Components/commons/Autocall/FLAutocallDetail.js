@@ -52,7 +52,7 @@ class FLAutocallDetail extends React.Component {
   
 
       this.autocall= this.props.autocall;
-      //console.log(this.autocall.getObject());
+      console.log(this.autocall.getObject());
 
       this.state = {
 
@@ -86,7 +86,7 @@ class FLAutocallDetail extends React.Component {
 
   _updateAutocall=(autocall) => {
       this.autocall = autocall;
-      this.setState({ toto : !this.state.toto });
+      this.setState({ toto : !this.state.toto }, () => console.log(this.autocall.getObject()));
   }
 
   _renderHeaderUnderlying = (content, index, isActive, sections) => {
@@ -103,8 +103,64 @@ class FLAutocallDetail extends React.Component {
 
   _renderDates() {
     return (
-      <View style={{backgroundColor: 'white', borderBottomColor: 'black', justifyContent: 'center', alignItems: 'center', padding: 5}}>
-        <Text style={setFont('400', 12)}>alouette</Text>
+      <View style={{backgroundColor: 'white', borderBottomColor: 'black', justifyContent: 'center', alignItems: 'center', padding: 5, marginTop: 5}}>
+      {
+        this.autocall.isStruck() ?
+              <View style={{flexDirection: 'row'}}>
+                    <View style={{flex: 0.5}}>
+                      <Text style={setFont('400', 12, 'black','Bold')}>Prochaine date : </Text>
+                    </View>
+                    <View style={{flex: 0.5}}>
+                      <Text style={setFont('400', 12)}>
+                          {Moment(this.autocall.getStrikingDate()).locale('fr',localization).format('ll')}
+                      </Text>
+                    </View>
+              </View>
+              : null
+      }
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                  <Text style={setFont('400', 12, 'black','Regular')}>Date de strike :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                   {Moment(this.autocall.getStrikingDate()).locale('fr',localization).format('ll')}
+                </Text>
+              </View>
+        </View>
+
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                 <Text style={setFont('400', 12, 'black','Regular')}>Date d'émission :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                    {Moment(this.autocall.getStartDate()).locale('fr',localization).format('ll')}
+                </Text>
+              </View>
+        </View>
+
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                  <Text style={setFont('400', 12, 'black','Regular')}>Date finale de constatation :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                    {Moment(this.autocall.getLastConstatDate()).locale('fr',localization).format('ll')}
+                </Text>
+              </View>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                  <Text style={setFont('400', 12, 'black','Regular')}>Date de remboursement :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                    {Moment(this.autocall.getEndDate()).locale('fr',localization).format('ll')}
+                </Text>
+              </View>
+        </View>
+
       </View>
     );
   }
@@ -118,7 +174,7 @@ class FLAutocallDetail extends React.Component {
   };
   
   _renderFooterUnderlying = (content, index, isActive, sections) => {
-    console.log("EST ACTIF : " + isActive);
+    //console.log("EST ACTIF : " + isActive);
     if (!isActive) {
       //return;
     }

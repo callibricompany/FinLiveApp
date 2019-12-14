@@ -1,3 +1,4 @@
+import Moment from 'moment';
 import * as TEMPLATE_TYPE from '../../constants/template';
 
 //classe mere de tous les objets financiers, immos, arts, etc...
@@ -130,4 +131,23 @@ export class CProduct {
       return uf;
     }
 
-  }
+
+    /////////////////////////
+
+    //      DATES
+
+    /////////////////////////
+
+    getStartDate() {
+      return Moment(this.product.startdate, "YYYYMMDD").toDate();
+    }
+
+    getEndDate() {
+      return Moment(this.product.enddate, "YYYYMMDD").toDate();
+    }
+
+    getNextOpenDay(d='') {
+        if (d === '') {}
+    }
+
+}

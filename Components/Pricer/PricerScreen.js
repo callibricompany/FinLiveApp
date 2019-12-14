@@ -1024,7 +1024,7 @@ _renderTiles() {
             <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
               {this._renderTiles()}
             </ScrollView>
-            <View style={{width: DEVICE_WIDTH*0.9, marginTop : 20, marginBottom : 10, marginLeft : 0.05*DEVICE_WIDTH}}>
+            <View style={{width: DEVICE_WIDTH,  marginTop : 10, paddingTop : 10, paddingLeft : 0.05*DEVICE_WIDTH, paddingRight : 0.05*DEVICE_WIDTH,  marginLeft :0, backgroundColor: 'snow'}}>
                       <SwitchSelector
                         initial={1}
                         onPress={obj => {
