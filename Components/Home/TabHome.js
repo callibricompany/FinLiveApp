@@ -148,11 +148,13 @@ class TabHome extends React.PureComponent {
       .catch((error) => console.log("Erreur de mise en favori : " + error));
   } */
 
-  _renderTicket = (item, index) => {
+  _renderFeatured = (item, index) => {
     switch (item.template) {
       case "PSLIST":
         return (
-          <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
+          <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+             <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
+          </View>
         );
       default:
         return null;
@@ -191,7 +193,7 @@ class TabHome extends React.PureComponent {
         </View>
 
         <FlatList
-          //style={styles.wrapper}
+          //style={{marginLeft : 100}}
           //scrollTo={this.state.scrollTo}
           contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
           data={
@@ -202,7 +204,7 @@ class TabHome extends React.PureComponent {
               : this.props.homePage
           }
           horizontal={true}
-          renderItem={({ item, index }) => this._renderTicket(item, index)}
+          renderItem={({ item, index }) => this._renderFeatured(item, index)}
           //tabRoute={this.props.route.key}
           keyExtractor={item => {
             let key =
@@ -240,7 +242,11 @@ class TabHome extends React.PureComponent {
           renderItem={({ item, index }) => {
             switch (item.template) {
               case "PSLIST":
-                return <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>;
+                return (
+                  <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                    <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
+                  </View>
+                );
               default:
                 return null;
             }

@@ -112,10 +112,10 @@ export class CPSRequest extends CRequest {
           'icon' : 'clock-start',
         },
         'isMemory': {
-          'value': false,
+          'value': true,
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
-          'valueLabel': 'Non mémoire',
+          'valueLabel': 'Effet mémoire',
           'title': 'MEMOIRE',
           'isMandatory': true,
           'isLocked': false,

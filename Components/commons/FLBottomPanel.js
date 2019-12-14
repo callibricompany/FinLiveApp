@@ -180,7 +180,7 @@ class FLBottomPanel extends React.Component {
                                   >
                               
                                       <View style={{marginTop: 5, alignItems: 'center', justifyContent: 'center'}}>
-                                        <Image style={{width: 50, height: 50, color: 'gray'}} source={this.props.isActivated ? logo_gray : logo} blurRadius={0}/>
+                                        <Image style={{width: 50, height: 50}} source={this.props.isActivated ? logo_gray : logo} blurRadius={0}/>
                                       </View>
                                       
                                       <View style={{marginTop: 2, alignItems: 'center', justifyContent: 'center'}}>

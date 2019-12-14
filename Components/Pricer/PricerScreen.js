@@ -248,11 +248,13 @@ class PricerScreen extends React.Component {
   _updateValue=(id, value, valueLabel) =>{
     console.log(id + "  :  "+value+"  :  "+valueLabel);
     this.request.setCriteria(id, value, valueLabel);
-    this.needToRefresh();
+    this.setState({ toto : !this.state.toto });
     
   }
   _activateParameter=(toActivate) => {
+
     this.request.setActivation(this.currentParameter, toActivate);
+    
     if (this.currentParameter === 'freq') {
       this.request.setActivation('nncp', toActivate);
     }
@@ -265,17 +267,14 @@ class PricerScreen extends React.Component {
     if (this.currentParameter === 'degressiveStep') {
       this.request.setActivation('airbagLevel', toActivate);
     }
-
-    this.needToRefresh();
+    console.log(this.currentParameter + "   :   " + toActivate);
+  
+    this.setState({ toto : !this.state.toto });
+    
     //fermeture du panel
     //this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[2] });
   }
-  //demande le calcul au serveur et affichage des résultats 
-  _launchPricing = () => {
 
-    this.calculateProducts();
-    this.setState({ needToRefresh: false });
-  }
 
   //les prix ne sont plus bons : un parametre au moins a été touché
   needToRefresh = () => {
@@ -385,8 +384,8 @@ _renderProductTile() {
   );
 }
   //choix du sous-jacent
-_renderGenericTile(criteria) {
-
+_renderGenericTile=(criteria) => {
+  //console.log("PASSE LA : "+criteria);
   return (
             <View style={{
                         height: (DEVICE_WIDTH*0.925-20)/3, 
@@ -437,7 +436,7 @@ _renderGenericTile(criteria) {
                         }
                     </View>
                 </TouchableOpacity>
-                <View style={{height: 35, borderTopWidth : 1, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{height: 35, borderTopWidth : this.request.isActivated(criteria) ? 1 : 0, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[setFont('300', 14, this.request.isActivated(criteria) ? setColor('') : setColor('light'), 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle(criteria)}
                   </Text>
@@ -448,13 +447,13 @@ _renderGenericTile(criteria) {
 }
 
 //choix de la fréquence et du no call périod
-_renderPhoenixTile() {
+_renderPhoenixTile=() => {
   let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];
-
+  console.log("PHOENIX ACTIVE : "+ this.request.isActivated('barrierPhoenix') + "    :     " +this.request.getValue('barrierPhoenix'));
   //determination de la couleur backgound
   let bgColorPhoenix = 'white';
   let iconColorPhoenix = setColor('');
-  if (this.request.getValue('type') !== 'phoenix') {
+  /*if (this.request.getValue('type') !== 'phoenix') {
     bgColorPhoenix = setColor('gray');
     iconColorPhoenix = setColor('light');
   } else {
@@ -462,8 +461,8 @@ _renderPhoenixTile() {
       bgColorPhoenix = setColor('');
       iconColorPhoenix = setColor('light');
     }
-  }
-
+  }*/
+  
   return (
             <View style={{
                         height: (DEVICE_WIDTH*0.925-20)/3, 
@@ -475,12 +474,12 @@ _renderPhoenixTile() {
                         borderRadius : 4
                         }}
             >
-                <View style={{flexDirection: 'row', height: 2*(DEVICE_WIDTH*0.925-20)/3/3,  flexGrow: 1}}>
-                    <TouchableOpacity style={{flex: 0.5, flexDirection: 'column', borderWidth: 0,  paddingTop: 2, justifyContent: 'space-between', alignItems: 'center', backgroundColor: bgColorPhoenix}}
+                <View style={{flexDirection: 'row', height: 2*(DEVICE_WIDTH*0.925-20)/3/3}}>
+                    <TouchableOpacity style={{flexDirection: 'column', width :(DEVICE_WIDTH*0.925-20)/3 +5, borderWidth: 0,  paddingTop: 2, justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
                                         if (this.request.getValue('type') === 'phoenix'){
                                             this.currentParameter = 'barrierPhoenix';
-                                            this.request.setActivation(this.currentParameter, true);
+                                            //this.request.setActivation(this.currentParameter, true);
                                   
                                             this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
                                         }
@@ -502,29 +501,21 @@ _renderPhoenixTile() {
                                                 }}
                                                 activeOpacity={this.request.getValue('type') === 'phoenix' ? 0.2 : 1}
                               >
-                               { this.request.getValue('type') === 'phoenix' ?
-                                                           <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('light')}}/>
-                                                                              : null
-                               }
+                              
+                                  <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('light')}}/>
+
                               </TouchableOpacity>
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
-                            { this.request.getValue('type') === 'phoenix' ?
-                                                                            this.request.isActivated('barrierPhoenix') ? 
-                                                                              <Text style={[setFont('300', 14, this.request.isActivated('barrierPhoenix') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
-                                                                                      { this.request.getValueLabel('barrierPhoenix') }
-                                                                              </Text>
-                                                                              :
-                                                                              <View style={{backgroundColor : 'white', padding: 10, borderRadius: 30, marginBottom: 3}}>
-                                                                                <Image style={{width: 30, height: 30}} source={logo} />
-                                                                              </View>
-                                                                          :   <Text style={[setFont('300', 14, setColor('')), {textAlign: 'center'}]}>
-                                                                                  -
-                                                                              </Text>
-                            }
+                            
+                          <Text style={[setFont('300', 14, this.request.isActivated('barrierPhoenix') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
+                                  {this.request.getValueLabel('barrierPhoenix') }
+                          </Text>
+
+                            
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flex: 0.5, flexDirection: 'column', borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center'}}
+                    <TouchableOpacity style={{flexDirection: 'column', width :(DEVICE_WIDTH*0.925-20)/3 +5, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
                                         this._dropdown['isMemory'].show();
                                       }}
@@ -571,7 +562,7 @@ _renderPhoenixTile() {
                                       <Text style={[setFont('300', 14, setColor('')), {textAlign: 'left'}]}>
                                         {this.request.getValueLabel('isMemory')}
                                       </Text>
-                                    </ModalDropdown>
+                                </ModalDropdown>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -665,7 +656,7 @@ _renderFreqTile() {
                       </TouchableOpacity>
  
                   </View>
-                  <View style={{height: 35, borderTopWidth : 1, borderTopColor : this.request.isActivated('freq') ? setColor('') : setColor('light'), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                  <View style={{height: 35, borderTopWidth : this.request.isActivated('freq') ? 1 : 0, borderTopColor : this.request.isActivated('freq') ? setColor('') : setColor('light'), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={[setFont('300', 14, this.request.isActivated('freq') ? setColor('') : setColor('light'), 'Regular' ), {textAlign: 'center'}]}>
                         {this.request.getTitle('freq')}
                     </Text>
@@ -677,7 +668,19 @@ _renderFreqTile() {
 
   //choix du airbag et stepdown
 _renderAirbagTile() {
- //let dsText = this.request.getV === 0 ? 'sans stepdown' : (Numeral(this.autocallResult.getDegressiveStep()/100).format('0%') +' / an')}
+   //determination de la couleur backgound
+   let bgColor = 'white';
+   let iconColor = setColor('');
+   if (this.request.getValue('type') !== 'athena') {
+    bgColor = setColor('gray');
+    iconColor = setColor('light');
+   } else {
+     if (!this.request.isActivated('airbagLevel')) {
+      bgColor = setColor('');
+      iconColor = setColor('light');
+     }
+   }
+
   return (
             <View style={{
                         height: (DEVICE_WIDTH*0.925-20)/3, 
@@ -685,18 +688,21 @@ _renderAirbagTile() {
                         marginLeft : 5,  
                         //marginRight :0, 
                         marginBottom: 5, 
-                        backgroundColor:  (this.request.isActivated('airbagLevel') || this.request.isActivated('degressiveStep') ) ? 'white' : setColor(''),
+                        backgroundColor:  bgColor,
                         borderRadius : 4
                         }}
             >
                 <View style={{flexDirection: 'row', paddingTop: 2, flexGrow: 1}}>
                     <TouchableOpacity style={{flex: 0.333, flexDirection: 'column', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
-                                        this.currentParameter = 'airbagLevel';
-                                        this.request.setActivation(this.currentParameter, true);
-                                        this.request.setActivation('degressiveStep', true);
-                                        this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                                        if (this.request.getValue('type') === 'athena'){
+                                            this.currentParameter = 'airbagLevel';
+                                            this.request.setActivation(this.currentParameter, true);
+                                            this.request.setActivation('degressiveStep', true);
+                                            this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                                        }
                                       }}
+                                      activeOpacity={this.request.getValue('type') === 'athena' ? 0.2 : 1}
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
@@ -708,17 +714,22 @@ _renderAirbagTile() {
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
-                                        {this.request.isActivated('airbagLevel') ? this.request.getValueLabel('airbagLevel') : ''}
+                                        {this.request.getValue('type') === 'athena' ?
+                                                              this.request.isActivated('airbagLevel') ? this.request.getValueLabel('airbagLevel') : ''
+                                                                  : <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'center'}]}>-</Text>}
                             </Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={{flex: 0.334, flexDirection: 'column', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center'}}
-                                      onPress={() => {
+                                  onPress={() => {
+                                    if (this.request.getValue('type') === 'athena'){
                                         this.currentParameter = 'airbagLevel';
                                         this.request.setActivation(this.currentParameter, true);
                                         this.request.setActivation('degressiveStep', true);
                                         this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
-                                      }}
+                                    }
+                                  }}
+                                  activeOpacity={this.request.getValue('type') === 'athena' ? 0.2 : 1}
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
@@ -733,10 +744,11 @@ _renderAirbagTile() {
                                 <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
                                   {this.request.getValueLabel('degressiveStep') === '' ? 'Sans stepdown' : this.request.getValueLabel('degressiveStep')}
                                 </Text>
-                                :
-                                <View style={{backgroundColor : 'white', padding: 10, borderRadius: 30, marginBottom: 3}}>
-                                  <Image style={{width: 30, height: 30}} source={logo} />
-                                </View>
+                                :  this.request.getValue('type') === 'athena' ?
+                                        <View style={{backgroundColor : 'white', padding: 10, borderRadius: 30, marginBottom: 3}}>
+                                          <Image style={{width: 30, height: 30}} source={logo} />
+                                        </View>
+                                        : <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'center'}]}>-</Text>
                             }
                         </View>
                     </TouchableOpacity>
@@ -751,12 +763,15 @@ _renderAirbagTile() {
                                                     this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
                                                   }}
                                 >
+                                { this.request.getValue('type') === 'athena' ?
                                   <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('light')}}/>
+                                  : null 
+                                }
                                 </TouchableOpacity>
                           </View>
                           <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                               <Text style={[setFont('300', 14, setColor('light')), {textAlign: 'left'}]}>
-                                          {this.request.isActivated('degressiveStep') ?  Numeral(this.request.getValue('autocallLevel')).format('0%') : ''}
+                                          {Numeral(this.request.getValue('autocallLevel')).format('0%') }
                               </Text>
                           </View>
                       </View>
@@ -771,7 +786,7 @@ _renderAirbagTile() {
   );
 }
 
-//choix de l'effet memoire
+//choix du tipe de produit
 _renderAuctionTile() {
   let dataAuction = ["Appel public à l'épargne",'Placement privé'];
   return (
@@ -839,8 +854,106 @@ _renderAuctionTile() {
   );
 }
 
+//choix de l'effet mémoire
+_renderMemoryTile=() => {
+  
+  let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];
+
+  return (
+            <View style={{
+                        height: (DEVICE_WIDTH*0.925-20)/3, 
+                        width: (DEVICE_WIDTH*0.925-20)/3, 
+                        marginLeft : 5,  
+                        //marginRight :0, 
+                        marginBottom: 5, 
+                        backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                        borderRadius : 4
+                        }}
+            >
+                <TouchableOpacity style={{flexDirection: 'column', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
+                                  onPress={() => {
+                                    this._dropdown['isMemory'].show();
+                                  }}
+                >
+                    <View style={{flexDirection: 'row'}}>
+                          <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
+                              <MaterialCommunityIconsIcon name={this.request.getIcon('isMemory')}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('light')}}/> 
+                          </View>
+                          <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
+                                          onPress={() => {
+                                          
+                                              this.currentParameter = 'isMemory';
+                                              this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
+                                              
+                                          
+                                          }}
+                        
+                          >
+                              <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('light')}}/>
+                          </TouchableOpacity>
+                    </View>
+                    <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
+                              <ModalDropdown
+                                        //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                                        //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
+                                        dropdownTextStyle={setFont('500', 16, setColor(''), 'Regular')}
+                                        dropdownTextHighlightStyle={setFont('500', 16, setColor(''), 'Bold')}
+                                        onSelect={(index, value) => {
+                                          this._updateValue('isMemory', index == 0  ? true : false, value);
+
+                                          //this.setState({ toto : !this.state.toto});
+                                        }}
+                                        adjustFrame={(f) => {
+                                          return {
+                                            width: DEVICE_WIDTH/2,
+                                            height: Math.min(DEVICE_HEIGHT/3, dataMemoryAutocall.length * 40),
+                                            left : f.left,
+                                            right : f.right,
+                                            top: f.top,
+                                          }
+                                        }}
+                                        defaultIndex={dataMemoryAutocall.indexOf(this.request.getValueLabel('isMemory'))}
+                                        options={dataMemoryAutocall}
+                                        ref={component => this._dropdown['isMemory'] = component}
+                                        disabled={false}
+                                    >
+                                      <Text style={[setFont('300', 14, setColor('')), {textAlign: 'left'}]}>
+                                        {this.request.getValueLabel('isMemory')}
+                                      </Text>
+                                    </ModalDropdown>
+                        </View>
+                </TouchableOpacity>
+                <View style={{height: 35, borderTopWidth : this.request.isActivated('isMemory') ? 1 : 0, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={[setFont('300', 14, this.request.isActivated('isMemory') ? setColor('') : setColor('light'), 'Regular' ), {textAlign: 'center'}]}>
+                      {this.request.getTitle('isMemory')}
+                  </Text>
+                </View>
+           </View>
+        
+  );
+}
+
 _renderTiles() {
-   return (
+  console.log("Type : "+this.request.getValue('type'));
+
+
+  let renderPhoenix = this._renderPhoenixTile();
+  if (this.request.getValue('type') !== 'phoenix'){
+      renderPhoenix = <View style={{flexDirection: 'row'}}>
+                            <View style={{height: (DEVICE_WIDTH*0.925-20)/3, width: (DEVICE_WIDTH*0.925-20)/3, marginLeft : 5, marginBottom: 5 ,borderRadius : 4}}>
+                                  
+                            </View> 
+                            {this._renderMemoryTile()}
+                      </View>
+  } else if(!this.request.isActivated('barrierPhoenix')) {
+    renderPhoenix = <View style={{flexDirection: 'row'}}>
+        {this._renderGenericTile('barrierPhoenix')}
+        {this._renderMemoryTile()}
+      </View>
+  }
+
+  console.log("RENDER TILES");
+  return (
      <View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
             {this._renderAuctionTile()}
@@ -851,7 +964,7 @@ _renderTiles() {
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
           {this._renderGenericTile('barrierPDI')}
-          {this._renderPhoenixTile()}
+          {renderPhoenix}
         
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
@@ -859,30 +972,9 @@ _renderTiles() {
            {this._renderGenericTile('maturity')}
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-           {this._renderAirbagTile()}        
+           {this.request.getValue('type') === 'athena' ? this._renderAirbagTile() : null}        
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-            
-       
-            {this.state.optimizer === 'CPN' ? this._renderGenericTile('UF') : this._renderGenericTile('coupon')}
-            <TouchableOpacity style ={{ height: 80, width: 80,marginLeft : 15, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: 'white'}}
-                            onPress={() => {
-                              if (this.state.optimizer === 'CC') {
-                                alert("'J'optimise ma marge' en cours de développement\nChoisissez 'J'optimise mon coupon'");
-                                return;
-                              }
-                              this.calculateProducts();
-                            }}  
-            >
-              <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
-                  <Image style={{width: 50, height: 50}} source={logo} />
-              </View>
-              <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
-                <Text style={setFont('400', 12, setColor(''), 'Regular')}>{String('évaluer').toUpperCase()}</Text>
-              </View>
-          </TouchableOpacity>
-            
-        </View>
+
         <View style={{height: 150}}>
             
         </View>
@@ -911,6 +1003,8 @@ _renderTiles() {
           );
     }
 
+    
+
     return (
       <View style={{flex:1, height: DEVICE_HEIGHT  }}> 
         {/*  <View style={{flexDirection: 'row', height: 40 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: 'white', paddingTop: isAndroid() ? 0 : STATUSBAR_HEIGHT, justifyContent: 'space-between', alignItems: 'center'}}>
@@ -926,6 +1020,10 @@ _renderTiles() {
           <View style={[globalStyle.bgColor, {flex:1, borderWidth:0, justifyContent: 'space-between', marginTop:  isAndroid() ? 0 : STATUSBAR_HEIGHT}]}>
 
 
+ 
+            <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
+              {this._renderTiles()}
+            </ScrollView>
             <View style={{width: DEVICE_WIDTH*0.9, marginTop : 20, marginBottom : 10, marginLeft : 0.05*DEVICE_WIDTH}}>
                       <SwitchSelector
                         initial={1}
@@ -946,11 +1044,27 @@ _renderTiles() {
                           { label: "J'optimise le coupon", value: "CPN", customIcon: null} 
                         ]}
                       />
+
+                      <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginTop: 15}}>
+                         {this.state.optimizer === 'CPN' ? this._renderGenericTile('UF') : this._renderGenericTile('coupon')}
+                          <TouchableOpacity style ={{ height: 80, width: 80,marginLeft : 15, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: 'white'}}
+                                          onPress={() => {
+                                            if (this.state.optimizer === 'CC') {
+                                              alert("'J'optimise ma marge' en cours de développement\nChoisissez 'J'optimise mon coupon'");
+                                              return;
+                                            }
+                                            this.calculateProducts();
+                                          }}  
+                          >
+                              <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
+                                  <Image style={{width: 50, height: 50}} source={logo} />
+                              </View>
+                              <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
+                                <Text style={setFont('400', 12, setColor(''), 'Regular')}>{String('évaluer').toUpperCase()}</Text>
+                              </View>
+                          </TouchableOpacity>
+                      </View>
             </View>
-            <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
-              {this._renderTiles()}
-            </ScrollView>
-                        
           </View>
           <FLBottomPanel position={this.state.bottomPanelPosition} 
                               snapChange={this._snapChange} 

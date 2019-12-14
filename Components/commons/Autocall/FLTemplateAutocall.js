@@ -92,7 +92,7 @@ class FLTemplateAutocall extends React.Component {
     this.screenWidth = 0.975;
     switch (this.type) {
       case TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE : this.screenWidth = 0.9; break;
-      case TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE : this.screenWidth = 0.8; break;
+      case TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE : this.screenWidth = 0.9; break;
       case TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE : this.screenWidth = 0.6; break;
       default : this.screenWidth = 0.975; break;
     }
@@ -249,6 +249,9 @@ _recalculateProduct(){
     if (autocall.length === 1){
       //console.log(autocall);
       this.autocallResult.updateProduct(autocall[0]);
+      if (this.props.hasOwnProperty('callbackUpdate')) {
+        this.props.callbackUpdate(this.autocallResult);
+      }
       //this.request.setRequestFromCAutocall(this.autocallResult);
       //this.request = new CPSRequest();
       //this.request.setRequestFromCAutocall(this.autocallResult);
@@ -259,9 +262,10 @@ _recalculateProduct(){
     }
 
     this.setState({ messageLoading : '', isGoodToShow : true});
-  
+    
   })
   .catch(error => {
+    console.log("PASSE ICICICICICICICICI");
     console.log("ERREUR recup prix: " + error);
     alert('ERREUR calcul des prix', '' + error);
     this.setState({ isLoading : false , messageLoading : ''});
@@ -311,7 +315,8 @@ _renderHeaderShortTemplate() {
 }
 
 _renderHeaderMediumTemplate() {
-
+  let dataUnderlyingAutocall = this.props.getAllUndelyings();
+  let dataProductName = ['Athéna', 'Phoenix'];
   return (
 
                 <View style={{
@@ -328,16 +333,119 @@ _renderHeaderMediumTemplate() {
                               }}
                 >                                                    
                   <View style={{flexDirection: 'column', justifyContent: 'center' , paddingTop: 3, paddingBottom: 3}}>
-                      <View>
-                        <Text style={setFont('400', 18, 'black', 'Regular')}>
-                          {this.autocall.getProductName()} 
-                        </Text>
-                      </View>
-                      <View style={{flexDirection: 'row'}}>
-                          <Text style={setFont('400', 18, 'black', 'Regular')}>   
-                            {this.autocall.getFullUnderlyingName(this.props.categories)}
-                          </Text>   
-                      </View>
+                  <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0}}
+                            onPress={() => {
+                              this.state.isEditable ? this._dropdown['type'].show() : null;
+                              
+                            }}
+                            activeOpacity={this.state.isEditable ? 0.2 : 1}
+                    >
+                    <View style={{ borderWidth: 0}}>
+                          <ModalDropdown
+                                    //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                                    //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
+                                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                                    dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                                    onSelect={(index, value) => {
+                                      switch (Number(index))  {
+                                         case 0 :   //athena
+                                            this._updateValue('type', 'athena', value);
+                                            this._updateValue('barrierPhoenix', 1, "100%");
+                                            this._updateValue('isIncremental', true, "incremental");
+                                            this._updateValue('isMemory', true, "Effet mémoire");
+                                            break;
+                                         case 1 : 
+                                            this._updateValue('type', 'phoenix', value);
+                                            this._updateValue('isMemory', false, "non mémoire");
+                                            this.autocallResult.getDegressiveStep() !== 0 ? this._updateValue('degressiveStep', 0, 'sans stepdown'): null;
+                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('airbagLevel', 'NA', 'Non airbag') : null;
+                                            this.autocallResult.getBarrierPhoenix() === 1 ?  this._updateValue('barrierPhoenix', 0.9, "90%") : null;
+                                            break;
+                                         case 2 : 
+                                            this._updateValue('type', 'phoenix', value);
+                                            this._updateValue('isMemory', true, "Effet mémoire");
+                                            this._updateValue('barrierPhoenix', 0.9, "90%");
+                                            this.autocallResult.getDegressiveStep() !== 0 ? this._updateValue('degressiveStep', 0, 'sans stepdown'): null;
+                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('airbagLevel', 'NA', 'Non airbag') : null;
+                                            this.autocallResult.getBarrierPhoenix() === 1 ?  this._updateValue('barrierPhoenix', 0.9, "90%") : null;
+                                            break;
+                                      }
+                          
+               
+                                      this._recalculateProduct();
+                                    }}
+                                    adjustFrame={(f) => {
+                                      return {
+                                        width: DEVICE_WIDTH/2,
+                                        height: Math.min(DEVICE_HEIGHT/3, dataProductName.length * 40),
+                                        left : f.left,
+                                        right : f.right,
+                                        top: f.top,
+                                      }
+                                    }}
+                                    defaultIndex={dataProductName.indexOf(this.autocallResult.getProductTypeName())}
+                                    options={dataProductName}
+                                    ref={component => this._dropdown['type'] = component}
+                                    disabled={!this.state.isEditable}
+                                >
+                                  <Text style={setFont('400', 18, this.request.isUpdated('type') ? setColor('turquoise') : 'black')}>
+                                      {this.autocallResult.getProductName()} 
+                                  </Text>
+                          </ModalDropdown>
+                        </View>
+                        { this.state.isEditable ?
+                          <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center', padding : 2}}>
+                            <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('type') ? setColor('turquoise') : 'black'}}/> 
+                          </View>
+                        : null
+                          }
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flexDirection: 'row'}}
+                            onPress={() => {
+                              this.state.isEditable ? this._dropdown['underlying'].show() : null;
+                              
+                            }}
+                            activeOpacity={this.state.isEditable ? 0.2 : 1}
+                    >
+                    
+                            <ModalDropdown
+                              //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                              //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
+                              dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                              dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                              onSelect={(index, value) => {
+                                  let code = [ value ];
+                    
+                                  this._updateValue('underlying', code, value);
+                                  this._recalculateProduct();
+                              }}
+                              adjustFrame={(f) => {
+                                return {
+                                  width: DEVICE_WIDTH/3,
+                                  height: Math.min(DEVICE_HEIGHT/3, dataUnderlyingAutocall.length * 40),
+                                  left : f.left,
+                                  right : f.right,
+                                  top: f.top,
+                                }
+                              }}
+                              defaultIndex={dataUnderlyingAutocall.indexOf(this.autocallResult.getUnderlyingTicker())}
+                              ref={component => this._dropdown['underlying'] = component}
+                              options={dataUnderlyingAutocall}
+                              disabled={!this.state.isEditable}
+                          >
+                            <Text style={setFont('400', 18, this.request.isUpdated('underlying') ? setColor('turquoise') : 'black')}>
+                                {this.autocallResult.getFullUnderlyingName(this.props.categories)} <Text style={setFont('400', 18, 'black')}>{''}</Text>
+                            </Text>
+                          </ModalDropdown>
+           
+                          { this.state.isEditable ?
+                            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center', padding: 2}}>
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('underlying') ? setColor('turquoise') : 'black'}}/> 
+                            </View>
+                          : null
+                           }
+                    </TouchableOpacity>
+                 
                   </View>
                   <View style={{ padding: 5, alignItems: 'center', justifyContent: 'center', paddingRight: 5, borderWidth: 0}}>
                       <Text style={setFont('400', 24, 'green')} numberOfLines={1}>        
@@ -576,7 +684,7 @@ _renderHeaderFullTemplate() {
 _renderAutocallFullTemplate() {
 
   //remplissage des dropdown
-  let dataPhoenixBarrier = ['-70%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
+  let dataPhoenixBarrier = ['-70%','-60%','-55%','-50%','-45%','-40%','-35%','-30%','-25%','-20%','-15%','-10%'];
   let dataPDIBarrier = ['-70%','-65%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
   let dataNNCP = ['1 an','2 ans','3 ans'];
   let dataFreqAutocall = ['Mensuel','Trimestriel','Semestriel','Annuel'];
@@ -586,7 +694,7 @@ _renderAutocallFullTemplate() {
   let dataMaturityAutocall = ['1 an','2 ans','3 ans','4 ans','5 ans','6 ans','7 ans','8 ans','9 ans','10 ans'];
 
   return (
-   <View style={{flex : 0.55, flexDirection : 'row', backgroundColor: 'white', paddingTop:5 }}>
+   <View style={{flexDirection : 'row', backgroundColor: 'white', paddingTop:5 }}>
      <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
        <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
         <Text style={[setFont('300', 10, 'black', 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
@@ -1759,7 +1867,7 @@ render () {
       return (
             <View opacity={this.state.isGoodToShow ? 1 : 0.1} style={{flexDirection : 'column', 
                                                                       width: this.screenWidth, 
-                                                                      marginLeft : 0.025*DEVICE_WIDTH,
+                                                                      //marginLeft : 0.025*DEVICE_WIDTH,
                                                                       shadowColor: 'rgb(75, 89, 101)',
                                                                       shadowOffset: { width: 0, height: 2 },
                                                                       shadowOpacity: 0.9,
@@ -1780,7 +1888,7 @@ render () {
                 }
 
                 {this.state.messageLoading === '' ? this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE ? this._renderAutocallFullTemplate() 
-                                                                                                       : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderAutocallMediumTemplate()
+                                                                                                       : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderAutocallFullTemplate()
                                                                                                                                                               : this._renderAutocallShortTemplate()
                                                   : this._renderRecalculateProduct()
                 }

@@ -52,8 +52,8 @@ export class CProduct {
 
     updateProduct(product) {
       this._constructorProduct(product);
-      console.log("CProduct : ");
-      console.log(this.product);
+      //console.log("CProduct : ");
+      //console.log(this.product);
     }
 
 
