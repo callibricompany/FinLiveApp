@@ -86,7 +86,7 @@ class FLResultPricer extends React.PureComponent {
     _renderPrice = (item , id) => {
       //console.log('id : ' +id);
       return (
-            <View style={{marginTop: 20, alignItems: 'center', justifyContent:'center', borderWidth: 0, marginLeft : -0.025*DEVICE_WIDTH, paddingLeft : 2, paddingRight: 2}}>
+            <View style={{marginTop: 20, alignItems: 'center', justifyContent:'center', borderWidth: 0, marginLeft : 0, paddingLeft : 0, paddingRight: 2}}>
               <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Pricer'}/>
             </View>
       );

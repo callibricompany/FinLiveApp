@@ -84,7 +84,7 @@ function labelStyle (focused, tintColor) {
   
   //Ecran pricer
   const PricerScreenStack = createStackNavigator({
-    Pricer: {
+    PricerEvaluate: {
       screen: PricerScreen,
       navigationOptions: {
         title: 'Evaluer'

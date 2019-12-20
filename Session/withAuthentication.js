@@ -95,10 +95,10 @@ const withAuthentication = Component => {
                 });
 
                 let toto = [
-                  ...new Set(userDatas.homePage.map(x => x.category))
+                  ...new Set(userDatas.homePage.map(x => x.template))
                 ];
                 console.log(toto);
-                //console.log(userDatas.favorites);
+                //console.log(userDatas.homePage);
                 resolve("ok");
               })
               .catch(error => {

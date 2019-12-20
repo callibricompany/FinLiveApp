@@ -4,21 +4,25 @@ import { CProduct } from "./CProduct";
 import Moment from 'moment';
 import FREQUENCYLIST from "../../Data/frequencyList.json";
 
+
 export class CAutocall extends CProduct {
   constructor(autocall) {
     super(autocall); // appelle le constructeur parent avec le paramètre
 
     this.setProductName();
     this.underLyingName = "[UDL]";
+
+    this._checkDates();
   }
 
 
 
   updateProduct(product) {
-    console.log("CAutocall : ");
+    //console.log("CAutocall : ");
     super.updateProduct(product);
-    console.log("CAutocall apres super : ");
+    //console.log("CAutocall apres super : ");
     this.setProductName();
+    this._checkDates();
   }
 
   //determination du nom du produit
@@ -70,6 +74,10 @@ export class CAutocall extends CProduct {
     return desc;
   }
 
+  getProduct() {
+    return this.product;
+  }
+
   getResultAuction() {
     let result = [];
 
@@ -112,7 +120,21 @@ export class CAutocall extends CProduct {
   //      DATES
 
   /////////////////////////
+  _checkDates() {
+    if (!this.product.hasOwnProperty('startdate')){
+      this.product['startdate'] = Moment(this.product.date, "YYYYMMDD").add(14, 'days').format("YYYYMMDD");
+    }
 
+    if (!this.product.hasOwnProperty('enddate')){
+      let m = this.getMaturityInMonths();
+      this.product['enddate'] = Moment(this.product.startdate, "YYYYMMDD").add(m, 'months').format("YYYYMMDD");
+    }
+
+    if (!this.product.hasOwnProperty('finaldate')){
+      let m = this.getMaturityInMonths();
+      this.product['finaldate'] = Moment(this.product.date, "YYYYMMDD").add(m, 'months').format("YYYYMMDD");
+    }
+  }
   getStrikingDate() {
     return Moment(this.product.date, "YYYYMMDD").toDate();
   }
@@ -121,8 +143,19 @@ export class CAutocall extends CProduct {
     return Moment(this.product.finaldate, "YYYYMMDD").toDate();
   }
 
+  getNextImportantDate() {
+
+  }
+
   isStruck () {
-    return false;
+    struck = false;
+    //console.log("Date striking : "+this.getStrikingDate());
+    //console.log("Date now : "+Date.now());
+    strikingDateMoinsUn = Moment(this.getStrikingDate()).add(1, 'days').toDate();
+    if (strikingDateMoinsUn < Date.now()) {
+      struck = true;
+    }
+    return struck;
   }
 
   //determine le nom du sous
@@ -200,7 +233,7 @@ export class CAutocall extends CProduct {
         name = "Athéna";
       }
     } else if (name.toLowerCase().includes("phoenix")) {
-      if (this.isPhoenixMemory()) {
+      if (this.isMemory()) {
         name = "Phoenix mémoire";
       } else {
         name = "Phoenix";
@@ -291,16 +324,7 @@ export class CAutocall extends CProduct {
     return name;
   }
 
-  //renvoie l'upfront utilisé
-  getInvestmentType() {
-    let name = "Placement Privé";
-
-    if (this.product.hasOwnProperty("cf_cpg_choice")) {
-      name = this.product.cf_cpg_choice;
-    }
-
-    return name;
-  }
+ 
 
   //renvoie si airbag ou semi-airbag
   getAirbagTitle() {
@@ -324,6 +348,15 @@ export class CAutocall extends CProduct {
     }
     if (this.isSemiAirbag()) {
       name = "SA";
+    }
+    return name;
+  }
+
+  //renvoie le niveau airbag
+  getAirbagLevel() {
+    let name = 1;
+    if (this.product.hasOwnProperty("airbagLevel")) {
+      name = this.product.airbagLevel;
     }
     return name;
   }
@@ -532,7 +565,7 @@ export class CAutocall extends CProduct {
   }
 
   //verifie si c'est c'est un phoenix mémoire
-  isPhoenixMemory() {
+  isMemory() {
     let res = false;
     if (this.product.hasOwnProperty("isMemory")) {
       res = this.product.isMemory;
@@ -556,5 +589,68 @@ export class CAutocall extends CProduct {
       res = this.product.isPDIUS;
     }
     return res;
+  }
+
+
+  //calcule les dates et les niveaux de paiements et les niveaux de coupons
+  getPhoenixDatas() {
+        let phoenixDatas = [];
+        if (this.isPhoenix()){
+              
+            let freq = this.getFrequencyAutocallNumber();
+            let mat = this.getMaturityInMonths();
+
+            let numberOfDates = mat / freq;
+            //console.log("nb red ates : " + numberOfDates);
+            let obj = {};
+            let currentYear = 0;
+            let incrementalMultiplier = 1;
+            for (let i = 0; i < numberOfDates; i++) {
+              currentYear = Math.trunc(i / freq);
+              obj = {};
+              d = Moment(this.getStrikingDate(), "YYYYMMDD").add((i+1) * freq, 'months');
+              obj["date"] = d;
+              obj["level"] = Number(this.getBarrierPhoenix());
+              obj["coupon"] = Number(this.getCouponPhoenix())*freq/12;
+              
+              phoenixDatas.push(obj);
+            }
+        }
+        return phoenixDatas;
+  }
+
+    //calcule les dates et les niveaux de paiements et les niveaux de rappels et de coupons
+  getAutocallDatas() {
+
+    //Nombres de dates : 20  -  Nombre NNCall : 4  -  Freq : 6         DS : 3
+
+      callableDatas = [];
+      let freq = this.getFrequencyAutocallNumber();
+      let mat = this.getMaturityInMonths();
+      let numberOfDates = mat / freq;
+      
+      let numberWithNoCall = this.getNNCP()/ freq;
+      
+      
+      let obj = {};
+      let ds = Number(this.getDegressivity());
+      let currentYear = 0;
+      let incrementalMultiplier = 1;
+      console.log("Nombres de dates : " +numberOfDates + "  -  Nombre NNCall : " + numberWithNoCall + "  -  Freq : " + freq + "         DS : "+ds);
+      for (let i = numberWithNoCall; i <= numberOfDates; i++) {
+        currentYear = Number(freq* i / 12);
+        obj = {};
+        d = Moment(this.getStrikingDate(), "YYYYMMDD").add(i * freq, 'months');
+        obj["date"] = d;
+        obj["level"] = Number(this.getAutocallLevel()) - currentYear * ds/100;
+        if (i === numberOfDates) {
+          obj["level"] = Math.min(obj["level"], Number(this.getAirbagLevel()))
+        }
+        incrementalMultiplier = this.isMemory() ? currentYear : freq/12;
+        obj["coupon"] = this.isPhoenix() ? 1 : (1+(incrementalMultiplier * Number(this.getCouponTitle())));
+        
+        callableDatas.push(obj);
+      }
+      return callableDatas;
   }
 }

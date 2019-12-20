@@ -77,6 +77,15 @@ export class CProduct {
 
     }
 
+    getAuctionType() {
+      let name = "Placement Privé";
+      if (this.product.hasOwnProperty('cf_cpg_choice')){
+  
+        name = this.product['cf_cpg_choice'];
+      }
+      return name;
+    }
+
     setUserId (userId) {
       this.object['toFavorites']['userId'] = userId;
     }
@@ -139,6 +148,7 @@ export class CProduct {
     /////////////////////////
 
     getStartDate() {
+
       return Moment(this.product.startdate, "YYYYMMDD").toDate();
     }
 

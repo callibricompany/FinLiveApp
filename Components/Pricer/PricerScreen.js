@@ -62,6 +62,9 @@ import { FLCouponMinDetail } from './description/FLCouponMinDetail';
 
 import logo from '../../assets/LogoWithoutText.png';
 import logo_gray from '../../assets/LogoWithoutTex_gray.png';
+import logo_white from '../../assets/LogoWithoutTex_white.png';
+
+
 
 const Spline = require('cubic-spline');
 var polynomial = require('everpolate').polynomial;
@@ -104,7 +107,9 @@ class PricerScreen extends React.Component {
     //ensemble des modal dropdown
     this._dropdown = {};
 
-    this.request = new CPSRequest();
+    //recuperation eventuelle des cataracteristiques de l'autocall
+    let r = this.props.navigation.getParam('request', '...');
+    r === '...' ? this.request = new CPSRequest() : this.request = r;
     //console.log(this.request.getProduct());
 
     //recuperation de la liste des sous-jacents
@@ -131,6 +136,9 @@ class PricerScreen extends React.Component {
 
   }
 
+  componentWillUpdate() {
+    console.log("component will update");
+  }
   componentWillUnmount() {
     if (!isAndroid()) {
       this._navListener.remove();
@@ -449,7 +457,7 @@ _renderGenericTile=(criteria) => {
 //choix de la fréquence et du no call périod
 _renderPhoenixTile=() => {
   let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];
-  console.log("PHOENIX ACTIVE : "+ this.request.isActivated('barrierPhoenix') + "    :     " +this.request.getValue('barrierPhoenix'));
+  //console.log("PHOENIX ACTIVE : "+ this.request.isActivated('barrierPhoenix') + "    :     " +this.request.getValue('barrierPhoenix'));
   //determination de la couleur backgound
   let bgColorPhoenix = 'white';
   let iconColorPhoenix = setColor('');
@@ -934,7 +942,7 @@ _renderMemoryTile=() => {
 }
 
 _renderTiles() {
-  console.log("Type : "+this.request.getValue('type'));
+  //console.log("Type : "+this.request.getValue('type'));
 
 
   let renderPhoenix = this._renderPhoenixTile();
@@ -952,7 +960,7 @@ _renderTiles() {
       </View>
   }
 
-  console.log("RENDER TILES");
+  //console.log("RENDER TILES");
   return (
      <View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
@@ -989,7 +997,26 @@ _renderTiles() {
    );
  }
 
+_renderUFOrCoupon(what) {
 
+  return (
+      <TouchableOpacity style={{flexDirection : 'row', justifyContent: 'flex-end', padding: 10, backgroundColor : 'white', borderRadius : 4}}
+                        onPress={() => {                          
+                            this.currentParameter = what;
+                            this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                        }}
+      >
+          <View style={{justifyContent: 'center', alignItems: 'center', paddinng : 5}}>
+               <MaterialCommunityIconsIcon name={this.request.getIcon(what)}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('light')}}/> 
+          </View>
+          <View style={{justifyContent: 'center', alignItems: 'center', borderWidth: 0, padding: 10}}>
+                <Text style={[setFont('300', 14, this.request.isActivated(what) ? setColor('') : setColor('light'), 'Regular' ), {textAlign: 'center'}]}>
+                      {this.request.getTitle(what)} : {Numeral(this.request.getValue(what)).format('0.00%')}
+                </Text>
+          </View>
+      </TouchableOpacity>
+  );
+}
 
   render() {
     if (this.state.isLoading) {
@@ -1024,7 +1051,7 @@ _renderTiles() {
             <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
               {this._renderTiles()}
             </ScrollView>
-            <View style={{width: DEVICE_WIDTH,  marginTop : 10, paddingTop : 10, paddingLeft : 0.05*DEVICE_WIDTH, paddingRight : 0.05*DEVICE_WIDTH,  marginLeft :0, backgroundColor: 'snow'}}>
+            <View style={{width: DEVICE_WIDTH,  marginTop : 10, paddingTop : 10, paddingLeft : 0.05*DEVICE_WIDTH, paddingRight : 0.05*DEVICE_WIDTH,  marginLeft :0}}>
                       <SwitchSelector
                         initial={1}
                         onPress={obj => {
@@ -1035,8 +1062,8 @@ _renderTiles() {
                         }}
                         textColor={setColor('light')} 
                         selectedColor={'white'}
-                        buttonColor={setColor('turquoise')} 
-                        borderColor={setColor('turquoise')} 
+                        buttonColor={setColor('')} 
+                        borderColor={setColor('')} 
                         returnObject={true}
                         hasPadding
                         options={[
@@ -1045,9 +1072,9 @@ _renderTiles() {
                         ]}
                       />
 
-                      <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginTop: 15}}>
-                         {this.state.optimizer === 'CPN' ? this._renderGenericTile('UF') : this._renderGenericTile('coupon')}
-                          <TouchableOpacity style ={{ height: 80, width: 80,marginLeft : 15, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: 'white'}}
+                      <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 15}}>
+                         {this.state.optimizer === 'CPN' ? this._renderUFOrCoupon('UF') : this._renderUFOrCoupon('coupon')}
+                          <TouchableOpacity style ={{ flex: 0.4, height: 80, width: 80,marginLeft : 15, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: setColor('turquoise')}}
                                           onPress={() => {
                                             if (this.state.optimizer === 'CC') {
                                               alert("'J'optimise ma marge' en cours de développement\nChoisissez 'J'optimise mon coupon'");
@@ -1057,10 +1084,10 @@ _renderTiles() {
                                           }}  
                           >
                               <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
-                                  <Image style={{width: 50, height: 50}} source={logo} />
+                                  <Image style={{width: 50, height: 50}} source={logo_white} />
                               </View>
                               <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
-                                <Text style={setFont('400', 12, setColor(''), 'Regular')}>{String('évaluer').toUpperCase()}</Text>
+                                <Text style={setFont('400', 12, 'white', 'Regular')}>{String('évaluer').toUpperCase()}</Text>
                               </View>
                           </TouchableOpacity>
                       </View>

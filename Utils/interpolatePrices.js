@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 const dataForge = require('data-forge');
 var interpolator = require('./spline.js');
 
@@ -544,6 +546,7 @@ export  function interpolateBestProducts(data, request) {
                         fVega = interpolator(pointsVega);
 
                         //on fait le tour des maturite et on ajoute les manquantes
+                        console.log(product.typeAuction.value);
                         allMatDate.forEach((mat) => {
                           console.log(mat + "  :   " + f(mat) + "      /      "+ product.maturity.value[0] + " et " + product.maturity.value[1]);
                           if (mat >= product.maturity.value[0] && mat <= product.maturity.value[1]) {
@@ -634,6 +637,7 @@ export  function interpolateBestProducts(data, request) {
      UFAssoc : row => product.UFAssoc.value,
      couponPhoenix : row => row.coupon,
      cf_cpg_choice : row => product.typeAuction.valueLabel,
+     date : row => Moment(Date.now()).format("YYYYMMDD")
     });
    
     return interpolatedProducts.toArray();

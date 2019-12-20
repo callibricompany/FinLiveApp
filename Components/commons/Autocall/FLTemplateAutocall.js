@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal, Alert} from 'react-native';
+import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -49,7 +50,7 @@ import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
 import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, isEqual } from '../../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE } from '../../../Utils';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
@@ -77,6 +78,7 @@ class FLTemplateAutocall extends React.Component {
       isEditable : typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : false,
       showModalUpdate : false,
       messageLoading: '',
+      nominal : 0,
       toto : true,
     }
 
@@ -106,13 +108,14 @@ class FLTemplateAutocall extends React.Component {
     this.request = new CPSRequest();
     this.request.setRequestFromCAutocall(this.autocall);
 
-
+    
   }
 
 
   componentWillReceiveProps (props) {
     //console.log("Prop received in FLTemplateAutocall : " + props.data);
     typeof props.isGoodToShow !== 'undefined' ? this.setState({ isGoodToShow : props.isGoodToShow }) : null;
+    typeof props.nominal !== 'undefined' ? this.setState({ nominal : props.nominal }) : null;
    
   }
  
@@ -247,7 +250,8 @@ _recalculateProduct(){
     autocall = interpolateBestProducts(data, this.request);
 
     if (autocall.length === 1){
-      //console.log(autocall);
+      //console.log("RESULTAT DE L'AUTOCALL");
+      //console.log(autocall[0]);
       this.autocallResult.updateProduct(autocall[0]);
       if (this.props.hasOwnProperty('callbackUpdate')) {
         this.props.callbackUpdate(this.autocallResult);
@@ -265,7 +269,6 @@ _recalculateProduct(){
     
   })
   .catch(error => {
-    console.log("PASSE ICICICICICICICICI");
     console.log("ERREUR recup prix: " + error);
     alert('ERREUR calcul des prix', '' + error);
     this.setState({ isLoading : false , messageLoading : ''});
@@ -317,6 +320,7 @@ _renderHeaderShortTemplate() {
 _renderHeaderMediumTemplate() {
   let dataUnderlyingAutocall = this.props.getAllUndelyings();
   let dataProductName = ['Athéna', 'Phoenix'];
+  let dataAuction = ["Appel public à l'épargne",'Placement Privé'];
   return (
 
                 <View style={{
@@ -445,13 +449,61 @@ _renderHeaderMediumTemplate() {
                           : null
                            }
                     </TouchableOpacity>
-                 
+                    <TouchableOpacity style={{flexDirection: 'row'}}
+                            onPress={() => {
+                              this.state.isEditable ? this._dropdown['auction'].show() : null;
+                              
+                            }}
+                            activeOpacity={this.state.isEditable ? 0.2 : 1}
+                    >
+                    
+                            <ModalDropdown
+                              //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                              //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : setColor('light'), 'Bold'), {textAlign: 'center'}]}
+                              dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                              dropdownTextHighlightStyle={setFont('500', 16, 'black', 'Bold')}
+                              onSelect={(index, value) => {
+                                  let code = 'PP';
+                                 
+                                  if (Number(index) === 0) {
+                                    code = 'APE'
+                                  } else {
+                                    code = 'PP';
+                                  }
+                                  this._updateValue('typeAuction', code, value);
+                                  this._recalculateProduct();
+                              }}
+                              adjustFrame={(f) => {
+                                return {
+                                  width: DEVICE_WIDTH/2,
+                                  height: Math.min(DEVICE_HEIGHT/3, dataAuction.length * 40),
+                                  left : f.left,
+                                  right : f.right,
+                                  top: f.top,
+                                }
+                              }}
+                              defaultIndex={dataAuction.indexOf(this.autocallResult.getAuctionType())}
+                              ref={component => this._dropdown['auction'] = component}
+                              options={dataAuction}
+                              disabled={!this.state.isEditable}
+                          >
+                            <Text style={setFont('400', 14, this.request.isUpdated('typeAuction') ? setColor('turquoise') : 'black')}>
+                                {this.autocallResult.getAuctionType()}
+                            </Text>
+                          </ModalDropdown>
+                          { this.state.isEditable ?
+                          <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center', padding : 2}}>
+                            <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('typeAuction') ? setColor('turquoise') : 'black'}}/> 
+                          </View>
+                        : null
+                          }
+                    </TouchableOpacity>
                   </View>
                   <View style={{ padding: 5, alignItems: 'center', justifyContent: 'center', paddingRight: 5, borderWidth: 0}}>
                       <Text style={setFont('400', 24, 'green')} numberOfLines={1}>        
-                          { Numeral(this.autocallResult.getCouponTitle()).format('0.00%')}
-                      </Text>
-                      <Text style={setFont('200', 12)}>p.a.</Text>   
+                          { Numeral(this.autocallResult.getCouponTitle()).format('0.00%')} <Text style={setFont('200', 12)}>p.a.
+                      </Text></Text>   
+                      <Text style={setFont('200', 12)}>UF : {this.state.nominal === 0 ? Numeral(this.autocall.getUF()).format('0.00%') : currencyFormatDE(this.autocall.getUF() * this.state.nominal, 0)} {this.autocall.getCurrency()}</Text>
                   </View>  
                 </View>
   
@@ -787,14 +839,14 @@ _renderAutocallFullTemplate() {
                             top: f.top,
                           }
                         }}
-                        defaultIndex={this.autocallResult.isPhoenixMemory() ? 0 : 1}
-                        defaultValue={dataMemoryAutocall[this.autocallResult.isPhoenixMemory() ? 0 : 1]}
+                        defaultIndex={this.autocallResult.isMemory() ? 0 : 1}
+                        defaultValue={dataMemoryAutocall[this.autocallResult.isMemory() ? 0 : 1]}
                         ref={component => this._dropdown['isMemory'] = component}
                         options={dataMemoryAutocall}
                         disabled={!this.state.isEditable}
                     >
                      <Text style={[setFont('200', 11, this.request.isUpdated('isMemory') ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]} numberOfLines={1}>
-                       {this.autocallResult.isPhoenixMemory() ? 'mémoire': 'sans mémoire'}
+                       {this.autocallResult.isMemory() ? 'mémoire': 'sans mémoire'}
                      </Text>
                    </ModalDropdown>
             </View>
@@ -1256,14 +1308,14 @@ _renderAutocallMediumTemplate() {
                             top: f.top,
                           }
                         }}
-                        defaultIndex={this.autocallResult.isPhoenixMemory() ? 0 : 1}
-                        defaultValue={dataMemoryAutocall[this.autocallResult.isPhoenixMemory() ? 0 : 1]}
+                        defaultIndex={this.autocallResult.isMemory() ? 0 : 1}
+                        defaultValue={dataMemoryAutocall[this.autocallResult.isMemory() ? 0 : 1]}
                         ref={component => this._dropdown['isMemory'] = component}
                         options={dataMemoryAutocall}
                         disabled={!this.state.isEditable}
                     >
                      <Text style={[setFont('200', 11, this.request.isUpdated('isMemory') ? setColor('turquoise') : 'black','Regular'), {textAlign: 'center'}]} numberOfLines={1}>
-                       {this.autocallResult.isPhoenixMemory() ? 'mémoire': 'sans mémoire'}
+                       {this.autocallResult.isMemory() ? 'mémoire': 'sans mémoire'}
                      </Text>
                    </ModalDropdown>
             </View>
@@ -1722,10 +1774,14 @@ _renderFooterShortTemplate(isFavorite) {
                   <Ionicons name="md-help" size={20} style={{color: setColor('light')}}/>
                 </TouchableOpacity>
                 <TouchableOpacity style={{flex : 0.34, justifyContent: 'center', alignItems: 'center'}} 
-                                  onPress={() => {
-                                    
-                                   
-                                  }}
+                                                onPress={() => {
+                                                  let r = new CPSRequest();
+                                                  r.setRequestFromCAutocall(this.autocallResult);
+                                                  this.props.navigation.dispatch(NavigationActions.navigate({
+                                                    routeName: 'Pricer',
+                                                    action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
+                                                  }));
+                                                }}
                  >
                  
                   <FontAwesome name={"gears"}  size={20} style={{color: setColor('light')}}/> 
@@ -1813,10 +1869,14 @@ _renderFooterFullTemplate(isFavorite) {
                   <Ionicons name="md-help" size={20} style={{color: setColor('light')}}/>
                 </TouchableOpacity>
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
-                                  onPress={() => {
-                                    
-                                   
-                                  }}
+                                                onPress={() => {
+                                                  let r = new CPSRequest();
+                                                  r.setRequestFromCAutocall(this.autocallResult);
+                                                  this.props.navigation.dispatch(NavigationActions.navigate({
+                                                    routeName: 'Pricer',
+                                                    action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
+                                                  }));
+                                                }}
                  >
                  
                   <FontAwesome name={"gears"}  size={20} style={{color: setColor('light')}}/> 
@@ -1876,7 +1936,8 @@ render () {
                                                                       //borderTopLeftRadius: 15,
                                                                       borderRadius: 10,
                                                                       //overflow: "hidden",
-                                                                      elevation: 10
+                                                                      backgroundColor: 'gray',
+                                                                      elevation: 3
                                                                     }}
             >
 

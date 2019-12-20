@@ -114,7 +114,7 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
     });
   }
 
-export function ssCreateStructuredProduct (idToken, product) {
+export function ssCreateStructuredProduct (firebase, product) {
 
   var FormData = require('form-data');
   var form = new FormData();
@@ -137,32 +137,37 @@ export function ssCreateStructuredProduct (idToken, product) {
   }*/
   
 
-  var axiosConfig = {
-    headers :{
-      //'Content-Type': 'application/x-www-form-urlencoded',
-      //'Content-Type': 'application/json; charset=utf-8',
-      'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
-      //'Accept'      : 'application/json',
-      'bearer'      : idToken,
-      //'type'        : 'Produit structuré'
-    }
-  };
 
 
-  return new Promise(
-    (resolve, reject) => {
-      axios.post(URL_AWS + '/createTicket', form, axiosConfig)
-      .then((response) => {
-        //console.log(response);
-        resolve(response)
-        //res.render('pages/register',{email: email, isConnected: isConnected});
-      })
-      .catch(function (error) {
-        console.log("Erreur requete aws : " + error);
-        reject(error)
-      });
-    });
-  }
+
+  return new Promise((resolve, reject) => {
+    firebase.doGetIdToken()
+    .then(token => {
+        var axiosConfig = {
+          headers :{
+            //'Content-Type': 'application/x-www-form-urlencoded',
+            //'Content-Type': 'application/json; charset=utf-8',
+            'Content-Type'  : `multipart/form-data; boundary=${form._boundary}`,
+            //'Accept'      : 'application/json',
+            'bearer'        : token,
+            //'type'        : 'Produit structuré'
+          }
+        };  
+        axios.post(URL_AWS + '/createTicket', form, axiosConfig)
+        .then((response) => {
+          //console.log(response);
+          resolve(response)
+          //res.render('pages/register',{email: email, isConnected: isConnected});
+        })
+        .catch(function (error) {
+          console.log("Erreur requete aws : " + error);
+          reject(error)
+        });
+    })
+    .catch((error) => reject(error));
+    
+  });
+}
 
 
 export function ssModifyTicket (idToken, product) {

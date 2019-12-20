@@ -293,7 +293,7 @@ export class CPSRequest extends CRequest {
       this.autocall = autocall;
       p = {
         'typeAuction': {
-          'value': autocall.getInvestmentType() === 'Placement Privé' ? 'PP' : 'APE',
+          'value': autocall.getAuctionType() === 'Placement Privé' ? 'PP' : 'APE',
           'valueLabel': 'Placement Privé',
           'defaultValueLabel': 'Optimisé',
           'title': 'TYPE DE DEMANDE',
@@ -383,7 +383,7 @@ export class CPSRequest extends CRequest {
           'isUpdated': false,
         },
         'isMemory': {
-          'value': autocall.isPhoenixMemory(),
+          'value': autocall.isMemory(),
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': '',
