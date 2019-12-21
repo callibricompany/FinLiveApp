@@ -1000,17 +1000,17 @@ _renderTiles() {
 _renderUFOrCoupon(what) {
 
   return (
-      <TouchableOpacity style={{flexDirection : 'row', justifyContent: 'flex-end', padding: 10, backgroundColor : 'white', borderRadius : 4}}
+      <TouchableOpacity style={{width : 0.85*DEVICE_WIDTH - 80 , flexDirection : 'row', justifyContent: 'center', padding: 10, backgroundColor : 'white', borderWidth : 1, borderColor: setColor(''), borderRadius : 4}}
                         onPress={() => {                          
                             this.currentParameter = what;
                             this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
                         }}
       >
           <View style={{justifyContent: 'center', alignItems: 'center', paddinng : 5}}>
-               <MaterialCommunityIconsIcon name={this.request.getIcon(what)}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('light')}}/> 
+               <MaterialCommunityIconsIcon name={this.request.getIcon(what)}  size={30} style={{color: this.request.isActivated(what) ? setColor(''): setColor('light')}}/> 
           </View>
           <View style={{justifyContent: 'center', alignItems: 'center', borderWidth: 0, padding: 10}}>
-                <Text style={[setFont('300', 14, this.request.isActivated(what) ? setColor('') : setColor('light'), 'Regular' ), {textAlign: 'center'}]}>
+                <Text style={[setFont('300', 14, this.request.isActivated(what) ? setColor(''): setColor('light'), 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle(what)} : {Numeral(this.request.getValue(what)).format('0.00%')}
                 </Text>
           </View>
@@ -1051,7 +1051,7 @@ _renderUFOrCoupon(what) {
             <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
               {this._renderTiles()}
             </ScrollView>
-            <View style={{width: DEVICE_WIDTH,  marginTop : 10, paddingTop : 10, paddingLeft : 0.05*DEVICE_WIDTH, paddingRight : 0.05*DEVICE_WIDTH,  marginLeft :0}}>
+            <View style={{width: DEVICE_WIDTH,  marginTop : 10, paddingBottom : 10, paddingTop : 10, paddingLeft : 0.05*DEVICE_WIDTH, paddingRight : 0.05*DEVICE_WIDTH,  marginLeft :0, backgroundColor: 'white'}}>
                       <SwitchSelector
                         initial={1}
                         onPress={obj => {
@@ -1072,9 +1072,9 @@ _renderUFOrCoupon(what) {
                         ]}
                       />
 
-                      <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 15}}>
+                      <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginTop: 15, paddingBottom : 10}}>
                          {this.state.optimizer === 'CPN' ? this._renderUFOrCoupon('UF') : this._renderUFOrCoupon('coupon')}
-                          <TouchableOpacity style ={{ flex: 0.4, height: 80, width: 80,marginLeft : 15, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: setColor('turquoise')}}
+                          <TouchableOpacity style ={{  position: "absolute" , left : 0.9*DEVICE_WIDTH-80, height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: setColor('turquoise')}}
                                           onPress={() => {
                                             if (this.state.optimizer === 'CC') {
                                               alert("'J'optimise ma marge' en cours de développement\nChoisissez 'J'optimise mon coupon'");
@@ -1092,6 +1092,9 @@ _renderUFOrCoupon(what) {
                           </TouchableOpacity>
                       </View>
             </View>
+          </View>
+          <View style={[globalStyle.bgColor, {height: 20}]}>
+
           </View>
           <FLBottomPanel position={this.state.bottomPanelPosition} 
                               snapChange={this._snapChange} 

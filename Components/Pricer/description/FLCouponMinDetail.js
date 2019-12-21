@@ -58,7 +58,7 @@ export class FLCouponMinDetail extends Component{
                         />
                 </View>
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 40}}>
-                  <Text style={setFont('400', 18, 'Regular')}>{Numeral(this.state.couponMin).format('0.00%')} p.a.</Text> 
+                  <Text style={setFont('400', 18, 'black','Regular')}>{Numeral(this.state.couponMin).format('0.00%')} p.a.</Text> 
                 </View>
             </View>
         );
