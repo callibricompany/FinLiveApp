@@ -287,10 +287,30 @@ export class CPSRequest extends CRequest {
       this.product[criteria].isUpdated = true;
     }
 
+    _fillCriteria(criteria, value, valueLabel) {
+      this.product[criteria].value = value;
+      this.product[criteria].valueLabel = valueLabel;
+      this.product[criteria].isActivated = true;
+    }
 
     setRequestFromCAutocall (autocall) {
       //console.log("SOUS JACENT : " + autocall.getUnderlyingTicker());
       this.autocall = autocall;
+      this._fillCriteria('typeAuction', autocall.getAuctionType() === 'Placement Privé' ? 'PP' : 'APE', autocall.getAuctionType());
+      this._fillCriteria('type', autocall.getProductShortName(), autocall.getProductName());
+      this._fillCriteria('underlying', [autocall.getUnderlyingTicker()], autocall.getUnderlyingTicker());
+      this._fillCriteria('maturity', [autocall.getMaturityInMonths()/12, autocall.getMaturityInMonths()/12], autocall.getMaturityName());
+      this._fillCriteria('barrierPDI', autocall.getBarrierPDI(), "Protégé jusqu'à " + Numeral(autocall.getBarrierPDI()-1).format('0%'));
+      this._fillCriteria('freq', autocall.getFrequencyAutocall(), autocall.getFrequencyAutocallTitle());
+      this._fillCriteria('barrierPhoenix', autocall.getBarrierPhoenix(), "Protégé jusqu'à : " + Numeral(autocall.getBarrierPhoenix() - 1).format('0%'));
+      this._fillCriteria('airbagLevel', autocall.getAirbagCode(), autocall.getAirbagTitle());
+      this._fillCriteria('nncp', autocall.getNNCP(), "1er rappel dans "+autocall.getNNCPLabel());
+      this._fillCriteria('isMemory', autocall.isMemory(), autocall.isMemory() ? 'Effet mémoire' : 'Non mémoire');
+      this._fillCriteria('degressiveStep', autocall.getDegressivity(), autocall.getDegressivity() === 0 ? '' : 'Stepdown ' + Numeral(autocall.getDegressivity()).format('0%') + " / an");
+      this._fillCriteria('UF', autocall.getUF(), autocall.getUF());
+      this._fillCriteria('UFAssoc', autocall.getUFAssoc(), autocall.getUFAssoc());
+
+      /*
       p = {
         'typeAuction': {
           'value': autocall.getAuctionType() === 'Placement Privé' ? 'PP' : 'APE',
@@ -465,7 +485,7 @@ export class CPSRequest extends CRequest {
           'isUpdated': false,
           'icon': 'ticket-percent',
         },
-      };
+      };*/
    
 
       this.updateProduct(p);

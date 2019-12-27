@@ -10,7 +10,7 @@ import { globalStyle, setColor, backgdColor, FLFontFamily, subscribeColor, setFo
 
 import Robot from "../../assets/svg/robotBlink.svg";
 
-import { ifIphoneX, ifAndroid, isAndroid, isIphoneX } from '../../Utils';
+import { ifIphoneX, ifAndroid, isAndroid, isIphoneX, isEqual } from '../../Utils';
 import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 
 import SwipeGesture from '../../Gesture/SwipeGesture';
@@ -108,8 +108,8 @@ class PricerScreen extends React.Component {
     this._dropdown = {};
 
     //recuperation eventuelle des cataracteristiques de l'autocall
-    let r = this.props.navigation.getParam('request', '...');
-    r === '...' ? this.request = new CPSRequest() : this.request = r;
+    this.request = new CPSRequest() 
+
     //console.log(this.request.getProduct());
 
     //recuperation de la liste des sous-jacents
@@ -135,10 +135,32 @@ class PricerScreen extends React.Component {
    this.needToRefresh();
 
   }
-
-  componentWillUpdate() {
+ componentDidUpdate(){
+  //console.log("componentDidUpdate");
+  let r = this.props.navigation.getParam('request', '...');
+  //console.log("R : "+ r);
+  
+  if (r !== '...'){
+    //console.log("Request non null");
+    if (!Object.is(this.request, r)){
+        //console.log("non egal");  
+        this.request = r;
+        this.setState({ toto : !this.state.toto });
+    } else {
+      //console.log("deja equal");
+    }
+  } 
+ }
+  /*componentWillUpdate() {
+    let r = this.props.navigation.getParam('request', '...');
+    console.log("R : "+ r);
+    if (r !== '...'){
+      console.log("Request non null");
+      this.request = r;
+      this.setState({ toto : !this.state.toto });
+    } 
     console.log("component will update");
-  }
+  }*/
   componentWillUnmount() {
     if (!isAndroid()) {
       this._navListener.remove();
@@ -482,7 +504,7 @@ _renderPhoenixTile=() => {
                         borderRadius : 4
                         }}
             >
-                <View style={{flexDirection: 'row', height: 2*(DEVICE_WIDTH*0.925-20)/3/3}}>
+                <View style={{flexDirection: 'row', height: 2*(DEVICE_WIDTH*0.925)/3/3, borderWidth : 0}}>
                     <TouchableOpacity style={{flexDirection: 'column', width :(DEVICE_WIDTH*0.925-20)/3 +5, borderWidth: 0,  paddingTop: 2, justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
                                         if (this.request.getValue('type') === 'phoenix'){
@@ -796,7 +818,7 @@ _renderAirbagTile() {
 
 //choix du tipe de produit
 _renderAuctionTile() {
-  let dataAuction = ["Appel public à l'épargne",'Placement privé'];
+  let dataAuction = ["Appel public à l'épargne",'Placement Privé'];
   return (
             <View style={{
                         height: (DEVICE_WIDTH*0.925-20)/3, 

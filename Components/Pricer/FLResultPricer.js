@@ -23,7 +23,7 @@ import 'numeral/locales/fr'
 
 import Dimensions from 'Dimensions';
 
-import {  globalSyle, 
+import {  globalStyle, 
   setFont,
   setColor,
   generalFontColor, 
@@ -96,8 +96,8 @@ class FLResultPricer extends React.PureComponent {
       //console.log("RENDER TAB RESULTS");
       return (
 
-        <View style={{width: DEVICE_WIDTH, height: DEVICE_HEIGHT,}}> 
-             <TouchableOpacity style={{height: 40 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT, flexDirection : 'row', borderWidth: 0, padding : 5}}
+        <View style={[globalStyle.bgColor, {width: DEVICE_WIDTH, height: DEVICE_HEIGHT}]}> 
+             <TouchableOpacity style={{height: 25 + STATUSBAR_HEIGHT , paddingLeft : 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, paddingBottom : 5, backgroundColor: 'white'}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
                   
@@ -112,7 +112,7 @@ class FLResultPricer extends React.PureComponent {
                       </View>
             </TouchableOpacity>
 
-            <ScrollView contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', marginTop: 10}} >
+            <ScrollView contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', marginTop: 5}} >
     
 
               <View style={{borderWidth: 0, alignItems: 'center'}}>

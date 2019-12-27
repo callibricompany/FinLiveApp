@@ -98,7 +98,7 @@ const withAuthentication = Component => {
                   ...new Set(userDatas.homePage.map(x => x.template))
                 ];
                 console.log(toto);
-                //console.log(userDatas.homePage);
+                console.log(userDatas.homePage);
                 resolve("ok");
               })
               .catch(error => {

@@ -100,11 +100,11 @@ class FLAutocallDetail extends React.Component {
 
       //modal
       showModalDescription : false,
-
+      description : '',
 
       toto : true,
     }
-    this.description = '';
+    
 
 
     this.keyboardDidHide = this.keyboardDidHide.bind(this);
@@ -526,8 +526,8 @@ class FLAutocallDetail extends React.Component {
                                   multiline={true}
                                   numberOfLines={5}
                                   placeholder={'Vos instructions...'}
-                                  onChangeText={(e) => this.description = e}
-                                  value={this.description}
+                                  onChangeText={(e) => this.setState({ description : e})}
+                                  value={this.state.description}
                                   returnKeyType={'done'}
                                   onSubmitEditing={() => Keyboard.dismiss()}
                         />
@@ -541,8 +541,8 @@ class FLAutocallDetail extends React.Component {
                                  
                                         
                                         let productToSend = this.autocall.getProduct();;
-                                        productToSend['subject'] = this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.getFrequencyAutocallTitle().toLowerCase();
-                                        productToSend['description'] = this.description;
+                                        productToSend['subject'] = this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.autocall.getFrequencyAutocallTitle().toLowerCase();
+                                        productToSend['description'] = this.state.description;
                                         productToSend['type'] = 'Produit structuré';
                                         productToSend['department'] = 'FIN';
                                         productToSend['nominal'] = Number(this.state.nominal);
