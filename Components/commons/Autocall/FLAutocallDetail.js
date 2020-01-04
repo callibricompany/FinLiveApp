@@ -588,7 +588,7 @@ class FLAutocallDetail extends React.Component {
       return(
             <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : 1}}> 
               {this._renderModal()}
-              <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10}}>
+              <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'white'}}>
                 <View style={{width : 0.6*DEVICE_WIDTH,  justifyContent: 'center'}}>
                     <TextInput 
                             style={{    
@@ -681,6 +681,7 @@ class FLAutocallDetail extends React.Component {
                             justifyContent : 'center',
                             alignItems : 'center',
                             zIndex : 2,
+                            //backgroundColor: 'pink'
                           }}
               >
                      <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.nominal}/>

@@ -168,7 +168,7 @@ class FLTicketDetail extends React.Component {
     let underLyingDescription = null;
     let underLyingAction = null;
     switch(this.ticketObj.getUnderlyingType()) {
-      case CPPTicket.TYPE_PS() :
+      case "Produit Structuré" :
          underLyingDescription = <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_BODY_FULL_TEMPLATE} />
          underLyingAction =  <View style={{flex : 0.10, flexDirection : 'row',  backgroundColor: 'white'}}>
                                   <TouchableOpacity style={[{flex : 0.25}, globalStyle.templateIcon]}>

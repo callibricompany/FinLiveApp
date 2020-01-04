@@ -15,7 +15,6 @@ import {
 import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import { sendEmail } from '../../Utils/sendEmail'
-import ButtonSubmit from './ButtonSubmit'
 import splashImage from '../../assets/splash_transparent.png';
 import Dimensions from 'Dimensions';
 

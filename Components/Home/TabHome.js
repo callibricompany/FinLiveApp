@@ -24,6 +24,7 @@ import Dimensions from "Dimensions";
 import { setFont } from "../../Styles/globalStyle";
 
 import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
+import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
 import { CAutocall } from "../../Classes/Products/CAutocall";
 import * as TEMPLATE_TYPE from "../../constants/template";
 
@@ -162,23 +163,62 @@ class TabHome extends React.PureComponent {
   };
 
   render() {
-    console.log(this.props.userOrg);
+    //console.log(this.props.userOrg);
     return (
       <FLScrollView
         style={{ marginTop: Platform.OS === "android" ? -45 : -45 }}
       >
-        <View
-          style={{
-            marginLeft: DEVICE_WIDTH * 0.025,
-            alignItems: "flex-start",
-            borderWidth: 0
-          }}
-        >
-          <Text style={setFont("400", 20, "black", "FLFontFamily")}>
-            Tickets en cours >
-          </Text>
-        </View>
 
+      {this.props.broadcasts.length !== 0  ?
+            <View>
+              <View
+                style={{
+                  marginTop: 20,
+                  marginLeft: DEVICE_WIDTH * 0.025,
+                  alignItems: "flex-start",
+                  borderWidth: 0
+                }}
+              >
+                <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                  APE en cours
+                </Text>
+              </View>
+              <FlatList
+                //style={styles.wrapper}
+                //scrollTo={this.state.scrollTo}
+                contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                data={
+                  this.props.filtersHomePage["category"] === "PSFAVORITES"
+                    ? this.props.favorites
+                    : this.isFiltered
+                    ? this.state.filteredFeaturedProducts
+                    : this.props.broadcasts
+                }
+                horizontal={true}
+                renderItem={({ item, index }) => {
+                  switch (item.template) {
+                    case "PSBROADCAST":
+                      return (
+                        <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                          <FLTemplatePSBroadcast object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
+                        </View>
+                      );
+                    default:
+                      return null;
+                  }
+                }}
+                //tabRoute={this.props.route.key}
+                keyExtractor={item => {
+                  let key =
+                    typeof item.data["id"] === "undefined"
+                      ? item.data["code"]
+                      : item.data["id"];
+                  return key.toString();
+                }}
+              />
+          </View>
+        : null
+        }
         <View
           style={{
             marginTop: 20,
@@ -187,7 +227,7 @@ class TabHome extends React.PureComponent {
             borderWidth: 0
           }}
         >
-          <Text style={setFont("400", 20, "black", "FLFontFamily")}>
+          <Text style={setFont("400", 18, "black", "FLFontFamily")}>
             Nos recommandations
           </Text>
         </View>
@@ -223,7 +263,7 @@ class TabHome extends React.PureComponent {
             borderWidth: 0
           }}
         >
-          <Text style={setFont("400", 20, "black", "FLFontFamily")}>
+          <Text style={setFont("400", 18, "black", "FLFontFamily")}>
             Meilleurs coupons par sous-jacent
           </Text>
         </View>

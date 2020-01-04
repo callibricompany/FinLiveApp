@@ -6,8 +6,20 @@ import FREQUENCYLIST from "../../Data/frequencyList.json";
 
 
 export class CAutocall extends CProduct {
-  constructor(autocall) {
-    super(autocall); // appelle le constructeur parent avec le paramètre
+  constructor(autocall, userId='') {
+    super(autocall, userId); // appelle le constructeur parent avec le paramètre
+
+
+    //tant que Pierre ne rajoute l'UF dans le calcul sur serveur on le rajoute
+    if (!this.product.hasOwnProperty('UF')) {
+      this.product['UF'] = 0.03;
+    }
+    if (!this.product.hasOwnProperty('UFAssoc')) {
+      this.product['UFAssoc'] = 0.001;
+    }
+    if (!this.product.hasOwnProperty('cf_cpg_choice')) {
+      this.product['cf_cpg_choice'] = "Placement Privé";
+    }
 
     this.setProductName();
     this.underLyingName = "[UDL]";

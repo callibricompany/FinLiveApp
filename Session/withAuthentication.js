@@ -33,6 +33,9 @@ const withAuthentication = Component => {
         categories: [],
         getAllUndelyings: filter => this.getAllUndelyings(filter),
 
+        //tickets
+        broadcasts: [],
+
         //toFavorites
         favorites: [],
         setFavorite: obj => this.setFavorite(obj),
@@ -91,14 +94,17 @@ const withAuthentication = Component => {
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
                   favorites: userDatas.favorites,
-                  tickets: userDatas.userTickets
+                  tickets: userDatas.userTickets,
+                  broadcasts : userDatas.homePage.filter(({ template }) => template === "PSBROADCAST"),
+                  
                 });
 
                 let toto = [
                   ...new Set(userDatas.homePage.map(x => x.template))
                 ];
                 console.log(toto);
-                console.log(userDatas.homePage);
+                //console.log(userDatas.userTickets);
+                
                 resolve("ok");
               })
               .catch(error => {
@@ -147,7 +153,7 @@ const withAuthentication = Component => {
         console.log("Doit etre mis en favori : " + !obj.isFavorite);
 
         //check if it's in favorites object
-        console.log(obj);
+        //console.log(obj);
 
         //console.log(this.item.data);
         let favoriteToSend = JSON.parse(JSON.stringify(obj));

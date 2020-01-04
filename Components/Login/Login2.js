@@ -17,7 +17,7 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import React, {Component} from 'react';
-import ButtonSubmit from './ButtonSubmit'
+
 import Dimensions from 'Dimensions';
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';

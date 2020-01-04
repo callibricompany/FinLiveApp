@@ -1,6 +1,7 @@
 import WORKFLOW from '../../Data/workflow.json'
-
+import * as TEMPLATE_TYPE from '../../constants/template';
 import { CAutocall } from '../Products/CAutocall';
+import { CObject } from '../CObject';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -8,52 +9,42 @@ import 'numeral/locales/fr'
 
 
 //classe mere de tous les objets tickets
-export class CTicket { 
+export class CTicket extends CObject { 
 
     
-    constructor(ticket, userId="") {
-      this.ticket = ticket;
-      this.userIdFirestore = userId;
-
-      //determination de l'étape 
-      this.step = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].codeStep)[0];
-
-      //determination de l'étape  suivante
-      this.nextStep = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].nextCodeStep)[0];
-      
+    constructor(ticket, userId='') {
+      super(ticket, userId);
+      //this.object = ticket;
+      this.ticket = this.object['data'];
+  
       //priorite FD
       this.priority = CTicket.PRIORITY().filter(({id}) => id === this.ticket.priority)[0];
       
       //statut FD
       this.status = CTicket.STATUS().filter(({id}) => id === this.ticket.status)[0];
 
-      //manage underlying 
+      //manage product on ticket 
+      this.product = null;
+
       switch(ticket.type) {
-        case CTicket.TYPE_PS(): 
-          this.underlying = new CAutocall(this.ticket.data);
-          this.underlying.setUserId(userId);
+        case "Produit structuré": 
+          //determination de l'étape 
+          this.step = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].codeStep)[0];
+
+          //determination de l'étape  suivante
+          this.nextStep = WORKFLOW.filter(({codeStep}) => codeStep === this.ticket.currentStep[0].nextCodeStep)[0];
+
+          this.product = new CAutocall(this.ticket.data, userId);
+          
           break;
         default : 
-          this.underlying = null;
+          
           break;
       }
     }
    
 
-  setUserId(userId) {//user Id de firestore
-    this.userIdFirestore = userId;
-
-  }
-  
-  getUserId() {//user Id de firestore
-    return this.userIdFirestore;
-
-  }
-
-   static TYPE_PS () {
-     return "Produit structuré";
-   }
-
+   
    static STATUS () {
      let data = [
       {
@@ -156,12 +147,12 @@ export class CTicket {
      return agentName;
    }
 
-   getUnderlying() {
+   getProduct() {
 
-     return this.underlying;
+     return this.product;
    }
 
-   getUnderlyingType() {
+   getProductType() {
         return this.ticket.type;
    }
 
@@ -205,6 +196,16 @@ export class CTicket {
       return this.step.userTrigger;
     }
 
+    getDescription() {
+      return this.ticket.description_text;
+    }
 
+    getCompanyId() {
+      return this.ticket.company_id;
+    }
+
+    getCurrency() {
+      return this.product.getCurrency();
+    }
   }
 
