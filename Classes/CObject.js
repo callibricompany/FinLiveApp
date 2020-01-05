@@ -74,4 +74,15 @@ export class CObject {
       getObject() {
         return this.object;
       }
+
+      //determine si de l'organisation
+      isOrg() {
+        let name = false;
+
+        if (this.object.hasOwnProperty("isOrg")) {
+          name = this.product.underlying;
+        }
+
+        return name;
+      }
 }

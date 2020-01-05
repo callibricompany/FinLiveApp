@@ -9,7 +9,7 @@ export class CAutocall extends CProduct {
   constructor(autocall, userId='') {
     super(autocall, userId); // appelle le constructeur parent avec le paramètre
 
-
+    
     //tant que Pierre ne rajoute l'UF dans le calcul sur serveur on le rajoute
     if (!this.product.hasOwnProperty('UF')) {
       this.product['UF'] = 0.03;
@@ -151,6 +151,10 @@ export class CAutocall extends CProduct {
     return Moment(this.product.date, "YYYYMMDD").toDate();
   }
 
+  getMaturityDate() {
+    return Moment(this.product.enddate, "YYYYMMDD").toDate();
+  }
+
   getLastConstatDate() {
     return Moment(this.product.finaldate, "YYYYMMDD").toDate();
   }
@@ -158,6 +162,7 @@ export class CAutocall extends CProduct {
   getNextImportantDate() {
 
   }
+  
 
   isStruck () {
     struck = false;
@@ -302,6 +307,8 @@ export class CAutocall extends CProduct {
     }
     return mat;
   }
+
+
 
   //renvoie le coupon annualisé
   getCouponTitle() {

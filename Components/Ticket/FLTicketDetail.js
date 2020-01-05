@@ -150,11 +150,11 @@ class FLTicketDetail extends React.Component {
       <View style={{flexDirection : 'row', borderTopLeftRadius: 15, marginTop: 20, backgroundColor:  blueFLColor, width: DEVICE_WIDTH*0.975, marginLeft: DEVICE_WIDTH*0.0125}}>
         <View style={{flex : 0.85, paddingLeft : 20,   justifyContent: 'center', alignItems : 'flex-start', borderWidth: 0}}>
             <Text style={[setFont('400', 18, 'white'), {paddingTop: 5, paddingLeft :5}]}>
-            {this.ticketObj.getUnderlyingType().toUpperCase()} 
+            {this.ticketObj.getProductType().toUpperCase()} 
          
             </Text>
             <Text style={[setFont('200', 14, 'white'), {padding: 5}]}>
-              {currencyFormatDE(this.ticketObj.getUnderlying().getNominal())} {this.ticketObj.getUnderlying().getCurrency()} | CC : {Numeral(this.ticketObj.getUnderlying().getUF()).format('0.00%')} 
+              {currencyFormatDE(this.ticketObj.getProduct().getNominal())} {this.ticketObj.getProduct().getCurrency()} | CC : {Numeral(this.ticketObj.getProduct().getUF()).format('0.00%')} 
             </Text>
         </View>
         <View style={{flex: 0.15,  justifyContent: 'center', alignItems: 'center'}}>
@@ -167,7 +167,7 @@ class FLTicketDetail extends React.Component {
   _renderContentUnderlying = section => {
     let underLyingDescription = null;
     let underLyingAction = null;
-    switch(this.ticketObj.getUnderlyingType()) {
+    switch(this.ticketObj.getProductType()) {
       case "Produit Structuré" :
          underLyingDescription = <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_BODY_FULL_TEMPLATE} />
          underLyingAction =  <View style={{flex : 0.10, flexDirection : 'row',  backgroundColor: 'white'}}>

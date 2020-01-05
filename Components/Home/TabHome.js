@@ -25,6 +25,7 @@ import { setFont } from "../../Styles/globalStyle";
 
 import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
 import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
+import FLTemplatePSPublicAPE from '../commons/Autocall/FLTemplatePSPublicAPE';
 import { CAutocall } from "../../Classes/Products/CAutocall";
 import * as TEMPLATE_TYPE from "../../constants/template";
 
@@ -137,17 +138,6 @@ class TabHome extends React.PureComponent {
       }*/
   }
 
-  /*_handleFavorite=(index) => {
-      console.log(index);
-      console.log(this.allProducts[index]);
-      this.props.setFavorite(this.allProducts[index])
-      .then((fav) => {
-        this.allProducts[index] = fav;                                    
-        //console.log(fav);
-        //this.setState({ isFavorite: this.allProducts[index].isFavorite })
-      })
-      .catch((error) => console.log("Erreur de mise en favori : " + error));
-  } */
 
   _renderFeatured = (item, index) => {
     switch (item.template) {
@@ -219,6 +209,8 @@ class TabHome extends React.PureComponent {
           </View>
         : null
         }
+
+
         <View
           style={{
             marginTop: 20,
@@ -300,6 +292,52 @@ class TabHome extends React.PureComponent {
             return key.toString();
           }}
         />
+
+
+        {this.props.apeSRP.length !== 0  ?
+            <View>
+              <View
+                style={{
+                  marginTop: 20,
+                  marginLeft: DEVICE_WIDTH * 0.025,
+                  alignItems: "flex-start",
+                  borderWidth: 0
+                }}
+              >
+                <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                  APE publiques en cours
+                </Text>
+              </View>
+              <FlatList
+                //style={styles.wrapper}
+                //scrollTo={this.state.scrollTo}
+                contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                data={
+                  this.props.filtersHomePage["category"] === "PSFAVORITES"
+                    ? this.props.favorites
+                    : this.isFiltered
+                    ? this.state.filteredFeaturedProducts
+                    : this.props.apeSRP
+                }
+                horizontal={true}
+                renderItem={({ item, index }) => {
+                  switch (item.template) {
+                    case TEMPLATE_TYPE.PSSRPLIST:
+                      return (
+                        <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                          <FLTemplatePSPublicAPE object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
+                        </View>
+                      );
+                    default:
+                      return null;
+                  }
+                }}
+                //tabRoute={this.props.route.key}
+                keyExtractor={item => item.code}
+              />
+          </View>
+        : null
+        }
 
         <TouchableOpacity
           onPress={() => {

@@ -11,17 +11,31 @@ export class  CBroadcastTicket extends CTicket {
           this.object['template'] = TEMPLATE_TYPE.PSBROADCAST;
       }*/
 
-      switch(this.object.template) {
-        case "PSBROADCAST": 
-          this.product = new CAutocall(this.ticket.product);
-          //this.underlying.setUserId(this.object.getUserId());
-          break;
-        default : 
+      this.product = this.buildProduct(this.ticket.data);
 
-          break;
-      }
       
     }
+
+
+    //construit l'objet autocall a partir des infos données dans les champs SRP
+    buildProduct(product) {
+      switch(this.object.template) {
+        case TEMPLATE_TYPE.PSBROADCAST : 
+          return new CAutocall(this.ticket.product);
+          //this.underlying.setUserId(this.object.getUserId());
+          break;
+
+
+        default : 
+          return null;
+          break;
+      }
+    }
+
+
+
+
+
 
     getMessage() {
       return this.ticket['custom_fields'].cf_message;

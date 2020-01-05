@@ -9,6 +9,7 @@ import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
 import PricerScreen from '../Components/Pricer/PricerScreen'
 import FLResultPricer from '../Components/Pricer/FLResultPricer'
 import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
+import FLSRPPdfReader from '../Components/Home/FLSRPPdfReader';
 import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
 import ProfileScreen from '../Components/ProfileScreen'
 import TicketScreen from '../Components/Ticket/TicketScreen'
@@ -73,7 +74,10 @@ function labelStyle (focused, tintColor) {
     },
     FLAutocallDetailHome : {
       screen : FLAutocallDetailHome
-    }
+    },
+    FLSRPPdfReader: {
+      screen : FLSRPPdfReader
+    },
   }, 
   {
     initialRouteName: 'Home'

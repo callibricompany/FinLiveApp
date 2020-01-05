@@ -57,7 +57,7 @@ import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid } from '../../../Utils';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
-import { CAutocall } from '../../../Classes/Products/CAutocall';
+import { CAutocallSRP } from '../../../Classes/Products/CAutocallSRP';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
 
@@ -69,7 +69,7 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
-class FLTemplatePSBroadcast extends React.Component {
+class FLTemplatePSPublicAPE extends React.Component {
 
 
   constructor(props) {
@@ -92,11 +92,9 @@ class FLTemplatePSBroadcast extends React.Component {
     //largeur de la cartouche sur l'ecran
     this.screenWidth = 0.9 * DEVICE_WIDTH;
 
-          
-    //gestion des classes autocall et ticket broadcast
-    this.broadcast = new CBroadcastTicket(this.props.object, this.props.authUser.uid);
-    this.autocall = this.broadcast.getProduct();
+    this.autocall = new CAutocallSRP(this.props.object);    
 
+    //console.log(this.autocall.getProductName());
   
   }
 
@@ -132,16 +130,16 @@ _renderHeaderFullTemplate() {
                   <View style={{flexDirection: 'row', borderWidth: 0}}>
                     <View style={{ borderWidth: 0}}>
            
-                          <Text style={setFont('400', 18, 'white')}>
-                              {this.autocall.getProductName()} 
+                          <Text style={setFont('400', 14, 'white')}>
+                              {this.autocall.getProductTile()} 
                           </Text>
           
                         </View>
 
                     </View>
                     <View style={{flexDirection: 'row'}}>
-                            <Text style={setFont('400', 18,  'white')}>
-                                {this.autocall.getFullUnderlyingName(this.props.categories)} <Text style={setFont('400', 18, 'white')}>{''}</Text>
+                            <Text style={setFont('400', 12,  'white')} numberOfLines={1}>
+                                {this.autocall.getUnderlying()} <Text style={setFont('400', 18, 'white')}>{''}</Text>
                             </Text>
                     </View>
                   </View>
@@ -233,7 +231,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor('light')}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                    <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocall.getMaturityName()} </Text>
+                    <Text style={setFont('300', 12, setColor(''), 'Light')}>{Moment(this.autocall.getMaturityDate()).format("DD-MMM-YY")} </Text>
                 </View>
             </View>
         </View>
@@ -252,11 +250,11 @@ _renderFooterFullTemplate(isFavorite) {
                                   onPress={() => {
              
                                     
-                                    this.props.setFavorite(this.broadcast.getObject())
+                                    this.props.setFavorite(this.autocall.getObject())
                                     .then((fav) => {    
                                       console.log("=================================");
                                       console.log(fav);                             
-                                      this.broadcast.setFavorite(fav);
+                                      this.autocall.setFavorite(fav);
                                       this.setState({ toto: !this.state.toto })
                                     })
                                     .catch((error) => console.log("Erreur de mise en favori : " + error));
@@ -282,7 +280,7 @@ _renderFooterFullTemplate(isFavorite) {
                 </TouchableOpacity>   
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
                                                 onPress={() => {
-        
+                                                  this.props.navigation.navigate('FLSRPPdfReader', {urLPDF: this.autocall.getURIDescription()});
                                                 }}
                  >
                  
@@ -298,10 +296,10 @@ _renderFooterFullTemplate(isFavorite) {
 
 
 render () {
-      
+ 
       //check if it is in favorites
       let isFavorite = false;
-      isFavorite = this.broadcast.isFavorite(this.props.favorite);
+      isFavorite = this.autocall.isFavorite(this.props.favorite);
       
     
       return (
@@ -320,9 +318,9 @@ render () {
                           //elevation: 3
                         }}
             >
-                <View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 2}}>
+                {/*<View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 99}}>
                     <YourTeam_SVG width={50} height={80} />
-                </View>
+                </View>*/}
 
                 {this._renderHeaderFullTemplate()}
 
@@ -331,35 +329,50 @@ render () {
                             <View style={{flex: 0.6}}>
                             {this._renderAutocallShortTemplate()}
                             </View>
-                            <View style={{flex: 0.4}}>
-                                <Image
-                                  style={{width : 150, height : 50}}
-                                  source={{uri: this.props.userOrg.logoUrl}}
-                                />
-                                <Text style={setFont('300', 12, 'black', 'Regular')}>
-                                  Plus que {Moment(this.broadcast.getEndDate()).diff(Moment(Date.now()), 'days')} jours
-                                </Text>
+                            <View style={{flex: 0.4, padding: 5}}>
+                                <View>
+                                    <Text style={setFont('300', 12, 'black', 'Bold')}>
+                                      Emetteur : 
+                                    </Text>
+                                    <Text style={setFont('300', 12, 'black', 'Regular')}>
+                                      {this.autocall.getIssuer()}
+                                    </Text>
+                                </View>
+                                <View style={{paddingTop : 3}}>
+                                    <Text style={setFont('300', 12, 'black', 'Bold')}>
+                                      Distributeur : 
+                                    </Text>
+                                    <Text style={setFont('300', 12, 'black', 'Regular')}>
+                                      {this.autocall.getDistributor()}
+                                    </Text>
+                                </View>
+                                <View style={{paddingTop : 3, justifyContent: 'center', alignItems: 'center'}}>
+                                    <Text style={setFont('300', 12, 'black', 'Regular')}>
+                                      Plus que {Moment(this.autocall.getStrikingDate()).diff(Moment(Date.now()), 'days')} jours
+                                    </Text>
+                                </View>
+
                             </View>
                         </View>
                         <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.05*DEVICE_WIDTH}}>
                             <View>
-                                <Text style={setFont('300', 12, 'black', 'Regular')}>
-                                  Objectif : {currencyFormatDE(this.broadcast.getBroadcastAmount())} {this.broadcast.getCurrency()}
+                                <Text style={setFont('300', 12, 'black', 'Regular')} numberOfLines={5}>
+                                  {this.autocall.getDescription(2)}
                                 </Text>
                             </View>
                             <View style={{flexDirection : 'row', marginTop: 0, justifyContent:'space-between'}}>
-                                <View style={{padding: 5, justifyContent: 'center', alignItems: 'center'}}>
-                                     <Ionicons name="ios-podium" size={20} style={{color: setColor('gray')}}/> 
+                                <View style={{padding: 0, justifyContent: 'center', alignItems: 'center'}}>
+                                     
                                 </View>
-                                <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Progress.Bar progress={0.3} width={(DEVICE_WIDTH/2)} color={setColor('')}/>
+                                <View style={{padding: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                
                                </View>
                                <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Text style={setFont('300', 10)}>{Moment(this.broadcast.getEndDate()).format("ll")}</Text>
+                                  
                                </View>
                             </View>
-                            <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Text style={setFont('400', 12, 'black', 'Bold')}>{this.broadcast.getMessage()}</Text>
+                            <View style={{padding: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                 
                             </View>
 
                              
@@ -385,6 +398,6 @@ render () {
    );
    
    //export default HomeScreen;
-export default hoistStatics(composedWithNav)(FLTemplatePSBroadcast);
+export default hoistStatics(composedWithNav)(FLTemplatePSPublicAPE);
 
 //export default FLTemplateAutocall;

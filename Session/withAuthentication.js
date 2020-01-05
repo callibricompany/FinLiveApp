@@ -17,9 +17,14 @@ const withAuthentication = Component => {
       this.state = {
         authUser: null,
 
-        //donnees statiques
+        //tickets
         tickets: [],
         addTicket: ticket => this.addTicket(ticket),
+
+        apeTickets : [],
+
+        //ape publique issu de srp
+        apeSRP : [],
 
         //chargé au départ
         allInfo: [],
@@ -95,7 +100,10 @@ const withAuthentication = Component => {
                   userOrg: userDatas.userOrg,
                   favorites: userDatas.favorites,
                   tickets: userDatas.userTickets,
-                  broadcasts : userDatas.homePage.filter(({ template }) => template === "PSBROADCAST"),
+                  apeTickets: userDatas.startPage.ape,
+                  apeSRP : userDatas.startPage.srp.slice(0,10),
+                  //broadcasts : userDatas.homePage.filter(({ template }) => template === "PSBROADCAST"),
+                  broadcasts : userDatas.startPage.campaign,
                   
                 });
 
@@ -103,7 +111,9 @@ const withAuthentication = Component => {
                   ...new Set(userDatas.homePage.map(x => x.template))
                 ];
                 console.log(toto);
-                //console.log(userDatas.userTickets);
+                //console.log(userDatas.startPage.srp.slice(0,1));
+                //console.log(userDatas.userTickets[0]);
+               
                 
                 resolve("ok");
               })
