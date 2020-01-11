@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal, Alert} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal, Alert, Linking } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -280,7 +280,8 @@ _renderFooterFullTemplate(isFavorite) {
                 </TouchableOpacity>   
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
                                                 onPress={() => {
-                                                  this.props.navigation.navigate('FLSRPPdfReader', {urLPDF: this.autocall.getURIDescription()});
+                                                  //this.props.navigation.navigate('FLSRPPdfReader', {urLPDF: this.autocall.getURIDescription()});
+                                                  Linking.openURL(this.autocall.getURIDescription()).catch((err) => console.error('An error occurred', err));
                                                 }}
                  >
                  
@@ -346,11 +347,19 @@ render () {
                                       {this.autocall.getDistributor()}
                                     </Text>
                                 </View>
-                                <View style={{paddingTop : 3, justifyContent: 'center', alignItems: 'center'}}>
-                                    <Text style={setFont('300', 12, 'black', 'Regular')}>
-                                      Plus que {Moment(this.autocall.getStrikingDate()).diff(Moment(Date.now()), 'days')} jours
-                                    </Text>
-                                </View>
+                                {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') === 0 ?
+                                    <View style={{marginTop : 10, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', borderRadius: 3}}>
+                                        <Text style={setFont('300', 12, 'white', 'Regular')}>
+                                          Dernier jour
+                                        </Text>
+                                    </View>
+                                  :
+                                  <View style={{paddingTop : 10, justifyContent: 'center', alignItems: 'center'}}>
+                                      <Text style={setFont('500', 12, 'black', 'Bold')}>
+                                        Plus que {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days')} jours
+                                      </Text>
+                                  </View>   
+                                }                            
 
                             </View>
                         </View>

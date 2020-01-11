@@ -156,21 +156,21 @@ class TabHome extends React.PureComponent {
     //console.log(this.props.userOrg);
     return (
       <FLScrollView
-        style={{ marginTop: Platform.OS === "android" ? -45 : -45 }}
+        style={{ marginTop: Platform.OS === "android" ? -65 : -45 }}
       >
 
       {this.props.broadcasts.length !== 0  ?
             <View>
               <View
                 style={{
-                  marginTop: 20,
+                  marginTop: 0,
                   marginLeft: DEVICE_WIDTH * 0.025,
                   alignItems: "flex-start",
                   borderWidth: 0
                 }}
               >
                 <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-                  APE en cours
+                  APE sur mesure
                 </Text>
               </View>
               <FlatList
@@ -305,7 +305,7 @@ class TabHome extends React.PureComponent {
                 }}
               >
                 <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-                  APE publiques en cours
+                  APE du marché
                 </Text>
               </View>
               <FlatList

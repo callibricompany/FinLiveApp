@@ -101,7 +101,7 @@ const withAuthentication = Component => {
                   favorites: userDatas.favorites,
                   tickets: userDatas.userTickets,
                   apeTickets: userDatas.startPage.ape,
-                  apeSRP : userDatas.startPage.srp.slice(0,10),
+                  apeSRP : userDatas.startPage.srp,
                   //broadcasts : userDatas.homePage.filter(({ template }) => template === "PSBROADCAST"),
                   broadcasts : userDatas.startPage.campaign,
                   

@@ -61,11 +61,11 @@ export class CAutocall extends CProduct {
         this.product["product"] = "phoenix";
       } else {
         //c'est un autocall
-        this.product["product"] = "athena";
+        this.product["product"] = "autocall";
       }
     } else if (this.product["product"] === 'autocall') {
         //c'est un autocall on lui change de nom
-        this.product["product"] = "athena";
+        this.product["product"] = "autocall";
     }
   }
 
@@ -147,6 +147,11 @@ export class CAutocall extends CProduct {
       this.product['finaldate'] = Moment(this.product.date, "YYYYMMDD").add(m, 'months').format("YYYYMMDD");
     }
   }
+
+  getStartDate() {
+    return Moment(this.product.startdate, "YYYYMMDD").toDate();
+  }
+
   getStrikingDate() {
     return Moment(this.product.date, "YYYYMMDD").toDate();
   }
@@ -245,9 +250,9 @@ export class CAutocall extends CProduct {
       name = "Réverse convertible";
     } else if (name.toLowerCase().includes("autocall") || name.toLowerCase().includes("athena")  || name.toLowerCase().includes("athéna")) {
       if (this.isIncremental()) {
-        name = "Athéna";
+        name = "Autocall";
       } else {
-        name = "Athéna";
+        name = "Autocall";
       }
     } else if (name.toLowerCase().includes("phoenix")) {
       if (this.isMemory()) {

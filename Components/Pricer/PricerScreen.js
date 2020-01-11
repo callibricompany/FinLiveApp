@@ -1,8 +1,9 @@
 import React from 'react'
-import { Modal, StyleSheet, SafeAreaView, TouchableWithoutFeedback, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, StatusBar, Platform } from 'react-native'
+import { Modal, StyleSheet, SafeAreaView, TextInput, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, StatusBar, Platform } from 'react-native'
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 
@@ -31,6 +32,8 @@ import { VictoryBar, VictoryChart, VictoryTheme, VictoryGroup, VictoryStack } fr
 
 import { UserContext } from '../../Session/UserProvider';
 import FLSearchInput from '../commons/FLSearchInput';
+
+import { currencyFormatDE } from '../../Utils';
 
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -98,6 +101,9 @@ class PricerScreen extends React.Component {
       //on optimise la marge ou le coupon
       optimizer : 'CPN',
 
+      hideCC : false,
+
+      nominal : 0,
       toto : true,
     }
 
@@ -323,7 +329,7 @@ class PricerScreen extends React.Component {
 
 //choix du produit
 _renderProductTile() {
-  let dataProductName = ['Athéna', 'Phoenix'];
+  let dataProductName = ['Autocall', 'Phoenix'];
   return (
             <View style={{
                         height: (DEVICE_WIDTH*0.925-20)/3, 
@@ -362,8 +368,8 @@ _renderProductTile() {
                                     dropdownTextHighlightStyle={setFont('500', 16, setColor(''), 'Bold')}
                                     onSelect={(index, value) => {
                                       switch (Number(index))  {
-                                         case 0 :   //athena
-                                            this._updateValue('type', 'athena', value);
+                                         case 0 :   //autocall
+                                            this._updateValue('type', 'autocall', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
@@ -482,7 +488,7 @@ _renderPhoenixTile=() => {
   //console.log("PHOENIX ACTIVE : "+ this.request.isActivated('barrierPhoenix') + "    :     " +this.request.getValue('barrierPhoenix'));
   //determination de la couleur backgound
   let bgColorPhoenix = 'white';
-  let iconColorPhoenix = setColor('');
+  let iconColorPhoenix = this.request.getValue('type') === 'phoenix' ? setColor('') : setColor('light');
   /*if (this.request.getValue('type') !== 'phoenix') {
     bgColorPhoenix = setColor('gray');
     iconColorPhoenix = setColor('light');
@@ -531,15 +537,16 @@ _renderPhoenixTile=() => {
                                                 }}
                                                 activeOpacity={this.request.getValue('type') === 'phoenix' ? 0.2 : 1}
                               >
-                              
+                              {this.request.getValue('type') === 'phoenix' ?
                                   <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('light')}}/>
-
+                                : null
+                              }
                               </TouchableOpacity>
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                             
                           <Text style={[setFont('300', 14, this.request.isActivated('barrierPhoenix') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
-                                  {this.request.getValueLabel('barrierPhoenix') }
+                                  {this.request.getValue('type') !== 'phoenix' ? Numeral(this.request.getValue('autocallLevel')).format('0%') : this.request.getValueLabel('barrierPhoenix') }
                           </Text>
 
                             
@@ -701,7 +708,7 @@ _renderAirbagTile() {
    //determination de la couleur backgound
    let bgColor = 'white';
    let iconColor = setColor('');
-   if (this.request.getValue('type') !== 'athena') {
+   if (this.request.getValue('type') !== 'autocall') {
     bgColor = setColor('gray');
     iconColor = setColor('light');
    } else {
@@ -725,14 +732,14 @@ _renderAirbagTile() {
                 <View style={{flexDirection: 'row', paddingTop: 2, flexGrow: 1}}>
                     <TouchableOpacity style={{flex: 0.333, flexDirection: 'column', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
-                                        if (this.request.getValue('type') === 'athena'){
+                                        if (this.request.getValue('type') === 'autocall'){
                                             this.currentParameter = 'airbagLevel';
                                             this.request.setActivation(this.currentParameter, true);
                                             this.request.setActivation('degressiveStep', true);
                                             this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
                                         }
                                       }}
-                                      activeOpacity={this.request.getValue('type') === 'athena' ? 0.2 : 1}
+                                      activeOpacity={this.request.getValue('type') === 'autocall' ? 0.2 : 1}
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
@@ -744,7 +751,7 @@ _renderAirbagTile() {
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
-                                        {this.request.getValue('type') === 'athena' ?
+                                        {this.request.getValue('type') === 'autocall' ?
                                                               this.request.isActivated('airbagLevel') ? this.request.getValueLabel('airbagLevel') : ''
                                                                   : <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'center'}]}>-</Text>}
                             </Text>
@@ -752,14 +759,14 @@ _renderAirbagTile() {
                     </TouchableOpacity>
                     <TouchableOpacity style={{flex: 0.334, flexDirection: 'column', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center'}}
                                   onPress={() => {
-                                    if (this.request.getValue('type') === 'athena'){
+                                    if (this.request.getValue('type') === 'autocall'){
                                         this.currentParameter = 'airbagLevel';
                                         this.request.setActivation(this.currentParameter, true);
                                         this.request.setActivation('degressiveStep', true);
                                         this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
                                     }
                                   }}
-                                  activeOpacity={this.request.getValue('type') === 'athena' ? 0.2 : 1}
+                                  activeOpacity={this.request.getValue('type') === 'autocall' ? 0.2 : 1}
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
@@ -774,7 +781,7 @@ _renderAirbagTile() {
                                 <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
                                   {this.request.getValueLabel('degressiveStep') === '' ? 'Sans stepdown' : this.request.getValueLabel('degressiveStep')}
                                 </Text>
-                                :  this.request.getValue('type') === 'athena' ?
+                                :  this.request.getValue('type') === 'autocall' ?
                                         <View style={{backgroundColor : 'white', padding: 10, borderRadius: 30, marginBottom: 3}}>
                                           <Image style={{width: 30, height: 30}} source={logo} />
                                         </View>
@@ -793,7 +800,7 @@ _renderAirbagTile() {
                                                     this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
                                                   }}
                                 >
-                                { this.request.getValue('type') === 'athena' ?
+                                { this.request.getValue('type') === 'autocall' ?
                                   <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('light')}}/>
                                   : null 
                                 }
@@ -968,7 +975,7 @@ _renderTiles() {
 
 
   let renderPhoenix = this._renderPhoenixTile();
-  if (this.request.getValue('type') !== 'phoenix'){
+  /*if (this.request.getValue('type') !== 'phoenix'){
       renderPhoenix = <View style={{flexDirection: 'row'}}>
                             <View style={{height: (DEVICE_WIDTH*0.925-20)/3, width: (DEVICE_WIDTH*0.925-20)/3, marginLeft : 5, marginBottom: 5 ,borderRadius : 4}}>
                                   
@@ -980,9 +987,9 @@ _renderTiles() {
         {this._renderGenericTile('barrierPhoenix')}
         {this._renderMemoryTile()}
       </View>
-  }
+  }*/
 
-  //console.log("RENDER TILES");
+  //console.log("RENDER TILES / "+ this.request.getValue('type') );
   return (
      <View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
@@ -1002,7 +1009,7 @@ _renderTiles() {
            {this._renderGenericTile('maturity')}
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-           {this.request.getValue('type') === 'athena' ? this._renderAirbagTile() : null}        
+           {this.request.getValue('type') === 'autocall' ? this._renderAirbagTile() : null}        
         </View>
 
         <View style={{height: 150}}>
@@ -1040,7 +1047,28 @@ _renderUFOrCoupon(what) {
   );
 }
 
-  render() {
+_renderCalculateButton(position='right') {
+  return (
+    <TouchableOpacity style ={{  position: "absolute" , left : position==='right' ? (0.9*DEVICE_WIDTH-80) : (DEVICE_WIDTH/2 - 60), height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: setColor('turquoise')}}
+          onPress={() => {
+            if (this.state.optimizer === 'CC') {
+              alert("'J'optimise ma marge' en cours de développement\nChoisissez 'J'optimise mon coupon'");
+              return;
+
+            }
+            this.calculateProducts();
+          }}  
+      >
+        <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
+        <Image style={{width: 50, height: 50}} source={logo_white} />
+        </View>
+        <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
+        <Text style={setFont('400', 12, 'white', 'Regular')}>{String('évaluer').toUpperCase()}</Text>
+        </View>
+    </TouchableOpacity>
+  )
+}
+render() {
     if (this.state.isLoading) {
           return (
               <View style ={{flex: 1,  backgroundColor: 'white', justifyContent: 'center', alignItems: 'center'}}>
@@ -1069,11 +1097,65 @@ _renderUFOrCoupon(what) {
           <View style={[globalStyle.bgColor, {flex:1, borderWidth:0, justifyContent: 'space-between', marginTop:  isAndroid() ? 0 : STATUSBAR_HEIGHT}]}>
 
 
- 
+   
+            <View style={{width : 0.9*DEVICE_WIDTH, marginTop : 10, justifyContent: 'center', marginLeft : 0.05*DEVICE_WIDTH + 5, alignItems: 'stretch', flexDirection: 'row'}}>
+                <View style={{flex: 0.9}}>
+                      <TextInput 
+                              style={{    
+                                        display: 'flex',
+                                        backgroundColor: 'white',
+                                        height : 40,
+                                        fontSize: 28,
+                                        color: 'black',
+                                        borderColor : setColor(''),
+                                        borderWidth: 1,
+                                        borderRadius: 4,
+                                        padding: 5,
+                                        //textAlign: this.state.nominal === 0 ? 'left' : 'right',
+                                        textAlign: 'right',
+                                      }}
+                              placeholder={"EUR"}
+                              placeholderTextColor={'lightgray'}
+                              underlineColorAndroid={'#fff'}
+                              autoCorrect={false}
+                              keyboardType={'numeric'}
+                              returnKeyType={'done'}
+                              onFocus={() => {
+                                
+                              }}
+                              onBlur={() => {
+                                console.log("tatayoyo");
+                              }}
+                              //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                              value={this.state.nominal === 0 ? '' : currencyFormatDE(Number(this.state.nominal),0)}
+                              ref={(inputNominal) => {
+                                this.inputNominal = inputNominal;
+                              }}
+                              onChangeText={e => {
+                                //console.log(Number(e));
+                                this.setState({ nominal : e === '' ? 0 : Numeral(e).value()  });
+                                ;
+                              }}
+                      />
+                  </View>
+                  <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', padding: 5}}
+                                    onPress={() => {
+                                      let optimi = this.state.hideCC ? this.state.optimizer : 'CPN';
+                                      this.setState({ optimizer : optimi, hideCC : !this.state.hideCC });
+                                    }}
+                  >
+                      <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={30} style={{color: setColor(''), transform: [{ rotate: '90deg'}]}}/> 
+                  </TouchableOpacity>
+              
+
+            </View>
+
             <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
               {this._renderTiles()}
             </ScrollView>
-            <View style={{width: DEVICE_WIDTH,  marginTop : 10, paddingBottom : 10, paddingTop : 10, paddingLeft : 0.05*DEVICE_WIDTH, paddingRight : 0.05*DEVICE_WIDTH,  marginLeft :0, backgroundColor: 'white'}}>
+            <View style={{width: DEVICE_WIDTH, marginTop : 10, paddingBottom : 10, paddingTop : 10, paddingLeft : 0.05*DEVICE_WIDTH, paddingRight : 0.05*DEVICE_WIDTH,  marginLeft :0, backgroundColor: 'white'}}>
+                {!this.state.hideCC ?
+                    <View>
                       <SwitchSelector
                         initial={1}
                         onPress={obj => {
@@ -1096,23 +1178,13 @@ _renderUFOrCoupon(what) {
 
                       <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginTop: 15, paddingBottom : 10}}>
                          {this.state.optimizer === 'CPN' ? this._renderUFOrCoupon('UF') : this._renderUFOrCoupon('coupon')}
-                          <TouchableOpacity style ={{  position: "absolute" , left : 0.9*DEVICE_WIDTH-80, height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: setColor('turquoise')}}
-                                          onPress={() => {
-                                            if (this.state.optimizer === 'CC') {
-                                              alert("'J'optimise ma marge' en cours de développement\nChoisissez 'J'optimise mon coupon'");
-                                              return;
-                                            }
-                                            this.calculateProducts();
-                                          }}  
-                          >
-                              <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
-                                  <Image style={{width: 50, height: 50}} source={logo_white} />
-                              </View>
-                              <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
-                                <Text style={setFont('400', 12, 'white', 'Regular')}>{String('évaluer').toUpperCase()}</Text>
-                              </View>
-                          </TouchableOpacity>
+                        {this._renderCalculateButton()}
                       </View>
+                    </View>
+                : <View style={{ alignItems: 'center', height: 80}}>
+                      {this._renderCalculateButton('center')}
+                  </View>
+              }
             </View>
           </View>
           <View style={[globalStyle.bgColor, {height: 20}]}>

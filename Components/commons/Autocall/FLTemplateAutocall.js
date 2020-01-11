@@ -319,7 +319,7 @@ _renderHeaderShortTemplate() {
 
 _renderHeaderMediumTemplate() {
   let dataUnderlyingAutocall = this.props.getAllUndelyings();
-  let dataProductName = ['Athéna', 'Phoenix'];
+  let dataProductName = ['Autocall', 'Phoenix'];
   let dataAuction = ["Appel public à l'épargne",'Placement Privé'];
   return (
 
@@ -353,7 +353,7 @@ _renderHeaderMediumTemplate() {
                                     onSelect={(index, value) => {
                                       switch (Number(index))  {
                                          case 0 :   //athena
-                                            this._updateValue('type', 'athena', value);
+                                            this._updateValue('type', 'autocall', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
@@ -514,7 +514,7 @@ _renderHeaderFullTemplate() {
   
   let dataUnderlyingAutocall = this.props.getAllUndelyings();
   //let dataProductName = STRUCTUREDPRODUCTS.map((p) => p.name);
-  let dataProductName = ['Athéna', 'Phoenix'];
+  let dataProductName = ['Autocall', 'Phoenix'];
   
 
   return (
@@ -547,7 +547,7 @@ _renderHeaderFullTemplate() {
                                     onSelect={(index, value) => {
                                       switch (Number(index))  {
                                          case 0 :   //athena
-                                            this._updateValue('type', 'athena', value);
+                                            this._updateValue('type', 'autocall', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
@@ -787,7 +787,7 @@ _renderAutocallFullTemplate() {
                     defaultValue={Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}
                     ref={component => this._dropdown['barrierPhoenix'] = component}
                     options={dataPhoenixBarrier}
-                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'athena' ? true : false : !this.state.isEditable}
+                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'autocall' ? true : false : !this.state.isEditable}
                 />
             </View>
             { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1)   ?
@@ -1267,7 +1267,7 @@ _renderAutocallMediumTemplate() {
                     defaultValue={Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}
                     ref={component => this._dropdown['barrierPhoenix'] = component}
                     options={dataPhoenixBarrier}
-                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'athena' ? true : false : !this.state.isEditable}
+                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'autocall' ? true : false : !this.state.isEditable}
                 />
             </View>
             { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1)   ?

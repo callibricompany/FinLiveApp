@@ -7,9 +7,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 
-import * as Progress from 'react-native-progress';
-
-
 import RobotBlink from "../../../assets/svg/robotBlink.svg";
 import banniere from '../../../assets/yourTeam.png';
 import YourTeam_SVG from "../../../assets/svg/yourTeam.svg";
@@ -40,6 +37,7 @@ import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 
+import * as Progress from 'react-native-progress';
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
@@ -320,9 +318,9 @@ render () {
                           //elevation: 3
                         }}
             >
-                <View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 2}}>
-                    <YourTeam_SVG width={50} height={80} />
-                </View>
+              <View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 2}}>
+                  <YourTeam_SVG width={50} height={80} />
+              </View>
 
                 {this._renderHeaderFullTemplate()}
 
@@ -341,9 +339,9 @@ render () {
                                 </Text>
                             </View>
                         </View>
-                        <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.05*DEVICE_WIDTH}}>
+                        <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.025*DEVICE_WIDTH}}>
                             <View>
-                                <Text style={setFont('300', 12, 'black', 'Regular')}>
+                                <Text style={setFont('300', 14, 'black', 'Regular')}>
                                   Objectif : {currencyFormatDE(this.broadcast.getBroadcastAmount())} {this.broadcast.getCurrency()}
                                 </Text>
                             </View>
@@ -361,7 +359,6 @@ render () {
                             <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
                                   <Text style={setFont('400', 12, 'black', 'Bold')}>{this.broadcast.getMessage()}</Text>
                             </View>
-
                              
                             
                         </View>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, StyleSheet, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput, WebView} from 'react-native';
+import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, StyleSheet, Platform, Image, Modal, Keyboard, TextInput} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -38,8 +38,8 @@ import { CAutocall } from '../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../Classes/Products/CPSRequest';
 import { ScrollView } from 'react-native-gesture-handler';
 
-import PDFReader from 'rn-pdf-reader-js'
-import { Constants } from 'expo'
+import { WebView } from 'react-native-webview';
+import PDFView from 'react-native-view-pdf';
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
@@ -118,29 +118,7 @@ class FLSRPPdfReader extends React.Component {
 
   render() { 
 
-      return(
-
-              <View style={{
-                            flex: 1,
-                            //width : DEVICE_WIDTH,
-                            //height : DEVICE_HEIGHT - 50 - STATUSBAR_HEIGHT,
-                            justifyContent : 'center',
-                            alignItems : 'center',
-                            
-                            //backgroundColor: 'pink'
-                          }}
-              >
-                    
-                    <PDFReader
-                      source={{
-                        uri: this.url,
-                      }}
-                    />
-              </View>
-
-
-
-      );
+      return null;
     }
 }
 
@@ -158,7 +136,8 @@ export default hoistStatics(composedFLSRPPdfReader)(FLSRPPdfReader);
 
 
 /*
-            <View style={{flex:1, height: DEVICE_HEIGHT}}> 
+
+        <View style={{height: DEVICE_HEIGHT}}> 
 
 
               <View style={{height: 50+STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: 'white', paddingTop: isAndroid() ?  0 : STATUSBAR_HEIGHT}}>
@@ -166,14 +145,14 @@ export default hoistStatics(composedFLSRPPdfReader)(FLSRPPdfReader);
                                     onPress={() => this.props.navigation.goBack()}
                   >
                       <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                           <Ionicons name={'ios-arrow-back'}  size={25} style={{color: setColor('')}}/>
+                          <Ionicons name={'ios-arrow-back'}  size={25} style={{color: setColor('')}}/>
                       </View>
                       <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
-                           <Text style={setFont('300', 16, setColor(''), 'Regular')}>Retour</Text>
+                          <Text style={setFont('300', 16, setColor(''), 'Regular')}>Retour</Text>
                       </View>
                       <View style={{flex: 1, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*DEVICE_WIDTH}}>
                           <View style={{flexDirection : 'row'}}>
-   
+
                               <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                                   <EvilIcons name={'share-apple'} size={35} style={{color: setColor('')}}/>
                               </TouchableOpacity>
@@ -181,5 +160,10 @@ export default hoistStatics(composedFLSRPPdfReader)(FLSRPPdfReader);
                       </View>
                   </TouchableOpacity>
               </View>
-
+            
+              <View style={{width: DEVICE_WIDTH, height: 200, backgroundColor: 'pink'}}>
+                 <Text>jshdjshfjhd</Text>
+                 <WebView source={{ uri: 'https://facebook.github.io/react-native/' }} />
+              </View>            
+      </View>
               */
