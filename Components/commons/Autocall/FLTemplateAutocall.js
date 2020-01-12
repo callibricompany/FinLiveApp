@@ -78,7 +78,7 @@ class FLTemplateAutocall extends React.Component {
       isEditable : typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : false,
       showModalUpdate : false,
       messageLoading: '',
-      nominal : 0,
+      nominal : typeof this.props.nominal !== 'undefined' ? this.props.nominal  : 2020,
       toto : true,
     }
 
@@ -108,22 +108,31 @@ class FLTemplateAutocall extends React.Component {
     this.request = new CPSRequest();
     this.request.setRequestFromCAutocall(this.autocall);
 
+   
     
   }
 
+  componentDidMount() {
+
+  }
 
   componentWillReceiveProps (props) {
-    //console.log("Prop received in FLTemplateAutocall : " + props.data);
+ 
     typeof props.isGoodToShow !== 'undefined' ? this.setState({ isGoodToShow : props.isGoodToShow }) : null;
-    typeof props.nominal !== 'undefined' ? this.setState({ nominal : props.nominal }) : null;
-   
+    if (typeof props.nominal !== 'undefined' ) {
+      this.state.nominal !== props.nominal ? this.setState({ nominal : props.nominal }, this._updateNominal()) : null;
+    }
+    
   }
  
-
+ _updateNominal() {
+    this._updateValue('nominal', this.state.nominal,currencyFormatDE(this.state.nominal) );
+    this._recalculateProduct();
+ }
 
 
 _renderRecalculateProduct() {
-        //on est en train de recalcler le produit
+        //on est en train de recalculer le produit
         /*
                           <AnimatedProgressWheel 
                       size={60} 
@@ -737,7 +746,7 @@ _renderAutocallFullTemplate() {
 
   //remplissage des dropdown
   let dataPhoenixBarrier = ['-70%','-60%','-55%','-50%','-45%','-40%','-35%','-30%','-25%','-20%','-15%','-10%'];
-  let dataPDIBarrier = ['-70%','-65%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
+  let dataPDIBarrier = ['-70%','-65%','-60%','-55%','-50%','-45%','-40%','-35%','-30%','-25%','-20%','-15%','-10%'];
   let dataNNCP = ['1 an','2 ans','3 ans'];
   let dataFreqAutocall = ['Mensuel','Trimestriel','Semestriel','Annuel'];
   let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];
@@ -1221,8 +1230,8 @@ _renderAutocallFullTemplate() {
 _renderAutocallMediumTemplate() {
 
   //remplissage des dropdown
-  let dataPhoenixBarrier = ['-70%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
-  let dataPDIBarrier = ['-70%','-65%','-60%','-55%','-50%','-45%','-40%','-35%','-20%','-15%','-10%'];
+  let dataPhoenixBarrier = ['-70%','-60%','-55%','-50%','-45%','-40%','-35%','-30%','-25%','-20%','-15%','-10%'];
+  let dataPDIBarrier = ['-70%','-65%','-60%','-55%','-50%','-45%','-40%','-35%','-30%','-25%','-20%','-15%','-10%'];
   let dataNNCP = ['1 an','2 ans','3 ans'];
   let dataFreqAutocall = ['Mensuel','Trimestriel','Semestriel','Annuel'];
   let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];

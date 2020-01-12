@@ -80,12 +80,13 @@ class FLAutocallDetail extends React.Component {
 
 
     this.autocall= this.props.autocall;
-    console.log(this.autocall.getObject());
+    //console.log(this.autocall.getObject());
+  
 
     this.state = {
 
-      nominal : 0,
-
+      nominal :  this.autocall.getNominal(),
+      finalNominal :  this.autocall.getNominal(),
 
       //affchage du modal description avant traiter
       showModalDescription : false,
@@ -596,7 +597,7 @@ class FLAutocallDetail extends React.Component {
                                       backgroundColor: 'white',
                                       height : 40,
                                       fontSize: 28,
-                                      color: 'black',
+                                      color: setColor('light'),
                                       borderColor : setColor(''),
                                       borderWidth: 1,
                                       borderRadius: 4,
@@ -610,6 +611,11 @@ class FLAutocallDetail extends React.Component {
                             autoCorrect={false}
                             keyboardType={'numeric'}
                             returnKeyType={'done'}
+                            onBlur={() => {
+                              console.log("STATE NOMINAL : " + this.state.nominal +  "-  AUTOCALL NOMINAL : " + this.autocall.getNominal());
+                            
+                              this.setState( { finalNominal : this.state.nominal});
+                            }}
                             onFocus={() => {
                               
                             }}
@@ -684,7 +690,7 @@ class FLAutocallDetail extends React.Component {
                             //backgroundColor: 'pink'
                           }}
               >
-                     <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.nominal}/>
+                     <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} />
                      <ScrollView style={{marginTop: 5, width: 0.9*DEVICE_WIDTH}}>
                         <Accordion
                             sections={SECTIONS}

@@ -660,7 +660,7 @@ export class CAutocall extends CProduct {
       let ds = Number(this.getDegressivity());
       let currentYear = 0;
       let incrementalMultiplier = 1;
-      console.log("Nombres de dates : " +numberOfDates + "  -  Nombre NNCall : " + numberWithNoCall + "  -  Freq : " + freq + "         DS : "+ds);
+      //console.log("Nombres de dates : " +numberOfDates + "  -  Nombre NNCall : " + numberWithNoCall + "  -  Freq : " + freq + "         DS : "+ds);
       for (let i = numberWithNoCall; i <= numberOfDates; i++) {
         currentYear = Number(freq* i / 12);
         obj = {};

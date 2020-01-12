@@ -1,32 +1,38 @@
 [
-    {
-      "name": "Mensuel",
-      "commonName" : "mois",
-      "id": "1M",
-      "freq": 1
-    },
-    {
-      "name": "Trimestriel",
-      "commonName" : "trimestre",
-      "id": "3M",
-      "freq": 3
-    },
-    {
-      "name": "Semestriel",
-      "commonName" : "semestre",
-      "id": "6M",
-      "freq": 6
-    },
-    {
-      "name": "Annuel",
-      "commonName" : "an",
-      "id": "1Y",
-      "freq": 12
-    },
-    {
-      "name": "Biannuel",
-      "commonName" : "an",
-      "id": "2Y",
-      "freq": 24
-    }
-  ]
+  {
+    "name": "Quotidien",
+    "commonName": "jour",
+    "id": "1D",
+    "freq": 0.03
+  },
+  {
+    "name": "Mensuel",
+    "commonName": "mois",
+    "id": "1M",
+    "freq": 1
+  },
+  {
+    "name": "Trimestriel",
+    "commonName": "trimestre",
+    "id": "3M",
+    "freq": 3
+  },
+  {
+    "name": "Semestriel",
+    "commonName": "semestre",
+    "id": "6M",
+    "freq": 6
+  },
+  {
+    "name": "Annuel",
+    "commonName": "an",
+    "id": "1Y",
+    "freq": 12
+  },
+  {
+    "name": "Biannuel",
+    "commonName": "an",
+    "id": "2Y",
+    "freq": 24
+  }
+]

@@ -32,14 +32,45 @@ export class CAutocallSRP extends CAutocall {
     let cpn = this.product['data']["Digital Coupon"];
     this.product['coupon'] = Numeral(cpn.substring(0, cpn.length - 4)).format('0.00'); 
 
+    this.product['startdate'] = this.product['data']["Offer Close Date"];
+
+    if (this.product['data'].hasOwnProperty("Knockout Level")) {
+      let ar = (this.product['data']["Knockout Level"]).split('|');
+
+      this.product['levelAutocall'] = Number(Numeral(ar[0]).value())+1;
+     } else {
+      this.product['levelAutocall'] = 0;
+     } 
+  
+     
+     if (this.getDescription().includes("semi-annual observation")) {
+      this.product['freqAutocall'] = "6M";
+     } else if (this.getDescription().includes("annual observation")) {
+      this.product['freqAutocall'] = "1Y";
+     } else if (this.getDescription().includes("monthly observation")){
+        this.product['freqAutocall'] = "1M";
+     } else if (this.getDescription().includes("quarterly observation")){
+      this.product['freqAutocall'] = "3M";
+     } else if (this.getDescription().includes("daily observation")){
+      this.product['freqAutocall'] = "1D";
+     }
+
+     if (this.product.data.hasOwnProperty("Sales Commision")){
+       this.product['UF'] = this.product['data']['Sales Commision'];
+     } 
+
+     this.product['ISIN'] = this.product['data']['ISIN'];
+     
  }
 
+
   getProductTile() {
+
     return this.product.data.hasOwnProperty("Title") ? this.product['data']['Title'] : super.getProductName();
   }
 
   getDescription(nb = 1) {
-    return nb === 1 ? this.product['data']["Product Description 1"] : this.product['data']["Product Description 2"];
+    return nb === 1 ? this.product['data']["Product Description 1"] : (this.product['data']["Product Description 2"] === '' ? this.product['data']["Product Description 2"] : this.product['data']["Product Description 2"]);
   }
 
   getIssuer(){

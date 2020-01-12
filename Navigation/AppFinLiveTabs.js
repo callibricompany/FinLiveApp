@@ -9,7 +9,7 @@ import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
 import PricerScreen from '../Components/Pricer/PricerScreen'
 import FLResultPricer from '../Components/Pricer/FLResultPricer'
 import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
-import FLSRPPdfReader from '../Components/Home/FLSRPPdfReader';
+import FLSRPDetail from '../Components/Home/FLSRPDetail';
 import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
 import ProfileScreen from '../Components/ProfileScreen'
 import TicketScreen from '../Components/Ticket/TicketScreen'
@@ -75,8 +75,8 @@ function labelStyle (focused, tintColor) {
     FLAutocallDetailHome : {
       screen : FLAutocallDetailHome
     },
-    FLSRPPdfReader: {
-      screen : FLSRPPdfReader
+    FLSRPDetail: {
+      screen : FLSRPDetail
     },
   }, 
   {
@@ -280,7 +280,7 @@ function labelStyle (focused, tintColor) {
     //console.log("HOMEEEEEBAR : " + routes[index].routeName);
     //console.log(routes[index].params);
     
-    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'){
+    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail'){
       if (typeof routes[index].params !== 'undefined') {
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params);
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params['hideBottomTabBar']);

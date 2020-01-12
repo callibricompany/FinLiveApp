@@ -103,7 +103,7 @@ class PricerScreen extends React.Component {
 
       hideCC : false,
 
-      nominal : 0,
+      nominal : 1000000,
       toto : true,
     }
 
@@ -151,7 +151,7 @@ class PricerScreen extends React.Component {
     if (!Object.is(this.request, r)){
         //console.log("non egal");  
         this.request = r;
-        this.setState({ toto : !this.state.toto });
+        this.setState({ toto : !this.state.toto , nominal : this.request.getValue('nominal')});
     } else {
       //console.log("deja equal");
     }
@@ -1106,7 +1106,7 @@ render() {
                                         backgroundColor: 'white',
                                         height : 40,
                                         fontSize: 28,
-                                        color: 'black',
+                                        color: setColor('light'),
                                         borderColor : setColor(''),
                                         borderWidth: 1,
                                         borderRadius: 4,
@@ -1124,7 +1124,10 @@ render() {
                                 
                               }}
                               onBlur={() => {
-                                console.log("tatayoyo");
+                                if (this.state.nominal === '' || this.state.nominal < 10000) {
+                                  alert("Vous ne pouvez évaluer un produit qu'avec un nominal minimum \nde 10 000 EUR");
+                                  this.setState({ nominal : 10000 });
+                                }
                               }}
                               //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
                               value={this.state.nominal === 0 ? '' : currencyFormatDE(Number(this.state.nominal),0)}

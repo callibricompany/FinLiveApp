@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { View, Text } from 'react-native';
 
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -31,7 +31,7 @@ class FLAutocallDetailHome extends React.Component {
 
     render() {
       return (
-          <FLAutocallDetail autocall={this.autocall} />
+        <FLAutocallDetail autocall={this.autocall} />
       );
     }
 };

@@ -217,7 +217,7 @@ export function interpolateAirbag (df, airbag) {
 }
 
 export function interpolateDS (df, ds) {
-
+  
     if (df.where((row) => row.degressiveStep === ds).toRows().length !== 0) {
       df = df.where((row) => row.degressiveStep === ds).bake();
     } else {
@@ -248,6 +248,7 @@ export function interpolateDS (df, ds) {
                         if (d6.toRows().length !== 0) {
                             ////this.setState({ messageLoading : this.eleborateMessageLoading('.')});
                             //interpolation
+                            //print (d6,["product", "coupon", "maturity", "degressiveStep", "airbagLevel", "price", "code"]);
                             xs = d6.getSeries('degressiveStep').bake().distinct().toArray();
                             ys = d6.getSeries('price').bake().distinct().toArray();
                             ysVega = d6.getSeries('vega').bake().distinct().toArray();
@@ -264,11 +265,11 @@ export function interpolateDS (df, ds) {
                             fVega = interpolator(pointsVega);
 
 
-                            //print (d6,["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
+                            //print (d6,["product", "coupon", "maturity", "degressiveStep", "airbagLevel", "price", "code"]);
                                 
 
                             //on ne garde que le premier pour recrer le meme tableau
-                            d10 = d6.head(1);
+                            d10 = d6.head(1).bake();
                             //print (d10,["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
                              
                             bDSOld = d10.getSeries('degressiveStep').bake().toArray().toString();
@@ -280,8 +281,8 @@ export function interpolateDS (df, ds) {
                                 //il faut reconstiturer le code
                                 code: value => value.replace('_DS:' + bDSOld, '_DS:' + ds)
                             });
-                            //print (d10,["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
-                             
+                            //print (d10,["product", "coupon", "maturity", "degressiveStep", "airbagLevel", "price", "code"]);
+                            // console.log("DONE");
 
                             dfToAdd = dfToAdd.concat(new dataForge.DataFrame(d10));
                             //print (dfToAdd,["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);

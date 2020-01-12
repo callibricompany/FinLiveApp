@@ -309,7 +309,7 @@ export class CPSRequest extends CRequest {
       this._fillCriteria('degressiveStep', autocall.getDegressivity(), autocall.getDegressivity() === 0 ? '' : 'Stepdown ' + Numeral(autocall.getDegressivity()).format('0%') + " / an");
       this._fillCriteria('UF', autocall.getUF(), autocall.getUF());
       this._fillCriteria('UFAssoc', autocall.getUFAssoc(), autocall.getUFAssoc());
-
+      this._fillCriteria('nominal', autocall.getNominal(), autocall.getNominal());
       /*
       p = {
         'typeAuction': {

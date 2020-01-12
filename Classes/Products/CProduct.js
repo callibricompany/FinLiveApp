@@ -74,6 +74,25 @@ export class CProduct extends CObject {
     }
 
 
+    getISIN() {
+      let name = "[X]";
+  
+      if (this.product.hasOwnProperty("ISIN")) {
+        name = this.product.ISIN;
+      }
+  
+      return name;
+    }
+
+    getNominal() {
+      let name = 1000000;
+  
+      if (this.product.hasOwnProperty("nominal")) {
+        name = this.product.nominal;
+      }
+  
+      return name;
+    }
     /////////////////////////
 
     //      DATES
