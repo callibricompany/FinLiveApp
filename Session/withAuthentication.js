@@ -108,11 +108,12 @@ const withAuthentication = Component => {
                 });
 
                 let toto = [
-                  ...new Set(userDatas.homePage.map(x => x.template))
+                  ...new Set(userDatas.userTickets.map(x => x.company_id))
                 ];
                 console.log(toto);
-                //console.log(userDatas.startPage.srp.slice(0,1));
-                //console.log(userDatas.userTickets[0]);
+                //userDatas.userTickets.forEach((t) => console.log(t.currentStep));
+                console.log(userDatas.userTickets.slice(0,1));
+                //console.log(this.getAllUndelyings());
                
                 
                 resolve("ok");
@@ -127,6 +128,7 @@ const withAuthentication = Component => {
             //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
             alert("ERREUR RECUPERATION DES INFOS USER : ", "" + error);
             reject(error);
+
           });
       });
     }

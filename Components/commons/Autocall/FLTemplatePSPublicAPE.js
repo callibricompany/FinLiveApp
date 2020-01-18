@@ -282,7 +282,7 @@ _renderAutocallMediumTemplate() {
         <View style={{flex : 0.33, flexDirection : 'column', padding: 5, alignItems: 'flex-start'}}>
           <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
             <Text style={[setFont('300', 10, setColor(''), 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
-                {String('protection capital').toUpperCase()}
+                {String('protection \ncapital').toUpperCase()}
             </Text>         
           </View>
           <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
@@ -312,7 +312,7 @@ _renderAutocallMediumTemplate() {
         <View style={{flex : 0.33, flexDirection : 'column', padding: 5, alignItems: 'flex-start'}}>
           <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
             <Text style={[setFont('300', 10, setColor(''), 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
-                {String('rappels du prduit').toUpperCase()}
+                {String('rappels \ndu prduit').toUpperCase()}
             </Text>         
           </View>
           <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
@@ -342,7 +342,7 @@ _renderAutocallMediumTemplate() {
         <View style={{flex : 0.33, flexDirection : 'column', padding: 5, alignItems: 'flex-start'}}>
         <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
             <Text style={[setFont('300', 10, setColor(''), 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
-                {String('maturité du prduit').toUpperCase()}
+                {String('maturité \ndu prduit').toUpperCase()}
             </Text>         
           </View>
           <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>

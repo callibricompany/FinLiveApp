@@ -61,11 +61,11 @@ export class CAutocall extends CProduct {
         this.product["product"] = "phoenix";
       } else {
         //c'est un autocall
-        this.product["product"] = "autocall";
+        this.product["product"] = "athena";
       }
     } else if (this.product["product"] === 'autocall') {
         //c'est un autocall on lui change de nom
-        this.product["product"] = "autocall";
+        this.product["product"] = "athena";
     }
   }
 
@@ -250,9 +250,9 @@ export class CAutocall extends CProduct {
       name = "Réverse convertible";
     } else if (name.toLowerCase().includes("autocall") || name.toLowerCase().includes("athena")  || name.toLowerCase().includes("athéna")) {
       if (this.isIncremental()) {
-        name = "Autocall";
+        name = "Athéna";
       } else {
-        name = "Autocall";
+        name = "Athéna";
       }
     } else if (name.toLowerCase().includes("phoenix")) {
       if (this.isMemory()) {

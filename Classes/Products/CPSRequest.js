@@ -21,8 +21,8 @@ export class CPSRequest extends CRequest {
           'icon2' : 'ios-contacts',
         },
         'type': {
-          'value': 'autocall',
-          'valueLabel': 'Autocall',
+          'value': 'athena',
+          'valueLabel': 'Athéna',
           'defaultValueLabel': 'Optimisé',
           'title': 'PRODUIT',
           'isActivated': true,
@@ -504,7 +504,7 @@ export class CPSRequest extends CRequest {
       if (this.product['type'].value.includes('phoenix')){ //effet airbag, degressivite desactive
         this.product['airbagLevel'].isLocked = true;
         this.product['airbagLevel'].defaultValueLabel = 'Non compatible';
-      } else if (this.product['type'].value.includes('autocall')) {
+      } else if (this.product['type'].value.includes('athena')) {
         this.product['barrierPhoenix'].isLocked = true;
         this.product['barrierPhoenix'].defaultValueLabel = 'Non compatible';
       }
@@ -517,10 +517,10 @@ export class CPSRequest extends CRequest {
       criteria['noCallNbPeriod'] =  this.product.freq.isActivated ? this.product.nncp.value : 12;
 
       //autocall
-      criteria['isIncremental'] =  this.product.type.value === 'autocall' ? this.product.isIncremental.value : false;
+      criteria['isIncremental'] =  this.product.type.value === 'athena' ? this.product.isIncremental.value : false;
       
       //gestion du stepdown et du non airbag et barrier coupon
-      if (this.product.type.value === 'autocall') {
+      if (this.product.type.value === 'athena') {
         let ds = this.product.degressiveStep.value;
         let ds_array = [0, 2, 5];
         if (ds_array.indexOf(ds) !== -1) {
@@ -568,7 +568,7 @@ export class CPSRequest extends CRequest {
         }
       } else { //on prend le max des PDI max
         criteria['barrierPDI'] =  0.8;
-        if (this.product.airbagLevel.isActivated && this.product.type.value === 'autocall' && this.product.airbagLevel.value !== 'NA') {
+        if (this.product.airbagLevel.isActivated && this.product.type.value === 'athena' && this.product.airbagLevel.value !== 'NA') {
           if (this.product.airbagLevel.value === 'FA') {
             criteria['airbagLevel'] =  0.8;
           } else if (this.product.airbagLevel.value === 'SA') {

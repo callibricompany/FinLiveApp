@@ -52,12 +52,17 @@ const SECTIONS = [
   {
     title: 'descriptif',
     code: 'DESCRIPTION',
+    height : 400,
+  },   
+  {
+    title: 'émission',
+    code: 'ISSUER',
     height : 200,
-  },         
+  },          
   {
     title: 'dates importantes',
     code: 'DATE',
-    height : 100,
+    height : 150,
   }, 
   {
     title: 'protection du capital',
@@ -77,7 +82,7 @@ class FLSRPDetail extends React.Component {
 
 
     this.autocall = this.props.navigation.getParam('autocall', '...');
-    console.log(this.autocall.getObject());
+    //console.log(this.autocall.getObject());
 
     this.state = {
 
@@ -88,7 +93,7 @@ class FLSRPDetail extends React.Component {
       showModalDescription : false,
 
       //gestion des sections
-      activeSections: [],
+      activeSections: [0],
       scrollViewHeight : 50,
 
       //gestion du clavier
@@ -244,6 +249,67 @@ class FLSRPDetail extends React.Component {
     );
   }
 
+  _renderIssuer() {
+    return (
+      <View style={{backgroundColor: 'white', borderBottomColor: 'black', justifyContent: 'center', alignItems: 'center', padding: 5, marginTop: 5}}>
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                  <Text style={setFont('400', 12, 'black','Regular')}>Code ISIN :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                    {this.autocall.getISIN()}
+                </Text>
+              </View>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                  <Text style={setFont('400', 12, 'black','Regular')}>Fin de la souscription :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                    {Moment(this.autocall.getStartDate()).locale('fr',localization).format('ll')}
+                </Text>
+              </View>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                  <Text style={setFont('400', 12, 'black','Regular')}>Date de strike :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                   {Moment(this.autocall.getStrikingDate()).locale('fr',localization).format('ll')}
+                </Text>
+              </View>
+        </View>
+
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                 <Text style={setFont('400', 12, 'black','Regular')}>Emetteur :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                    {this.autocall.getIssuer()}
+                </Text>
+              </View>
+        </View>
+
+        <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 0.5}}>
+                  <Text style={setFont('400', 12, 'black','Regular')}>Distributeur :</Text>
+              </View>
+              <View style={{flex: 0.5}}>
+                <Text style={setFont('400', 12)}>
+                    {this.autocall.getDistributor()}
+                </Text>
+              </View>
+        </View>
+
+
+      </View>
+    );
+  }
+
   _renderCapital() {
     return (
       <View style={{backgroundColor: 'white', borderBottomColor: 'black', justifyContent: 'center', alignItems: 'center', padding: 0, marginTop: 5, marginBottom :5}}>
@@ -280,15 +346,11 @@ class FLSRPDetail extends React.Component {
 
 
 
-  _renderDescrption() {
+  _renderDescription() {
 
     return (
       <View style={{backgroundColor: 'white', borderBottomColor: 'black', justifyContent: 'center', alignItems: 'flex-start', padding: 0, marginTop: 5, marginBottom :5}}>
-        <View style={{justifyContent: 'flex-start', borderWidth: 0, marginTop : 5, alignItems: 'flex-start'}}>
-                  <Text style={setFont('400', 12, 'black','Bold')}>
-                    {this.autocall.getISIN()}
-                  </Text>
-        </View>
+
         <View style={{flex: 1, justifyContent: 'flex-start', borderWidth: 0, marginTop : 5, marginBottom: 5}}>
                   <Text style={setFont('600', 12, 'black','Regular')}>
                     {this.autocall.getDescription(2)}
@@ -307,7 +369,8 @@ class FLSRPDetail extends React.Component {
     switch(content.code) {
       case 'DATE' : return this._renderDates();
       case 'CAPITAL' : return this._renderCapital();
-      case 'DESCRIPTION' : return this._renderDescrption();
+      case 'DESCRIPTION' : return this._renderDescription();
+      case 'ISSUER' : return this._renderIssuer();
       default : <View><Text>...</Text></View>;
     }
   };
@@ -329,7 +392,7 @@ class FLSRPDetail extends React.Component {
       return(
             <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : 1}}> 
          
-              <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'white'}}>
+              <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent'}}>
                 <View style={{width : 0.6*DEVICE_WIDTH,  justifyContent: 'center'}}>
                     <TextInput 
                             style={{    
@@ -422,8 +485,8 @@ class FLSRPDetail extends React.Component {
               >
                      <FLTemplatePSPublicAPE object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={false} source={'Home'} nominal={this.state.nominal}/>
                      {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') === 0 ?
-                                    <View style={{marginTop : 10, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', borderRadius: 3}}>
-                                        <Text style={setFont('300', 12, 'white', 'Regular')}>
+                                    <View style={{padding : 5, marginTop : 10, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', borderRadius: 3}}>
+                                        <Text style={setFont('500', 12, 'white', 'Bold')}>
                                           Dernier jour
                                         </Text>
                                     </View>
@@ -444,6 +507,7 @@ class FLSRPDetail extends React.Component {
                             renderContent={this._renderContentUnderlying}
                             expandMultiple={true}
                             onChange={(activeSections) => {
+                              //console.log(this.state.activeSections);
                               this.setState( { activeSections : activeSections }, () => this._redefineHeight())  
                             }}
                           />

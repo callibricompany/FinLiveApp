@@ -13,9 +13,13 @@ import {
 
 import { FLScrollView } from "../SearchBar/searchBarAnimation";
 
+import { withAuthorization } from '../../Session';
 import { withUser } from "../../Session/withAuthentication";
 import { withNavigation } from "react-navigation";
 import { compose, hoistStatics } from "recompose";
+
+import { searchProducts } from '../../API/APIAWS';
+import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 
 import RobotBlink from "../../assets/svg/robotBlink.svg";
 
@@ -24,10 +28,14 @@ import Dimensions from "Dimensions";
 import { setFont } from "../../Styles/globalStyle";
 
 import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
+import FLTemplateEmpty from "../commons/Autocall/FLTemplateEmpty";
 import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
 import FLTemplatePSPublicAPE from '../commons/Autocall/FLTemplatePSPublicAPE';
 import { CAutocall } from "../../Classes/Products/CAutocall";
 import * as TEMPLATE_TYPE from "../../constants/template";
+import { CPSRequest } from "../../Classes/Products/CPSRequest";
+import { isAndroid } from "../../Utils";
+
 
 const DEVICE_WIDTH = Dimensions.get("window").width;
 const DEVICE_HEIGHT = Dimensions.get("window").height;
@@ -40,9 +48,13 @@ class TabHome extends React.PureComponent {
       scrollTo: this.props.marginSearch,
       refreshing: false,
 
-      filteredFeaturedProducts: []
+      filteredFeaturedProducts: [],
+
+      bestCouponsExtraData : true,
     };
 
+    this.bestCoupons = [];
+    
     //console.log(this.allProducts[0]);
     /* this.allProducts.forEach((product) => {
         //console.log(product);
@@ -63,6 +75,47 @@ class TabHome extends React.PureComponent {
     typeof props.filters !== "undefined"
       ? this.updateFilters(props.filters)
       : null;
+  }
+
+  componentDidMount(){
+    //chargement des meilleurs coupons
+    let allUnderlyings = this.props.getAllUndelyings();
+    
+    allUnderlyings.forEach((u) => {
+      let request = new CPSRequest();
+      //request.setCriteria('type', autocall.getProductShortName(), autocall.getProductName());
+      request.setCriteria('underlying', u.split(), u);
+      request.setCriteria('maturity', [8,8], "8Y");
+      request.setCriteria('barrierPDI', 0.6, "Protégé jusqu'à -40%");
+      request.setCriteria('isIncremental', true, "Incremental");
+      
+      //this._fillCriteria('freq', autocall.getFrequencyAutocall(), autocall.getFrequencyAutocallTitle());
+      //this._fillCriteria('barrierPhoenix', autocall.getBarrierPhoenix(), "Protégé jusqu'à : " + Numeral(autocall.getBarrierPhoenix() - 1).format('0%'));
+      //this._fillCriteria('airbagLevel', autocall.getAirbagCode(), autocall.getAirbagTitle());
+      //this._fillCriteria('nncp', autocall.getNNCP(), "1er rappel dans "+autocall.getNNCPLabel());
+      //this._fillCriteria('isMemory', autocall.isMemory(), autocall.isMemory() ? 'Effet mémoire' : 'Non mémoire');
+      //this._fillCriteria('degressiveStep', autocall.getDegressivity(), autocall.getDegressivity() === 0 ? '' : 'Stepdown ' + Numeral(autocall.getDegressivity()).format('0%') + " / an");
+      //this._fillCriteria('UF', autocall.getUF(), autocall.getUF());
+      //this._fillCriteria('UFAssoc', autocall.getUFAssoc(), autocall.getUFAssoc());
+      //this._fillCriteria('nominal', autocall.getNominal(), autocall.getNominal());
+
+      searchProducts(this.props.firebase, request.getCriteria())
+      .then((data) => {
+        
+          let autocall = interpolateBestProducts(data, request);
+          if (autocall.length === 1){
+            this.bestCoupons.push(autocall[0]);
+            this.setState({ bestCouponsExtraData : !this.state.bestCouponsExtraData });
+          } else if (autocall.length === 0) {
+            console.log("Pas résultat possible.\nModifiez vos critères : " + u);
+          }
+      })
+      .catch(error => {
+        console.log(u+" - ERREUR recup prix " + error);
+        //alert('ERREUR calcul des prix', '' + error);
+      });
+    
+    })
   }
 
   //va aider pour savoir si on affiche ou pas
@@ -154,6 +207,7 @@ class TabHome extends React.PureComponent {
 
   render() {
     //console.log(this.props.userOrg);
+ 
     return (
       <FLScrollView
         style={{ marginTop: Platform.OS === "android" ? -65 : -45 }}
@@ -263,33 +317,33 @@ class TabHome extends React.PureComponent {
           //style={styles.wrapper}
           //scrollTo={this.state.scrollTo}
           contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
-          data={
-            this.props.filtersHomePage["category"] === "PSFAVORITES"
-              ? this.props.favorites
-              : this.isFiltered
-              ? this.state.filteredFeaturedProducts
-              : this.props.homePage
-          }
+          data={this.bestCoupons.length === 0 ? this.props.homePage.slice(0,2) : this.bestCoupons}
           horizontal={true}
+          
           renderItem={({ item, index }) => {
-            switch (item.template) {
-              case "PSLIST":
+
                 return (
                   <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                    <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
+                  {this.bestCoupons.length === 0 ?
+                      <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
+                    : <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
+                  }
                   </View>
                 );
-              default:
-                return null;
-            }
+ 
           }}
+          extraData={this.state.extraData}
           //tabRoute={this.props.route.key}
           keyExtractor={item => {
-            let key =
-              typeof item.data["id"] === "undefined"
-                ? item.data["code"]
-                : item.data["id"];
-            return key.toString();
+            if (this.bestCoupons.length === 0) {
+                  let key =
+                    typeof item.data["id"] === "undefined"
+                      ? item.data["code"]
+                      : item.data["id"];
+                  return key.toString();
+            } else {
+              return item.code.toString();
+            }
           }}
         />
 
@@ -338,8 +392,8 @@ class TabHome extends React.PureComponent {
           </View>
         : null
         }
-
-        <TouchableOpacity
+        <View style={{height: isAndroid() ? 100 : 150}} />
+        {/*<TouchableOpacity
           onPress={() => {
             Alert.alert("FinLive SAS", "Copyright ©");
           }}
@@ -352,14 +406,16 @@ class TabHome extends React.PureComponent {
         >
           <RobotBlink width={100} height={100} />
           <Text style={{ fontFamily: "FLFontTitle" }}>F i n L i v e</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>*/}
       </FLScrollView>
     );
   }
 }
 
+
+const condition = authUser => !!authUser;
 const composedWithNav = compose(
-  //withAuthorization(condition),
+  withAuthorization(condition),
   withNavigation,
   withUser
 );

@@ -327,7 +327,7 @@ export function searchProducts (firebase, criteria) {
   var form = new FormData();
 
   Object.keys(criteria).forEach(key => {
-    console.log(key + "   -   " + criteria[key]);
+    //console.log(key + "   -   " + criteria[key]);
     form.append(key, criteria[key]);
   });
   
@@ -336,7 +336,7 @@ export function searchProducts (firebase, criteria) {
 
       firebase.doGetIdToken()
       .then(token => {
-
+       
           var axiosConfig = {
             headers :{
               //'Content-Type': 'application/x-www-form-urlencoded',
@@ -350,7 +350,7 @@ export function searchProducts (firebase, criteria) {
 
           axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
           .then((response) => {
-            console.log("Succes demande prix : " + response.data.length);
+            //console.log("Succes demande prix : " + response.data.length);
             resolve(response.data)
             //res.render('pages/register',{email: email, isConnected: isConnected});
           })

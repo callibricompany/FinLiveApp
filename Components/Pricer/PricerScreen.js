@@ -329,7 +329,7 @@ class PricerScreen extends React.Component {
 
 //choix du produit
 _renderProductTile() {
-  let dataProductName = ['Autocall', 'Phoenix'];
+  let dataProductName = ['Athéna', 'Phoenix'];
   return (
             <View style={{
                         height: (DEVICE_WIDTH*0.925-20)/3, 
@@ -369,7 +369,7 @@ _renderProductTile() {
                                     onSelect={(index, value) => {
                                       switch (Number(index))  {
                                          case 0 :   //autocall
-                                            this._updateValue('type', 'autocall', value);
+                                            this._updateValue('type', 'athena', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
@@ -708,7 +708,7 @@ _renderAirbagTile() {
    //determination de la couleur backgound
    let bgColor = 'white';
    let iconColor = setColor('');
-   if (this.request.getValue('type') !== 'autocall') {
+   if (this.request.getValue('type') !== 'athena') {
     bgColor = setColor('gray');
     iconColor = setColor('light');
    } else {
@@ -732,14 +732,14 @@ _renderAirbagTile() {
                 <View style={{flexDirection: 'row', paddingTop: 2, flexGrow: 1}}>
                     <TouchableOpacity style={{flex: 0.333, flexDirection: 'column', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
-                                        if (this.request.getValue('type') === 'autocall'){
+                                        if (this.request.getValue('type') === 'athena'){
                                             this.currentParameter = 'airbagLevel';
                                             this.request.setActivation(this.currentParameter, true);
                                             this.request.setActivation('degressiveStep', true);
                                             this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
                                         }
                                       }}
-                                      activeOpacity={this.request.getValue('type') === 'autocall' ? 0.2 : 1}
+                                      activeOpacity={this.request.getValue('type') === 'athena' ? 0.2 : 1}
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
@@ -751,7 +751,7 @@ _renderAirbagTile() {
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
-                                        {this.request.getValue('type') === 'autocall' ?
+                                        {this.request.getValue('type') === 'athena' ?
                                                               this.request.isActivated('airbagLevel') ? this.request.getValueLabel('airbagLevel') : ''
                                                                   : <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'center'}]}>-</Text>}
                             </Text>
@@ -759,14 +759,14 @@ _renderAirbagTile() {
                     </TouchableOpacity>
                     <TouchableOpacity style={{flex: 0.334, flexDirection: 'column', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center'}}
                                   onPress={() => {
-                                    if (this.request.getValue('type') === 'autocall'){
+                                    if (this.request.getValue('type') === 'athena'){
                                         this.currentParameter = 'airbagLevel';
                                         this.request.setActivation(this.currentParameter, true);
                                         this.request.setActivation('degressiveStep', true);
                                         this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
                                     }
                                   }}
-                                  activeOpacity={this.request.getValue('type') === 'autocall' ? 0.2 : 1}
+                                  activeOpacity={this.request.getValue('type') === 'athena' ? 0.2 : 1}
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
@@ -781,7 +781,7 @@ _renderAirbagTile() {
                                 <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
                                   {this.request.getValueLabel('degressiveStep') === '' ? 'Sans stepdown' : this.request.getValueLabel('degressiveStep')}
                                 </Text>
-                                :  this.request.getValue('type') === 'autocall' ?
+                                :  this.request.getValue('type') === 'athena' ?
                                         <View style={{backgroundColor : 'white', padding: 10, borderRadius: 30, marginBottom: 3}}>
                                           <Image style={{width: 30, height: 30}} source={logo} />
                                         </View>
@@ -800,7 +800,7 @@ _renderAirbagTile() {
                                                     this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
                                                   }}
                                 >
-                                { this.request.getValue('type') === 'autocall' ?
+                                { this.request.getValue('type') === 'athena' ?
                                   <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('light')}}/>
                                   : null 
                                 }
@@ -1009,7 +1009,7 @@ _renderTiles() {
            {this._renderGenericTile('maturity')}
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-           {this.request.getValue('type') === 'autocall' ? this._renderAirbagTile() : null}        
+           {this.request.getValue('type') === 'athena' ? this._renderAirbagTile() : null}        
         </View>
 
         <View style={{height: 150}}>

@@ -31,6 +31,7 @@ export class CAutocallSRP extends CAutocall {
 
     let cpn = this.product['data']["Digital Coupon"];
     this.product['coupon'] = Numeral(cpn.substring(0, cpn.length - 4)).format('0.00'); 
+    
 
     this.product['startdate'] = this.product['data']["Offer Close Date"];
 
@@ -70,7 +71,7 @@ export class CAutocallSRP extends CAutocall {
   }
 
   getDescription(nb = 1) {
-    return nb === 1 ? this.product['data']["Product Description 1"] : (this.product['data']["Product Description 2"] === '' ? this.product['data']["Product Description 2"] : this.product['data']["Product Description 2"]);
+    return nb === 1 ? this.product['data']["Product Description 1"] : (this.product['data']["Product Description 2"] === '' ? this.product['data']["Product Description 1"] : this.product['data']["Product Description 2"]);
   }
 
   getIssuer(){

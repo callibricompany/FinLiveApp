@@ -4,10 +4,10 @@ const dataForge = require('data-forge');
 var interpolator = require('./spline.js');
 
 function print(df, tab) {
-    console.log("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");    
+    //console.log("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");    
     let dfPrint3 = new dataForge.DataFrame(df);
     dfPrint3 = dfPrint3.subset(tab);
-    console.log(dfPrint3.toString());    
+    //console.log(dfPrint3.toString());    
 
 }
 
@@ -398,7 +398,7 @@ export  function interpolateBestProducts(data, request) {
     });
 
     var df = new dataForge.DataFrame(allPricesDF);
-    console.log("Taille départ : " + df.toRows().length);
+    //console.log("Taille départ : " + df.toRows().length);
 
     //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     //
@@ -420,11 +420,11 @@ export  function interpolateBestProducts(data, request) {
 
     //         PDI US ou EU
     df = df.where((row) => criteria['isPDIUS'] === row.isPDIUS).bake(); 
-    console.log("Taille pendant 1 er filtres simples : " + df.toRows().length);
+    //console.log("Taille pendant 1 er filtres simples : " + df.toRows().length);
     //         PHOENIX MEMOIRE
     df = df.where((row) => criteria['isMemory'] === row.isMemory).bake(); 
 
-    console.log("Taille apres 1 er filtres simples : " + df.toRows().length);
+    //console.log("Taille apres 1 er filtres simples : " + df.toRows().length);
 
     
     //AIRBAG
@@ -451,7 +451,7 @@ export  function interpolateBestProducts(data, request) {
     }
     //print(df, ["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
     
-    console.log("Taille apres AIRBAG : " + df.toRows().length);
+    //console.log("Taille apres AIRBAG : " + df.toRows().length);
     
     
 
@@ -473,14 +473,14 @@ export  function interpolateBestProducts(data, request) {
 
     //PDI
     df = interpolatePDI (df, criteria.hasOwnProperty('barrierPDI') ? criteria['barrierPDI'] : product.barrierPDI.value);
-    console.log("Taille apres PDI : " + df.toRows().length);
+    //console.log("Taille apres PDI : " + df.toRows().length);
     //print(df, ["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
 
 
     //STEPDOWN
     //print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "degressiveStep", "code"]);
     df = interpolateDS (df, criteria.hasOwnProperty('degressiveStep') ? criteria['degressiveStep'] : product.degressiveStep.value);
-    console.log("Taille apres STEPDOWN : " + df.toRows().length);
+    //console.log("Taille apres STEPDOWN : " + df.toRows().length);
 
     //BARRIER PHOENIX
     //print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "barrierPhoenix", "code"]);
@@ -488,7 +488,7 @@ export  function interpolateBestProducts(data, request) {
     interpolateBarrierPhoenix
     //print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "barrierPhoenix", "code"]);
 
-    console.log("Taille apres BARRIER PHOENIX : " + df.toRows().length);
+    //console.log("Taille apres BARRIER PHOENIX : " + df.toRows().length);
 
     
     //MATURITY
@@ -547,9 +547,9 @@ export  function interpolateBestProducts(data, request) {
                         fVega = interpolator(pointsVega);
 
                         //on fait le tour des maturite et on ajoute les manquantes
-                        console.log(product.typeAuction.value);
+                        
                         allMatDate.forEach((mat) => {
-                          console.log(mat + "  :   " + f(mat) + "      /      "+ product.maturity.value[0] + " et " + product.maturity.value[1]);
+                          //console.log(mat + "  :   " + f(mat) + "      /      "+ product.maturity.value[0] + " et " + product.maturity.value[1]);
                           if (mat >= product.maturity.value[0] && mat <= product.maturity.value[1]) {
                             d10 = d9.head(1);
                             matToChange = d10.getSeries('maturity').bake().toArray().toString();
@@ -574,7 +574,7 @@ export  function interpolateBestProducts(data, request) {
       df = dfToAdd;
     }
     print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "barrierPhoenix", "code"]);
-    console.log("Taille apres MATURITY : " + df.toRows().length);
+    //console.log("Taille apres MATURITY : " + df.toRows().length);
 
     //on passe sur tous les produits distincts et on interpoler
     let interpolatedProducts = new dataForge.DataFrame();

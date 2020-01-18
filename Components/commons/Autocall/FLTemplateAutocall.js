@@ -328,7 +328,7 @@ _renderHeaderShortTemplate() {
 
 _renderHeaderMediumTemplate() {
   let dataUnderlyingAutocall = this.props.getAllUndelyings();
-  let dataProductName = ['Autocall', 'Phoenix'];
+  let dataProductName = ['Athéna', 'Phoenix'];
   let dataAuction = ["Appel public à l'épargne",'Placement Privé'];
   return (
 
@@ -362,7 +362,7 @@ _renderHeaderMediumTemplate() {
                                     onSelect={(index, value) => {
                                       switch (Number(index))  {
                                          case 0 :   //athena
-                                            this._updateValue('type', 'autocall', value);
+                                            this._updateValue('type', 'athena', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
@@ -523,7 +523,7 @@ _renderHeaderFullTemplate() {
   
   let dataUnderlyingAutocall = this.props.getAllUndelyings();
   //let dataProductName = STRUCTUREDPRODUCTS.map((p) => p.name);
-  let dataProductName = ['Autocall', 'Phoenix'];
+  let dataProductName = ['Athéna', 'Phoenix'];
   
 
   return (
@@ -556,7 +556,7 @@ _renderHeaderFullTemplate() {
                                     onSelect={(index, value) => {
                                       switch (Number(index))  {
                                          case 0 :   //athena
-                                            this._updateValue('type', 'autocall', value);
+                                            this._updateValue('type', 'athena', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
@@ -759,7 +759,7 @@ _renderAutocallFullTemplate() {
      <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
        <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
         <Text style={[setFont('300', 10, setColor(''), 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
-             {String('protection coupon').toUpperCase()}
+             {String('protection \ncoupon').toUpperCase()}
          </Text>         
        </View>
        <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
@@ -796,7 +796,7 @@ _renderAutocallFullTemplate() {
                     defaultValue={Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}
                     ref={component => this._dropdown['barrierPhoenix'] = component}
                     options={dataPhoenixBarrier}
-                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'autocall' ? true : false : !this.state.isEditable}
+                    disabled={this.state.isEditable ? this.autocallResult.getBarrierPhoenix() === 1 ? true : false : !this.state.isEditable}
                 />
             </View>
             { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1)   ?
@@ -1276,7 +1276,7 @@ _renderAutocallMediumTemplate() {
                     defaultValue={Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}
                     ref={component => this._dropdown['barrierPhoenix'] = component}
                     options={dataPhoenixBarrier}
-                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'autocall' ? true : false : !this.state.isEditable}
+                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'athena' ? true : false : !this.state.isEditable}
                 />
             </View>
             { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1)   ?
