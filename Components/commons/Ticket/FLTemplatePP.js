@@ -57,7 +57,7 @@ import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
+import { CPPTicket } from '../../../Classes/Tickets/CPPTicket';
 
 
 
@@ -67,7 +67,7 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
-class FLTemplatePSBroadcast extends React.Component {
+class FLTemplatePP extends React.Component {
 
 
   constructor(props) {
@@ -85,14 +85,22 @@ class FLTemplatePSBroadcast extends React.Component {
     //console.log(this.props.object);
 
     //type de tycket
-    this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE;
+    this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.TICKET_FULL_TEMPLATE;
 
     //largeur de la cartouche sur l'ecran
-    this.screenWidth = 0.9 * DEVICE_WIDTH;
+    switch(this.type) {
+      case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE :
+          this.screenWidth = 0.7 * DEVICE_WIDTH;
+          break;
+        default :
+          this.screenWidth = 0.9 * DEVICE_WIDTH;
+          break;
+    }
+    
 
           
     //gestion des classes autocall et ticket broadcast
-    this.broadcast = new CBroadcastTicket(this.props.object, this.props.authUser.uid);
+    this.ticket = new CPPTicket(this.props.object, this.props.authUser.uid);
     this.autocall = this.broadcast.getProduct();
 
   
@@ -382,6 +390,6 @@ render () {
    );
    
    //export default HomeScreen;
-export default hoistStatics(composedWithNav)(FLTemplatePSBroadcast);
+export default hoistStatics(composedWithNav)(FLTemplatePP);
 
 //export default FLTemplateAutocall;

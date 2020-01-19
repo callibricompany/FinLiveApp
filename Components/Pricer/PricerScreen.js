@@ -1068,6 +1068,7 @@ _renderCalculateButton(position='right') {
     </TouchableOpacity>
   )
 }
+
 render() {
     if (this.state.isLoading) {
           return (
@@ -1141,13 +1142,13 @@ render() {
                               }}
                       />
                   </View>
-                  <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', padding: 5}}
+                  <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', paddingLeft: 5, paddingRight: 5}}
                                     onPress={() => {
                                       let optimi = this.state.hideCC ? this.state.optimizer : 'CPN';
                                       this.setState({ optimizer : optimi, hideCC : !this.state.hideCC });
                                     }}
                   >
-                      <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={30} style={{color: setColor(''), transform: [{ rotate: '90deg'}]}}/> 
+                      <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={25} style={{color: setColor(''), transform: [{ rotate: '90deg'}]}}/> 
                   </TouchableOpacity>
               
 

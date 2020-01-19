@@ -31,7 +31,7 @@ const withAuthentication = Component => {
         getUserAllInfo: () => this.getUserAllInfo(),
 
         //la homepage
-        homePage: [],
+        featured: [],
         userOrg: [],
 
         //gestion des categories
@@ -95,14 +95,14 @@ const withAuthentication = Component => {
                 //console.log("Passage de withAuth");
                 this.setState({
                   allInfo: userDatas,
-                  homePage: JSON.parse(JSON.stringify(userDatas.homePage)),
+                  
+                  featured : userDatas.startPage.bestCoupon,
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
                   favorites: userDatas.favorites,
                   tickets: userDatas.userTickets,
                   apeTickets: userDatas.startPage.ape,
                   apeSRP : userDatas.startPage.srp,
-                  //broadcasts : userDatas.homePage.filter(({ template }) => template === "PSBROADCAST"),
                   broadcasts : userDatas.startPage.campaign,
                   
                 });
@@ -111,8 +111,9 @@ const withAuthentication = Component => {
                   ...new Set(userDatas.userTickets.map(x => x.company_id))
                 ];
                 console.log(toto);
+                console.log(userDatas.startPage.bestCoupon);
                 //userDatas.userTickets.forEach((t) => console.log(t.currentStep));
-                console.log(userDatas.userTickets.slice(0,1));
+                //console.log(userDatas.userTickets.slice(0,1));
                 //console.log(this.getAllUndelyings());
                
                 

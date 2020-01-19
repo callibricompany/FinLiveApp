@@ -8,6 +8,10 @@ export const PSPP = 'PSPP';
 //specific template for autocall template
 export const BROADCAST_PS_FULL_TEMPLATE = "BROADCAST_PS_FULL_TEMPLATE";
 
+//specific template for ticket template
+export const TICKET_MEDIUM_TEMPLATE = "TICKET_MEDIUM_TEMPLATE";
+export const TICKET_FULL_TEMPLATE = "TICKET_FULL_TEMPLATE";
+
 //specific template for autocall template
 export const AUTOCALL_BODY_FULL_TEMPLATE = "AUTOCALL_BODY_FULL_TEMPLATE";
 export const AUTOCALL_FULL_TEMPLATE = "AUTOCALL_FULL_TEMPLATE";

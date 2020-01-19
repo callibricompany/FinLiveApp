@@ -16,22 +16,7 @@ const withAuthorization = condition => Component => {
 
       }
 
-    
-      /*async componentWillMount() {
-        try {
-          await Expo.Font.loadAsync({
-      //      Roboto: require("native-base/Fonts/Roboto.ttf"),
-      //      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
-              Roboto: require("native-base/Fonts/Roboto.ttf"),
-              Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
-              //Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
-          })
-          } catch (error) {
-            console.log('Erreur chargement icon fonts', error);
-          }
-    
-        //this.setState({ isLoading: false });    
-      }*/
+  
     
 
     componentDidMount() {

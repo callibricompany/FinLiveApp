@@ -31,6 +31,9 @@ import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
 import FLTemplateEmpty from "../commons/Autocall/FLTemplateEmpty";
 import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
 import FLTemplatePSPublicAPE from '../commons/Autocall/FLTemplatePSPublicAPE';
+import FLTicketTemplateAPE  from '../Ticket/FLTicketTemplateAPE';
+import FLTemplatePP from '../commons/Ticket/FLTemplatePP';
+
 import { CAutocall } from "../../Classes/Products/CAutocall";
 import * as TEMPLATE_TYPE from "../../constants/template";
 import { CPSRequest } from "../../Classes/Products/CPSRequest";
@@ -81,7 +84,8 @@ class TabHome extends React.PureComponent {
     //chargement des meilleurs coupons
     let allUnderlyings = this.props.getAllUndelyings();
     
-    allUnderlyings.forEach((u) => {
+   // allUnderlyings.forEach((u) => {
+     u = allUnderlyings[0];
       let request = new CPSRequest();
       //request.setCriteria('type', autocall.getProductShortName(), autocall.getProductName());
       request.setCriteria('underlying', u.split(), u);
@@ -115,7 +119,7 @@ class TabHome extends React.PureComponent {
         //alert('ERREUR calcul des prix', '' + error);
       });
     
-    })
+  //  })
   }
 
   //va aider pour savoir si on affiche ou pas
@@ -129,7 +133,7 @@ class TabHome extends React.PureComponent {
       this.isFiltered = true;
 
       let newData = [];
-      this.props.homePage.forEach(product => {
+      this.props.featured.forEach(product => {
         //verifier son type
         if (product.template === "PSLIST") {
           //c'est un autocall
@@ -213,200 +217,236 @@ class TabHome extends React.PureComponent {
         style={{ marginTop: Platform.OS === "android" ? -65 : -45 }}
       >
 
-      {this.props.broadcasts.length !== 0  ?
-            <View>
-              <View
-                style={{
-                  marginTop: 0,
-                  marginLeft: DEVICE_WIDTH * 0.025,
-                  alignItems: "flex-start",
-                  borderWidth: 0
-                }}
-              >
-                <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-                  APE sur mesure
-                </Text>
-              </View>
-              <FlatList
-                //style={styles.wrapper}
-                //scrollTo={this.state.scrollTo}
-                contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
-                data={
-                  this.props.filtersHomePage["category"] === "PSFAVORITES"
-                    ? this.props.favorites
-                    : this.isFiltered
-                    ? this.state.filteredFeaturedProducts
-                    : this.props.broadcasts
-                }
-                horizontal={true}
-                renderItem={({ item, index }) => {
-                  switch (item.template) {
-                    case "PSBROADCAST":
-                      return (
-                        <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                          <FLTemplatePSBroadcast object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
-                        </View>
-                      );
-                    default:
-                      return null;
-                  }
-                }}
-                //tabRoute={this.props.route.key}
-                keyExtractor={item => {
-                  let key =
-                    typeof item.data["id"] === "undefined"
-                      ? item.data["code"]
-                      : item.data["id"];
-                  return key.toString();
-                }}
-              />
-          </View>
-        : null
-        }
-
-
-        <View
-          style={{
-            marginTop: 20,
-            marginLeft: DEVICE_WIDTH * 0.025,
-            alignItems: "flex-start",
-            borderWidth: 0
-          }}
-        >
-          <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-            Nos recommandations
-          </Text>
-        </View>
-
-        <FlatList
-          //style={{marginLeft : 100}}
-          //scrollTo={this.state.scrollTo}
-          contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
-          data={
-            this.props.filtersHomePage["category"] === "PSFAVORITES"
-              ? this.props.favorites
-              : this.isFiltered
-              ? this.state.filteredFeaturedProducts
-              : this.props.homePage
-          }
-          horizontal={true}
-          renderItem={({ item, index }) => this._renderFeatured(item, index)}
-          //tabRoute={this.props.route.key}
-          keyExtractor={item => {
-            let key =
-              typeof item.data["id"] === "undefined"
-                ? item.data["code"]
-                : item.data["id"];
-            return key.toString();
-          }}
-        />
-
-        <View
-          style={{
-            marginTop: 20,
-            marginLeft: DEVICE_WIDTH * 0.025,
-            alignItems: "flex-start",
-            borderWidth: 0
-          }}
-        >
-          <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-            Meilleurs coupons par sous-jacent
-          </Text>
-        </View>
-        <FlatList
-          //style={styles.wrapper}
-          //scrollTo={this.state.scrollTo}
-          contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
-          data={this.bestCoupons.length === 0 ? this.props.homePage.slice(0,2) : this.bestCoupons}
-          horizontal={true}
-          
-          renderItem={({ item, index }) => {
-
-                return (
-                  <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                  {this.bestCoupons.length === 0 ?
-                      <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
-                    : <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
-                  }
+          {this.props.broadcasts.length !== 0  ?
+                <View>
+                  <View
+                    style={{
+                      marginTop: 0,
+                      marginLeft: DEVICE_WIDTH * 0.025,
+                      alignItems: "flex-start",
+                      borderWidth: 0
+                    }}
+                  >
+                    <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                      APE sur mesure
+                    </Text>
                   </View>
-                );
- 
-          }}
-          extraData={this.state.extraData}
-          //tabRoute={this.props.route.key}
-          keyExtractor={item => {
-            if (this.bestCoupons.length === 0) {
-                  let key =
-                    typeof item.data["id"] === "undefined"
-                      ? item.data["code"]
-                      : item.data["id"];
-                  return key.toString();
-            } else {
-              return item.code.toString();
-            }
-          }}
-        />
-
-
-        {this.props.apeSRP.length !== 0  ?
-            <View>
-              <View
-                style={{
-                  marginTop: 20,
-                  marginLeft: DEVICE_WIDTH * 0.025,
-                  alignItems: "flex-start",
-                  borderWidth: 0
-                }}
-              >
-                <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-                  APE du marché
-                </Text>
+                  <FlatList
+                    //style={styles.wrapper}
+                    //scrollTo={this.state.scrollTo}
+                    contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                    data={
+                      this.props.filtersHomePage["category"] === "PSFAVORITES"
+                        ? this.props.favorites
+                        : this.isFiltered
+                        ? this.state.filteredFeaturedProducts
+                        : this.props.broadcasts
+                    }
+                    horizontal={true}
+                    renderItem={({ item, index }) => {
+                      switch (item.template) {
+                        case "PSBROADCAST":
+                          return (
+                            <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                              <FLTemplatePSBroadcast object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
+                            </View>
+                          );
+                        default:
+                          return null;
+                      }
+                    }}
+                    //tabRoute={this.props.route.key}
+                    keyExtractor={item => {
+                      let key =
+                        typeof item.data["id"] === "undefined"
+                          ? item.data["code"]
+                          : item.data["id"];
+                      return key.toString();
+                    }}
+                  />
               </View>
-              <FlatList
-                //style={styles.wrapper}
-                //scrollTo={this.state.scrollTo}
-                contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
-                data={
-                  this.props.filtersHomePage["category"] === "PSFAVORITES"
-                    ? this.props.favorites
-                    : this.isFiltered
-                    ? this.state.filteredFeaturedProducts
-                    : this.props.apeSRP
+            : null
+            }
+
+            {this.props.broadcasts.length !== 0  ?
+                <View>
+                  <View
+                    style={{
+                      marginTop: 20,
+                      marginLeft: DEVICE_WIDTH * 0.025,
+                      alignItems: "flex-start",
+                      borderWidth: 0
+                    }}
+                  >
+                    <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                      Mes tickets en cours
+                    </Text>
+                  </View>
+                  <FlatList
+                    //style={styles.wrapper}
+                    //scrollTo={this.state.scrollTo}
+                    contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                    data={this.props.tickets}
+                    horizontal={true}
+                    renderItem={({ item, index }) => {
+                      let type = item['currentStep'][0].codeOperation;
+
+                      switch (type) {
+                        case 'ape' : 
+                          return <FLTicketTemplateAPE ticket={item} />
+                        case 'pp' : 
+                          return <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE}/>
+                        default : return null;
+                      }
+                    }}
+                    keyExtractor={(item) => item.id.toString()}
+                  />
+              </View>
+            : null
+            }
+
+
+            <View
+              style={{
+                marginTop: 20,
+                marginLeft: DEVICE_WIDTH * 0.025,
+                alignItems: "flex-start",
+                borderWidth: 0
+              }}
+            >
+              <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                Les plus demandés 
+              </Text>
+            </View>
+            <FlatList
+              //style={{marginLeft : 100}}
+              //scrollTo={this.state.scrollTo}
+              contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+              data={
+                this.props.filtersHomePage["category"] === "PSFAVORITES"
+                  ? this.props.favorites
+                  : this.isFiltered
+                  ? this.state.filteredFeaturedProducts
+                  : this.props.featured
+              }
+              horizontal={true}
+              renderItem={({ item, index }) => this._renderFeatured(item, index)}
+              //tabRoute={this.props.route.key}
+              keyExtractor={item => {
+                let key =
+                  typeof item.data["id"] === "undefined"
+                    ? item.data["code"]
+                    : item.data["id"];
+                return key.toString();
+              }}
+            />
+
+            <View
+              style={{
+                marginTop: 20,
+                marginLeft: DEVICE_WIDTH * 0.025,
+                alignItems: "flex-start",
+                borderWidth: 0
+              }}
+            >
+              <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                Meilleurs coupons par sous-jacent
+              </Text>
+            </View>
+            <FlatList
+              //style={styles.wrapper}
+              //scrollTo={this.state.scrollTo}
+              contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+              data={this.bestCoupons.length === 0 ? this.props.featured.slice(0,2) : this.bestCoupons}
+              horizontal={true}
+              
+              renderItem={({ item, index }) => {
+
+                    return (
+                      <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                      {this.bestCoupons.length === 0 ?
+                          <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
+                        : <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
+                      }
+                      </View>
+                    );
+    
+              }}
+              extraData={this.state.extraData}
+              //tabRoute={this.props.route.key}
+              keyExtractor={item => {
+                if (this.bestCoupons.length === 0) {
+                      let key =
+                        typeof item.data["id"] === "undefined"
+                          ? item.data["code"]
+                          : item.data["id"];
+                      return key.toString();
+                } else {
+                  return item.code.toString();
                 }
-                horizontal={true}
-                renderItem={({ item, index }) => {
-                  switch (item.template) {
-                    case TEMPLATE_TYPE.PSSRPLIST:
-                      return (
-                        <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                          <FLTemplatePSPublicAPE object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
-                        </View>
-                      );
-                    default:
-                      return null;
-                  }
-                }}
-                //tabRoute={this.props.route.key}
-                keyExtractor={item => item.code}
-              />
-          </View>
-        : null
-        }
-        <View style={{height: isAndroid() ? 100 : 150}} />
-        {/*<TouchableOpacity
-          onPress={() => {
-            Alert.alert("FinLive SAS", "Copyright ©");
-          }}
-          style={{
-            height: 150,
-            alignItems: "center",
-            marginTop: 100,
-            marginBottom: 150
-          }}
-        >
-          <RobotBlink width={100} height={100} />
-          <Text style={{ fontFamily: "FLFontTitle" }}>F i n L i v e</Text>
-        </TouchableOpacity>*/}
+              }}
+            />
+
+
+            {this.props.apeSRP.length !== 0  ?
+                <View>
+                  <View
+                    style={{
+                      marginTop: 20,
+                      marginLeft: DEVICE_WIDTH * 0.025,
+                      alignItems: "flex-start",
+                      borderWidth: 0
+                    }}
+                  >
+                    <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                      APE du marché
+                    </Text>
+                  </View>
+                  <FlatList
+                    //style={styles.wrapper}
+                    //scrollTo={this.state.scrollTo}
+                    contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                    data={
+                      this.props.filtersHomePage["category"] === "PSFAVORITES"
+                        ? this.props.favorites
+                        : this.isFiltered
+                        ? this.state.filteredFeaturedProducts
+                        : this.props.apeSRP
+                    }
+                    horizontal={true}
+                    renderItem={({ item, index }) => {
+                      switch (item.template) {
+                        case TEMPLATE_TYPE.PSSRPLIST:
+                          return (
+                            <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                              <FLTemplatePSPublicAPE object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
+                            </View>
+                          );
+                        default:
+                          return null;
+                      }
+                    }}
+                    //tabRoute={this.props.route.key}
+                    keyExtractor={item => item.code}
+                  />
+              </View>
+            : null
+            }
+            <View style={{height: isAndroid() ? 100 : 150}} />
+            {/*<TouchableOpacity
+              onPress={() => {
+                Alert.alert("FinLive SAS", "Copyright ©");
+              }}
+              style={{
+                height: 150,
+                alignItems: "center",
+                marginTop: 100,
+                marginBottom: 150
+              }}
+            >
+              <RobotBlink width={100} height={100} />
+              <Text style={{ fontFamily: "FLFontTitle" }}>F i n L i v e</Text>
+            </TouchableOpacity>*/}
       </FLScrollView>
     );
   }
