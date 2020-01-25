@@ -221,7 +221,7 @@ class TabHome extends React.PureComponent {
                 <View>
                   <View
                     style={{
-                      marginTop: 0,
+
                       marginLeft: DEVICE_WIDTH * 0.025,
                       alignItems: "flex-start",
                       borderWidth: 0
@@ -234,7 +234,7 @@ class TabHome extends React.PureComponent {
                   <FlatList
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
-                    contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                    contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
                     data={
                       this.props.filtersHomePage["category"] === "PSFAVORITES"
                         ? this.props.favorites
@@ -268,11 +268,10 @@ class TabHome extends React.PureComponent {
             : null
             }
 
-            {this.props.broadcasts.length !== 0  ?
+            {this.props.tickets.length !== 0  ?
                 <View>
                   <View
                     style={{
-                      marginTop: 20,
                       marginLeft: DEVICE_WIDTH * 0.025,
                       alignItems: "flex-start",
                       borderWidth: 0
@@ -285,17 +284,25 @@ class TabHome extends React.PureComponent {
                   <FlatList
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
-                    contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                    contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
                     data={this.props.tickets}
                     horizontal={true}
                     renderItem={({ item, index }) => {
                       let type = item['currentStep'][0].codeOperation;
-
+                      
                       switch (type) {
                         case 'ape' : 
-                          return <FLTicketTemplateAPE ticket={item} />
+                          return (
+                                <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                                    <FLTicketTemplateAPE ticket={item} />
+                                </View>
+                          );
                         case 'pp' : 
-                          return <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE}/>
+                          return (
+                            <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                                <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE}/>
+                            </View>
+                          );
                         default : return null;
                       }
                     }}
@@ -308,7 +315,6 @@ class TabHome extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 20,
                 marginLeft: DEVICE_WIDTH * 0.025,
                 alignItems: "flex-start",
                 borderWidth: 0
@@ -321,7 +327,7 @@ class TabHome extends React.PureComponent {
             <FlatList
               //style={{marginLeft : 100}}
               //scrollTo={this.state.scrollTo}
-              contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+              contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
               data={
                 this.props.filtersHomePage["category"] === "PSFAVORITES"
                   ? this.props.favorites
@@ -343,7 +349,6 @@ class TabHome extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 20,
                 marginLeft: DEVICE_WIDTH * 0.025,
                 alignItems: "flex-start",
                 borderWidth: 0
@@ -356,7 +361,7 @@ class TabHome extends React.PureComponent {
             <FlatList
               //style={styles.wrapper}
               //scrollTo={this.state.scrollTo}
-              contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+              contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
               data={this.bestCoupons.length === 0 ? this.props.featured.slice(0,2) : this.bestCoupons}
               horizontal={true}
               
@@ -392,7 +397,6 @@ class TabHome extends React.PureComponent {
                 <View>
                   <View
                     style={{
-                      marginTop: 20,
                       marginLeft: DEVICE_WIDTH * 0.025,
                       alignItems: "flex-start",
                       borderWidth: 0
@@ -405,7 +409,7 @@ class TabHome extends React.PureComponent {
                   <FlatList
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
-                    contentContainerStyle={{ marginTop: 10, marginBottom: 5 }}
+                    contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
                     data={
                       this.props.filtersHomePage["category"] === "PSFAVORITES"
                         ? this.props.favorites

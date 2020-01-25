@@ -446,7 +446,7 @@ class FLTicketDetail extends React.Component {
             <View style={{flexDirection: 'row', backgroundColor: 'transparent', marginTop: -60}}>
                   <View style={{flex: 0.6}}>
                     <Text style={[setFont('200', 12, 'green'), {width: arrowW*0.8, height:50, top : 10, left: 0.07*DEVICE_WIDTH, textAlignVertical: 'center'}]}>
-                      {this.ticketObj.getCurrentStep()}
+                      {this.ticketObj.getUnsolvedCodeStep()}
                     </Text>
                   </View>
                   <TouchableOpacity style={{flex : 0.4, backgroundColor: 'white', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}

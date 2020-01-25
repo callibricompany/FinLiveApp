@@ -7,8 +7,8 @@ import FREQUENCYLIST from "../../Data/frequencyList.json";
 
 
 export class CAutocallSRP extends CAutocall {
-  constructor(autocall, userId='') {
-    super(autocall, userId); // appelle le constructeur parent avec le paramètre
+  constructor(autocall) {
+    super(autocall); // appelle le constructeur parent avec le paramètre
 
     
     //tranposition des champs SRP en finlive

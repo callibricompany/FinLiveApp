@@ -69,12 +69,6 @@ import logo_white from '../../assets/LogoWithoutTex_white.png';
 
 
 
-const Spline = require('cubic-spline');
-var polynomial = require('everpolate').polynomial;
-var interpolator = require('../../Utils/spline.js');
-
-const dataForge = require('data-forge');
-
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;

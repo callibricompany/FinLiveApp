@@ -4,8 +4,8 @@ import { CObject } from '../CObject';
 
 //classe mere de tous les objets financiers, immos, arts, etc...
 export class CProduct extends CObject { 
-    constructor(product, userId) {
-      super(product, userId);
+    constructor(product) {
+      super(product);
       this.product = this.object['data'];
 
 

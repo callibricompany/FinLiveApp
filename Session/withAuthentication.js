@@ -2,12 +2,14 @@ import React from "react";
 
 import AuthUserContext from "./context";
 import { withFirebase } from "../Database";
+import { CWorkflowTicket } from '../Classes/Tickets/CWorkflowTicket';
 
 import {
   getUserAllInfoAPI,
   setFavoriteAPI,
   getUserFavorites
 } from "../API/APIAWS";
+import { CObject } from "../Classes/CObject";
 
 const withAuthentication = Component => {
   class WithAuthentication extends React.Component {
@@ -19,15 +21,15 @@ const withAuthentication = Component => {
 
         //tickets
         tickets: [],
+        apeTickets : [],
         addTicket: ticket => this.addTicket(ticket),
 
-        apeTickets : [],
+        
 
         //ape publique issu de srp
         apeSRP : [],
 
         //chargé au départ
-        allInfo: [],
         getUserAllInfo: () => this.getUserAllInfo(),
 
         //la homepage
@@ -40,6 +42,8 @@ const withAuthentication = Component => {
 
         //tickets
         broadcasts: [],
+        worklow : [],
+
 
         //toFavorites
         favorites: [],
@@ -94,26 +98,33 @@ const withAuthentication = Component => {
                 //console.log("reception : " + JSON.stringify(userDatas.categories));
                 //console.log("Passage de withAuth");
                 this.setState({
-                  allInfo: userDatas,
-                  
                   featured : userDatas.startPage.bestCoupon,
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
                   favorites: userDatas.favorites,
-                  tickets: userDatas.userTickets,
+                  tickets: userDatas.userTickets.slice(0,1),
+                  //tickets: userDatas.userTickets,
                   apeTickets: userDatas.startPage.ape,
                   apeSRP : userDatas.startPage.srp,
                   broadcasts : userDatas.startPage.campaign,
+
+                  workflow : userDatas.workflow,
                   
                 });
+                //passage du workflow au ticket
+                CWorkflowTicket.WORKFLOW = userDatas.workflow;
+                CObject.UID = this.state.authUser.uid;
 
                 let toto = [
-                  ...new Set(userDatas.userTickets.map(x => x.company_id))
+                  ...new Set(userDatas.userTickets.map(x => x.id))
                 ];
                 console.log(toto);
-                console.log(userDatas.startPage.bestCoupon);
+                //console.log(userDatas.startPage.bestCoupon);
                 //userDatas.userTickets.forEach((t) => console.log(t.currentStep));
                 //console.log(userDatas.userTickets.slice(0,1));
+                //console.log(userDatas.workflow.slice(0,1));
+                //console.log(this.state.authUser);
+                
                 //console.log(this.getAllUndelyings());
                
                 

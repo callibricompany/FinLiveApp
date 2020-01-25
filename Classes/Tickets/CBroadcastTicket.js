@@ -4,8 +4,8 @@ import Moment from 'moment';
 import * as TEMPLATE_TYPE from '../../constants/template';
 
 export class  CBroadcastTicket extends CTicket {
-    constructor(ticket, userId="") {
-      super(ticket, userId); // appelle le constructeur parent avec le paramètre
+    constructor(ticket) {
+      super(ticket); // appelle le constructeur parent avec le paramètre
 
       /*if (!this.object.hasOwnProperty('template')) {
           this.object['template'] = TEMPLATE_TYPE.PSBROADCAST;

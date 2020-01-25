@@ -37,12 +37,12 @@ import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 
-import * as Progress from 'react-native-progress';
-
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
 import * as TEMPLATE_TYPE from '../../../constants/template'
+
+import * as Progress from 'react-native-progress';
 
 import { searchProducts } from '../../../API/APIAWS';
 
@@ -57,9 +57,35 @@ import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
+import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
 import { CPPTicket } from '../../../Classes/Tickets/CPPTicket';
 
+import StepIndicator from 'react-native-step-indicator';
 
+const labels = ["Cart","Delivery Address","Order Summary","Payment Method","Track"];
+const customStyles = {
+  stepIndicatorSize: 15,
+  currentStepIndicatorSize:20,
+  separatorStrokeWidth: 2,
+  currentStepStrokeWidth: 3,
+  stepStrokeCurrentColor: setColor('subscribeticket'),
+  stepStrokeWidth: 3,
+  stepStrokeFinishedColor: setColor('subscribeticket'),
+  stepStrokeUnFinishedColor: '#aaaaaa',
+  separatorFinishedColor: setColor('subscribeticket'),
+  separatorUnFinishedColor: '#aaaaaa',
+  stepIndicatorFinishedColor: setColor('subscribeticket'),
+  stepIndicatorUnFinishedColor: '#ffffff',
+  stepIndicatorCurrentColor: '#ffffff',
+  stepIndicatorLabelFontSize: 13,
+  currentStepIndicatorLabelFontSize: 6,
+  stepIndicatorLabelCurrentColor: setColor('subscribeticket'),
+  stepIndicatorLabelFinishedColor: '#ffffff',
+  stepIndicatorLabelUnFinishedColor: '#aaaaaa',
+  labelColor: '#999999',
+  labelSize: 5,
+  currentStepLabelColor: setColor('subscribeticket'),
+}
 
 
 
@@ -88,215 +114,193 @@ class FLTemplatePP extends React.Component {
     this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.TICKET_FULL_TEMPLATE;
 
     //largeur de la cartouche sur l'ecran
-    switch(this.type) {
-      case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE :
-          this.screenWidth = 0.7 * DEVICE_WIDTH;
-          break;
-        default :
-          this.screenWidth = 0.9 * DEVICE_WIDTH;
-          break;
+    switch (this.type) {
+      case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE : 
+        this.screenWidth = 0.8 * DEVICE_WIDTH;
+        break;
+      default :  
+        this.screenWidth = 0.9 * DEVICE_WIDTH;
+        break;
     }
-    
 
           
     //gestion des classes autocall et ticket broadcast
-    this.ticket = new CPPTicket(this.props.object, this.props.authUser.uid);
-    this.autocall = this.broadcast.getProduct();
-
+    //console.log(this.props.ticket);
+    if (typeof this.props.ticket !== 'undefined' && this.props.ticket !== null) {
+       this.ticket = new CPPTicket(this.props.ticket);
+       this.autocall = this.ticket.getProduct();
+    } else {
+      this.ticket = null;
+    }
+    console.log(this.ticket.getStepPosition() + "   -   " + this.ticket.getCurrentStepsDepth());
+    //console.log(this.ticket.getNumberOfFollowingSteps());
   
   }
 
 
 
- 
-
-
-
-
-
-
-
-
-
-_renderHeaderFullTemplate() {
+_renderHeaderMediumTemplate() {
   
   return (
-    <View>
-          <View style={{flexDirection : 'row'}}>
+            <View style={{flexDirection: 'row'}}>
                 <View style={{
-                              flex : 0.6, 
-                              flexDirection : 'column', 
+                              flex : 0.9,
                               paddingLeft : 20,  
-                              backgroundColor: blueFLColor, 
+                              paddingTop: 3,
+                              paddingBottom: 3,
+                              backgroundColor: setColor('vertpomme'), 
                               borderTopLeftRadius: 10, 
-                              //borderRadius: 14,
+                              //borderTopRightRadius: 10, 
                               borderBottomWidth :  0,
 
                               }}
                 >                                                    
-                  <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
-                  <View style={{flexDirection: 'row', borderWidth: 0}}>
-                    <View style={{ borderWidth: 0}}>
-           
-                          <Text style={setFont('400', 18, 'white')}>
-                              {this.autocall.getProductName()} 
-                          </Text>
-          
+                      <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
+                      <View style={{flexDirection: 'row', borderWidth: 0}}>
+                        <View style={{ borderWidth: 0}}>
+              
+                              <Text style={setFont('400', 18, 'white')} numberOfLines={2}>
+                                  {this.ticket.getSubject()} 
+                              </Text>
+              
+                            </View>
+
                         </View>
-
-                    </View>
-                    <View style={{flexDirection: 'row'}}>
-                            <Text style={setFont('400', 18,  'white')}>
-                                {this.autocall.getFullUnderlyingName(this.props.categories)} <Text style={setFont('400', 18, 'white')}>{''}</Text>
-                            </Text>
-                    </View>
-                  </View>
+                        <View style={{flexDirection: 'row'}}>
+                                <Text style={setFont('300', 14,  'white')}>
+                                  Placement privé : {this.ticket.getType()} 
+                                </Text>
+                        </View>
+                      </View>
 
                 </View>
-                <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
-                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
-                    <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
-                        { Numeral(this.autocall.getCouponTitle()).format('0.00%')}
-                        <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
-                    </Text>  
-                  </View> 
-                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
-                                                   onPress={() => {
-                                                  }}
-                  >
-                    <Text style={setFont('400', 14, 'white')}>
-                   VOIR >
-                    </Text>   
-                  </TouchableOpacity>
+                <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}>
+                   <Text style={setFont('400', 22, 'white')}>></Text>
                 </View>
+          </View>
 
-              </View>
-
-      </View>
   );
 }
 
-
-
-
-_renderAutocallShortTemplate() {
-
-  
-
+_renderMediumTemplate() {
   return (
-
-     <View style={{flex : 0.7, flexDirection : 'column', padding: 10, borderWidth: 0, backgroundColor: 'white'}}>
+    <View style={{flexDirection: 'column', backgroundColor: 'white', }}>
         <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
-                <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"gavel"}  size={15} style={{color: setColor('light')}}/> 
-                </View>
-                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{ Numeral(this.autocall.getAutocallLevel()).format('0%')} </Text>
-                </View>
+            <View style={{flex: 0.6, flexDirection: 'column', justifyContent: 'center', paddingLeft : 20, paddingTop: 5, paddingBottom: 3 }}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      {this.ticket.getUnsolvedCodeStep()}
+                    </Text>
             </View>
-            <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
-                <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: setColor('light')}}/> 
+            <TouchableOpacity style={{flex : 0.4,  borderWidth: 0, justifyContent: 'center', alignItems: 'center', backgroundColor : 'white'}}
+                                            onPress={() => {
+                                            if (this.ticket.isUserTrigger()) {
+        
+                                              this.props.navigation.navigate('FLTicketDetail', {
+                                                  ticket: this.ticket,
+                                                  showModalResponse : true
+                                                });
+                                            } else {
+                                                Alert.alert(
+                                                  'Vous attendez actuellement une réponse',
+                                                  'Souhaitez-vous envoyer un message concernant ce ticket ?',
+                                                  [
+                                                    
+                                                    {
+                                                      text: 'Attendre',
+                                                      onPress: () => console.log('Cancel Pressed'),
+                                                      style: 'cancel',
+                                                    },
+                                                    {text: 'OUI', onPress: () => console.log('OK Pressed')},
+                                                  ],
+                                                  {cancelable: false},
+                                                );
+                                            }
+                                        
+                                          }}>
+                <View style={{backgroundColor : this.ticket.isUserTrigger() ? 'red' : 'white', borderColor: this.ticket.isUserTrigger()? 'red' : 'gray', borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center', margin: 10}}>
+                    <Text style={[setFont('500',15, 'gray', 'Bold'), {textAlign: 'center', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}]} numberOfLines={this.ticket.isUserTrigger() ? 1 : 2}>
+                      {this.ticket.isUserTrigger() ? 'Répondre' : 'Demande\nen cours'}
+                    </Text>
                 </View>
-                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocall.getFrequencyPhoenixTitle().toLowerCase()} </Text>
-                </View>
-            </View>
+            </TouchableOpacity>
         </View>
-        <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
-                <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={this.autocall.getBarrierPhoenix() === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: setColor('light')}}/> 
-                </View>
-                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocall.getBarrierPhoenix()  === 1  ? this.autocall.getAirbagTitle() : Numeral(this.autocall.getBarrierPhoenix()  - 1).format('0%')}</Text>
-                </View>
-            </View>
-            { this.autocall.isMemory() ? 
-                  <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
-                      <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                        <MaterialCommunityIconsIcon name={"memory"}  size={15} style={{color: setColor('light')}}/>
-                      </View>
-                      <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                          <Text style={setFont('300', 12, setColor(''), 'Light')}>{(this.autocall.isMemory() ? 'mémoire': 'non mémoire')} </Text>
-                      </View>
-                  </View>
-              : null
-            }
+        <View style={{marginTop: 5}}>
+              <StepIndicator
+                  customStyles={customStyles}
+                  currentPosition={3}
+                  labels={labels}
+                  renderLabel={({position, label}) => {
+                    switch(position) {
+                      case 3 :
+                        let duedate = this.ticket.getDueBy();
+                        //console.log(duedate);
+                        if (duedate > Date.now()) {
+                            return <Text style={setFont('200', 9)}>{Moment(duedate).fromNow()}</Text>;
+                        } else {
+                          return (
+                              <View style={{backgroundColor: 'red', padding : 2}}>
+                                  <Text style={setFont('300', 10, 'white', 'Bold')}>En retard</Text>
+                              </View>
+                          );
+                        }
+                      case 0 :
+                        return <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>;
+                      default : 
+                        return null;
+                    }
+                  
+            
+                  }}
+                  renderStepIndicator={() => {
+                    return null;
+                  }}
+              />
         </View>
-        <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
-                <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"shield"}  size={15} style={{color: setColor('light')}}/> 
-                </View>
-                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{Numeral(this.autocall.getBarrierPDI() - 1).format('0%')}</Text>
-                </View>
-            </View>
-            <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
-                <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor('light')}}/> 
-                </View>
-                <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                    <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocall.getMaturityName()} </Text>
-                </View>
-            </View>
-        </View>
-     </View>
-  )
+    </View>
+  );
 }
 
-
-
-
-_renderFooterFullTemplate(isFavorite) {
+_renderFooterMediumTemplate(isFavorite) {
 
   return (
-    <View style={{flex : 0.10, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
-                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
+        <View style={{flex : 0.10, flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+                <View style={{paddingLeft : 15}}>
+                 
+                 <Text style={setFont('200', 12)}>
+                   {this.ticket.getAgentName()}
+                 </Text>
+                 <Text style={setFont('200', 9)}>
+                   #{this.ticket.getId()}
+                 </Text>
+               </View>   
+               <TouchableOpacity style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}
+                                  onPress={() => {
+                                  }}
+                >
+                    <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5}} />
+                    <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
+                      <Text style={setFont('200', 12)}>
+                        {this.ticket.getPriority().name}
+                      </Text>
+                    </View>
+                </TouchableOpacity> 
+                <TouchableOpacity style={[globalStyle.templateIcon, {paddingRight: 15}]} 
                                   onPress={() => {
              
                                     
-                                    this.props.setFavorite(this.broadcast.getObject())
+                                    this.props.setFavorite(this.ticket.getObject())
                                     .then((fav) => {    
                                       console.log("=================================");
                                       console.log(fav);                             
-                                      this.broadcast.setFavorite(fav);
+                                      this.ticket.setFavorite(fav);
                                       this.setState({ toto: !this.state.toto })
                                     })
                                     .catch((error) => console.log("Erreur de mise en favori : " + error));
                                   }}
                 >
-                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor('light')}/>
-                </TouchableOpacity>
-
-   
-                <View style={[{flex : 0.2}, globalStyle.templateIcon]}>              
-
-                </View>
-                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]}>
-                 
-                </TouchableOpacity>
-                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
-                                                onPress={() => {
-        
-                                                }}
-                 >
-                 
-                   <Ionicons name="md-help" size={20} style={{color: setColor('light')}}/>
-                </TouchableOpacity>   
-                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
-                                                onPress={() => {
-        
-                                                }}
-                 >
-                 
-                  <FontAwesome name={"file-text-o"}  size={20} style={{color: setColor('light')}}/> 
-                </TouchableOpacity>   
-
-                
-              </View>
+                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={'black'}/>
+                </TouchableOpacity>                
+        </View>
 
   );
 }
@@ -304,12 +308,29 @@ _renderFooterFullTemplate(isFavorite) {
 
 
 render () {
-      
+      if (this.ticket == null) {
+        return null;
+      }
       //check if it is in favorites
       let isFavorite = false;
-      isFavorite = this.broadcast.isFavorite(this.props.favorite);
+      isFavorite = this.ticket.isFavorite(this.props.favorite);
       
     
+      let render = <View></View>;
+      switch (this.type) {
+        case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE : 
+            render = <View>
+                          {this._renderHeaderMediumTemplate()}
+                          {this._renderMediumTemplate()}
+                          {this._renderFooterMediumTemplate(isFavorite)}
+                      </View>;
+            break;
+        default :  
+            render = <View></View>;
+            break;
+      }
+
+
       return (
             <View style={{flexDirection : 'column', 
                           width: this.screenWidth, 
@@ -326,53 +347,7 @@ render () {
                           //elevation: 3
                         }}
             >
-              <View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 2}}>
-                  <YourTeam_SVG width={50} height={80} />
-              </View>
-
-                {this._renderHeaderFullTemplate()}
-
-                <View style={{flexDirection: 'column', backgroundColor: 'white'}}>
-                        <View style={{flexDirection: 'row'}}>
-                            <View style={{flex: 0.6}}>
-                            {this._renderAutocallShortTemplate()}
-                            </View>
-                            <View style={{flex: 0.4}}>
-                                <Image
-                                  style={{width : 150, height : 50}}
-                                  source={{uri: this.props.userOrg.logoUrl}}
-                                />
-                                <Text style={setFont('300', 12, 'black', 'Regular')}>
-                                  Plus que {Moment(this.broadcast.getEndDate()).diff(Moment(Date.now()), 'days')} jours
-                                </Text>
-                            </View>
-                        </View>
-                        <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.025*DEVICE_WIDTH}}>
-                            <View>
-                                <Text style={setFont('300', 14, 'black', 'Regular')}>
-                                  Objectif : {currencyFormatDE(this.broadcast.getBroadcastAmount())} {this.broadcast.getCurrency()}
-                                </Text>
-                            </View>
-                            <View style={{flexDirection : 'row', marginTop: 0, justifyContent:'space-between'}}>
-                                <View style={{padding: 5, justifyContent: 'center', alignItems: 'center'}}>
-                                     <Ionicons name="ios-podium" size={20} style={{color: setColor('gray')}}/> 
-                                </View>
-                                <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Progress.Bar progress={0.3} width={(DEVICE_WIDTH/2)} color={setColor('')}/>
-                               </View>
-                               <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Text style={setFont('300', 10)}>{Moment(this.broadcast.getEndDate()).format("ll")}</Text>
-                               </View>
-                            </View>
-                            <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Text style={setFont('400', 12, 'black', 'Bold')}>{this.broadcast.getMessage()}</Text>
-                            </View>
-                             
-                            
-                        </View>
-                </View>
-                
-                {this._renderFooterFullTemplate(isFavorite)}
+                {render}
                
             </View>
         );

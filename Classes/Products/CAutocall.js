@@ -6,8 +6,8 @@ import FREQUENCYLIST from "../../Data/frequencyList.json";
 
 
 export class CAutocall extends CProduct {
-  constructor(autocall, userId='') {
-    super(autocall, userId); // appelle le constructeur parent avec le paramètre
+  constructor(autocall) {
+    super(autocall); // appelle le constructeur parent avec le paramètre
 
     
     //tant que Pierre ne rajoute l'UF dans le calcul sur serveur on le rajoute

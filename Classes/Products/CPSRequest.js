@@ -512,9 +512,13 @@ export class CPSRequest extends CRequest {
 
     getCriteria() {
       let criteria = {};
+
       this.product.underlying.isActivated ? criteria['underlying'] = this.product.underlying.value : null;
       criteria['freqAutocall'] =  this.product.freq.isActivated ? this.product.freq.value : "3M";
       criteria['noCallNbPeriod'] =  this.product.freq.isActivated ? this.product.nncp.value : 12;
+
+      //type de placement
+      criteria['typeAuction'] =  this.product.typeAuction.value;
 
       //autocall
       criteria['isIncremental'] =  this.product.type.value === 'athena' ? this.product.isIncremental.value : false;

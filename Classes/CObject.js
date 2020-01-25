@@ -1,20 +1,23 @@
 import * as TEMPLATE_TYPE from '../constants/template';
 
 
+
+
 export class CObject { 
-    constructor(object, userId='', template = TEMPLATE_TYPE.PSLIST) {
-      
-        this._constructorProduct(object, userId, template);
-        
+    constructor(object,  template = TEMPLATE_TYPE.PSLIST) {
+     
+        //!object ? this._constructorProduct(object,  template) : null;
+        this._constructorProduct(object,  template) ;
     }
 
-    _constructorProduct(object, userId, template = TEMPLATE_TYPE.PSLIST) {
+    _constructorProduct(object, template = TEMPLATE_TYPE.PSLIST) {
         this.object= {};
         //copie des datas au format correct
+        
         if (!object.hasOwnProperty('toFavorites')) {
           //reconstruction de l'objet style envoie dans homepage
           this.object['category'] = object.category;
-          this.object['code'] = object.underlying;
+          this.object['code'] = template === TEMPLATE_TYPE.PSLIST ? object.underlying : object.id;
           this.object['isOrg'] = false;
           this.object['template'] = template;
           this.object['isFavorite'] = false;
@@ -24,11 +27,11 @@ export class CObject {
     
           let toFavorites = {};
           toFavorites['active'] = false;
-          toFavorites['code'] = object.code;
+          toFavorites['code'] = template === TEMPLATE_TYPE.PSLIST ? object.code : object.id;
           toFavorites['label'] = '';
           toFavorites['source'] = 'sp';
           toFavorites['userId'] = "";
-          toFavorites['id'] = userId;
+          toFavorites['id'] = CObject.UID;
           this.object['toFavorites'] = toFavorites;
       
         } else {

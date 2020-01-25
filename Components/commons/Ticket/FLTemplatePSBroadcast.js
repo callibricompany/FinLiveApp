@@ -92,7 +92,7 @@ class FLTemplatePSBroadcast extends React.Component {
 
           
     //gestion des classes autocall et ticket broadcast
-    this.broadcast = new CBroadcastTicket(this.props.object, this.props.authUser.uid);
+    this.broadcast = new CBroadcastTicket(this.props.object);
     this.autocall = this.broadcast.getProduct();
 
   
