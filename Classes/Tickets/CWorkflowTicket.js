@@ -26,9 +26,11 @@ export class  CWorkflowTicket extends CTicket {
     //determination de l'étape  suivante
     this.firstCode = '';
     this.lastStep = '';
+    this._previousStepsTab = [];
     this.currentStep = ticket.currentStep[0];
-
+    this.previousSteps=[];
   }
+
   isUserTrigger() {
     return this.currentStep.userTrigger;
   }
@@ -48,36 +50,47 @@ export class  CWorkflowTicket extends CTicket {
 
   //calcule l'a position ou l'on se trouve dans les steps
   getStepPosition() {
-    let i = 1;
-    let curr = JSON.parse(JSON.stringify(this.currentStep));
-    while(curr.codeStep !== this.firstCode) {
-      curr = this.steps.filter(({nextCodeStep}) => nextCodeStep === curr.codeStep)[0];
-    }
-    return i;
+    return this.currentStep.level;
   }
+
   //calcule le nombre maximums de steps restants
   getCurrentStepsDepth() {
-    return this._getStepsDepth(this.getCurrentCodeStep());
+    let toto = [
+      ...new Set(this.steps.map(x => x.level))
+    ];
+    return Math.max(...toto);
+    //return this._getStepsDepth(this.getCurrentCodeStep());
   }
   _getStepsDepth(code) {
     //retrouve le code du step
     let steps = this.steps.filter(({codeStep}) => codeStep === code);
-    
+
+    console.log("=========================  " + this.firstCode + " ==== " + this.lastStep);
+    this.previousSteps.push(code);
+    let tabMax =[];
     steps.forEach((s) => {
-      console.log(s);
-        if (s.nextCodeStep === 'PPEND') {
-          return 0;
+        console.log(s);
+        
+        console.log(this.previousSteps);
+        if (s.nextCodeStep === this.firstCode || s.nextCodeStep === this.lastStep || this.previousSteps.includes(s.nextCodeStep)) {
+          tabMax.push(0);
         } else {
-          let tabMax =[];
-          tabMax.push(this._getStepsDepth(s.nextCodeStep) + 1);  //recursivité
-          return (Math.max(tabMax) +1);
+          console.log(this.counter+"/  "+code +  "  : " + JSON.stringify(tabMax));
+          tabMax.push((this._getStepsDepth(s.nextCodeStep) + 1));  //recursivité
         }
+        
     })
+    console.log(tabMax);
+    return (Math.max(...tabMax));
+
   }
+ 
+
+
 
   getResultAuction() {
     return this.getUnderlying().getResultAuction();
-    }
+  }
   
   getSteps() {
     let steps = this.ticket.currentStep;

@@ -62,7 +62,7 @@ import { CPPTicket } from '../../../Classes/Tickets/CPPTicket';
 
 import StepIndicator from 'react-native-step-indicator';
 
-const labels = ["Cart","Delivery Address","Order Summary","Payment Method","Track"];
+
 const customStyles = {
   stepIndicatorSize: 15,
   currentStepIndicatorSize:20,
@@ -132,8 +132,13 @@ class FLTemplatePP extends React.Component {
     } else {
       this.ticket = null;
     }
-    console.log(this.ticket.getStepPosition() + "   -   " + this.ticket.getCurrentStepsDepth());
-    //console.log(this.ticket.getNumberOfFollowingSteps());
+    //this.labels = ["Cart","Delivery Address","Order Summary","Payment Method","Track"];
+    //this.labels = Array(this.ticket.getCurrentStepsDepth()).fill().map((_, index) => (""+index));
+    this.labels =  ["Cart","Delivery Address","Order Summary","Payment Method","Track","Track","Track","Track"];
+    
+    console.log(this.labels);
+    console.log(this.ticket.getStepPosition() + "   -   ") ;
+
   
   }
 
@@ -224,27 +229,36 @@ _renderMediumTemplate() {
                 </View>
             </TouchableOpacity>
         </View>
-        <View style={{marginTop: 5}}>
+        <View style={{marginTop: 5, borderWidth: 0, justifyContent:'center', alignItems: 'stretch'}}>
               <StepIndicator
                   customStyles={customStyles}
-                  currentPosition={3}
-                  labels={labels}
+                  currentPosition={this.ticket.getStepPosition()}
+                  labels={this.labels}
+                  stepCount={this.labels.length}
                   renderLabel={({position, label}) => {
                     switch(position) {
-                      case 3 :
+                      case this.ticket.getStepPosition() :
                         let duedate = this.ticket.getDueBy();
                         //console.log(duedate);
                         if (duedate > Date.now()) {
-                            return <Text style={setFont('200', 9)}>{Moment(duedate).fromNow()}</Text>;
+                            return (
+                              <View style={{backgroundColor: 'red', padding : 2, width: 80, alignItems: 'center', justifyContent: 'center'}}>
+                                  <Text style={setFont('200', 9)}>{Moment(duedate).fromNow()}</Text>
+                              </View>
+                            );
                         } else {
                           return (
-                              <View style={{backgroundColor: 'red', padding : 2}}>
+                              <View style={{backgroundColor: 'red', padding : 2, width: 50, alignItems: 'center', justifyContent: 'center'}}>
                                   <Text style={setFont('300', 10, 'white', 'Bold')}>En retard</Text>
                               </View>
                           );
                         }
                       case 0 :
-                        return <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>;
+                        return (
+                          <View style={{ alignItems: 'center', justifyContent: 'center'}}>
+                              <Text style={setFont('200', 9)} >{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
+                          </View>
+                        );
                       default : 
                         return null;
                     }

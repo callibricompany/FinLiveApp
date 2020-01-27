@@ -119,9 +119,9 @@ const withAuthentication = Component => {
                   ...new Set(userDatas.userTickets.map(x => x.id))
                 ];
                 console.log(toto);
+                //console.log(userDatas.workflow);
                 //console.log(userDatas.startPage.bestCoupon);
                 //userDatas.userTickets.forEach((t) => console.log(t.currentStep));
-                //console.log(userDatas.userTickets.slice(0,1));
                 //console.log(userDatas.workflow.slice(0,1));
                 //console.log(this.state.authUser);
                 
