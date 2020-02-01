@@ -1,5 +1,7 @@
 export const PSLIST = 'PSLIST'; //juste un produit structure
 export const IMMO = 'IMMOBILER';
+
+export const TICKET = "TICKET";
 export const PSBROADCAST = 'PSBROADCAST';
 export const PSSRPLIST = "PSSRPLIST";
 export const PSAPE = 'PSAPE';

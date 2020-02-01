@@ -39,7 +39,7 @@ import 'numeral/locales/fr'
 
 
 
-import {  CPPTicket } from '../../Classes/Tickets/CPPTicket';
+import {  CWorkflowTicket } from '../../Classes/Tickets/CWorkflowTicket';
 
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE} from '../../Utils';
 import { convertFresh } from '../../Utils/convertFresh';
@@ -112,7 +112,7 @@ class FLTicketDetail extends React.Component {
 
 
     createObjectTicket(ticket) {
-      this.ticketObj = new CPPTicket(ticket);
+      this.ticketObj = new CWorkflowTicket(ticket);
     }
 
     static navigationOptions = ({ navigation }) => {

@@ -6,7 +6,7 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import FLAutocallDetail  from '../commons/Autocall/FLAutocallDetail';
+import FLTicketDetail  from '../commons/Ticket/FLTicketDetail';
 
 class FLTicketDetailHome extends React.Component {
     
@@ -14,7 +14,8 @@ class FLTicketDetailHome extends React.Component {
       super(props);
 
 
-      this.autocall =  this.props.navigation.getParam('autocall', '...');
+      this.ticket =  this.props.navigation.getParam('ticket', '...');
+      this.showModal =  this.props.navigation.getParam('showModal', false);
 
       
 
@@ -31,7 +32,7 @@ class FLTicketDetailHome extends React.Component {
 
     render() {
       return (
-        <FLAutocallDetail autocall={this.autocall} />
+        <FLTicketDetail ticket={this.autocall} showModal={this.showModal}/>
       );
     }
 };

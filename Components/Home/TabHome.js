@@ -38,6 +38,8 @@ import { CAutocall } from "../../Classes/Products/CAutocall";
 import * as TEMPLATE_TYPE from "../../constants/template";
 import { CPSRequest } from "../../Classes/Products/CPSRequest";
 import { isAndroid } from "../../Utils";
+import { CWorkflowTicket } from "../../Classes/Tickets/CWorkflowTicket";
+
 
 
 const DEVICE_WIDTH = Dimensions.get("window").width;
@@ -288,19 +290,16 @@ class TabHome extends React.PureComponent {
                     data={this.props.tickets}
                     horizontal={true}
                     renderItem={({ item, index }) => {
-                      let type = item['currentStep'][0].codeOperation;
                       
-                      switch (type) {
-                        case 'ape' : 
-                          return (
-                                <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                                    <FLTicketTemplateAPE ticket={item} />
-                                </View>
-                          );
-                        case 'pp' : 
+                      let ticket = new CWorkflowTicket(item);
+                      console.log("TEMPLATE : "+ ticket.getTemplate());
+                      switch (ticket.getTemplate()) {
+                        case TEMPLATE_TYPE.PSAPE : 
+                          return null;
+                        case TEMPLATE_TYPE.PSPP :         
                           return (
                             <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                                <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE}/>
+                                <FLTemplatePP ticket={ticket} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'}/>
                             </View>
                           );
                         default : return null;

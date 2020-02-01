@@ -1,26 +1,28 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { createBottomTabNavigator, createStackNavigator } from 'react-navigation'
+import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 
-import HomeScreen from '../Components/Home/HomeScreen'
-import NewsList from '../Components/Home/NewsList'
-import NewsDetail from '../Components/Home/NewsDetail'
-import NewsDetailWeb from '../Components/Home/NewsDetailWeb'
-import PricerScreen from '../Components/Pricer/PricerScreen'
-import FLResultPricer from '../Components/Pricer/FLResultPricer'
+import HomeScreen from '../Components/Home/HomeScreen';
+import NewsList from '../Components/Home/NewsList';
+import NewsDetail from '../Components/Home/NewsDetail';
+import NewsDetailWeb from '../Components/Home/NewsDetailWeb';
+import FLTicketDetailHome from '../Components/Home/FLTicketDetailHome';
 import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
 import FLSRPDetail from '../Components/Home/FLSRPDetail';
-import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
-import ProfileScreen from '../Components/ProfileScreen'
-import TicketScreen from '../Components/Ticket/TicketScreen'
-import FLTicketDetail from '../Components/Ticket/FLTicketDetail'
-import BroadcastingScreen from '../Components/Broadcast/BroadcastingScreen'
-import AdminScreen from '../Components/Admin/AdminScreen'
-import AdminUser from '../Components/Admin/AdminUser'
 
-import FontAwesomeI from 'react-native-vector-icons/FontAwesome'
-import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons'
-import { Icon } from 'native-base'
+import PricerScreen from '../Components/Pricer/PricerScreen'
+import FLResultPricer from '../Components/Pricer/FLResultPricer'
+import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
+import ProfileScreen from '../Components/ProfileScreen';
+import TicketScreen from '../Components/Ticket/TicketScreen';
+import FLTicketDetail from '../Components/Ticket/FLTicketDetail';
+import BroadcastingScreen from '../Components/Broadcast/BroadcastingScreen';
+import AdminScreen from '../Components/Admin/AdminScreen';
+import AdminUser from '../Components/Admin/AdminUser';
+
+import FontAwesomeI from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Icon } from 'native-base';
 
 import { blueFLColor, FLFontFamily } from '../Styles/globalStyle';
 
@@ -78,6 +80,9 @@ function labelStyle (focused, tintColor) {
     FLSRPDetail: {
       screen : FLSRPDetail
     },
+    FLTicketDetailHome: {
+      screen : FLTicketDetailHome
+    }
   }, 
   {
     initialRouteName: 'Home'

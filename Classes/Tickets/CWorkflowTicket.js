@@ -1,21 +1,25 @@
 import { CTicket } from './CTicket';
 import { CAutocall } from '../Products/CAutocall';
-
-
+import { convertFresh } from '../../Utils/convertFresh';
+import * as TEMPLATE_TYPE from '../../constants/template';
 
 
 export class  CWorkflowTicket extends CTicket {
-  constructor(ticket, template) {
-    super(ticket, template); // appelle le constructeur parent avec le paramètre
+  constructor(ticket) {
+    super(ticket); // appelle le constructeur parent avec le paramètre
     switch(ticket.type) {
       case "Produit structuré": 
-        //determination de l'étape 
-        this.steps = null;
+        //on remet le bon template
+        this.setTemplate(TEMPLATE_TYPE.TICKET);
 
-
-    
-        //this.product = new CAutocall(this.ticket.data);
-
+        if (ticket['currentStep'][0].codeOperation === 'pp') {
+          this.setTemplate(TEMPLATE_TYPE.PSPP);
+          this.steps = CWorkflowTicket.WORKFLOW.filter(({codeOperation}) => codeOperation === 'pp');
+          this.firstCode = 'PPDVB';
+          this.lastStep = 'PPEND';
+        }
+        //convertFresh(this.ticket['custom_fields']);
+        this.product = new CAutocall(convertFresh(ticket['custom_fields']));
         
         break;
       default : 
@@ -50,6 +54,7 @@ export class  CWorkflowTicket extends CTicket {
 
   //calcule l'a position ou l'on se trouve dans les steps
   getStepPosition() {
+
     return this.currentStep.level;
   }
 
@@ -85,9 +90,25 @@ export class  CWorkflowTicket extends CTicket {
 
   }
  
+  getUF() {
+    return this.ticket['custom_fields']['cf_rtro'] === null ? 0 : this.ticket['custom_fields']['cf_rtro'];
 
+  }
 
+  getUFAssoc(){
+    return this.ticket['custom_fields']['cf_rtro_asso'] === null ? 0 : this.ticket['custom_fields']['cf_rtro_asso'];
+  }
 
+  getNominal() {
+    return this.ticket['custom_fields']['cf_ps_nominal'] === null ? 0 : this.ticket['custom_fields']['cf_ps_nominal'];
+    
+  }
+
+  getCurrency() {
+    return this.ticket['custom_fields']['cf_devise'] === null ? 0 : this.ticket['custom_fields']['cf_devise'];
+    
+  }
+  
   getResultAuction() {
     return this.getUnderlying().getResultAuction();
   }
@@ -112,4 +133,13 @@ export class  CWorkflowTicket extends CTicket {
     }
     return steps;
   }
+}
+
+
+class CWFTree {
+
+    constructor(tree) {
+      this.tree = tree;
+    }
+
 }

@@ -58,7 +58,7 @@ import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
-import { CPPTicket } from '../../../Classes/Tickets/CPPTicket';
+
 
 import StepIndicator from 'react-native-step-indicator';
 
@@ -93,6 +93,7 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
+
 class FLTemplatePP extends React.Component {
 
 
@@ -100,13 +101,10 @@ class FLTemplatePP extends React.Component {
     super(props);
 
     this.state = {
-      isEditable : typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : false,
 
       toto : true,
     }
 
-    //ensemble des modal dropdown
-    this._dropdown = {};
 
     //console.log(this.props.object);
 
@@ -127,19 +125,15 @@ class FLTemplatePP extends React.Component {
     //gestion des classes autocall et ticket broadcast
     //console.log(this.props.ticket);
     if (typeof this.props.ticket !== 'undefined' && this.props.ticket !== null) {
-       this.ticket = new CPPTicket(this.props.ticket);
+       this.ticket = this.props.ticket;
        this.autocall = this.ticket.getProduct();
     } else {
       this.ticket = null;
     }
-    //this.labels = ["Cart","Delivery Address","Order Summary","Payment Method","Track"];
-    //this.labels = Array(this.ticket.getCurrentStepsDepth()).fill().map((_, index) => (""+index));
-    this.labels =  ["Cart","Delivery Address","Order Summary","Payment Method","Track","Track","Track","Track"];
-    
-    console.log(this.labels);
-    console.log(this.ticket.getStepPosition() + "   -   ") ;
 
-  
+    this.labels = Array(this.ticket.getCurrentStepsDepth()).fill().map((_, index) => (""+index));
+ 
+    //this.labels =  ["Cart","Delivery Address","Order Summary","Payment Method","Track","Track","Track","Track"];
   }
 
 
@@ -175,13 +169,22 @@ _renderHeaderMediumTemplate() {
                                 <Text style={setFont('300', 14,  'white')}>
                                   Placement privé : {this.ticket.getType()} 
                                 </Text>
+
                         </View>
+  
                       </View>
 
                 </View>
-                <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}>
+                <TouchableOpacity style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}
+                                  onPress={() => {
+                                    this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailHome', {
+                                      autocall: this.autocallResult,
+                                      //ticketType: TICKET_TYPE.PSCREATION
+                                    })
+                                  }}
+                >
                    <Text style={setFont('400', 22, 'white')}>></Text>
-                </View>
+                </TouchableOpacity>
           </View>
 
   );
@@ -196,45 +199,53 @@ _renderMediumTemplate() {
                       {this.ticket.getUnsolvedCodeStep()}
                     </Text>
             </View>
-            <TouchableOpacity style={{flex : 0.4,  borderWidth: 0, justifyContent: 'center', alignItems: 'center', backgroundColor : 'white'}}
-                                            onPress={() => {
-                                            if (this.ticket.isUserTrigger()) {
-        
-                                              this.props.navigation.navigate('FLTicketDetail', {
-                                                  ticket: this.ticket,
-                                                  showModalResponse : true
-                                                });
-                                            } else {
-                                                Alert.alert(
-                                                  'Vous attendez actuellement une réponse',
-                                                  'Souhaitez-vous envoyer un message concernant ce ticket ?',
-                                                  [
-                                                    
-                                                    {
-                                                      text: 'Attendre',
-                                                      onPress: () => console.log('Cancel Pressed'),
-                                                      style: 'cancel',
-                                                    },
-                                                    {text: 'OUI', onPress: () => console.log('OK Pressed')},
-                                                  ],
-                                                  {cancelable: false},
-                                                );
-                                            }
-                                        
-                                          }}>
-                <View style={{backgroundColor : this.ticket.isUserTrigger() ? 'red' : 'white', borderColor: this.ticket.isUserTrigger()? 'red' : 'gray', borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center', margin: 10}}>
+            <View style={{flex : 0.4,  borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start', backgroundColor : 'white'}}>
+                <TouchableOpacity style={{backgroundColor : this.ticket.isUserTrigger() ? 'red' : 'white', borderColor: this.ticket.isUserTrigger()? 'red' : 'gray', borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center', margin: 10}}
+                                  onPress={() => {
+                                    if (this.ticket.isUserTrigger()) {
+
+                                      this.props.navigation.navigate('FLTicketDetail', {
+                                          ticket: this.ticket,
+                                          showModalResponse : true
+                                        });
+                                    } else {
+                                        Alert.alert(
+                                          'Vous attendez actuellement une réponse',
+                                          'Souhaitez-vous envoyer un message concernant ce ticket ?',
+                                          [
+                                            
+                                            {
+                                              text: 'Attendre',
+                                              onPress: () => console.log('Cancel Pressed'),
+                                              style: 'cancel',
+                                            },
+                                            {text: 'OUI', onPress: () => console.log('OK Pressed')},
+                                          ],
+                                          {cancelable: false},
+                                        );
+                                    }
+                                
+                                  }}
+                >
                     <Text style={[setFont('500',15, 'gray', 'Bold'), {textAlign: 'center', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}]} numberOfLines={this.ticket.isUserTrigger() ? 1 : 2}>
                       {this.ticket.isUserTrigger() ? 'Répondre' : 'Demande\nen cours'}
                     </Text>
+                </TouchableOpacity>
+                <View style={{marginLeft: 10, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    <Text style={setFont('400', 10,  'black', 'Regular')}>
+                          {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()} 
+                    </Text>
                 </View>
-            </TouchableOpacity>
+            </View>
         </View>
-        <View style={{marginTop: 5, borderWidth: 0, justifyContent:'center', alignItems: 'stretch'}}>
+
+        <View style={{marginTop: 5,  borderWidth: 0, justifyContent: 'center', alignItems: 'stretch'}}>
+
               <StepIndicator
                   customStyles={customStyles}
                   currentPosition={this.ticket.getStepPosition()}
-                  labels={this.labels}
-                  stepCount={this.labels.length}
+                  labels={this.labels.slice(0,6)}
+                  stepCount={Math.min(this.labels.length, 6)}
                   renderLabel={({position, label}) => {
                     switch(position) {
                       case this.ticket.getStepPosition() :
@@ -242,34 +253,54 @@ _renderMediumTemplate() {
                         //console.log(duedate);
                         if (duedate > Date.now()) {
                             return (
-                              <View style={{backgroundColor: 'red', padding : 2, width: 80, alignItems: 'center', justifyContent: 'center'}}>
-                                  <Text style={setFont('200', 9)}>{Moment(duedate).fromNow()}</Text>
+                              <View style={{ padding : 2, alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
+                                  <Text style={[setFont('200', 9),{textAlign: 'center'}]}>{Moment(duedate).fromNow()}</Text>
                               </View>
                             );
                         } else {
                           return (
-                              <View style={{backgroundColor: 'red', padding : 2, width: 50, alignItems: 'center', justifyContent: 'center'}}>
-                                  <Text style={setFont('300', 10, 'white', 'Bold')}>En retard</Text>
+                              <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
+                                  <Text style={[setFont('300', 10, 'white', 'Bold'), {textAlign: 'center'}]}>En retard</Text>
                               </View>
                           );
                         }
                       case 0 :
                         return (
-                          <View style={{ alignItems: 'center', justifyContent: 'center'}}>
-                              <Text style={setFont('200', 9)} >{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
+                          <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+                              <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
                           </View>
                         );
+                        case Math.min(this.labels.length, 6) - 1 :  //dernier
+                          return (
+                            <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+                                <Text style={setFont('200', 8, setColor('light'))}>Traité</Text>
+                            </View>
+                          );
                       default : 
                         return null;
                     }
                   
             
                   }}
-                  renderStepIndicator={() => {
+                  renderStepIndicator={({position}) => {
+                    //console.log("POSITION : "+position +" / " + );
+                    if ((position+1) === Math.min(this.labels.length, 6)){   //derniere position
+                        return (
+                              <View style={{backgroundColor: 'white', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
+                        );
+                    } else if (position === Math.min(this.labels.length, 6) - 2) {//avant-dernier
+                        return (
+                              <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
+                                  <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
+                              </View>  
+                        );  
+                    }
                     return null;
                   }}
               />
+
         </View>
+
     </View>
   );
 }
@@ -312,7 +343,7 @@ _renderFooterMediumTemplate(isFavorite) {
                                     .catch((error) => console.log("Erreur de mise en favori : " + error));
                                   }}
                 >
-                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={'black'}/>
+                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={'gray'}/>
                 </TouchableOpacity>                
         </View>
 

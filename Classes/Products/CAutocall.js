@@ -78,10 +78,10 @@ export class CAutocall extends CProduct {
       this.getMaturityName() +
       this.getBarrierPDI() +
       this.getBarrierPhoenix() +
-      (this.isAirbag() ? "airbag" : null) +
+      (this.isAirbag() ? "airbag" : '') +
       this.getDegressiveStep() +
       this.getDegressivity() +
-      this.product["code"];
+      (this.product.hasOwnProperty('code') ? this.product["code"] : '');
 
     return desc;
   }

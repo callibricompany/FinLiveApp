@@ -25,7 +25,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import { convertFresh } from '../../Utils/convertFresh';
 
-import {  CPPTicket } from '../../Classes/Tickets/CPPTicket';
+import {  CWorkflowTicket } from '../../Classes/Tickets/CWorkflowTicket';
 
 import Svg, { Polyline } from 'react-native-svg';
 
@@ -64,7 +64,7 @@ class FLTicketTemplatePP extends React.Component {
     this.ticket['data'] = convertFresh(this.ticket['custom_fields']);
     console.log(this.ticket);
     
-    this.ticketObj = new CPPTicket(this.ticket, this.props.authUser.uid);
+    this.ticketObj = new CWorkflowTicket(this.ticket, this.props.authUser.uid);
     
 
     //determination de l'étape 

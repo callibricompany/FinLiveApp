@@ -42,6 +42,14 @@ export class CObject {
         }
       }
 
+    setTemplate(template) {
+      this.object['template'] = template;
+      this.object['toFavorites']['code'] = template === TEMPLATE_TYPE.PSLIST ? this.object.code : this.object.id;
+    }
+
+    getTemplate() {
+      return this.object['template'];
+    }
 
     //verifie si ce produit est dans la liste des favoris
     isFavorite(favoriteList) {
