@@ -32,7 +32,7 @@ class FLTicketDetailHome extends React.Component {
 
     render() {
       return (
-        <FLTicketDetail ticket={this.autocall} showModal={this.showModal}/>
+        <FLTicketDetail ticket={this.ticket} showModal={this.showModal}/>
       );
     }
 };

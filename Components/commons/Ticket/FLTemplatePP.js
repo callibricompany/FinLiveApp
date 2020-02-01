@@ -178,7 +178,7 @@ _renderHeaderMediumTemplate() {
                 <TouchableOpacity style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}
                                   onPress={() => {
                                     this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailHome', {
-                                      autocall: this.autocallResult,
+                                      ticket: this.ticket,
                                       //ticketType: TICKET_TYPE.PSCREATION
                                     })
                                   }}
@@ -231,7 +231,7 @@ _renderMediumTemplate() {
                       {this.ticket.isUserTrigger() ? 'Répondre' : 'Demande\nen cours'}
                     </Text>
                 </TouchableOpacity>
-                <View style={{marginLeft: 10, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                <View style={{marginLeft: 10, marginTop : -5, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                     <Text style={setFont('400', 10,  'black', 'Regular')}>
                           {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()} 
                     </Text>
@@ -239,7 +239,7 @@ _renderMediumTemplate() {
             </View>
         </View>
 
-        <View style={{marginTop: 5,  borderWidth: 0, justifyContent: 'center', alignItems: 'stretch'}}>
+        <View style={{marginTop: 10,  borderWidth: 0, justifyContent: 'center', alignItems: 'stretch'}}>
 
               <StepIndicator
                   customStyles={customStyles}

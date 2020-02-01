@@ -292,7 +292,7 @@ class TabHome extends React.PureComponent {
                     renderItem={({ item, index }) => {
                       
                       let ticket = new CWorkflowTicket(item);
-                      console.log("TEMPLATE : "+ ticket.getTemplate());
+                    
                       switch (ticket.getTemplate()) {
                         case TEMPLATE_TYPE.PSAPE : 
                           return null;

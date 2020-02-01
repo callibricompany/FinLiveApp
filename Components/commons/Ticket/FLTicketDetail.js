@@ -79,9 +79,9 @@ class FLTicketDetail extends React.Component {
     super(props);
 
 
-    this.ticket= this.props.ticket;
+    this.ticket = this.props.ticket;
     //console.log(this.autocall.getObject());
-  
+    this.autocall = this.ticket.getProduct();
 
     this.state = {
 
