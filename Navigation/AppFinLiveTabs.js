@@ -285,7 +285,7 @@ function labelStyle (focused, tintColor) {
     //console.log("HOMEEEEEBAR : " + routes[index].routeName);
     //console.log(routes[index].params);
     
-    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail'){
+    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'){
       if (typeof routes[index].params !== 'undefined') {
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params);
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params['hideBottomTabBar']);

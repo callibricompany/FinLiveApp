@@ -35,7 +35,7 @@ export function setFont ( weight, size, color='black', family='Light') {
   return {
     fontWeight : weight,
     //fontSize: sizeByDevice(size +2, size, DEVICE_WIDTH < 350  && size > 12 ? size - 4 : size ) ,
-    fontSize: sizeByDevice(size +1, size, DEVICE_WIDTH < 321 ? size - 1 : size) ,
+    fontSize: sizeByDevice(size +1, size, DEVICE_WIDTH < 321 ? size < 10 ? size : size < 12 ? size - 1 : size < 16 ? size -2  : size < 20 ? size - 3 : size - 4  : size) ,
     fontFamily : family,
     color,
     textAlignVertical : 'center',

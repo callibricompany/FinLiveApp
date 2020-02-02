@@ -1,20 +1,20 @@
 import React from 'react';
-import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, StyleSheet, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput} from 'react-native';
+import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, StyleSheet, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput, TouchableWithoutFeedback} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
-import Accordion from 'react-native-collapsible/Accordion';
 
-import { ssCreateStructuredProduct } from '../../../API/APIAWS';
+import { ssCreateStructuredProduct, ssModifyTicket, getConversation  } from '../../../API/APIAWS';
 
 import { setFont, setColor , globalStyle } from '../../../Styles/globalStyle';
 
-
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
@@ -47,31 +47,6 @@ const DEVICE_HEIGHT = Dimensions.get('window').height;
 const STATUSBAR_HEIGHT =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
 
 
-const SECTIONS = [            
-  {
-    title: 'dates importantes',
-    code: 'DATE',
-    height : 100,
-  }, 
-  {
-    title: 'protection du capital',
-    code: 'CAPITAL',
-    height : 100,
-  }, 
-  {
-    title: 'coupons',
-    code: 'PHOENIX',
-    height : 200,
-  }, 
-  {
-    title: 'niveaux de rappel',
-    code: 'AUTOCALL',
-    height : 250,
-  }, 
-]
-
-
-
 
 class FLTicketDetail extends React.Component {
     
@@ -79,9 +54,9 @@ class FLTicketDetail extends React.Component {
     super(props);
 
 
-    this.ticket = this.props.ticket;
-    //console.log(this.autocall.getObject());
+    this.ticket= this.props.ticket;
     this.autocall = this.ticket.getProduct();
+  
 
     this.state = {
 
@@ -91,10 +66,6 @@ class FLTicketDetail extends React.Component {
       //affchage du modal description avant traiter
       showModalDescription : false,
 
-      //gestion des sections
-      activeSections: [],
-      scrollViewHeight : 50,
-
       //gestion du clavier
       keyboardHeight: 0,
       isKeyboardVisible: false,
@@ -103,6 +74,7 @@ class FLTicketDetail extends React.Component {
       showModalDescription : false,
       description : '',
 
+      isLoading : false,
       toto : true,
     }
     
@@ -120,6 +92,23 @@ class FLTicketDetail extends React.Component {
     }
     Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
+
+    //chargement de la conversation
+    this.setState({ isLoading : true });
+
+    getConversation(this.props.firebase, this.ticket.getId())
+    .then((data) => {
+
+      console.log(data.data);
+
+      this.setState({ isLoading : false});
+    })
+    .catch(error => {
+      console.log("ERREUR recupération conversations : " + error);
+      alert('Erreur : ' + error);
+      this.setState({ isLoading : false });
+      
+    }) 
   }
   componentWillUnmount() {
     if (!isAndroid()) {
@@ -143,119 +132,79 @@ class FLTicketDetail extends React.Component {
     }, ()=> console.log("HAUTEUR CLAVIER : " + this.state.keyboardHeight));
   }
 
-  _updateAutocall=(autocall) => {
-      this.autocall = autocall;
-      this.setState({ toto : !this.state.toto }, () => console.log(this.autocall.getObject()));
-  }
-
-  //compense un bug de <Accordeon>
-  //calcule le nombre d'élément ouvert et refait la hauteur du scroll
-  _redefineHeight() {
-    let h = 50;
-    this.state.activeSections.forEach((elementPosition) => {
-        h = h + SECTIONS[elementPosition].height;
-    });
-    //console.log("NOUVELLE HAUTEUR : "+ h);
-    this.setState({ scrollViewHeight : h });
-  }
-
-
-  _renderHeaderUnderlying = (content, index, isActive, sections) => {
-
-    return (
-      <View style={{backgroundColor: 'white', marginTop: 15, borderTopLeftRadius: 10, borderTopRightRadius: 10, borderWidth :0, backgroundColor : setColor(''),                                          shadowColor: 'rgb(75, 89, 101)',
-                    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.9, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={setFont('400', 18, 'white', 'Regular')}>
-           {String(content.title).toUpperCase()}
-        </Text>
-      </View>
-    );
-  };
-
-
-
   
-  _renderContentUnderlying = (content, index, isActive, sections) => {
-    //console.log("EST ACTIF : " + isActive);
-    
-    switch(content.code) {
-     // case 'DATE' : return this._renderDates();
-
-      default : <View><Text>...</Text></View>;
+  _renderHistory() {
+    return (
+        <View><Text> kfjhfjze</Text></View>
+    )
+  }
+  _renderScene = ({ route }) => {
+     
+    switch (route.key) {
+      case 'tabHistory':
+        return this._renderHistory();
+      case 'tabProduct':
+         return  <View><Text>Produit</Text></View>;
+      default:
+        return <View><Text>Pas fait</Text></View>;
     }
   };
-  
-  _renderFooterUnderlying = (content, index, isActive, sections) => {
 
-    return (
-      <View style={{height: 10, border: 1, borderTopWidth : 0, borderColor: setColor(''),shadowColor: 'rgb(75, 89, 101)', shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.9, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
-      </View>
-    );
-  };
+
 
 
   render() { 
 
       return(
-            <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : 1}}> 
-              <View style={{height: 140 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: setColor(''), paddingTop: isAndroid() ?  0 : STATUSBAR_HEIGHT}}>
-                  <TouchableOpacity style={{flexDirection : 'row', borderWidth: 0, padding : 5}}
-                                    onPress={() => this.props.navigation.goBack()}
-                  >
-                      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{flex:1, flexDirection : 'column', height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : 1}}> 
+              <View style={{flexDirection : 'row', height: (isAndroid() ? 110 : 140) + STATUSBAR_HEIGHT , paddingLeft : 10, backgroundColor: setColor(''), paddingTop: isAndroid() ?  0 : STATUSBAR_HEIGHT, padding : 5, alignItems: 'flex-start',justifyContent: 'space-between'}}>
+                      <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', padding : 5}}
+                                        onPress={() => this.props.navigation.goBack()}
+                      >
                            <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
+                      </TouchableOpacity>
+                      <View style={{flex: 0.6, justifyContent: 'center', alignItems: 'center'}}>
+                           <Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()}</Text>
+                           <Text style={setFont('300', 12, 'white', )}>{this.ticket.getType()}</Text>
                       </View>
-                      <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
-                           <Text style={setFont('300', 16, 'white', 'Regular')}>Retour</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*DEVICE_WIDTH}}>
-                          <View style={{flexDirection : 'row'}}>
+                      <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.025*DEVICE_WIDTH}}>
                               <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}
                                                 onPress={() => {
-                                                  let r = new CPSRequest();
-                                                  r.setRequestFromCAutocall(this.autocall);
-                                                  this.props.navigation.dispatch(NavigationActions.navigate({
-                                                    routeName: 'Pricer',
-                                                    action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
-                                                  }));
+       
                                                 }}
                               >
-                                  <FontAwesome name={'gears'} size={25} style={{color: 'white'}}/>
-                              </TouchableOpacity>
-                              <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                                   <EvilIcons name={'share-apple'} size={35} style={{color: 'white'}}/>
                               </TouchableOpacity>
-                          </View>
+                              <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
+                                  <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
+                              </TouchableOpacity>
                       </View>
-                  </TouchableOpacity>
               </View>
-              <View style={{
-
-                            marginTop : -100 ,
-                            justifyContent : 'center',
+              <View style={{flex : 1,
+                            marginTop : isAndroid() ?  -80 : -80 ,
+                            justifyContent : 'flex-start',
                             alignItems : 'center',
                             zIndex : 2,
                             //backgroundColor: 'pink'
                           }}
               >
-                     <FLTemplatePP ticket={this.ticket} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'} />
-                     <ScrollView style={{marginTop: 5, width: 0.9*DEVICE_WIDTH}}>
-                        <Accordion
-                            sections={SECTIONS}
-                            underlayColor={'transparent'}
-                            activeSections={this.state.activeSections}
-                            renderHeader={this._renderHeaderUnderlying}
-                            renderFooter={this._renderFooterUnderlying}
-                            renderContent={this._renderContentUnderlying}
-                            expandMultiple={true}
-                            onChange={(activeSections) => {
-                              this.setState( { activeSections : activeSections }, () => this._redefineHeight())  
-                            }}
-                          />
-                          <View style={{height : this.state.scrollViewHeight}}>
+                     <FLTemplatePP ticket={this.ticket} templateType={TEMPLATE_TYPE.TICKET_FULL_TEMPLATE} source={'Home'} />
+                     <View style={{flex : 1, flexDirection : 'column', marginTop : 10, backgroundColor: 'pink',borderWidth : 1, width: 0.975*DEVICE_WIDTH}}>
+                          <View style={{flexDirection : 'row'}}>
+                              <TouchableOpacity style={{flex: 0.7, borderWidth:1}}>
+                                  <Text>CONVERSATIONS</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity style={{flex: 0.15, borderWidth: 1}}>
+                                  <Text>PRODUIT</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity style={{flex: 0.15, borderWidth : 1}}>
+                                   <FontAwesome name={"file-text-o"}  size={20} style={{color: setColor('light')}}/> 
+                              </TouchableOpacity>
                           </View>
-                    </ScrollView>
+                          <View>
+
+                          </View>
+                    </View>
                   
               </View>
 
@@ -277,5 +226,3 @@ const composedStructuredProductDetail = compose(
 
 //export default HomeScreen;
 export default hoistStatics(composedStructuredProductDetail)(FLTicketDetail);
-
-

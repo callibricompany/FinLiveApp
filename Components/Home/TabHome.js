@@ -48,7 +48,7 @@ const DEVICE_HEIGHT = Dimensions.get("window").height;
 class TabHome extends React.PureComponent {
   constructor(props) {
     super(props);
-
+      
     this.state = {
       scrollTo: this.props.marginSearch,
       refreshing: false,

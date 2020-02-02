@@ -137,7 +137,31 @@ class FLTemplatePP extends React.Component {
   }
 
 
+  _renderHeaderFullTemplate() {
+  
+    return (
+                  <View style={{
+                                paddingLeft : 20,  
+                                paddingTop: 3,
+                                paddingBottom: 3,
+                                backgroundColor: setColor('vertpomme'), 
+                                borderTopLeftRadius: 10, 
+                                borderTopRightRadius: 10, 
+                                borderBottomWidth :  0,
+  
+                                }}
+                  >                                                    
+                
+                                <Text style={setFont('400', 18, 'white')}>
+                                    {this.ticket.getSubject()} 
+                                </Text>
 
+
+  
+                  </View>
+  
+    );
+  }
 _renderHeaderMediumTemplate() {
   
   return (
@@ -189,7 +213,27 @@ _renderHeaderMediumTemplate() {
 
   );
 }
-
+_renderFullTemplate() {
+  return (
+            <View style={{flexDirection : 'column', backgroundColor: 'white', justifyContent: 'center',  paddingBottom: 10 }}>
+              <View style={{backgroundColor: 'snow', paddingLeft : 20, paddingTop: 5,paddingBottom : 5,justifyContent : 'center'}}>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>
+                      {this.ticket.getDescription()}
+                    </Text>
+              </View>
+              <View style={{ paddingLeft : 20, paddingTop: 5,justifyContent : 'center', alignItems: 'center'}}>
+                    <Text style={[setFont('600', 14, 'black', 'Bold'), {textAlign: 'center'}]}>
+                      {this.ticket.getUnsolvedCodeStep()}
+                    </Text>
+              </View>
+              <View style={{ paddingLeft : 20, paddingTop: 5,justifyContent : 'center', alignItems: 'flex-start'}}>
+                   <Text style={setFont('400', 12, 'black', 'Regular')}>
+                      Nominal {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()} | Rétro : {currencyFormatDE(this.ticket.getNominal()*this.ticket.getUF()/100)} {this.ticket.getCurrency()} 
+                    </Text>
+              </View>
+            </View>
+  );
+}
 _renderMediumTemplate() {
   return (
     <View style={{flexDirection: 'column', backgroundColor: 'white', }}>
@@ -305,6 +349,43 @@ _renderMediumTemplate() {
   );
 }
 
+
+_renderFooterFullTemplate() {
+
+  return (
+        <View style={{flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+                <View style={{paddingLeft : 15}}>
+                    <Text style={setFont('200', 12)}>
+                      {this.ticket.getAgentName()}
+                    </Text>
+                    <Text style={setFont('200', 9)}>
+                      #{this.ticket.getId()}
+                    </Text>
+               </View>   
+               <View style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}>
+                          <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getStatus().color, margin : 5}} />
+                          <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
+                              <Text style={setFont('200', 12)}>
+                                {this.ticket.getStatus().name}
+                              </Text>
+                          </View>
+               </View>   
+               <TouchableOpacity style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}
+                                  onPress={() => {
+                                    //ajouter le changement de priorité
+                                  }}
+                >
+                    <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5}} />
+                    <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
+                      <Text style={setFont('200', 12)}>
+                        {this.ticket.getPriority().name}
+                      </Text>
+                    </View>
+                </TouchableOpacity>            
+        </View>
+
+  );
+}
 _renderFooterMediumTemplate(isFavorite) {
 
   return (
@@ -368,6 +449,13 @@ render () {
                           {this._renderHeaderMediumTemplate()}
                           {this._renderMediumTemplate()}
                           {this._renderFooterMediumTemplate(isFavorite)}
+                      </View>;
+            break;
+        case TEMPLATE_TYPE.TICKET_FULL_TEMPLATE : 
+            render = <View>
+                          {this._renderHeaderFullTemplate()}
+                          {this._renderFullTemplate()}
+                          {this._renderFooterFullTemplate()}
                       </View>;
             break;
         default :  

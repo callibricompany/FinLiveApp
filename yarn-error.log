@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/Cellar/node/11.6.0/bin/node /usr/local/Cellar/yarn/1.12.3/libexec/bin/yarn.js add expo-device@~1.0.0
+  /usr/local/Cellar/node/11.6.0/bin/node /usr/local/Cellar/yarn/1.12.3/libexec/bin/yarn.js add expo@^36.0.0
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin

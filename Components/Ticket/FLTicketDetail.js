@@ -167,7 +167,7 @@ class FLTicketDetail extends React.Component {
   _renderContentUnderlying = section => {
     let underLyingDescription = null;
     let underLyingAction = null;
-    switch(this.ticketObj.getProductType()) {
+    switch(this.ticketObj.getType()) {
       case "Produit Structuré" :
          underLyingDescription = <FLTemplateAutocall object={this.ticket} templateType={TEMPLATE_TYPE.AUTOCALL_BODY_FULL_TEMPLATE} />
          underLyingAction =  <View style={{flex : 0.10, flexDirection : 'row',  backgroundColor: 'white'}}>

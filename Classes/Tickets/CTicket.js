@@ -58,9 +58,7 @@ export class CTicket extends CObject {
       return this.product;
     }
 
-    getProductType() {
-          return this.ticket.type;
-    }
+
 
 
 

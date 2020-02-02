@@ -35,6 +35,13 @@ export class  CWorkflowTicket extends CTicket {
     this.previousSteps=[];
   }
 
+  getWorkflowName() {
+    if (this.currentStep.codeOperation === 'pp') {
+        return 'Placement privé';
+    }
+    return "Appel public à l'épargne";
+  }
+
   isUserTrigger() {
     return this.currentStep.userTrigger;
   }
