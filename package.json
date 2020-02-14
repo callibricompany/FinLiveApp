@@ -59,7 +59,7 @@
     "rn-pdf-reader-js": "^0.3.0",
     "util": "^0.12.1",
     "victory-native": "^32.0.2",
-    "yarn": "^1.17.3"
+    "yarn": "^1.22.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.2.0"
