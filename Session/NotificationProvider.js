@@ -1,6 +1,7 @@
 // store/UserProvider.js
 import React, { createContext, Component } from "react"; // on importe createContext qui servira à la création d'un ou plusieurs contextes
 
+
 /**
  * `createContext` contient 2 propriétés :
  * `Provider` et `Consumer`. Nous les rendons accessibles
@@ -9,9 +10,9 @@ import React, { createContext, Component } from "react"; // on importe createCon
  * On exporte ce contexte afin qu'il soit exploitable par
  * d'autres composants par la suite via le `Consumer`
  */
-export const UserContext = createContext({
-  name: "",
-  searchInputText: "",
+export const NotificationContext = createContext({
+  titleNoticfication: "",
+  eventNotification: "",
   setName: () => {}
 });
 
@@ -21,13 +22,19 @@ export const UserContext = createContext({
  * dans le composant éponyme. De cette façon, ses values
  * seront accessible de manière globale via le `Consumer`
  */
-class UserProvider extends Component {
+class NotificationProvider extends Component {
   state = {
-    name: "Bonjour FinLive", // une valeur de départ
-    searchInputText: "",
-    setName: name => this.setState({ name: name }),
-    setSearchInputText: inputedText => this.setState({ searchInputText: inputedText })
+    notification: '', // une valeur de départ
+    object : '',
+
+    setNotification: (notification, obj) => this.setNotification(notification, obj),
   };
+
+  setNotification(notification, obj) {
+    //console.log("DEPUIS LE STORE NOTIFICATION : ");
+    //console.log(ticket);
+    this.setState({ notification , object : obj });
+  }
 
   render() {
     return (
@@ -35,22 +42,22 @@ class UserProvider extends Component {
        * la propriété value est très importante ici, elle rend ici
        * le contenu du state disponible aux `Consumers` de l'application
        */
-      <UserContext.Provider value={this.state}>
+      <NotificationContext.Provider value={this.state}>
         {this.props.children}
-      </UserContext.Provider>
+      </NotificationContext.Provider>
     );
   }
 }
 
 /**
- * La fonction `withUserTest` sera notre HOC
+ * La fonction `withNotification` sera notre HOC
  * qui se chargera d'injecter les propriétés de notre contexte
  * à n'importe quel composant qui l'appellera
  */
-export const withUserTest = Component => props => (
-  <UserContext.Consumer>
+export const withNotification = Component => props => (
+  <NotificationContext.Consumer>
     {store => <Component {...props} {...store} />}
-  </UserContext.Consumer>
+  </NotificationContext.Consumer>
 );
 
-export default UserProvider;
+export default NotificationProvider;

@@ -1,8 +1,8 @@
 
 import {
-  ImageBackground,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
-  AsyncStorage,
+  Keyboard,
   View,
   ScrollView,
   ActivityIndicator,
@@ -143,6 +143,7 @@ class LoginFormBase extends Component {
 
   
     return (
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{width: DEVICE_WIDTH*0.9, marginLeft:0.05*DEVICE_WIDTH, height: DEVICE_HEIGHT, flexDirection: 'column', justifyContent:'center',alignItems: 'center', borderWidth: 0}}>
           <View style={{flex :0.35, marginTop : ifIphoneX(45, 10), zIndex: 99}}>
             <Image
@@ -156,7 +157,7 @@ class LoginFormBase extends Component {
               resizeMode="contain"
             />
           </View>
-          <KeyboardAvoidingView behavior={'padding'} style={{ flex: 0.65 , width: 0.9*DEVICE_WIDTH}}>  
+          <KeyboardAvoidingView behavior={'padding'} style={{ flex: 0.65 , width: 0.9*DEVICE_WIDTH}} enabled={true}>  
             <ScrollView keyboardShouldPersistTaps={"always"}>
                 <View style={{flexDirection: 'row', marginTop: 25, borderBottomWidth: 1, borderBottomColor : setColor('gray')}} >
                   <View style={{padding : 5}}>
@@ -245,6 +246,7 @@ class LoginFormBase extends Component {
             </ScrollView>
             </KeyboardAvoidingView>
         </View>
+        </TouchableWithoutFeedback>
     );
 
   }

@@ -31,7 +31,6 @@ import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
 import FLTemplateEmpty from "../commons/Autocall/FLTemplateEmpty";
 import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
 import FLTemplatePSPublicAPE from '../commons/Autocall/FLTemplatePSPublicAPE';
-import FLTicketTemplateAPE  from '../Ticket/FLTicketTemplateAPE';
 import FLTemplatePP from '../commons/Ticket/FLTemplatePP';
 
 import { CAutocall } from "../../Classes/Products/CAutocall";
@@ -39,6 +38,8 @@ import * as TEMPLATE_TYPE from "../../constants/template";
 import { CPSRequest } from "../../Classes/Products/CPSRequest";
 import { isAndroid } from "../../Utils";
 import { CWorkflowTicket } from "../../Classes/Tickets/CWorkflowTicket";
+import { CBroadcastTicket } from '../../Classes/Tickets/CBroadcastTicket';
+import { CTicket } from '../../Classes/Tickets/CTicket';
 
 
 
@@ -56,10 +57,40 @@ class TabHome extends React.PureComponent {
       filteredFeaturedProducts: [],
 
       bestCouponsExtraData : true,
+
+
+      //gestion affichage activityindicator en fin des flatlist
+      apeSRPRefreshing : false,
     };
 
     this.bestCoupons = [];
-    
+
+    this.tickets = [];
+    this.props.tickets.forEach((t) => {
+      //let tempTicket = new CTicket(t);
+      //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
+      
+      //switch (tempTicket.getType()) {
+      switch(t.type) {
+        case "Broadcasting" :
+          console.log("Broadcast : "+t.id);
+          //console.log(t);
+          //let ticketB = new CBroadcastTicket(t);
+          //this.tickets.push(ticketB);
+          break;
+        case "Produit structuré" :
+          console.log("Workflow : "+t.id);
+          //console.log(t);
+          let ticketC = new CWorkflowTicket(t);
+          this.tickets.push(ticketC);
+          break;
+        default : 
+          //this.tickets.push(t);
+          break;
+      }
+    });
+    this.tickets.sort(CTicket.compareLastUpdate);
+
     //console.log(this.allProducts[0]);
     /* this.allProducts.forEach((product) => {
         //console.log(product);
@@ -94,16 +125,6 @@ class TabHome extends React.PureComponent {
       request.setCriteria('maturity', [8,8], "8Y");
       request.setCriteria('barrierPDI', 0.6, "Protégé jusqu'à -40%");
       request.setCriteria('isIncremental', true, "Incremental");
-      
-      //this._fillCriteria('freq', autocall.getFrequencyAutocall(), autocall.getFrequencyAutocallTitle());
-      //this._fillCriteria('barrierPhoenix', autocall.getBarrierPhoenix(), "Protégé jusqu'à : " + Numeral(autocall.getBarrierPhoenix() - 1).format('0%'));
-      //this._fillCriteria('airbagLevel', autocall.getAirbagCode(), autocall.getAirbagTitle());
-      //this._fillCriteria('nncp', autocall.getNNCP(), "1er rappel dans "+autocall.getNNCPLabel());
-      //this._fillCriteria('isMemory', autocall.isMemory(), autocall.isMemory() ? 'Effet mémoire' : 'Non mémoire');
-      //this._fillCriteria('degressiveStep', autocall.getDegressivity(), autocall.getDegressivity() === 0 ? '' : 'Stepdown ' + Numeral(autocall.getDegressivity()).format('0%') + " / an");
-      //this._fillCriteria('UF', autocall.getUF(), autocall.getUF());
-      //this._fillCriteria('UFAssoc', autocall.getUFAssoc(), autocall.getUFAssoc());
-      //this._fillCriteria('nominal', autocall.getNominal(), autocall.getNominal());
 
       searchProducts(this.props.firebase, request.getCriteria())
       .then((data) => {
@@ -220,7 +241,7 @@ class TabHome extends React.PureComponent {
       >
 
           {this.props.broadcasts.length !== 0  ?
-                <View>
+                <View style={{marginRight: 0.025*DEVICE_WIDTH}}>
                   <View
                     style={{
 
@@ -237,20 +258,16 @@ class TabHome extends React.PureComponent {
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
                     contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-                    data={
-                      this.props.filtersHomePage["category"] === "PSFAVORITES"
-                        ? this.props.favorites
-                        : this.isFiltered
-                        ? this.state.filteredFeaturedProducts
-                        : this.props.broadcasts
-                    }
+                    data={this.props.broadcasts}
                     horizontal={true}
                     renderItem={({ item, index }) => {
-                      switch (item.template) {
-                        case "PSBROADCAST":
+                      let ticket = new CBroadcastTicket(item);
+                      //console.log(ticket.getTemplate());
+                      switch (ticket.getTemplate()) {
+                        case TEMPLATE_TYPE.PSBROADCAST :
                           return (
                             <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                              <FLTemplatePSBroadcast object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
+                              <FLTemplatePSBroadcast ticket={ticket} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
                             </View>
                           );
                         default:
@@ -270,15 +287,9 @@ class TabHome extends React.PureComponent {
             : null
             }
 
-            {this.props.tickets.length !== 0  ?
-                <View>
-                  <View
-                    style={{
-                      marginLeft: DEVICE_WIDTH * 0.025,
-                      alignItems: "flex-start",
-                      borderWidth: 0
-                    }}
-                  >
+            {this.tickets.length !== 0  ?
+                <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
+                  <View style={{marginLeft: DEVICE_WIDTH * 0.025, marginRight: DEVICE_WIDTH * 0.025, alignItems: "flex-start", borderWidth: 0}}>
                     <Text style={setFont("400", 18, "black", "FLFontFamily")}>
                       Mes tickets en cours
                     </Text>
@@ -287,116 +298,136 @@ class TabHome extends React.PureComponent {
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
                     contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-                    data={this.props.tickets}
+                    data={this.tickets}
                     horizontal={true}
                     renderItem={({ item, index }) => {
                       
-                      let ticket = new CWorkflowTicket(item);
-                    
-                      switch (ticket.getTemplate()) {
-                        case TEMPLATE_TYPE.PSAPE : 
-                          return null;
-                        case TEMPLATE_TYPE.PSPP :         
-                          return (
-                            <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                                <FLTemplatePP ticket={ticket} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'}/>
-                            </View>
-                          );
-                        default : return null;
+                      switch(item.getType()) {
+                        case "Broadcasting" :
+                        console.log("TEMPLATE : " + item.getTemplate());
+                            switch (item.getTemplate()) {
+                              case TEMPLATE_TYPE.PSBROADCAST :
+                                return (
+                                  <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                                    <FLTemplatePSBroadcast ticket={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'} screenWidth={0.7} />
+                                  </View>
+                                );
+                              default:
+                                return null;
+                            };
+                            break;
+                         case "Produit structuré" :
+                            switch (item.getTemplate()) {
+                              case TEMPLATE_TYPE.PSAPE : 
+                                return null;
+                              case TEMPLATE_TYPE.PSPP :         
+                                return (
+                                  <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                                      <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'}/>
+                                  </View>
+                                );
+                              default : return null;
+                            }
+                         default : return null;
                       }
                     }}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item.getId().toString()}
                   />
               </View>
             : null
             }
 
-
-            <View
-              style={{
-                marginLeft: DEVICE_WIDTH * 0.025,
-                alignItems: "flex-start",
-                borderWidth: 0
-              }}
-            >
-              <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-                Les plus demandés 
-              </Text>
+            <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
+                <View
+                  style={{
+                    marginLeft: DEVICE_WIDTH * 0.025,
+                    marginRight: DEVICE_WIDTH * 0.025,
+                    alignItems: "flex-start",
+                    borderWidth: 0
+                  }}
+                >
+                  <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                    Les plus demandés 
+                  </Text>
+                </View>
+                <FlatList
+                  //style={{marginLeft : 100}}
+                  //scrollTo={this.state.scrollTo}
+                  contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
+                  data={
+                    this.props.filtersHomePage["category"] === "PSFAVORITES"
+                      ? this.props.favorites
+                      : this.isFiltered
+                      ? this.state.filteredFeaturedProducts
+                      : this.props.featured
+                  }
+                  horizontal={true}
+                  renderItem={({ item, index }) => this._renderFeatured(item, index)}
+                  //tabRoute={this.props.route.key}
+                  keyExtractor={item => {
+                    let key =
+                      typeof item.data["id"] === "undefined"
+                        ? item.data["code"]
+                        : item.data["id"];
+                    return key.toString();
+                  }}
+                />
             </View>
-            <FlatList
-              //style={{marginLeft : 100}}
-              //scrollTo={this.state.scrollTo}
-              contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-              data={
-                this.props.filtersHomePage["category"] === "PSFAVORITES"
-                  ? this.props.favorites
-                  : this.isFiltered
-                  ? this.state.filteredFeaturedProducts
-                  : this.props.featured
-              }
-              horizontal={true}
-              renderItem={({ item, index }) => this._renderFeatured(item, index)}
-              //tabRoute={this.props.route.key}
-              keyExtractor={item => {
-                let key =
-                  typeof item.data["id"] === "undefined"
-                    ? item.data["code"]
-                    : item.data["id"];
-                return key.toString();
-              }}
-            />
 
-            <View
-              style={{
-                marginLeft: DEVICE_WIDTH * 0.025,
-                alignItems: "flex-start",
-                borderWidth: 0
-              }}
-            >
-              <Text style={setFont("400", 18, "black", "FLFontFamily")}>
-                Meilleurs coupons par sous-jacent
-              </Text>
+            <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
+                <View
+                  style={{
+                    marginLeft: DEVICE_WIDTH * 0.025,
+                    alignItems: "flex-start",
+                    borderWidth: 0
+                  }}
+                >
+                  <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                    Meilleurs coupons par sous-jacent
+                  </Text>
+                </View>
+                <FlatList
+                  //style={styles.wrapper}
+                  //scrollTo={this.state.scrollTo}
+                  contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
+                  data={this.bestCoupons.length === 0 ? this.props.featured.slice(0,2) : this.bestCoupons}
+                  horizontal={true}
+                  
+                  renderItem={({ item, index }) => {
+
+                        return (
+                          <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                          {this.bestCoupons.length === 0 ?
+                              <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
+                            : <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
+                          }
+                          </View>
+                        );
+        
+                  }}
+                  extraData={this.state.extraData}
+                  //tabRoute={this.props.route.key}
+                  keyExtractor={item => {
+                    if (this.bestCoupons.length === 0) {
+                          let key =
+                            typeof item.data["id"] === "undefined"
+                              ? item.data["code"]
+                              : item.data["id"];
+                          return key.toString();
+                    } else {
+                      return item.code.toString();
+                    }
+                  }}
+                />
             </View>
-            <FlatList
-              //style={styles.wrapper}
-              //scrollTo={this.state.scrollTo}
-              contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-              data={this.bestCoupons.length === 0 ? this.props.featured.slice(0,2) : this.bestCoupons}
-              horizontal={true}
-              
-              renderItem={({ item, index }) => {
-
-                    return (
-                      <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                      {this.bestCoupons.length === 0 ?
-                          <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
-                        : <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
-                      }
-                      </View>
-                    );
-    
-              }}
-              extraData={this.state.extraData}
-              //tabRoute={this.props.route.key}
-              keyExtractor={item => {
-                if (this.bestCoupons.length === 0) {
-                      let key =
-                        typeof item.data["id"] === "undefined"
-                          ? item.data["code"]
-                          : item.data["id"];
-                      return key.toString();
-                } else {
-                  return item.code.toString();
-                }
-              }}
-            />
 
 
             {this.props.apeSRP.length !== 0  ?
-                <View>
+                <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
                   <View
                     style={{
                       marginLeft: DEVICE_WIDTH * 0.025,
+                      marginRight: DEVICE_WIDTH * 0.025,
                       alignItems: "flex-start",
                       borderWidth: 0
                     }}
@@ -409,13 +440,7 @@ class TabHome extends React.PureComponent {
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
                     contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-                    data={
-                      this.props.filtersHomePage["category"] === "PSFAVORITES"
-                        ? this.props.favorites
-                        : this.isFiltered
-                        ? this.state.filteredFeaturedProducts
-                        : this.props.apeSRP
-                    }
+                    data={this.props.apeSRP}
                     horizontal={true}
                     renderItem={({ item, index }) => {
                       switch (item.template) {
@@ -431,6 +456,17 @@ class TabHome extends React.PureComponent {
                     }}
                     //tabRoute={this.props.route.key}
                     keyExtractor={item => item.code}
+                    onEndReachedThreshold={0.1}
+                    onEndReached={() => {
+                      
+                      if (this.state.apeSRPRefreshing) {
+                        return null;
+                      }
+                      console.log("onEndReached");
+                      this.setState({ apeSRPRefreshing : true });
+        
+                    }}
+                    ListFooterComponent={this.state.apeSRPRefreshing ? <View style={{flex: 1, marginLeft : 30, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator size={'large'} /></View> : null }
                   />
               </View>
             : null

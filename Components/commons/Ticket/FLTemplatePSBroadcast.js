@@ -88,11 +88,12 @@ class FLTemplatePSBroadcast extends React.Component {
     this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE;
 
     //largeur de la cartouche sur l'ecran
-    this.screenWidth = 0.9 * DEVICE_WIDTH;
+    this.screenWidth = this.props.hasOwnProperty('screenWidth') ? this.props.screenWidth*DEVICE_WIDTH : 0.9 * DEVICE_WIDTH;
 
           
     //gestion des classes autocall et ticket broadcast
-    this.broadcast = new CBroadcastTicket(this.props.object);
+    //this.broadcast = new CBroadcastTicket(this.props.object);
+    this.broadcast = this.props.ticket;
     this.autocall = this.broadcast.getProduct();
 
   
@@ -100,20 +101,10 @@ class FLTemplatePSBroadcast extends React.Component {
 
 
 
- 
-
-
-
-
-
-
-
-
-
 _renderHeaderFullTemplate() {
   
   return (
-    <View>
+
           <View style={{flexDirection : 'row'}}>
                 <View style={{
                               flex : 0.6, 
@@ -123,6 +114,7 @@ _renderHeaderFullTemplate() {
                               borderTopLeftRadius: 10, 
                               //borderRadius: 14,
                               borderBottomWidth :  0,
+
 
                               }}
                 >                                                    
@@ -161,8 +153,6 @@ _renderHeaderFullTemplate() {
                     </Text>   
                   </TouchableOpacity>
                 </View>
-
-              </View>
 
       </View>
   );
@@ -303,7 +293,8 @@ render () {
       
     
       return (
-            <View style={{flexDirection : 'column', 
+            <View style={{flexDirection : 'column',
+                          //flex: 1,
                           width: this.screenWidth, 
                           //marginLeft : 0.025*DEVICE_WIDTH,
                           shadowColor: 'rgb(75, 89, 101)',
@@ -314,14 +305,16 @@ render () {
                           //borderTopLeftRadius: 15,
                           borderRadius: 10,
                           //overflow: "hidden",
-                          backgroundColor: 'gray',
+                          backgroundColor: 'transparent',
+                          borderWidth : 1,
                           //elevation: 3
                         }}
+                  opacity={this.broadcast.hasBeenSeen() ? 0.7 : 1}
             >
-              <View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 2}}>
+              <View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 20}}>
                   <YourTeam_SVG width={50} height={80} />
               </View>
-
+              <View style={{zIndex : 1}}>
                 {this._renderHeaderFullTemplate()}
 
                 <View style={{flexDirection: 'column', backgroundColor: 'white'}}>
@@ -365,7 +358,7 @@ render () {
                 </View>
                 
                 {this._renderFooterFullTemplate(isFavorite)}
-               
+               </View>
             </View>
         );
     }

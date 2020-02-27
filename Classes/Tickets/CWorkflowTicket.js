@@ -7,6 +7,7 @@ import * as TEMPLATE_TYPE from '../../constants/template';
 export class  CWorkflowTicket extends CTicket {
   constructor(ticket) {
     super(ticket); // appelle le constructeur parent avec le paramètre
+    //console.log("constructeur workflow");
     switch(ticket.type) {
       case "Produit structuré": 
         //on remet le bon template
@@ -51,8 +52,12 @@ export class  CWorkflowTicket extends CTicket {
   return numberOfPotentialSteps + (this.isUserTrigger() ? 1 : 0) ;
 }
 
-  getUnsolvedCodeStep() {
+  getUnsolvedStep() {
     return this.currentStep.stepUnsolved;
+  }
+
+  getSolvedStep() {
+    return this.currentStep.stepSolved;
   }
 
   getCurrentCodeStep() {

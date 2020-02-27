@@ -30,7 +30,12 @@ export class CAutocallSRP extends CAutocall {
     this.product['underlying'] = this.object['data']['Underlying'];
 
     let cpn = this.product['data']["Digital Coupon"];
-    this.product['coupon'] = Numeral(cpn.substring(0, cpn.length - 4)).format('0.00'); 
+    //cpn = cpn.replace('.',',');
+    //numeral.locale('fr');
+    cpn = Numeral(cpn.substring(0, cpn.length - 4)).format('0.0000');
+    cpn = cpn > 1 ? cpn/100 : cpn; 
+    //console.log("COUPON : "+ cpn + "   -  "+this.product['data']["Digital Coupon"]);
+    this.product['coupon'] = cpn; 
     
 
     this.product['startdate'] = this.product['data']["Offer Close Date"];

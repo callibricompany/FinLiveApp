@@ -117,9 +117,11 @@ class FLTemplatePP extends React.Component {
         this.screenWidth = 0.8 * DEVICE_WIDTH;
         break;
       default :  
-        this.screenWidth = 0.9 * DEVICE_WIDTH;
+        this.screenWidth = 0.95 * DEVICE_WIDTH;
         break;
     }
+    this.screenWidth = this.props.hasOwnProperty('screenWidth')  ? this.props.screenWidth * DEVICE_WIDTH : this.screenWidth;
+
 
           
     //gestion des classes autocall et ticket broadcast
@@ -140,13 +142,13 @@ class FLTemplatePP extends React.Component {
   _renderHeaderFullTemplate() {
   
     return (
-                  <View style={{
+      <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 0.8, 
                                 paddingLeft : 20,  
                                 paddingTop: 3,
                                 paddingBottom: 3,
                                 backgroundColor: setColor('vertpomme'), 
                                 borderTopLeftRadius: 10, 
-                                borderTopRightRadius: 10, 
                                 borderBottomWidth :  0,
   
                                 }}
@@ -155,53 +157,56 @@ class FLTemplatePP extends React.Component {
                                 <Text style={setFont('400', 18, 'white')}>
                                     {this.ticket.getSubject()} 
                                 </Text>
-
-
-  
                   </View>
-  
+                  <TouchableOpacity style={{flex: 0.2, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}
+                                  onPress={() => {
+                                    this.autocall.setFinalNominal(this.ticket.getNominal());
+                                    this.autocall.setEditable(false);
+                                    this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailHome', {
+                                      autocall: this.autocall,
+                                      //ticketType: TICKET_TYPE.PSCREATION
+                                    })
+                                  }}
+                >
+                   <Text style={setFont('400', 12, 'white')}>PRODUIT ></Text>
+                </TouchableOpacity>
+        </View>
     );
   }
 _renderHeaderMediumTemplate() {
   
   return (
-            <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row', height : 70}}>
                 <View style={{
                               flex : 0.9,
                               paddingLeft : 20,  
+                              paddingRight : 3,
                               paddingTop: 3,
-                              paddingBottom: 3,
+                              paddingBottom: 5,
                               backgroundColor: setColor('vertpomme'), 
                               borderTopLeftRadius: 10, 
                               //borderTopRightRadius: 10, 
                               borderBottomWidth :  0,
-
                               }}
                 >                                                    
-                      <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
-                      <View style={{flexDirection: 'row', borderWidth: 0}}>
-                        <View style={{ borderWidth: 0}}>
+                      <View style={{justifyContent: 'center' }}>
+
               
-                              <Text style={setFont('400', 18, 'white')} numberOfLines={2}>
+                              <Text style={setFont('400', isAndroid() ? 16 : 18, 'white')} numberOfLines={2}>
                                   {this.ticket.getSubject()} 
                               </Text>
-              
-                            </View>
-
                         </View>
-                        <View style={{flexDirection: 'row'}}>
+                        <View style={{flex: 1, borderWidth: 0, justifyContent : 'flex-end', paddingTop : 3}}>
                                 <Text style={setFont('300', 14,  'white')}>
                                   Placement privé : {this.ticket.getType()} 
                                 </Text>
 
                         </View>
-  
-                      </View>
 
                 </View>
                 <TouchableOpacity style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}
                                   onPress={() => {
-                                    this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailHome', {
+                                    this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
                                       ticket: this.ticket,
                                       //ticketType: TICKET_TYPE.PSCREATION
                                     })
@@ -223,7 +228,7 @@ _renderFullTemplate() {
               </View>
               <View style={{ paddingLeft : 20, paddingTop: 5,justifyContent : 'center', alignItems: 'center'}}>
                     <Text style={[setFont('600', 14, 'black', 'Bold'), {textAlign: 'center'}]}>
-                      {this.ticket.getUnsolvedCodeStep()}
+                      {this.ticket.getUnsolvedStep()}
                     </Text>
               </View>
               <View style={{ paddingLeft : 20, paddingTop: 5,justifyContent : 'center', alignItems: 'flex-start'}}>
@@ -236,14 +241,14 @@ _renderFullTemplate() {
 }
 _renderMediumTemplate() {
   return (
-    <View style={{flexDirection: 'column', backgroundColor: 'white', }}>
+    <View style={{flexDirection: 'column', backgroundColor: 'white', justifyContent: 'space-between',height : 140}}>
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 0.6, flexDirection: 'column', justifyContent: 'center', paddingLeft : 20, paddingTop: 5, paddingBottom: 3 }}>
-                    <Text style={setFont('400', 14, 'black', 'Regular')}>
-                      {this.ticket.getUnsolvedCodeStep()}
+                    <Text style={setFont('400', isAndroid() ? 16 : 18, 'black', 'Regular')}>
+                      {this.ticket.getUnsolvedStep()}
                     </Text>
             </View>
-            <View style={{flex : 0.4,  borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start', backgroundColor : 'white'}}>
+            <View style={{flex : 0.4,  flexDirection : 'column', borderWidth: 0, justifyContent: 'center', alignItems: 'center', backgroundColor : 'white'}}>
                 <TouchableOpacity style={{backgroundColor : this.ticket.isUserTrigger() ? 'red' : 'white', borderColor: this.ticket.isUserTrigger()? 'red' : 'gray', borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center', margin: 10}}
                                   onPress={() => {
                                     if (this.ticket.isUserTrigger()) {
@@ -271,11 +276,11 @@ _renderMediumTemplate() {
                                 
                                   }}
                 >
-                    <Text style={[setFont('500',15, 'gray', 'Bold'), {textAlign: 'center', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}]} numberOfLines={this.ticket.isUserTrigger() ? 1 : 2}>
+                    <Text style={[setFont('500',15, this.ticket.isUserTrigger() ? 'white' : 'gray', 'Bold'), {textAlign: 'center', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}]} numberOfLines={this.ticket.isUserTrigger() ? 1 : 2}>
                       {this.ticket.isUserTrigger() ? 'Répondre' : 'Demande\nen cours'}
                     </Text>
                 </TouchableOpacity>
-                <View style={{marginLeft: 10, marginTop : -5, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                <View style={{marginLeft: 0, marginTop : -5, alignItems: 'center', justifyContent: 'space-evenly', borderWidth: 0}}>
                     <Text style={setFont('400', 10,  'black', 'Regular')}>
                           {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()} 
                     </Text>
@@ -283,7 +288,7 @@ _renderMediumTemplate() {
             </View>
         </View>
 
-        <View style={{marginTop: 10,  borderWidth: 0, justifyContent: 'center', alignItems: 'stretch'}}>
+        <View style={{marginTop: 0,  borderWidth: 0, justifyContent: 'center', alignItems: 'stretch'}}>
 
               <StepIndicator
                   customStyles={customStyles}
@@ -303,7 +308,7 @@ _renderMediumTemplate() {
                             );
                         } else {
                           return (
-                              <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
+                              <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderRadius: 2, borderWith : 1, borderColor : 'red'}}>
                                   <Text style={[setFont('300', 10, 'white', 'Bold'), {textAlign: 'center'}]}>En retard</Text>
                               </View>
                           );
@@ -353,10 +358,10 @@ _renderMediumTemplate() {
 _renderFooterFullTemplate() {
 
   return (
-        <View style={{flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+        <View style={{flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 2, paddingBottom : 2, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
                 <View style={{paddingLeft : 15}}>
                     <Text style={setFont('200', 12)}>
-                      {this.ticket.getAgentName()}
+                      Agt : {this.ticket.getAgentName()}
                     </Text>
                     <Text style={setFont('200', 9)}>
                       #{this.ticket.getId()}
@@ -389,11 +394,11 @@ _renderFooterFullTemplate() {
 _renderFooterMediumTemplate(isFavorite) {
 
   return (
-        <View style={{flex : 0.10, flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+        <View style={{flex : 0.10, flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 2, paddingBottom : 2, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
                 <View style={{paddingLeft : 15}}>
                  
                  <Text style={setFont('200', 12)}>
-                   {this.ticket.getAgentName()}
+                   Agt: {this.ticket.getAgentName()}
                  </Text>
                  <Text style={setFont('200', 9)}>
                    #{this.ticket.getId()}

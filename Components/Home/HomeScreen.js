@@ -3,12 +3,13 @@ import React from 'react'
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar, Animated, KeyboardAvoidingView} from 'react-native'
 import { Thumbnail, Toast, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
-import { globalStyle , blueFLColor, subscribeColor} from '../../Styles/globalStyle'
+import { globalStyle , blueFLColor, setColor, setFont} from '../../Styles/globalStyle'
 
 
 import { FLBadge } from '../commons/FLBadge'
  
-import smallIcon from '../../assets/icon_196.png'
+
+import RobotBlink from "../../assets/svg/robotBlink.svg";
 
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -45,7 +46,7 @@ const initialLayout = {
         
         this.state = {
           isLoading : true,
-
+          isServerOk : true,
           //gestion du scroll avec l'input text recherche
           marginSearch : 0,
 
@@ -60,7 +61,7 @@ const initialLayout = {
           filterText : '',
           searchTextForNews : ''
         }
-     
+        //this.props.navigation.setParams({ hideBottomTabBar : true });
         // console.log("PLATE-FORME : " + Platform.OS)
     }
     
@@ -89,36 +90,21 @@ const initialLayout = {
       this._navListener.remove();
     }
 
-    async componentWillMount () {
-      
-      //console.log(CATEGORIES);
-      await this.props.getUserAllInfo();
-     
-     
-      //creation de l aliste des categories 
-      //console.log("Passage homescrrenn");
-    
-      //console.log("PASSEE E EE E  E E E E E  E E E E E E E E EE E  E E E EE E E E E E  E");
-      //toto = {...this.props.categories};
-      //console.log(this.props.categories);
-      //console.log(this.props.categoriesState);
-      /*this.props.categories.forEach((value, cle) => {
-            console.log(value + " : "+ cle);
-      });
-      /*Toast.show({
-        text: "Wrong password!",
-        buttonText: "Okay",
-        duration: 3000
-      });*/
-
-      //on va charger toutes les constantes (sous jacents, etc, ....)
-
-      //setTimeout(() => {
-        
-      //}, 300);
-      this.setState({ isLoading: false });
+    componentWillMount () {
+      this._loadAllUserIndos();
     }
 
+    async _loadAllUserIndos() {
+      //console.log(CATEGORIES);
+      try {
+        await this.props.getUserAllInfo();
+        this.setState({ isServerOk : true, isLoading: false});
+      } catch(error) {
+        console.log("ERREUR RESEAU : "+error);
+        this.setState({ isServerOk : false, isLoading: false});
+      }
+ 
+    }
  
 
     //le user veut filtrer --> on va renvoyer à HOC un objet filtre
@@ -260,11 +246,34 @@ const initialLayout = {
                       </SearchBarProvider>
                 
 
-          if (this.state.isLoading) {
-            render =  <View style={globalStyle.loading}>
-                  <ActivityIndicator size='large' />
-                </View>
-          }
+      if (this.state.isLoading) {
+        return (
+              <View style={{flex : 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator size='large' />
+              </View>
+        );
+      }
+      if (!this.state.isServerOk) {
+            //this.props.navigation.setParams({ hideBottomTabBar : false });
+            return (
+              <View style={{flex : 1, alignItems: 'center'}}>
+                  <View style={{flex : 0.7, justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white'}}>
+                    <RobotBlink width={120} height={120} />
+                    <Text style={setFont('400', 18)}>Problème de connexion</Text>
+
+                  </View>
+                  <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', padding : 10, borderRadius : 3, backgroundColor: setColor('')}}
+                                    onPress={() => {
+                                          //this.props.navigation.setParams({ hideBottomTabBar : true });
+                                          this.setState({ isLoading : true}, () => this._loadAllUserIndos());
+                                    }}
+                  >
+                        <Text style={setFont('400', 13, 'white', 'Regular')}>Essayer à nouveau</Text>
+                  </TouchableOpacity>
+              </View>
+            );
+      }
+      //this.props.navigation.setParams({ hideBottomTabBar : true });
       return(
             <SafeAreaView style={{backgroundColor: 'white'}}>
                    { Platform.OS === 'android' && 

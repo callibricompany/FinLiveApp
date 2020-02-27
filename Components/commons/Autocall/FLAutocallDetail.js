@@ -12,7 +12,7 @@ import Accordion from 'react-native-collapsible/Accordion';
 
 import { ssCreateStructuredProduct } from '../../../API/APIAWS';
 
-import { setFont, setColor , globalStyle } from '../../../Styles/globalStyle';
+import { setFont, setColor , globalStyle , backgdColor} from '../../../Styles/globalStyle';
 
 
 
@@ -81,8 +81,8 @@ class FLAutocallDetail extends React.Component {
 
     this.autocall= this.props.autocall;
     //console.log(this.autocall.getObject());
-  
-
+    
+  console.log("NOMINAL : "+ this.autocall.getNominal());
     this.state = {
 
       nominal :  this.autocall.getNominal(),
@@ -455,7 +455,7 @@ class FLAutocallDetail extends React.Component {
       case 'DATE' : return this._renderDates();
       case 'CAPITAL' : return this._renderCapital();
       case 'PHOENIX' : return this.autocall.isPhoenix() ? this._renderPhoenix() : <View></View>;
-      case 'AUTOCALL' : return this._renderAutocall();
+      case 'AUTOCALL' : return this.autocall.isReverse() ? <View></View> : this._renderAutocall();
       default : <View><Text>...</Text></View>;
     }
   };
@@ -506,22 +506,23 @@ class FLAutocallDetail extends React.Component {
                       flexDirection: 'column',
                       backgroundColor: 'white',
                       borderWidth :1,
-                      borderColor : 'white',
+                      borderColor : setColor(''),
                       borderRadius: 4,
                       width: DEVICE_WIDTH*0.8,
                       height: DEVICE_HEIGHT*0.4,
                       top:  DEVICE_HEIGHT*0.15,
                       left : DEVICE_WIDTH*0.1,
+                      borderRadius: 4
 
                   }}
                 >
 
 
-                  <View style={{flex:0.2, backgroundColor: setColor('turquoise'), alignItems:'center', justifyContent: 'center'}}>
+                  <View style={{flex:0.2, backgroundColor: setColor(''), alignItems:'center', justifyContent: 'center'}}>
                       <Text style={setFont('500',14,'white', 'Regular')}>INSTRUCTIONS DE COTATION</Text>
                   </View>
                   <View style={{flex:0.6, backgroundColor: globalStyle.bgColor, alignItems:'flex-start', justifyContent: 'flex-start'}}>
-                      <Text style={[setFont('300', 12), {padding: 10}]}>Ajoutez vos instructions spéciales relatives à la confirmation du prix auprès des émetteurs :</Text>
+                      <Text style={[setFont('300', 12), {padding: 10}]}>Ajoutez vos instructions pour les émetteurs :</Text>
                       <View style={{backgroundColor: globalStyle.bgColor, borderWidth :0}}>
                         <TextInput  style={{color: 'black', textAlignVertical:'top', backgroundColor: 'white' , margin : 10, padding: 5, borderWidth :1, borderRadius: 2,width: DEVICE_WIDTH*0.8-20, height: DEVICE_HEIGHT*0.15}}
                                   multiline={true}
@@ -548,27 +549,27 @@ class FLAutocallDetail extends React.Component {
                                         productToSend['department'] = 'FIN';
                                         productToSend['nominal'] = Number(this.state.nominal);
                                         if (productToSend['cf_cpg_choice'] === "Placement Privé") {
-                                          productToSend['cf_step_pp'] = "PPDCC";
+                                          productToSend['cf_step_pp'] = "PPDVB";
                                         } else {
-                                          productToSend['cf_step_ape'] = "APEESRP";
+                                          productToSend['cf_step_ape'] = "APEDVB";
                                         }
                                     
                                         //productToSend['UF'] = 0.03;
                                         //productToSend['UFAsso'] =0.001;
-                                        console.log(productToSend);
+                                        //console.log(productToSend);
                                         ssCreateStructuredProduct(this.props.firebase, productToSend)
                                         .then((data) => {
                                           //console.log("USER CREE AVEC SUCCES DANS ZOHO");
                                           
                                           console.log("SUCCES CREATION TICKET");
-                                          console.log(data.data);
+                                          //console.log(data.data);
                                           this.props.addTicket(data.data);
                                           console.log("TICKET AJOUTE");
-                                          this.setState({ isLoading : true , showModalDescription : false}, () => this.props.navigation.navigate('Tickets'));
+                                          this.setState({ isLoading : false , showModalDescription : false}, () => this.props.navigation.navigate('Tickets'));
                                         })
                                         .catch(error => {
                                           console.log("ERREUR CREATION TICKET: " + error);
-                                          this.setState({ isLoading : true , showModalDescription : false}, () => alert('ERREUR CREATION DE TICKET', '' + error));
+                                          this.setState({ isLoading : false , showModalDescription : false}, () => alert('ERREUR CREATION DE TICKET', '' + error));
                                           
                                         }) 
                                 
@@ -587,69 +588,73 @@ class FLAutocallDetail extends React.Component {
   render() { 
 
       return(
-            <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : 1}}> 
+            <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.1 : 1}}> 
               {this._renderModal()}
-              <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'white'}}>
-                <View style={{width : 0.6*DEVICE_WIDTH,  justifyContent: 'center'}}>
-                    <TextInput 
-                            style={{    
-                                      display: 'flex',
-                                      backgroundColor: 'white',
-                                      height : 40,
-                                      fontSize: 28,
-                                      color: setColor('light'),
-                                      borderColor : setColor(''),
-                                      borderWidth: 1,
-                                      borderRadius: 4,
-                                      padding: 5,
-                                      //textAlign: this.state.nominal === 0 ? 'left' : 'right',
-                                      textAlign: 'right',
-                                    }}
-                            placeholder={this.autocall.getCurrency()}
-                            placeholderTextColor={'lightgray'}
-                            underlineColorAndroid={'#fff'}
-                            autoCorrect={false}
-                            keyboardType={'numeric'}
-                            returnKeyType={'done'}
-                            onBlur={() => {
-                              console.log("STATE NOMINAL : " + this.state.nominal +  "-  AUTOCALL NOMINAL : " + this.autocall.getNominal());
-                            
-                              this.setState( { finalNominal : this.state.nominal});
-                            }}
-                            onFocus={() => {
-                              
-                            }}
-                            //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
-                            value={this.state.nominal === 0 ? '' : currencyFormatDE(Number(this.state.nominal),0)}
-                            ref={(inputNominal) => {
-                              this.inputNominal = inputNominal;
-                            }}
-                            onChangeText={e => {
-                              //console.log(Number(e));
-                              this.setState({ nominal : e === '' ? 0 : Numeral(e).value()  });
-                              ;
-                            }}
-                    />
+              {this.autocall.getFinalNominal() === -1 ?
+                  <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'white'}}>
+                      <View style={{width : 0.6*DEVICE_WIDTH,  justifyContent: 'center'}}>
+                        <TextInput 
+                                style={{    
+                                          display: 'flex',
+                                          backgroundColor: 'white',
+                                          height : 40,
+                                          fontSize: 28,
+                                          color: setColor('light'),
+                                          borderColor : setColor(''),
+                                          borderWidth: 1,
+                                          borderRadius: 4,
+                                          padding: 5,
+                                          //textAlign: this.state.nominal === 0 ? 'left' : 'right',
+                                          textAlign: 'right',
+                                        }}
+                                placeholder={this.autocall.getCurrency()}
+                                placeholderTextColor={'lightgray'}
+                                underlineColorAndroid={'#fff'}
+                                autoCorrect={false}
+                                keyboardType={'numeric'}
+                                returnKeyType={'done'}
+                                onBlur={() => {
+                                  console.log("STATE NOMINAL : " + this.state.nominal +  "-  AUTOCALL NOMINAL : " + this.autocall.getNominal());
+                                
+                                  this.setState( { finalNominal : this.state.nominal});
+                                }}
+                                onFocus={() => {
+                                  
+                                }}
+                                //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                value={this.state.nominal === 0 ? '' : currencyFormatDE(Number(this.state.nominal),0)}
+                                ref={(inputNominal) => {
+                                  this.inputNominal = inputNominal;
+                                }}
+                                onChangeText={e => {
+                                  //console.log(Number(e));
+                                  this.setState({ nominal : e === '' ? 0 : Numeral(e).value()  });
+                                  ;
+                                }}
+                        />
+                      </View>
+                      <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 80, width: 80, borderColor: setColor('turquoise'), borderRadius: 40, marginLeft : 10, padding : 10, backgroundColor: setColor('turquoise')}}
+                                      onPress={() => {
+                                        if(this.state.nominal === 0) {
+                                          alert("Renseigner un nominal avant de demander une cotation");
+                                          return;
+                                        }
+                                        this.setState({ showModalDescription: true });
+                                      }}  
+                      >
+                          <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
+                              <Image style={{width: 50, height: 50}} source={logo_white} />
+                          </View>
+                          <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
+                            <Text style={setFont('400', 12, 'white', 'Regular')}>{String('traiter').toUpperCase()}</Text>
+                          </View>
+                      </TouchableOpacity>
+
+                  </KeyboardAvoidingView>
+                : <View style={{position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : DEVICE_WIDTH*0.025, zIndex: 10, backgroundColor: setColor('turquoise'), width : DEVICE_WIDTH*0.95, borderRadius: 5}}>
+                      <Text style={[setFont('400', 24, 'white', 'Regular'), {textAlign: 'center'}]}>{currencyFormatDE(this.autocall.getFinalNominal())} {this.autocall.getCurrency()}</Text>
                   </View>
-                  <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 80, width: 80, borderColor: setColor('turquoise'), borderRadius: 40, marginLeft : 10, padding : 10, backgroundColor: setColor('turquoise')}}
-                                  onPress={() => {
-                                    if(this.state.nominal === 0) {
-                                      alert("Renseigner un nominal avant de demander une cotation");
-                                      return;
-                                    }
-                                    this.setState({ showModalDescription: true });
-                                  }}  
-                  >
-                      <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
-                          <Image style={{width: 50, height: 50}} source={logo_white} />
-                      </View>
-                      <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={setFont('400', 12, 'white', 'Regular')}>{String('traiter').toUpperCase()}</Text>
-                      </View>
-                  </TouchableOpacity>
-
-              </KeyboardAvoidingView>
-
+              }                        
               <View style={{height: 140 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: setColor(''), paddingTop: isAndroid() ?  0 : STATUSBAR_HEIGHT}}>
                   <TouchableOpacity style={{flexDirection : 'row', borderWidth: 0, padding : 5}}
                                     onPress={() => this.props.navigation.goBack()}
@@ -690,7 +695,7 @@ class FLAutocallDetail extends React.Component {
                             //backgroundColor: 'pink'
                           }}
               >
-                     <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} />
+                     <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={this.autocall.isEditableProduct()} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} />
                      <ScrollView style={{marginTop: 5, width: 0.9*DEVICE_WIDTH}}>
                         <Accordion
                             sections={SECTIONS}

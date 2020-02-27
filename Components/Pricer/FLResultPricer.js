@@ -97,14 +97,14 @@ class FLResultPricer extends React.PureComponent {
       return (
 
         <View style={[globalStyle.bgColor, {width: DEVICE_WIDTH, height: DEVICE_HEIGHT}]}> 
-             <TouchableOpacity style={{height: 25 + STATUSBAR_HEIGHT , paddingLeft : 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, paddingBottom : 5, backgroundColor: 'white'}}
+             <TouchableOpacity style={{height: 30 + STATUSBAR_HEIGHT , paddingLeft : 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, backgroundColor: 'white'}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
                   
                       <View style={{justifyContent: 'center', alignItems: 'center'}}>
                            <Ionicons name={'ios-arrow-back'}  size={25} style={{color: setColor('')}}/>
                       </View>
-                      <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
+                      <View style={{justifyContent: 'center', alignItems: 'center', paddingLeft : 5}}>
                            <Text style={setFont('300', 16, setColor(''), 'Regular')}>Retour</Text>
                       </View>
                       <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>

@@ -176,7 +176,7 @@ _renderHeaderMediumTemplate() {
   
   return (
 
-                <View style={{flexDirection : 'row',paddingLeft : 20,  backgroundColor: 'white', borderTopLeftRadius: 10,  borderBottomWidth :  0}}>                                                    
+                <View style={{flexDirection : 'row',paddingLeft : 20,  backgroundColor: 'white', borderTopLeftRadius: 10,  borderTopRightRadius: 10,borderBottomWidth :  0}}>                                                    
                         <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
                                 <Text style={setFont('400', 16, setColor(''), 'Regular')}>
                                     {this.autocall.getProductTile()} 
@@ -185,7 +185,7 @@ _renderHeaderMediumTemplate() {
                                     {this.autocall.getFullUnderlyingName()} 
                                 </Text>
                         </View>
-                        <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
+                        <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10, borderTopRightRadius: 10}}>
                                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
                                       <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
                                           { Numeral(this.autocall.getCouponTitle()).format('0.00%')}
@@ -512,7 +512,7 @@ render () {
                                   :
                                   <View style={{paddingTop : 10, justifyContent: 'center', alignItems: 'center'}}>
                                       <Text style={setFont('500', 12, 'black', 'Bold')}>
-                                        Plus que {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days')} jours
+                                        Plus que {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days')} jour{Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') !== 1 ? 's' : ''}
                                       </Text>
                                   </View>   
                                 }                            

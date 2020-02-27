@@ -8,10 +8,27 @@ export class CProduct extends CObject {
       super(product);
       this.product = this.object['data'];
 
-
+      this.finalNominal = -1;
+      this.isEditable = true;
     }
     
  
+    setFinalNominal(nominal) {
+      this.finalNominal = nominal;
+    }
+
+    getFinalNominal() {
+      return this.finalNominal;
+    }
+
+    setEditable(editable) {
+      this.isEditable = editable;
+    }
+
+    isEditableProduct() {
+      return this.isEditable;
+    }
+
     updateProduct(product) {
       this._constructorProduct(product);
       this.product = this.object['data'];

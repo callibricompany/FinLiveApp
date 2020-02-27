@@ -3,13 +3,20 @@ import React from "react";
 import AuthUserContext from "./context";
 import { withFirebase } from "../Database";
 import { CWorkflowTicket } from '../Classes/Tickets/CWorkflowTicket';
-
+import * as Network from 'expo-network';
+import  Constants  from "expo-constants";
+import * as Device from 'expo-device';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import { getAPIIP } from '../API/APINetwork';
 import {
   getUserAllInfoAPI,
   setFavoriteAPI,
-  getUserFavorites
+  getUserFavorites,
+  getTicket
 } from "../API/APIAWS";
 import { CObject } from "../Classes/CObject";
+import { withNotification } from './NotificationProvider'; 
 
 const withAuthentication = Component => {
   class WithAuthentication extends React.Component {
@@ -17,7 +24,15 @@ const withAuthentication = Component => {
       super(props);
 
       this.state = {
+        //utilisateur
         authUser: null,
+        //device
+        device : '',
+
+        //notifications recues
+        notification: {},
+        tatayoyo : '',
+
 
         //tickets
         tickets: [],
@@ -55,30 +70,131 @@ const withAuthentication = Component => {
       };
     }
 
-    componentDidMount() {
+   async componentDidMount() {
       console.log("didMount Authentication lancement");
 
-      this.listener = this.props.firebase.onAuthUserListener(
-        authUser => {
-          console.log(
-            "didMount Authentication : " +
-              authUser.firstName +
-              " " +
-              authUser.name +
-              " (" +
-              authUser.company +
-              " / " +
-              authUser.organization +
-              ")"
+      try {
+          this.listener =  await this.props.firebase.onAuthUserListener(
+            authUser => {
+            
+              console.log(
+                "didMount Authentication : " +
+                  authUser.firstName +
+                  " " +
+                  authUser.name +
+                  " (" +
+                  authUser.company +
+                  " / " +
+                  authUser.organization +
+                  ")"
+              );
+            
+              this.setState({ authUser });
+
+
+              
+              
+              // Handle notifications that are received or selected while the app
+              // is open. If the app was closed and then opened by tapping the
+              // notification (rather than just tapping the app icon to open it),
+              // this function will fire on the next tick after the app starts
+              // with the notification data.
+              this._notificationSubscription = Notifications.addListener(this._handleNotification);
+              
+            },
+            () => {
+              console.log("didMount Authentication KO");
+              this.setState({ authUser: "" });
+              //this.listener();
+            }
           );
-          this.setState({ authUser });
+      } 
+      catch(error) {
+        console.log("ERREUR RECUP DATABASE INFO USER : ");
+        console.log(error);
+      }
+
+    }
+
+
+
+    //gestion de la reception des notifications
+    _handleNotification = notification => {
+          // do whatever you want to do with the notification
+          console.log("Notification recu : "+notification.origin);
+          //console.log(notification.remote);
+
+          //retourne un ticket donné
+          getTicket(this.props.firebase, notification.data.idTicket)
+          .then((ticket) => {
+                  console.log("ticket retrouvé");
+                  //console.log(notification.data);
+                  //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
+                    if (notification.origin == 'received') {
+                      
+                      this.props.setNotification(notification.data, ticket);
+                    } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
+
+                      this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
+                        ticket: new CWorkflowTicket(ticket),
+                        //ticketType: TICKET_TYPE.PSCREATION
+                      })
+                    }
+                  //this.setState({ notification : notification });
+                  //this.setState({ tatayoyo : notification.data });
+          })
+          .catch((error) => {
+            console.log(error);
+            alert("Impossible de récupérer les changements du ticket " + notification.data.idTicket);
+          });
+          //this.setState({ notification: notification });
+          let localnotificationId = notification.notificationId;
+          /*setTimeout(function () {
+            Notifications.dismissNotificationAsync(localnotificationId);
+          }, 10000)*/
+          //console.log(Object.keys(notification));
+    };
+
+
+
+    //enregistrement du device pour notifications
+    async  _recordDeviceForNoticiation() {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      // only asks if permissions have not already been determined, because
+      // iOS won't necessarily prompt the user a second time.
+      // On Android, permissions are granted on app installation, so
+      // `askAsync` will never prompt the user
+    
+      // Stop here if the user did not grant permissions
+      if (status !== 'granted') {
+        //alert('No notification permissions!');
+        return;
+      }
+    
+      // Get the token that identifies this device
+      let token = await Notifications.getExpoPushTokenAsync();
+
+      return token;
+      //console.log("TOKEN : "+ token);
+      //let device = this.state.device;
+      //device['TOKEN'] = token;
+      //this.setState( { device });
+      // POST the token to your backend server from where you can retrieve it to send push notifications.
+      /*return fetch(PUSH_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        () => {
-          console.log("didMount Authentication KO");
-          this.setState({ authUser: "" });
-          //this.listener();
-        }
-      );
+        body: JSON.stringify({
+          token: {
+            value: token,
+          },
+          user: {
+            username: 'Brent',
+          },
+        }),
+      });*/
     }
 
     //enregistre les filtres
@@ -89,44 +205,116 @@ const withAuthentication = Component => {
 
     //chargement des donnees de départ deopuis le serveur
     async getUserAllInfo() {
+      let ip = ''; //await Network.getIpAddressAsync();
+      try {
+         ip = await getAPIIP();
+      } catch(error) {
+        console.log("ERROR GET IP ADDRESS : " + error);
+      };
+
+      //let mac = await Network.getMacAddressAsync();
+      let mac='';
+      let token =  await this._recordDeviceForNoticiation();
+      let type = await Device.getDeviceTypeAsync();
+      //on recupere toutes les donnes sur le device
+      let d = {};
+      d['expoVersion'] = Constants.expoVersion;
+      d['installationId'] =Constants.installationId;
+      d['deviceName'] =Constants.deviceName;
+      d['isDevice'] =Constants.isDevice;
+      d['deviceId'] =Constants.deviceId;
+      d['nativeAppVersion'] =Constants.nativeAppVersion;
+      d['nativeBuildVersion'] =Constants.nativeBuildVersion;
+      d['platform'] =Constants.platform;
+      d['brand'] =Device.brand;
+      d['manufacturer'] =Device.manufacturer
+      d['modelName'] =Device.modelName
+      d['modelId'] =Device.modelId
+      d['designName'] =Device.designName
+      d['productName'] =Device.productName
+      d['totalMemory'] =Device.totalMemory
+      d['supportedCpuArchitectures'] =Device.supportedCpuArchitectures
+      d['osName'] =Device.osName
+      d['osVersion'] =Device.osVersion
+      d['osBuildId'] =Device.osBuildId
+      d['osInternalBuildId'] =Device.osInternalBuildId
+      d['osBuildFingerprint'] =Device.osBuildFingerprint
+      d['platformApiLevel'] =Device.platformApiLevel
+      d['IP'] = ip;
+      d['MAC'] = mac;
+      d['TYPE'] = Device.DeviceType[type];
+      if (Constants.isDevice) {
+        d['TOKEN'] = token;
+      }
+      //this.setState({ device : d}, () => console.log(this.state.device));
+      this.setState({ device : d });
+      /*Network.getIpAddressAsync().then((ip) => {
+        d['IP'] = ip;
+        Network.getMacAddressAsync().then((mac) => {
+          d['MAC'] = mac;
+          Device.getDeviceTypeAsync().then((type) => {
+            d['TYPE'] = Device.DeviceType[type];
+            if (Constants.isDevice) {
+                console.log("AVANT TOKEN");
+                
+                console.log("APRES TOKEN : "+ token);
+                d['TOKEN'] = token;
+            }
+            this.setState({ device : d}, () => console.log(this.state.device));
+          })
+          
+        });
+      });*/
+      //console.log("DEVICE : " );
+      //console.log(this.state.device);
       return new Promise((resolve, reject) => {
         this.props.firebase
           .doGetIdToken()
           .then(token => {
-            getUserAllInfoAPI(token)
+            //console.log("TOKEn : "+ token);
+            getUserAllInfoAPI(token, d)
               .then(userDatas => {
-                //console.log("reception : " + JSON.stringify(userDatas.categories));
+                //console.log(userDatas.userTickets.slice(0,1));
+                //console.log(userDatas.userTickets.slice(0,1));
                 //console.log("Passage de withAuth");
                 this.setState({
                   featured : userDatas.startPage.bestCoupon,
+                  //featured : [],
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
                   favorites: userDatas.favorites,
-                  //tickets: userDatas.userTickets.slice(0,1),
                   tickets: userDatas.userTickets,
+                  //tickets: userDatas.userTickets.slice(0,1),
+
                   apeTickets: userDatas.startPage.ape,
                   apeSRP : userDatas.startPage.srp,
+                  //apeSRP : [],
                   broadcasts : userDatas.startPage.campaign,
-
-                  workflow : userDatas.workflow,
-                  
+                  //broadcasts : [],
                 });
+
                 //passage du workflow au ticket
                 CWorkflowTicket.WORKFLOW = userDatas.workflow;
+                //console.log("Enregistrement user id : ");
                 CObject.UID = this.state.authUser.uid;
 
                 let toto = [
                   ...new Set(userDatas.userTickets.map(x => x.id))
                 ];
-                console.log(toto);
+
+             
+               
+                //console.log(toto);
+                //console.log(userDatas.categories);
                 //console.log(userDatas.workflow);
                 //console.log(userDatas.startPage.bestCoupon);
                 //userDatas.userTickets.forEach((t) => console.log(t.currentStep));
                 //console.log(userDatas.workflow.slice(0,1));
                 //console.log(this.state.authUser);
-                
+                //console.log(userDatas.startPage.campaign);
+                //console.log(userDatas.userTickets.slice(0,1))
                 //console.log(this.getAllUndelyings());
-               
+               //console.log("Nbre APE : " + userDatas.startPage.srp.length);
                 
                 resolve("ok");
               })
@@ -242,6 +430,7 @@ const withAuthentication = Component => {
       this.listener();
     }
 
+    //ajoute un ticket des qu'il est crée
     addTicket(ticket) {
       let t = this.state.tickets;
       t.unshift(ticket);
@@ -257,7 +446,7 @@ const withAuthentication = Component => {
     }
   }
 
-  return withFirebase(WithAuthentication);
+  return withNotification(withFirebase(WithAuthentication));
 };
 
 export const withUser = Component => props => (

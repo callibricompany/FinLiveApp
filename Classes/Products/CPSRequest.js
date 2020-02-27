@@ -287,6 +287,10 @@ export class CPSRequest extends CRequest {
       this.product[criteria].isUpdated = true;
     }
 
+    setTitle(criteria, title) {
+      this.product[criteria].title = title;
+    }
+
     _fillCriteria(criteria, value, valueLabel) {
       this.product[criteria].value = value;
       this.product[criteria].valueLabel = valueLabel;
@@ -514,6 +518,7 @@ export class CPSRequest extends CRequest {
       let criteria = {};
 
       this.product.underlying.isActivated ? criteria['underlying'] = this.product.underlying.value : null;
+      criteria['levelAutocall'] =   this.product.autocallLevel.value;
       criteria['freqAutocall'] =  this.product.freq.isActivated ? this.product.freq.value : "3M";
       criteria['noCallNbPeriod'] =  this.product.freq.isActivated ? this.product.nncp.value : 12;
 
@@ -586,6 +591,8 @@ export class CPSRequest extends CRequest {
       //memoire phoenix
       //criteria['isMemory'] =  this.product.type.value === 'phoenix'  ? this.product.isMemory.value : false;
       criteria['isMemory'] =  this.product.isMemory.value;
+
+      //criteria['nominal'] = this.product.nominal.value;
       
       return criteria;
     }

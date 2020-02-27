@@ -1,20 +1,20 @@
 Arguments: 
-  /usr/local/Cellar/node/11.6.0/bin/node /usr/local/Cellar/yarn/1.12.3/libexec/bin/yarn.js add expo@^36.0.0
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.22.0/libexec/bin/yarn.js add expo-network@~1.0.0
 
 PATH: 
-  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 Yarn version: 
-  1.12.3
+  1.22.0
 
 Node version: 
-  13.2.0
+  10.15.3
 
 Platform: 
   darwin x64
 
 Trace: 
-  Error: EACCES: permission denied, mkdir '/Users/Vincent Sudre/Documents/Travail/Callibri/dev/FinLiveApp/node_modules/@babel/plugin-proposal-decorators/node_modules/@babel/helper-plugin-utils'
+  Error: EACCES: permission denied, mkdir '/Users/vincent/Documents/dev/FinLiveApp/node_modules/@react-native-community/cli/node_modules/babel-preset-fbjs'
 
 npm manifest: 
   {
@@ -36,6 +36,7 @@ npm manifest:
       "data-forge": "^1.7.3",
       "everpolate": "0.0.3",
       "expo": "^35.0.0",
+      "expo-device": "^2.0.0",
       "firebase": "^5.11.1",
       "form-data": "^2.5.1",
       "fs": "0.0.1-security",
@@ -53,6 +54,7 @@ npm manifest:
       "react-native-collapsible": "^1.5.1",
       "react-native-foldview": "^1.2.1",
       "react-native-gesture-handler": "^1.3.0",
+      "react-native-gifted-chat": "^0.13.0",
       "react-native-keyboard-aware-scroll-view": "^0.8.0",
       "react-native-masked-text": "^1.13.0",
       "react-native-material-dropdown": "^0.11.1",

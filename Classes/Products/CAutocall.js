@@ -588,6 +588,11 @@ export class CAutocall extends CProduct {
     return this.product.barrierPhoenix !== this.product.levelAutocall;
   }
 
+  //verifie si c'est c'est une reverse
+  isReverse() {
+    return this.product.levelAutocall === 99.99;
+  }
+
   //verifie si c'est c'est un phoenix mémoire
   isMemory() {
     let res = false;

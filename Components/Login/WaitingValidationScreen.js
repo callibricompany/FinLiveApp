@@ -15,7 +15,7 @@ import {
 import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import { sendEmail } from '../../Utils/sendEmail'
-import splashImage from '../../assets/splash_transparent.png';
+import splashImage from '../../assets/LogoWithoutText.png';
 import Dimensions from 'Dimensions';
 
 
@@ -69,7 +69,7 @@ class WaitingValidationScreen extends Component {
                     style={{backgroundColor : '#85B3D3', width: 0.9*DEVICE_WIDTH, justifyContent:'center', alignItems: 'center'}}
                     onPress={() => {
                         sendEmail(
-                          'admin@finlive.eu',
+                          'pierre@finlive.eu;vincent@finlive.eu',
                           'Activation de compte',
                           'Bonjour,\nSuite à mon incription, je souhaite activer mon compte le plus rapidement possible.\nMerci de faire le nécessaire.\n\nCordialement,\n'
                         ).then(() => {

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "2020024- FinLive",
+    "name": "20200226 - FinLive",
     "slug": "FinLiveApp",
     "privacy": "public",
     "sdkVersion": "35.0.0",
@@ -10,7 +10,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/LogoSquare.png",
     "splash": {
       "image": "./assets/LogoWithText.png",
       "resizeMode": "contain",
@@ -38,6 +38,10 @@
         "tsx",
         "svg"
       ]
+    },
+    "notification": {
+      "icon": "./assets/LogoSquare96.png",
+      "color": "#deff00"
     }
   }
 }

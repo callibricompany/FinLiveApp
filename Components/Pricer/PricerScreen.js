@@ -30,8 +30,8 @@ import 'numeral/locales/fr'
 import { VictoryBar, VictoryChart, VictoryTheme, VictoryGroup, VictoryStack } from 'victory-native'
 
 
-import { UserContext } from '../../Session/UserProvider';
-import FLSearchInput from '../commons/FLSearchInput';
+import { withNotification } from '../../Session/NotificationProvider';
+
 
 import { currencyFormatDE } from '../../Utils';
 
@@ -97,6 +97,9 @@ class PricerScreen extends React.Component {
 
       hideCC : false,
 
+      //recherche aussi les produits SRP
+      searchSRP : false,
+
       nominal : 1000000,
       toto : true,
     }
@@ -117,6 +120,8 @@ class PricerScreen extends React.Component {
 
     //this.parameterProductUpdated(this.product);
     this.bestProducts = [];
+    
+
   }
 
 
@@ -323,7 +328,7 @@ class PricerScreen extends React.Component {
 
 //choix du produit
 _renderProductTile() {
-  let dataProductName = ['Athéna', 'Phoenix'];
+  let dataProductName = ['Athéna', 'Phoenix','Réverse convertible'];
   return (
             <View style={{
                         height: (DEVICE_WIDTH*0.925-20)/3, 
@@ -361,6 +366,7 @@ _renderProductTile() {
                                     dropdownTextStyle={setFont('500', 16, setColor(''), 'Regular')}
                                     dropdownTextHighlightStyle={setFont('500', 16, setColor(''), 'Bold')}
                                     onSelect={(index, value) => {
+                                      this.request.setTitle('freq', String("fréquence de rappel").toUpperCase());
                                       switch (Number(index))  {
                                          case 0 :   //autocall
                                             this._updateValue('type', 'athena', value);
@@ -380,6 +386,19 @@ _renderProductTile() {
                                             this.request.setActivation('airbagLevel', false);
                                             this.request.setActivation('degressiveStep', false);
                                             this.request.setActivation('barrierPhoenix', true);
+                                            break;
+                                          case 2 :
+                                            this._updateValue('nncp', 12, '1 an');
+                                            this._updateValue('type', 'reverse', value);
+                                            this._updateValue('isMemory', false, "non mémoire");
+                                            this._updateValue('autocallLevel', 99.99, 'pas de rappel');
+                                            this._updateValue('degressiveStep', 0, 'sans stepdown');
+                                            this._updateValue('airbagLevel', 'NA', 'Non airbag');
+                                            this._updateValue('freq', '1M', "1 mois");
+                                            this.request.setActivation('barrierPhoenix', false);
+                                            this.request.setActivation('airbagLevel', false);
+                                            this.request.setActivation('degressiveStep', false);
+                                            this.request.setTitle('freq', String("fréquence").toUpperCase());
                                             break;
                                       }
                                       //this.setState({ toto : !this.state.toto});
@@ -457,7 +476,7 @@ _renderGenericTile=(criteria) => {
                     <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                         {this.request.isActivated(criteria) ? 
                             <Text style={[setFont('300', 14, this.request.isActivated(criteria) ? setColor('') : setColor('light')), {textAlign: 'left'}]}>
-                                    { this.request.getValueLabel(criteria) }
+                                    { this.request.getValueLabel(criteria) } 
                             </Text>
                             :
                             <View style={{backgroundColor : 'white', padding: 10, borderRadius: 30, marginBottom: 3}}>
@@ -504,8 +523,8 @@ _renderPhoenixTile=() => {
                         borderRadius : 4
                         }}
             >
-                <View style={{flexDirection: 'row', height: 2*(DEVICE_WIDTH*0.925)/3/3, borderWidth : 0}}>
-                    <TouchableOpacity style={{flexDirection: 'column', width :(DEVICE_WIDTH*0.925-20)/3 +5, borderWidth: 0,  paddingTop: 2, justifyContent: 'space-between', alignItems: 'center'}}
+                <View style={{flexDirection: 'row', height: 2*(DEVICE_WIDTH*0.925-20)/3/3, borderWidth : 0, padding: 2, flexGrow: 1}}>
+                    <TouchableOpacity style={{flexDirection: 'column', width :(DEVICE_WIDTH*0.925-20)/3 +5, borderWidth: 0,  justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
                                         if (this.request.getValue('type') === 'phoenix'){
                                             this.currentParameter = 'barrierPhoenix';
@@ -995,12 +1014,12 @@ _renderTiles() {
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
           {this._renderGenericTile('barrierPDI')}
-          {renderPhoenix}
-        
+          {this.request.getValue('type') === 'reverse' ? this._renderGenericTile('maturity') : renderPhoenix}
+          {this.request.getValue('type') === 'reverse' ? this._renderGenericTile('freq') : null}
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-           {this._renderFreqTile()}
-           {this._renderGenericTile('maturity')}
+           {this.request.getValue('type') !== 'reverse' ? this._renderFreqTile() : null}
+           {this.request.getValue('type') !== 'reverse' ? this._renderGenericTile('maturity') : null}
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
            {this.request.getValue('type') === 'athena' ? this._renderAirbagTile() : null}        
@@ -1076,7 +1095,7 @@ render() {
     }
 
     
-
+    let dataOptions = ['SRP', 'Shadow'];
     return (
       <View style={{flex:1, height: DEVICE_HEIGHT  }}> 
         {/*  <View style={{flexDirection: 'row', height: 40 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: 'white', paddingTop: isAndroid() ? 0 : STATUSBAR_HEIGHT, justifyContent: 'space-between', alignItems: 'center'}}>
@@ -1093,7 +1112,7 @@ render() {
 
 
    
-            <View style={{width : 0.9*DEVICE_WIDTH, marginTop : 10, justifyContent: 'center', marginLeft : 0.05*DEVICE_WIDTH + 5, alignItems: 'stretch', flexDirection: 'row'}}>
+            <View style={{width : 0.9*DEVICE_WIDTH, marginTop : 10, justifyContent: 'space-between', marginLeft : 0.05*DEVICE_WIDTH + 5, alignItems: 'stretch', flexDirection: 'row'}}>
                 <View style={{flex: 0.9}}>
                       <TextInput 
                               style={{    
@@ -1105,9 +1124,10 @@ render() {
                                         borderColor : setColor(''),
                                         borderWidth: 1,
                                         borderRadius: 4,
-                                        padding: 5,
+                                        paddingRight: 5,
                                         //textAlign: this.state.nominal === 0 ? 'left' : 'right',
                                         textAlign: 'right',
+                                        textAlignVertical: 'center',
                                       }}
                               placeholder={"EUR"}
                               placeholderTextColor={'lightgray'}
@@ -1116,13 +1136,17 @@ render() {
                               keyboardType={'numeric'}
                               returnKeyType={'done'}
                               onFocus={() => {
+                                this.setState({ nominal : ''});
                                 
                               }}
                               onBlur={() => {
+                                let nom = this.state.nominal;
                                 if (this.state.nominal === '' || this.state.nominal < 10000) {
+                                  nom = 100000;
                                   alert("Vous ne pouvez évaluer un produit qu'avec un nominal minimum \nde 10 000 EUR");
                                   this.setState({ nominal : 10000 });
                                 }
+                                this._updateValue('nominal', nom, currencyFormatDE(nom));
                               }}
                               //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
                               value={this.state.nominal === 0 ? '' : currencyFormatDE(Number(this.state.nominal),0)}
@@ -1136,14 +1160,75 @@ render() {
                               }}
                       />
                   </View>
-                  <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', paddingLeft: 5, paddingRight: 5}}
-                                    onPress={() => {
-                                      let optimi = this.state.hideCC ? this.state.optimizer : 'CPN';
-                                      this.setState({ optimizer : optimi, hideCC : !this.state.hideCC });
+                  <ModalDropdown
+                                    //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                                    //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
+                                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                                    dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
+                                    onSelect={(index, value) => {
+                                      
                                     }}
+                                    adjustFrame={(f) => {
+                                      return {
+                                        width: DEVICE_WIDTH/2,
+                                        height: Math.min(DEVICE_HEIGHT/3, dataOptions.length * 40),
+                                        left : f.left,
+                                        right : f.right,
+                                        top: f.top,
+                                      }
+                                    }}
+                                    renderRow={(option, index, isSelected) => {
+                                      switch(option) {
+                                        case 'Shadow' :
+                                              return (
+                                                  <View style={{flexDirection : 'row', height: 40}}>
+                                                      <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                          <Text style={setFont('500', 16, setColor(''), 'Bold')}>Mode shadow</Text>
+                                                      </View>
+                                                      <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+                                                                        onPress={() => {
+                                                                          let optimi = this.state.hideCC ? this.state.optimizer : 'CPN';
+                                                                          this.setState({ optimizer : optimi, hideCC : !this.state.hideCC });
+                                                                        }}
+                                                      >
+                                                          <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={25} style={{color: setColor('')}}/> 
+                                                      </TouchableOpacity>
+                                                  </View>
+                                              );
+                                        case 'SRP' :
+                                              return (
+                                                  <View style={{flexDirection : 'row', height: 40}}>
+                                                      <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                          <Text style={setFont('500', 16, setColor(''), 'Bold')}>Inclure les APE</Text>
+                                                      </View>
+                                                      <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+                                                                        onPress={() => {
+                                                                            this.setState({ searchSRP : !this.state.searchSRP });
+                                                                        }}
+                                                      >
+                                                          <FontAwesome name={this.state.searchSRP ? "toggle-on" : "toggle-off"}  size={25} style={{color: setColor('')}}/> 
+                                                      </TouchableOpacity>
+                                                  </View>
+                                              );
+                                        default : 
+                                                return (
+                                                  <View style={{paddingLeft : 4, paddingRight : 4, height: 40, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                    <Text style={setFont('500', 16, 'gray', 'Regular')}>{option}</Text>
+                                                  </View>
+                                              );
+                                      }
+          
+                                    }}
+                                    //defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
+                                    options={dataOptions}
+                                    ref={component => this._dropdown['options'] = component}
+                                    disabled={false}
                   >
-                      <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={25} style={{color: setColor(''), transform: [{ rotate: '90deg'}]}}/> 
-                  </TouchableOpacity>
+                      <View style={{ borderWidth : 0, width : 0.1*DEVICE_WIDTH,  height: 40, justifyContent: 'center', alignItems: 'center'}}>
+                          <FontAwesome name={'navicon'}  size={25} style={{color: setColor('')}}/> 
+                      </View>
+                  </ModalDropdown>
+
               
 
             </View>
@@ -1212,7 +1297,8 @@ const condition = authUser => !!authUser;
 const composedPricerScreen = compose(
   withAuthorization(condition),
   withNavigation,
-  withUser
+  withUser,
+
 );
 
 //export default HomeScreen;

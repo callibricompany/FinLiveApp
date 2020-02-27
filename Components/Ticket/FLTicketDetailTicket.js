@@ -8,7 +8,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import FLTicketDetail  from '../commons/Ticket/FLTicketDetail';
 
-class FLTicketDetailHome extends React.Component {
+class FLTicketDetailTicket extends React.Component {
     
     constructor(props) {
       super(props);
@@ -32,7 +32,7 @@ class FLTicketDetailHome extends React.Component {
 
     render() {
       return (
-        <FLTicketDetail ticket={this.ticket} showModal={this.showModal} source={'Home'} />
+        <FLTicketDetail ticket={this.ticket} showModal={this.showModal} source={'Ticket'} />
       );
     }
 };
@@ -45,5 +45,5 @@ const composedFLTicketDetailHome = compose(
 );
 
 //export default HomeScreen;
-export default hoistStatics(composedFLTicketDetailHome)(FLTicketDetailHome);
+export default hoistStatics(composedFLTicketDetailHome)(FLTicketDetailTicket);
 

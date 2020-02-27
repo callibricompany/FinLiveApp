@@ -1,7 +1,7 @@
 import React from 'react'
 import { Input,Form, Item, Label } from 'native-base'
 
-import { withUserTest } from '../../Session/UserProvider'
+import { withNotification } from '../../Session/NotificationProvider'
 
 
 /*export default withUser(({ name, setName }) => (
@@ -25,7 +25,7 @@ constructor(props) {
             <Item floatingLabel>
                 <Label>Nom d'utilisateur</Label>
 
-                <Input autoCorrect={false} onChange={e => {this.props.setName(e.nativeEvent.text)}}/>
+                <Input autoCorrect={false} onChange={e => {this.props.setNotification(e.nativeEvent.text)}}/>
             </Item> 
         </Form>
             
@@ -33,7 +33,7 @@ constructor(props) {
  }
 }
 
-export default withUserTest(FLInput)
+export default withNotification(FLInput)
 
 //<Input autoCorrect={false} onChange={e => {this.props.setName(e.nativeEvent.text)}}/>
 //                <Input autoCorrect={false} onChange={e => {console.log(e.nativeEvent.text)}}/>

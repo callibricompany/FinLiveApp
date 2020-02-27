@@ -1,8 +1,9 @@
 
 import {
-  ImageBackground,
+  TouchableOpacity,
   KeyboardAvoidingView,
   AsyncStorage,
+  TouchableWithoutFeedback,
   View,
   ScrollView,
   SafeAreaView,
@@ -12,14 +13,15 @@ import {
   Platform,
   Alert,
   Text,
-  Image
+  Image,
+  Keyboard
 } from 'react-native';
 import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 import Dimensions from 'Dimensions';
-
-import splashImage from '../../assets/splash_transparent.png';
+import { setColor, setFont } from '../../Styles/globalStyle';
+import splashImage from '../../assets/LogoWithoutText.png';
 
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
@@ -249,7 +251,7 @@ class RegisterFormBase extends Component {
       return (
         <InputGroup>
         <Item style={{width: 0.9*DEVICE_WIDTH}} >
-        <Icon name="ios-people"  style={{color : 'black'}}/>
+        <Icon name="ios-people"  style={{color : setColor('')}}/>
         <Input
         onChangeText={e => {this.typingInputText('organization',e)}}
         clearButtonMode="always"
@@ -307,7 +309,7 @@ class RegisterFormBase extends Component {
   //button premettant d'eefacer l'input
   renderEraseOnButton = (whichInput) => {
     return(
-            <Icon name="close-circle" style={{color : 'black'}} onPress={() =>this.eraseInputText(whichInput)} />
+            <Icon name="close-circle" style={{color : setColor('')}} onPress={() =>this.eraseInputText(whichInput)} />
          );
     }
   render() {
@@ -320,6 +322,7 @@ class RegisterFormBase extends Component {
     <View style={styles.style_activityIndicator}>
     <ActivityIndicator size="large"/>
     </View> :
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{flexDirection :'column', flex: 1}}>
 
             
@@ -329,19 +332,20 @@ class RegisterFormBase extends Component {
            
             
                  
-              <Image style={styles.picture} source={splashImage} />
+            <Image style={styles.picture}  source={splashImage} />
                   
+          
+             
+            <KeyboardAvoidingView behavior={'position'} style={{ flex: 1 }}>  
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
                <Text style={styles.text2}>Créer votre compte</Text>
             </View>
-             
-            <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
             <ScrollView keyboardShouldPersistTaps="always">
                 <View style={[styles.container, {paddingTop:5}]}>
                 
                   <InputGroup >
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                        <Icon name="ios-person" style={{color : 'black'}}/>
+                        <Icon name="ios-person" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('name',e)}}
                        // value={this.state.name}
@@ -361,7 +365,7 @@ class RegisterFormBase extends Component {
                     </InputGroup>
                     <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                       <Icon name="ios-person" style={{color : 'black'}}/>
+                       <Icon name="ios-person" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('firstName',e)}}
                        // value={this.state.name}
@@ -384,7 +388,7 @@ class RegisterFormBase extends Component {
                   
                   <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                    <Icon name="ios-phone-portrait" style={{color : 'black'}}/>
+                    <Icon name="ios-phone-portrait" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('phone',e)}}
                         value={this.state.phone}
@@ -407,7 +411,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>  
                   <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}}>
-                    <Icon name="md-star-outline" style={{color : 'black'}}/>
+                    <Icon name="md-star-outline" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('company',e)}}
                         value={this.state.company}
@@ -433,7 +437,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>              
                   <InputGroup>
                     <Item style={{width: 0.9*DEVICE_WIDTH}} >
-                        <Icon name="ios-mail" style={{color : 'black'}}/>
+                        <Icon name="ios-mail" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('email',e)}}
                         value={this.state.email.toLowerCase()}
@@ -454,7 +458,7 @@ class RegisterFormBase extends Component {
                 
                   <InputGroup>
                   <Item style={{width: 0.9*DEVICE_WIDTH}} >
-                        <Icon name="ios-unlock"  style={{color : 'black'}}/>
+                        <Icon name="ios-unlock"  style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('password',e)}}
                        // value={this.state.password}
@@ -474,7 +478,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>
                   <InputGroup>
                   <Item style={{width: 0.9*DEVICE_WIDTH}} >
-                        <Icon name="ios-unlock"  style={{color : 'black'}}/>
+                        <Icon name="ios-unlock"  style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('passwordVerif',e)}}
                         value={this.state.passwordVerif}
@@ -496,24 +500,26 @@ class RegisterFormBase extends Component {
                   </InputGroup> 
                      <InputGroup>
                      <ListItem style={{width: 0.9*DEVICE_WIDTH}} >
-                        <Text style={{ color: 'black',}}>CGPI Indépendant  </Text>
+                        <Text style={{ color: setColor(''),}}>CGPI Indépendant  </Text>
                         <CheckBox 
                             checked={this.state.isIndependant} 
-                            color="black"
-                           onPress={this.checkIfIsIndependant.bind(this)}
+                            color={setColor('')}
+                            onPress={this.checkIfIsIndependant.bind(this)}
                             />
                         </ListItem>
                       
               
                     </InputGroup>
                     {this.renderIsIndepenadant()}
-                    <View style={styles.container_buttons}>
-                      <ButtonSubmit 
-                          onPress={this.register.bind(this)} 
-                          onCheckEmail={this.checkEmailValidity.bind(this)}
-                          text={'CREER SON COMPTE'}
-                        />
-                    </View>
+
+                      <TouchableOpacity  
+                            style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}
+                            onPress={this.register.bind(this)}
+                      >
+                              <Text style={[setFont('600', 22, 'white', 'Bold'), {padding: 5}]}>CREER SON COMPTE</Text>
+                      </TouchableOpacity>
+
+
                
                 <View style={styles.container_buttons}>
                     
@@ -521,7 +527,7 @@ class RegisterFormBase extends Component {
                         style={{ justifyContent:'center', marginBottom:50, width : DEVICE_WIDTH/2}}
                         onPress={this.backToLogin.bind(this)}
                         >
-                        <Icon name="md-arrow-dropleft" style={{color : "black"}}/>                      
+                        <Icon name="md-arrow-dropleft" style={{color : setColor('')}}/>                      
                             <Text style={styles.text_button}>Retour Connexion</Text>
                     </Button>
                     
@@ -533,26 +539,16 @@ class RegisterFormBase extends Component {
             </KeyboardAvoidingView>
            
         </View>
-      
+        </TouchableWithoutFeedback>
         ;
 
         //console.log('statusBarHeight: ', StatusBar.currentHeight);
         return (
             <SafeAreaView style={{flex: 1,paddingTop : STATUSBAR_HEIGHT}}>
-                   <StatusBar
-                        barStyle="dark-content"
-                        // dark-content, light-content and default
-                        hidden={false}
-                        //To hide statusBar
-                        backgroundColor="#00BCD4"
-                        //Background color of statusBar
-                        translucent={false}
-                        //allowing light, but not detailed shapes
-                        networkActivityIndicatorVisible={true}
-                      />
-            <View style={{flex: 1}}>
+
+  
                 {content}
-                </View>
+
             </SafeAreaView>
         );
   }
@@ -581,7 +577,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#F5FCFF',
     },
     text2: {
-        color: 'black',
+        color: setColor(''),
         backgroundColor: 'transparent',
         marginTop: 30,
         marginBottom: 30,
@@ -598,7 +594,7 @@ const styles = StyleSheet.create({
         },
 
     text_button: {
-            color: 'black',
+            color: setColor(''),
             backgroundColor: 'transparent',
          //   alignItems:'center',
           //  justifyContent:'center',
@@ -608,9 +604,11 @@ const styles = StyleSheet.create({
            //flex: 1,
            paddingTop: 30,
            paddingBottom: 10,
+           marginBottom: 40,
            // top: -95,
              width: 0.9*DEVICE_WIDTH,
             flexDirection: 'column',
+            
            
            // justifyContent: 'center',
            // alignItems: 'flex-start', 

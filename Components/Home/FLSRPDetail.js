@@ -493,7 +493,7 @@ class FLSRPDetail extends React.Component {
                                   :
                                   <View style={{paddingTop : 10, justifyContent: 'center', alignItems: 'center'}}>
                                       <Text style={setFont('500', 12, 'black', 'Bold')}>
-                                        Plus que {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days')} jours
+                                        Plus que {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days')} jour{Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') !== 1 ? 's' : ''}
                                       </Text>
                                   </View>   
                       } 

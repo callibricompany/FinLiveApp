@@ -3,18 +3,22 @@ import * as TEMPLATE_TYPE from '../constants/template';
 
 
 
+
 export class CObject { 
     constructor(object,  template = TEMPLATE_TYPE.PSLIST) {
-     
-        //!object ? this._constructorProduct(object,  template) : null;
+        //console.log("OBJECT CONSTRCUTIR : " + typeof object);
+        //object !== 'undefined' ? this._constructorProduct(object,  template) : null;
+
         this._constructorProduct(object,  template) ;
     }
 
-    _constructorProduct(object, template = TEMPLATE_TYPE.PSLIST) {
+    _constructorProduct(object, template) {
         this.object= {};
         //copie des datas au format correct
-        
+        //console.log(Object.keys(object));
+       
         if (!object.hasOwnProperty('toFavorites')) {
+
           //reconstruction de l'objet style envoie dans homepage
           this.object['category'] = object.category;
           this.object['code'] = template === TEMPLATE_TYPE.PSLIST ? object.underlying : object.id;

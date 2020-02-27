@@ -14,10 +14,19 @@ import { compose, hoistStatics } from 'recompose';
 
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
-import FLTicketTemplateAPE  from './FLTicketTemplateAPE';
-import FLTicketTemplatePP  from './FLTicketTemplatePP';
+import { CBroadcastTicket } from "../../Classes/Tickets/CBroadcastTicket";
+import { CTicket } from '../../Classes/Tickets/CTicket';
+import { CWorkflowTicket } from  "../../Classes/Tickets/CWorkflowTicket";
+
+import FLTemplatePP  from '../commons/Ticket/FLTemplatePP';
+import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
+
+import * as TEMPLATE_TYPE from '../../constants/template';
 
 import Dimensions from 'Dimensions';
+
+import Moment from 'moment';
+
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -38,6 +47,14 @@ class TicketScreen extends React.Component {
     //utiliser pour dispzarition en-tete
     const scrollAnim = new Animated.Value(0);
     const offsetAnim = new Animated.Value(0);
+
+    //liste de tous les tickets à afficher classé
+    //console.log(this.props.tickets.slice(1,2));
+    this.allTickets = [];
+    this.props.tickets.forEach((t) =>  t.type === "Produit structuré" ? this.allTickets.push(new CWorkflowTicket(t)) : null);
+    this.props.broadcasts.forEach((t) => this.allTickets.push(new CBroadcastTicket(t)));
+    this.allTickets.sort(CTicket.compareLastUpdate);
+    //this.allTickets.forEach((t) => console.log(t.getId() +" : " +Moment(t.getLastUpdateDate()).format('lll')));
 
     this.state = {
 
@@ -76,6 +93,8 @@ class TicketScreen extends React.Component {
       );
   }
 
+
+
   componentDidMount() {
 
     //StatusBarManager.getHeight(({height}) => console.log("HAUTEUR STATUS BAR : " + height));
@@ -90,9 +109,16 @@ class TicketScreen extends React.Component {
     this.state.offsetAnim.addListener(({ value }) => {
       this._offsetValue = value;
     });
+
+    this._navListener = this.props.navigation.addListener('didFocus', () => {
+      //StatusBar.setBarStyle('light-content');
+      //or
+      StatusBar.setBarStyle('dark-content')
+    });
   }
 
   componentWillUnmount() {
+    this._navListener.remove();
     this.state.scrollAnim.removeAllListeners();
     this.state.offsetAnim.removeAllListeners();
   }
@@ -118,28 +144,7 @@ class TicketScreen extends React.Component {
     }).start();*/
   };
 
-  _renderTicket = (item, index) => {
-    let type = item['currentStep'][0].codeOperation;
-    //let type = 'ape';
-    //console.log(item);
-    switch (type) {
-      case 'ape' : 
-        return <FLTicketTemplateAPE ticket={item} />
-      case 'pp' : 
-        return <FLTicketTemplatePP ticket={item} />
-      default :
-        return (
-            <View style={[globalStyle.itemTicket, {flexDirection : 'column', width: DEVICE_WIDTH*0.925, borderBottomWidth : 1, height : 50}]}>
-                <View style={{backgroundColor: type === 'ape' ? apeColor : headerTabColor }}>
-                  <Text style={{fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 16, color: 'white', padding: 5}}>
-                      {item['subject']}
-                  </Text>
-                </View>
-            </View>
-          );
-    }
 
-  }
 
   render() {
     const { clampedScroll } = this.state;
@@ -164,20 +169,55 @@ class TicketScreen extends React.Component {
     //console.log(this.props.tickets);
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
-      <SafeAreaView style={{flex : 1, backgroundColor: blueFLColor}}>
+      <SafeAreaView style={{flex : 1}}>
 
       <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH, backgroundColor: backgdColor}}>
         <AnimatedFlatList
           //contentContainerStyle={styles.contentContainer}
           contentContainerStyle={{alignItems : 'center', marginTop :  20 + NAVBAR_HEIGHT}}
-          //data={this.dataSource}
-          data={this.props.tickets}
-          //data={data}
-          renderItem={this._renderRow}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({item, id}) => (
-            this._renderTicket(item, id)     
-          )}
+          data={this.allTickets}
+          //data={this.props.broadcasts}
+          keyExtractor={(item)  => {
+            return item.getId().toString();
+          }}
+          renderItem={({item, index}) => {
+            //let ticket = new CTicket(item);
+            //console.log("TICKET TYPE : " + ticket.getId() + "   :  " + ticket.getType() +  "   :  " + ticket.getTemplate());
+            switch(item.getType()) {
+                case "Broadcasting" :
+                    //let ticketB = new CBroadcastTicket(item);
+                    //console.log("TICKET BROADCAST : " + ticketB.getId() + "   :  " + ticketB.getType() +  "   :  " + ticketB.getTemplate()+":templ : ");
+                    //console.log(item);
+                    switch (item.getTemplate()) {
+                      case TEMPLATE_TYPE.PSBROADCAST :
+                        return (
+                          <View style={{marginBottom : 15}} >
+                            <FLTemplatePSBroadcast ticket={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'} screenWidth={0.95} />
+                          </View>
+                        );
+                      default:
+                        return null;
+                    };
+                    break;
+                case "Produit structuré" :
+                    //let ticketC = new CWorkflowTicket(item);
+                    //console.log("TICKET WORKFLOW : " + ticketC.getId() + "   :  " + ticketC.getType() +  "   :  " + ticketC.getTemplate());
+     
+                    switch (item.getTemplate()) {
+                      case TEMPLATE_TYPE.PSAPE : 
+                        return null;
+                      case TEMPLATE_TYPE.PSPP :         
+                        return (
+                          <View style={{ marginBottom : 15}} >
+                              <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Ticket'} screenWidth={0.95} />
+                          </View>
+                        );
+                      default : return null;
+                    };
+                    break;
+                default : return null;  
+              }
+          }}
           scrollEventThrottle={1}
           onMomentumScrollBegin={this._onMomentumScrollBegin}
           onMomentumScrollEnd={this._onMomentumScrollEnd}
@@ -369,21 +409,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     //paddingTop: STATUS_BAR_HEIGHT,
   },
-  contentContainer: {
-    paddingTop: NAVBAR_HEIGHT,
-  },
  
-  row: {
-    height: 300,
-    width: null,
-    marginBottom: 1,
-    padding: 16,
-    backgroundColor: 'transparent',
-  },
-  rowText: {
-    color: 'white',
-    fontSize: 18,
-  },
+
   inputText: {
     display: 'flex',
     ...ifAndroid({

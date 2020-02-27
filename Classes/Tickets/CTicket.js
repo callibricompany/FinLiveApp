@@ -1,4 +1,3 @@
-import WORKFLOW from '../../Data/workflow.json'
 import * as TEMPLATE_TYPE from '../../constants/template';
 import { CAutocall } from '../Products/CAutocall';
 import { CObject } from '../CObject';
@@ -10,15 +9,14 @@ import Moment from 'moment';
 import { setColor } from '../../Styles/globalStyle.js';
 
 
+
 //classe mere de tous les objets tickets
 export class CTicket extends CObject { 
 
     
-    constructor(ticket, template) {
-      
-      super(ticket, template);
-      //this.object = ticket;
-      
+    constructor(ticket) {
+      super(ticket);
+
       this.ticket = this.object['data'];
   
  
@@ -29,11 +27,33 @@ export class CTicket extends CObject {
       //manage product on ticket 
       this.product = null;
 
-
+      //conversations
+      this.conversations = [];
+      
     }
    
 
+    setConversations(conversations) {
+      //console.log(conversations);
+      this.conversations = conversations;
+    }
 
+    getConversations() {
+      return this.conversations;
+    }
+
+    getNotes() {
+      let notes = [];
+
+      this.conversations.forEach((c) => {
+        if (c.source === 2000 || c.source === 15) {
+          console.log(c);
+          notes.push(c);
+        } 
+      });
+ 
+      return notes;
+    }
 
     getId() {
       return this.ticket.id;
@@ -95,6 +115,14 @@ export class CTicket extends CObject {
        return CTicket.PRIORITY().filter(({id}) => id === this.ticket.priority)[0];
     }
 
+    //est-ce que le ticket a été vu ou pas 
+    hasBeenSeen() {
+      if (!this.ticket['cf_seen']){
+        this.ticket['cf_seen'] = false;
+      }
+      return this.ticket.cf_seen;
+    }
+
 
 
     getDescription() {
@@ -113,32 +141,32 @@ export class CTicket extends CObject {
    static STATUS () {
     let data = [
      {
-       "name": "Ouvert",
+       "name": "????",
        "id": 0,
        "color" : "goldenrod"
      },
      {
-       "name": "En attente",
+       "name": "En attent????",
        "id": 1,
        "color" : "mediumaquamarine"
      },
      {
-       "name": "", //ouvert
+       "name": "En cours", //ouvert
        "id": 2,
        "color" : "transparent"
      },
      {
-       "name": "Fermé",
+       "name": "Pending",
        "id": 3,
        "color" : "gainsboro"
      },
      {
-       "name": "Attente client",
+       "name": "Résolu",
        "id": 4,
        "color" : "khaki"
      },
      {
-       "name": "Attente tiers",
+       "name": "Fermé",
        "id": 5,
        "color" : "linen"
      }
@@ -171,5 +199,13 @@ export class CTicket extends CObject {
    ];
    return data;
   }
+
+  static compareLastUpdate(a, b) {
+    let comparison = -1;
+    if (a.getLastUpdateDate() < b.getLastUpdateDate()) {
+      comparison = 1;
+    } 
+    return comparison;
   }
+}
 

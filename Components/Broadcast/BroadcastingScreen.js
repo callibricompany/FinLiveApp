@@ -127,8 +127,8 @@ class BroadcastingScreen extends React.Component {
   render() {
     const { clampedScroll } = this.state;
 
-    console.log("RENDER :");
-    console.log(this.state.scrollAnim);
+    //console.log("RENDER :");
+    //console.log(this.state.scrollAnim);
 
     const navbarTranslate = clampedScroll.interpolate({
       inputRange: [0, NAVBAR_HEIGHT ],

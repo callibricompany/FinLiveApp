@@ -13,10 +13,15 @@ import FLSRPDetail from '../Components/Home/FLSRPDetail';
 import PricerScreen from '../Components/Pricer/PricerScreen'
 import FLResultPricer from '../Components/Pricer/FLResultPricer'
 import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
+import FLTicketDetailTicket from '../Components/Ticket/FLTicketDetailTicket';
+
 import ProfileScreen from '../Components/ProfileScreen';
+
 import TicketScreen from '../Components/Ticket/TicketScreen';
-import FLTicketDetail from '../Components/Ticket/FLTicketDetail';
+import FLTicketDetail from '../Components/commons/Ticket/FLTicketDetail';
+
 import BroadcastingScreen from '../Components/Broadcast/BroadcastingScreen';
+
 import AdminScreen from '../Components/Admin/AdminScreen';
 import AdminUser from '../Components/Admin/AdminUser';
 
@@ -112,8 +117,8 @@ function labelStyle (focused, tintColor) {
     Tickets: {
       screen: TicketScreen,
     },
-    FLTicketDetail : {
-      screen : FLTicketDetail
+    FLTicketDetailTicket : {
+      screen : FLTicketDetailTicket
     }
 
     })
@@ -333,7 +338,7 @@ function labelStyle (focused, tintColor) {
     const { state: { routes, index } } = navigation;
     let tabBarVisible = true;
 
-    if(routes[index].routeName === 'Tickets'){
+    if(routes[index].routeName === 'Tickets' || routes[index].routeName === 'FLTicketDetailTicket'){
       if (typeof routes[index].params !== 'undefined') {
           tabBarVisible = !routes[index].params['hideBottomTabBar'];
       }

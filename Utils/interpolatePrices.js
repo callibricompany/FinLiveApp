@@ -388,7 +388,8 @@ export  function interpolateBestProducts(data, request) {
 
     var product = request.getProduct();
     var criteria = request.getCriteria();
-    
+    var nominal = request.getValue('nominal');
+    console.log("NOMBRE DE PRIX RECUS : "+data.length);
     //chargement des meilleurs prix
     var allPricesDF = dataForge.fromJSON(JSON.stringify(data));
     //correction des string en nombre
@@ -411,24 +412,25 @@ export  function interpolateBestProducts(data, request) {
 
      //        LA FREQUENCE
      df = df.where((row) => criteria['freqAutocall'] === row.freqAutocall).bake();    
+     console.log("Taille apres freqAutocall: " + df.toRows().length);
 
     //         LE NOMBRE DE PERIODES SANS RAPPEL
     df = df.where((row) => criteria['noCallNbPeriod'] === row.noCallNbPeriod).bake(); 
-
+    console.log("Taille apres noCallNbPeriod: " + df.toRows().length);
     //         INCREMENTAL
     //df = df.where((row) => criteria['isIncremental'] === row.isIncremental).bake(); 
 
     //         PDI US ou EU
     df = df.where((row) => criteria['isPDIUS'] === row.isPDIUS).bake(); 
-    //console.log("Taille pendant 1 er filtres simples : " + df.toRows().length);
+    console.log("Taille apres PDI US ou EU: " + df.toRows().length);
     //         PHOENIX MEMOIRE
     df = df.where((row) => criteria['isMemory'] === row.isMemory).bake(); 
 
-    //console.log("Taille apres 1 er filtres simples : " + df.toRows().length);
+    console.log("Taille apres 1 er filtres simples : " + df.toRows().length);
 
     
     //AIRBAG
-    //print(df, ["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
+    print(df, ["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
     if (product.airbagLevel.isActivated) {
       switch (product.airbagLevel.value) {
         case 'NA': //pas d'airbag
@@ -556,7 +558,7 @@ export  function interpolateBestProducts(data, request) {
                             //vega = Number(d10.getSeries('vega').bake().toArray().toString());
                             d10 = d10.transformSeries({
                               maturity: value => mat + "Y",
-                              price: value => f(mat) + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, fVega(mat), mat, 0) + getFLMargin(),
+                              price: value => f(mat) + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, fVega(mat), mat, nominal) + getFLMargin(),
                               vega: value => fVega(mat),
                               //il faut reconstituer le code
                               code: value => value.replace('_M:' + matToChange, '_M:' + mat + "Y")
@@ -638,7 +640,8 @@ export  function interpolateBestProducts(data, request) {
      UFAssoc : row => product.UFAssoc.value,
      couponPhoenix : row => row.coupon,
      cf_cpg_choice : row => product.typeAuction.valueLabel,
-     date : row => Moment(Date.now()).format("YYYYMMDD")
+     date : row => Moment(Date.now()).format("YYYYMMDD"),
+     nominal : row => nominal
     });
    
     return interpolatedProducts.toArray();

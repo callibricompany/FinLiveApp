@@ -240,9 +240,42 @@ export function getConversation (firebase, idTicket) {
 
       });
 }
-export function getUserAllInfoAPI (idToken) {
+
+export function getTicket (firebase, idTicket) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      firebase.doGetIdToken()
+      .then(token => {
+
+          var axiosConfig = {
+            headers :{
+              //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+              'bearer'      : token,
+            }
+          };
+
+          axios.get(URL_AWS + '/getTicket/'+ idTicket,  axiosConfig)
+          .then((response) => {
+            //console.log(response.data);
+            resolve(response.data)
+          })
+          .catch(function (error) {
+            console.log("Erreur requete aws (getTicket): " + error);
+            reject(error)
+          });
+      })
+      .catch((error) => reject(error));
+
+    });
+}
+
+export function getUserAllInfoAPI (idToken, device) {
   var axiosConfig = {
     headers :{
+      'Content-Type': 'application/json; charset=utf-8',
+      'Accept'      : 'application/json',
       //'Content-Type': 'application/x-www-form-urlencoded',
       //'Content-Type': 'application/json; charset=utf-8',
       //'Accept'      : 'application/json',
@@ -250,11 +283,17 @@ export function getUserAllInfoAPI (idToken) {
     }
   };
   
+
+  //console.log(device);
+
   return new Promise(
     (resolve, reject) => {
-      axios.get(URL_AWS + '/getUserAllInfo', axiosConfig)
+      //axios.get(URL_AWS + '/getUserAllInfo', axiosConfig)
+      axios.post(URL_AWS + '/getUserAllInfo', device, axiosConfig)
       .then((response) => {
         //console.log("Succes : " + JSON.stringify(response["data"]));
+        console.log("Succes requete getUserAllIndo");
+        //console.log(Object.keys(response.data));
         resolve(response.data);
         //res.render('pages/register',{email: email, isConnected: isConnected});
       })
