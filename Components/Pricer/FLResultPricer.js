@@ -97,20 +97,22 @@ class FLResultPricer extends React.PureComponent {
       return (
 
         <View style={[globalStyle.bgColor, {width: DEVICE_WIDTH, height: DEVICE_HEIGHT}]}> 
-             <TouchableOpacity style={{height: 30 + STATUSBAR_HEIGHT , paddingLeft : 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, backgroundColor: 'white'}}
+            <View style={{height: 30 + STATUSBAR_HEIGHT , paddingLeft : 10, paddingRight: 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, backgroundColor: 'white'}}>
+                  <TouchableOpacity style={{flex : 0.25,flexDirection : 'row',  justifyContent: 'flex-start', alignItems: 'center', borderWidth: 0}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
-                  
-                      <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                           <Ionicons name={'ios-arrow-back'}  size={25} style={{color: setColor('')}}/>
-                      </View>
-                      <View style={{justifyContent: 'center', alignItems: 'center', paddingLeft : 5}}>
-                           <Text style={setFont('300', 16, setColor(''), 'Regular')}>Retour</Text>
-                      </View>
-                      <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
-                           <Text style={setFont('300', 16, setColor(''), 'Regular')}>{String('                  résultats').toUpperCase()}</Text>
-                      </View>
-            </TouchableOpacity>
+                          <View style={{justifyContent: 'center', alignItems: 'center', borderWidth: 0}}>
+                              <Ionicons name={'ios-arrow-back'}  size={25} style={{color: setColor('')}}/>
+                          </View>
+                          <View style={{justifyContent: 'center', alignItems: 'center', paddingLeft : 5, paddingRight : 5, borderWidth: 0}}>
+                              <Text style={setFont('300', 16, setColor(''), 'Regular')}>Retour</Text>
+                          </View>
+                  </TouchableOpacity>
+
+                  <View style={{flex: 0.5, justifyContent: 'center', alignItems: 'center', paddingLeft : 5, paddingRight: 5}}>
+                        <Text style={setFont('300', 16, setColor(''), 'Regular')}>{String('résultats').toUpperCase()}</Text>
+                  </View>
+            </View>
 
             <ScrollView contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', marginTop: 5}} >
     

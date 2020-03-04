@@ -49,7 +49,7 @@ class Application extends React.Component {
      
       return (
           <View style={{flex: 1}}>
-              <Navigation >
+              <Navigation />
               {this.state.message !== '' 
               ?
                     <View style={{ flexDirection : 'row', position: 'absolute', top : DEVICE_HEIGHT - 180, left : DEVICE_WIDTH/10, width :4*DEVICE_WIDTH/5, borderWidth : 1, borderColor: 'transparent', borderRadius : 4, height : 50}}>
@@ -73,7 +73,7 @@ class Application extends React.Component {
                     </View>
                : null
             }
-            </Navigation>
+            
           </View>
   
       );

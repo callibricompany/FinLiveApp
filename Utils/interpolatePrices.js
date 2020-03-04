@@ -147,10 +147,10 @@ export function interpolateAirbag (df, airbag) {
             d2 = d1.where((row) => row.underlying === udl).bake();
             distinctBarrierPhoenix.forEach((bPh) => {
               d3 = d2.where((row) => row.barrierPhoenix === bPh).bake();
-                dictinctPDI.forEach((pdiLevel) => {
-                    d4 = d3.where((row) => row.barrierPDI === pdiLevel).bake();
+                //dictinctPDI.forEach((pdiLevel) => { 
+                //    d4 = d3.where((row) => row.barrierPDI === pdiLevel).bake();
                     distinctDegressiveStep.forEach((ds) => {
-                      d5 = d4.where((row) => row.degressiveStep === ds).bake();
+                      d5 = d3.where((row) => row.degressiveStep === ds).bake();
                       distinctCoupon.forEach((cpn) => {
                         //calcul du prix a cette barriere
                         d6 = d5.where((row) => row.coupon === cpn).bake();
@@ -158,7 +158,9 @@ export function interpolateAirbag (df, airbag) {
                             ////this.setState({ messageLoading : this.eleborateMessageLoading('.')});
                             
                             //interpolation
-                            xs = d6.getSeries('airbagLevel').bake().distinct().toArray();
+                            //xs = d6.getSeries('airbagLevel').bake().distinct().toArray();
+                            xs = [0.4, 0.6, 0.8];
+
                             //ys = d6.getSeries('price').distinct().toArray();
                             let ys ={};
                             xs.map((x, i) => ys[i] = d6.where((row) => row.airbagLevel === x).getSeries('price').bake().toArray()[0]);
@@ -202,7 +204,7 @@ export function interpolateAirbag (df, airbag) {
                         }
                       })
                     })
-                  })
+     //             })
                 
           })
         })
