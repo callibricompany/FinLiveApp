@@ -147,10 +147,10 @@ export function interpolateAirbag (df, airbag) {
             d2 = d1.where((row) => row.underlying === udl).bake();
             distinctBarrierPhoenix.forEach((bPh) => {
               d3 = d2.where((row) => row.barrierPhoenix === bPh).bake();
-                //dictinctPDI.forEach((pdiLevel) => { 
-                //    d4 = d3.where((row) => row.barrierPDI === pdiLevel).bake();
+                dictinctPDI.forEach((pdiLevel) => {
+                    d4 = d3.where((row) => row.barrierPDI === pdiLevel).bake();
                     distinctDegressiveStep.forEach((ds) => {
-                      d5 = d3.where((row) => row.degressiveStep === ds).bake();
+                      d5 = d4.where((row) => row.degressiveStep === ds).bake();
                       distinctCoupon.forEach((cpn) => {
                         //calcul du prix a cette barriere
                         d6 = d5.where((row) => row.coupon === cpn).bake();
@@ -158,28 +158,25 @@ export function interpolateAirbag (df, airbag) {
                             ////this.setState({ messageLoading : this.eleborateMessageLoading('.')});
                             
                             //interpolation
-                            //xs = d6.getSeries('airbagLevel').bake().distinct().toArray();
-                            xs = [0.4, 0.6, 0.8];
-                            
+                            xs = d6.getSeries('airbagLevel').bake().distinct().toArray();
                             //ys = d6.getSeries('price').distinct().toArray();
                             let ys ={};
-                            xs.map((x, i) => ys[i] = d6.where((row) => row.airbagLevel === x).where((row) => row.barrierPDI === x).getSeries('price').bake().toArray()[0]);
+                            xs.map((x, i) => ys[i] = d6.where((row) => row.airbagLevel === x).getSeries('price').bake().toArray()[0]);
                             let ysVega ={};
-                            xs.map((x, i) => ysVega[i] = d6.where((row) => row.airbagLevel === x).where((row) => row.barrierPDI === x).getSeries('vega').bake().toArray()[0]);
+                            xs.map((x, i) => ysVega[i] = d6.where((row) => row.airbagLevel === x).getSeries('vega').bake().toArray()[0]);
 
                             //xs.map((x, i) => console.log(x+" : "+ys[i]));
                             //xs.map((x, i) => xs[i] = Number(x.substring(0, x.length - 1)));
                             //inter et extrapolation
                             points = [];
                             xs.map((x, i) => points[i] = [xs[i], ys[i]]);
-                            console.log(points);
                             f = interpolator(points);
                             
                             pointsVega = [];
                             xs.map((x, i) => pointsVega[i] = [xs[i], ysVega[i]]);
                             fVega = interpolator(pointsVega);
-                            console.log("DANS AIRBAG");
-                            print (d6,[ "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "degressiveStep", "code"]);
+
+                            //print (d6,[ "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "degressiveStep", "code"]);
                                 
 
                             //on ne garde que le premier pour recrer le meme tableau
@@ -201,13 +198,11 @@ export function interpolateAirbag (df, airbag) {
                             dfToAdd = dfToAdd.concat(new dataForge.DataFrame(d10).bake());
                             //print (dfToAdd,["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
                              
+
                         }
                       })
                     })
-
-
-
- //                 })
+                  })
                 
           })
         })
@@ -435,9 +430,8 @@ export  function interpolateBestProducts(data, request) {
 
     
     //AIRBAG
-    //print(df, ["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
+    print(df, ["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
     if (product.airbagLevel.isActivated) {
-      //console.log("TYPE AIRbAG : " +product.airbagLevel.value);
       switch (product.airbagLevel.value) {
         case 'NA': //pas d'airbag
           df = df.where((row) => row.airbagLevel === 1).bake();
@@ -455,7 +449,7 @@ export  function interpolateBestProducts(data, request) {
           break;
       }
     } else { //on ne garde que les sans airbag
-      df = df.where((row) => row.airbagLevel === 1).bake();
+      df = df.where((row) => row.airbagLevel === 1);
     }
     //print(df, ["product", "coupon", "maturity", "barrierPDI", "airbagLevel", "price", "code"]);
     
