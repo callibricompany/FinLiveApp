@@ -88,7 +88,7 @@ class Firebase {
 
   
   doSignOut = () => {
-    if (this.ticketListenner != null) {
+    if (this.ticketListenner !== null) {
       this.ticketListenner();
     }
 

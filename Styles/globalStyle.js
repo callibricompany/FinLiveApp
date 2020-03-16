@@ -1,6 +1,6 @@
 
-import { StyleSheet, Platform, StatusBar} from 'react-native'
-import Dimensions from 'Dimensions'
+import { StyleSheet, Platform, StatusBar, Dimensions} from 'react-native'
+
 import { sizeByDevice } from '../Utils'
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;

@@ -28,7 +28,7 @@ class FLFlatListHelper extends React.PureComponent {
     }, 250);
   }
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     //console.log("PROPS margin  : "+props.scrollTo);
     if (props.scrollTo !== 9999) {
       this.scrollToOffset(props.scrollTo);

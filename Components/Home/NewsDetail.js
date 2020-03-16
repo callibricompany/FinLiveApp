@@ -27,8 +27,7 @@ class NewsDetail extends React.Component {
       console.log("PAGE : " + this.state.page);
     }
 
-    componentWillMount () {
-    }
+  
 
 
     static navigationOptions = ({ navigation }) => {

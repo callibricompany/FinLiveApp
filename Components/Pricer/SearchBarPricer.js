@@ -41,7 +41,7 @@ export default class SearchBarPricer extends Component {
   }
 
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     this.setState( { title : props.currentTab});
   }
 

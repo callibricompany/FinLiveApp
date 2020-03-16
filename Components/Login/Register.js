@@ -14,12 +14,13 @@ import {
   Alert,
   Text,
   Image,
-  Keyboard
+  Keyboard,
+  Dimensions
 } from 'react-native';
 import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
-import Dimensions from 'Dimensions';
+
 import { setColor, setFont } from '../../Styles/globalStyle';
 import splashImage from '../../assets/LogoWithoutText.png';
 

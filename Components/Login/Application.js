@@ -1,13 +1,14 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import Navigation from '../../Navigation/Navigation';
-import { withNavigation } from 'react-navigation';
+import NavigationService from '../../Navigation/NavigationService';
+
 import { withAuthentication , withAuthorization} from '../../Session';
 import { withUser } from '../../Session/withAuthentication';
 import { withNotification } from '../../Session/NotificationProvider'; 
 import { setColor, setFont } from '../../Styles/globalStyle';
 import { compose, hoistStatics } from 'recompose';
-import Dimensions from 'Dimensions';
+
 import { CWorkflowTicket } from '../../Classes/Tickets/CWorkflowTicket';
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
@@ -28,8 +29,8 @@ class Application extends React.Component {
       this.ticket = '';
     }
 
-    componentWillReceiveProps(props) {
-      
+    UNSAFE_componentWillReceiveProps(props) {
+      /*
       if (props.hasOwnProperty('notification') && props.notification !== '') {
         console.log(props.notification);
         console.log(props.notification.subject);
@@ -40,7 +41,7 @@ class Application extends React.Component {
           }, 10000);
 
         });
-      }
+      }*/
 
     } 
 
@@ -49,8 +50,11 @@ class Application extends React.Component {
      
       return (
           <View style={{flex: 1}}>
-              <Navigation />
-              {this.state.message !== '' 
+              <Navigation ref={navigatorRef => {
+                                 NavigationService.setTopLevelNavigator(navigatorRef);
+                              }}
+              />
+              {this.state.message === 'jhjhjhj' 
               ?
                     <View style={{ flexDirection : 'row', position: 'absolute', top : DEVICE_HEIGHT - 180, left : DEVICE_WIDTH/10, width :4*DEVICE_WIDTH/5, borderWidth : 1, borderColor: 'transparent', borderRadius : 4, height : 50}}>
                         <View style={{flex: 0.9, flexDirection : 'column',justifyContent: 'center', backgroundColor: setColor('vertpomme')}}>

@@ -92,7 +92,7 @@ class ProfileScreen extends React.Component {
 const condition = authUser => authUser != null;
 
 const composedFB = compose(
-  //withAuthorization(condition),
+  withAuthorization(condition),
   withFirebase,
   withUser,
   

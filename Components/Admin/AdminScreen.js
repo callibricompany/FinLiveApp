@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Platform, 
+import { Animated, Image, TextInput, TouchableOpacity, Dimensions, StatusBar, 
         StyleSheet, Easing, View, Text, FlatList, SafeAreaView } from 'react-native';
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,7 +14,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
 
-import Dimensions from 'Dimensions';
+
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;

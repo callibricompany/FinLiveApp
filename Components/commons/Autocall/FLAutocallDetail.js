@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, StyleSheet, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput} from 'react-native';
+import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, Dimensions, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -30,7 +30,7 @@ import logo_white from '../../../assets/LogoWithoutTex_white.png';
 import logo from '../../../assets/LogoWithoutText.png';
 
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../../Utils';
-import Dimensions from 'Dimensions';
+
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
 import * as TICKET_TYPE from '../../../constants/ticket'

@@ -29,9 +29,11 @@ import FontAwesomeI from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Icon } from 'native-base';
 
-import { blueFLColor, FLFontFamily } from '../Styles/globalStyle';
+import { blueFLColor, FLFontFamily, setFont, setColor} from '../Styles/globalStyle';
 
 import { withUser } from '../Session/withAuthentication';
+
+import Numeral from 'numeral';
 
 import * as ROLES from '../constants/roles';
 
@@ -51,7 +53,7 @@ function labelStyle (focused, tintColor) {
   
     
     return {
-      marginTop:10,  
+      marginTop:0,  
       //paddingTop: -20,
       fontSize: 14 ,
       //fontWeight: 'bold',
@@ -289,7 +291,8 @@ function labelStyle (focused, tintColor) {
     //console.log(JSON.stringify(navigation));
     //console.log("HOMEEEEEBAR : " + routes[index].routeName);
     //console.log(routes[index].params);
-    
+    //console.log("PASSE PAR ROUTE HOME");
+    //console.log(navigation);
     if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'){
       if (typeof routes[index].params !== 'undefined') {
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params);
@@ -335,12 +338,29 @@ function labelStyle (focused, tintColor) {
     }
   }
   TABS['Tickets'].navigationOptions = ({ navigation }) => {
-    const { state: { routes, index } } = navigation;
+    const { state: { routes, index, params} } = navigation;
     let tabBarVisible = true;
+    let badgeCount = 0
+    
 
     if(routes[index].routeName === 'Tickets' || routes[index].routeName === 'FLTicketDetailTicket'){
+      
       if (typeof routes[index].params !== 'undefined') {
-          tabBarVisible = !routes[index].params['hideBottomTabBar'];
+        if (routes[index].params.hasOwnProperty('hideBottomTabBar')) {
+            tabBarVisible = !routes[index].params['hideBottomTabBar'];
+        }
+      }
+
+      if (params) {
+        
+        if (params.hasOwnProperty('badge')){
+            badgeCount = params['badge'];
+            if (Numeral(badgeCount).value() > 99) {
+              badgeCount = '+99';
+            }
+        }
+  
+        
       }
       
     }
@@ -366,6 +386,28 @@ function labelStyle (focused, tintColor) {
                   size={30}
                   style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
               />   
+              {badgeCount > 0 && (
+                  <View
+                    style={{
+                      // If you're using react-native < 0.57 overflow outside of parent
+                      // will not work on Android, see https://git.io/fhLJ8
+                      position: 'absolute',
+                      right: -6,
+                      top: -3,
+                      backgroundColor: 'red',
+                      borderRadius: 9,
+                      width: 18,
+                      height: 18,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderWidth : 0
+                    }}
+                  >
+                    <Text style={setFont('300',12,'white','Regular')}>
+                      {badgeCount}
+                    </Text>
+                  </View>
+                )}
             </View>
           );
         },

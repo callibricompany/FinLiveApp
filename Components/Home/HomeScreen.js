@@ -1,10 +1,11 @@
 import React from 'react'
 
-import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList,Text,SafeAreaView,Platform, StatusBar, Animated, KeyboardAvoidingView} from 'react-native'
+import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions,Text,SafeAreaView,Platform, StatusBar, Animated, KeyboardAvoidingView} from 'react-native'
 import { Thumbnail, Toast, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { globalStyle , blueFLColor, setColor, setFont} from '../../Styles/globalStyle'
 
+import NavigationService from '../../Navigation/NavigationService';
 
 import { FLBadge } from '../commons/FLBadge'
  
@@ -16,7 +17,7 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import Dimensions from 'Dimensions';
+
 
 import { SearchBarProvider } from '../SearchBar/searchBarAnimation';
 import SearchBarHome from './SearchBarHome';
@@ -43,7 +44,7 @@ const initialLayout = {
 
     constructor(props) {
         super(props)
-        
+        this.countTicket=0;
         this.state = {
           isLoading : true,
           isServerOk : true,
@@ -90,7 +91,7 @@ const initialLayout = {
       this._navListener.remove();
     }
 
-    componentWillMount () {
+    UNSAFE_componentWillMount () {
       this._loadAllUserIndos();
     }
 
@@ -211,6 +212,17 @@ const initialLayout = {
           </Animated.View>
         );
       }
+
+      return (
+           <TouchableOpacity style={{height : 200, width: 200}}
+                             onPress={() => {
+                               this.countTicket = this.countTicket +1;
+                              NavigationService.handleBadges('Tickets', this.countTicket);
+                             }}
+           >
+               <Text>Test badge</Text>
+          </TouchableOpacity>
+      )
     }
     
 
@@ -288,6 +300,8 @@ const initialLayout = {
                     //allowing light, but not detailed shapes
                     networkActivityIndicatorVisible={true}
                   />}
+
+  
             {render}
 
             </SafeAreaView>

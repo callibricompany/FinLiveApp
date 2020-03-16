@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Text,
   Platform,
-  Alert
+  Alert,
+  Dimensions
 } from "react-native";
 
 import { FLScrollView } from "../SearchBar/searchBarAnimation";
@@ -23,7 +24,6 @@ import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 
 import RobotBlink from "../../assets/svg/robotBlink.svg";
 
-import Dimensions from "Dimensions";
 
 import { setFont } from "../../Styles/globalStyle";
 
@@ -105,7 +105,7 @@ class TabHome extends React.PureComponent {
     this.isFiltered = false;
   }
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     //console.log("RECEIVE PROPS HOME : "+ props.filters);
     this.setState({ scrollTo: props.marginSearch, refreshing: false });
     typeof props.filters !== "undefined"

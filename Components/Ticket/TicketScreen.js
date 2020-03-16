@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Platform, 
+import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Dimensions, 
         StyleSheet, Easing, View, Text, FlatList, SafeAreaView } from 'react-native';
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -23,7 +23,7 @@ import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
 
 import * as TEMPLATE_TYPE from '../../constants/template';
 
-import Dimensions from 'Dimensions';
+
 
 import Moment from 'moment';
 

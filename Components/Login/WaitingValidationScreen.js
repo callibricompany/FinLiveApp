@@ -10,13 +10,14 @@ import {
   StatusBar,
   Platform,
   Image,
-  Text
+  Text,
+  Dimensions
 } from 'react-native';
 import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
 import { sendEmail } from '../../Utils/sendEmail'
 import splashImage from '../../assets/LogoWithoutText.png';
-import Dimensions from 'Dimensions';
+
 
 
 

@@ -1,5 +1,5 @@
 import React from "react";
-
+import { View, Text } from 'react-native'; 
 import AuthUserContext from "./context";
 import { withFirebase } from "../Database";
 import { CWorkflowTicket } from '../Classes/Tickets/CWorkflowTicket';
@@ -31,7 +31,7 @@ const withAuthentication = Component => {
 
         //notifications recues
         notification: {},
-        tatayoyo : '',
+   
 
 
         //tickets
@@ -149,9 +149,9 @@ const withAuthentication = Component => {
           });
           //this.setState({ notification: notification });
           let localnotificationId = notification.notificationId;
-          /*setTimeout(function () {
+          setTimeout(function () {
             Notifications.dismissNotificationAsync(localnotificationId);
-          }, 10000)*/
+          }, 10000);
           //console.log(Object.keys(notification));
     };
 
@@ -305,6 +305,7 @@ const withAuthentication = Component => {
              
                
                 //console.log(toto);
+                console.log(userDatas.notifications);
                 //console.log(userDatas.categories);
                 //console.log(userDatas.workflow);
                 //console.log(userDatas.startPage.bestCoupon);
@@ -428,6 +429,7 @@ const withAuthentication = Component => {
 
       this.ticketListener();
       this.listener();
+      //this._notificationSubscription();
     }
 
     //ajoute un ticket des qu'il est crée
@@ -451,7 +453,14 @@ const withAuthentication = Component => {
 
 export const withUser = Component => props => (
   <AuthUserContext.Consumer>
-    {authUser => <Component {...props} {...authUser} />}
+    {(authUser) => {
+          return (
+    
+                   <Component {...props} {...authUser} />
+      
+          );
+      }
+    }
   </AuthUserContext.Consumer>
 );
 

@@ -88,7 +88,7 @@ class FLPanel extends React.Component{
         
     }
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
 
         //console.log("COMPONENT WILL RECEIVE PROPS TITLE : " + props.title + "    -    "+props.activated);
         this.setState({
@@ -97,7 +97,7 @@ class FLPanel extends React.Component{
         }
         );
     }
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         if (!this.state.expanded) {
             this.state.animation.setValue(33);  
         }

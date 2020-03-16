@@ -110,7 +110,7 @@ export default class SearchBarHome extends Component {
 
 
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     //fait pour palier au bug android d'apparition des tabbar quand les claviers apparaissent
     //this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => console.log("CLAVIER DEACTIVE"));
     //this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => console.log("CLAVIER ACTIVE"));

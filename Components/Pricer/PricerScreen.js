@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, StyleSheet, SafeAreaView, TextInput, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, StatusBar, Platform } from 'react-native'
+import { Modal, StyleSheet, SafeAreaView, TextInput, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, StatusBar, Dimensions } from 'react-native'
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -45,7 +45,7 @@ import botImage from '../../assets/bot.png'
 
 import { searchProducts } from '../../API/APIAWS';
 
-import Dimensions from 'Dimensions';
+
 
 import FLBottomPanel from '../commons/FLBottomPanel';
 import { SNAP_POINTS_FROM_TOP } from '../commons/FLBottomPanel';

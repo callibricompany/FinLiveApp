@@ -75,7 +75,7 @@ class FLBottomPanel extends React.Component {
       });
     }
 
-    componentWillReceiveProps (props) {
+    UNSAFE_componentWillReceiveProps (props) {
       //console.log("RECOIT LES PROPS : " + props.position);
       Animated.spring(this._translateYOffset, {
         //velocity: velocityY,

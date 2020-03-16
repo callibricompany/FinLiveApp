@@ -27,7 +27,7 @@ export class FLMaturityDetail extends Component{
 
 
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
       this.setState({ toto : !this.state.toto });
     }
 

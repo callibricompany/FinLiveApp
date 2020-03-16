@@ -27,7 +27,7 @@ export class FLSlider extends Component{
 
     }
     
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         //console.log("RECEIVE PROPS : " + props.activated)
         let isActivated = true;
         if (typeof this.props.activated != 'undefined'){

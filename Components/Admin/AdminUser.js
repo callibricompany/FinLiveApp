@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, Platform, Switch, Alert, KeyboardAvoidingView} from 'react-native'
+import { View, SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, Dimensions, Switch, Alert, KeyboardAvoidingView} from 'react-native'
 import { Icon, Button, Input} from 'native-base'
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
@@ -24,7 +24,7 @@ import 'numeral/locales/fr'
 import StepIndicator from 'react-native-step-indicator';
 
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE} from '../../Utils';
-import Dimensions from 'Dimensions';
+
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;

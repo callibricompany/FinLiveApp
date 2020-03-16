@@ -1,6 +1,15 @@
 // store/UserProvider.js
 import React, { createContext, Component } from "react"; // on importe createContext qui servira à la création d'un ou plusieurs contextes
+import { View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { CWorkflowTicket } from "../Classes/Tickets/CWorkflowTicket";
+import NavigationService from '../Navigation/NavigationService';
+import { setColor, setFont } from '../Styles/globalStyle';
 
+
+
+
+const DEVICE_WIDTH = Dimensions.get('window').width;
+const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 /**
  * `createContext` contient 2 propriétés :
@@ -11,9 +20,9 @@ import React, { createContext, Component } from "react"; // on importe createCon
  * d'autres composants par la suite via le `Consumer`
  */
 export const NotificationContext = createContext({
-  titleNoticfication: "",
-  eventNotification: "",
-  setName: () => {}
+  /*notification: '',
+  object: '',
+  setNotification: () => {}*/
 });
 
 /**
@@ -23,17 +32,52 @@ export const NotificationContext = createContext({
  * seront accessible de manière globale via le `Consumer`
  */
 class NotificationProvider extends Component {
-  state = {
-    notification: '', // une valeur de départ
-    object : '',
 
-    setNotification: (notification, obj) => this.setNotification(notification, obj),
-  };
+
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      notification: '', // une valeur de départ
+      titleNotification : '',
+      messageNotification : '',
+      object : '',
+  
+      setNotification: (notification, obj) => this.setNotification(notification, obj),
+
+
+      positionTop : new Animated.Value(DEVICE_HEIGHT),
+    };
+
+    this.ticketBadgesCount = 0;
+  }
+
 
   setNotification(notification, obj) {
-    //console.log("DEPUIS LE STORE NOTIFICATION : ");
-    //console.log(ticket);
-    this.setState({ notification , object : obj });
+    
+    console.log(notification);
+      
+    if (notification !== '') {
+      
+      //console.log(props.notification.subject);
+      this.setState({ titleNotification : notification.type , messageNotification : notification.subject, object : obj}, () => {
+        NavigationService.handleBadges(this.ticketBadgesCount);
+        Animated.spring(
+          this.state.positionTop,
+            {
+              toValue: DEVICE_HEIGHT - 180,
+              duration : 1500,
+              //easing: Easing.elastic(),
+              speed : 1
+            }
+        ).start();
+        setTimeout(() => {
+          this.setState({ titleNotification : '', messageNotification : '', positionTop : new Animated.Value(DEVICE_HEIGHT) });
+        }, 10000);
+
+      });
+    }
+    
   }
 
   render() {
@@ -56,8 +100,48 @@ class NotificationProvider extends Component {
  */
 export const withNotification = Component => props => (
   <NotificationContext.Consumer>
-    {store => <Component {...props} {...store} />}
+    
+    {store => {
+        //console.log(store);
+        return (
+        <View style={{flex: 1}}>
+              <View style={{flex: 1}}>
+                    <Component {...props} {...store} />
+              </View>
+              { store.titleNotification !== ''
+                ?
+                  <Animated.View style={{ flexDirection : 'row', position: 'absolute', top: store.positionTop, left : DEVICE_WIDTH/10, width :4*DEVICE_WIDTH/5, borderWidth : 1, borderColor: 'transparent', borderRadius : 4}}>
+                            <View style={{flex: 0.9, flexDirection : 'column',justifyContent: 'center', backgroundColor: setColor('vertpomme')}}>
+                                <View style={{flex: 0.4, padding : 5}}>
+                                  <Text style={setFont('400', 12, 'white')}> {store.titleNotification} {String("mis à jour").toUpperCase()}</Text>
+                                </View>
+                                <View style={{ padding : 5}}>
+                                  <Text style={setFont('400', 14, 'white')}>{store.messageNotification}</Text>
+                                </View>               
+                            </View>
+                            <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', backgroundColor: setColor('subscribeticket')}}
+                                              onPress={() => {
+                                                      let ticket = new CWorkflowTicket(store.object);
+                                                      this.setState({ titleNotification : '', messageNotification : '', positionTop : new Animated.Value(DEVICE_HEIGHT) });
+                                                      NavigationService.navigate('FLTicketDetailHome' , {
+                                                      ticket: ticket,
+                                                      });
+                                                    // NavigationService.navigate('NewsList');
+                                                      //this.props.navigation.navigate('NewsList'); 
+                                              }}          
+                            >
+                                <Text style={setFont('400', 18, 'white', 'Regular')}>></Text>
+                            </TouchableOpacity>
+                  </Animated.View>
+                : null
+              }
+        </View>
+        );
+      }
+  }
   </NotificationContext.Consumer>
 );
 
+
 export default NotificationProvider;
+

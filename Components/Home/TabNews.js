@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, TouchableOpacity, Text, Platform} from 'react-native'; 
+import { View, ActivityIndicator, TouchableOpacity, Text, Dimensions} from 'react-native'; 
 import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 
 import { FLFlatList } from '../SearchBar/searchBarAnimation';
@@ -12,7 +12,7 @@ import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
 import { globalStyle , blueFLColor, FLFontFamily} from '../../Styles/globalStyle'
-import Dimensions from 'Dimensions';
+
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -45,7 +45,7 @@ class TabNews extends React.PureComponent {
 
   }
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
 
     if (typeof props.filterNews != 'undefined' && this.filterNews != props.filterNews){
       this.filterNews = props.filterNews;

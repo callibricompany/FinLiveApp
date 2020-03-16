@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal, Alert} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal, Alert, Dimensions} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -28,7 +28,7 @@ import {
     setColor
  } from '../../../Styles/globalStyle'
 
-import Dimensions from 'Dimensions';
+
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 

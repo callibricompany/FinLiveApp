@@ -29,7 +29,7 @@ export class FLSlider2 extends Component{
     }
 
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         //console.log("ON EST DANS LE CALLBACK DU SLIDER : "+props.value);
         if (typeof props.value !== 'undefined'){
             this.setState({value : props.value, toto : !this.state.toto });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StatusBar, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Platform, Switch} from 'react-native'; 
+import { View, ScrollView, StatusBar, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Dimensions, Switch} from 'react-native'; 
 
 
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -21,7 +21,7 @@ import botImage from '../../assets/bot.png'
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
-import Dimensions from 'Dimensions';
+
 
 import {  globalStyle, 
   setFont,

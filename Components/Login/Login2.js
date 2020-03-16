@@ -12,13 +12,14 @@ import {
   Alert,
   Text,
   TextInput,
-  Image
+  Image,
+  Dimensions
 } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import React, {Component} from 'react';
 
-import Dimensions from 'Dimensions';
+
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
 import { withAuthorization } from '../../Session';

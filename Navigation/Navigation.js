@@ -29,9 +29,9 @@ const TABS_BAR_OPTIONS = {
     style: {
       backgroundColor: 'white',
       borderTopColor: blueFLColor,
-      paddingTop: 10,
-      borderTopWidth: 0,
-      height: Platform.OS === 'ios' ? 60 : 70,
+      paddingTop: 5,
+      borderTopWidth: 1,
+      height: Platform.OS === 'ios' ? 70 : 80,
       //ustifyContent: 'center',
       //alignItems: 'center',
       },

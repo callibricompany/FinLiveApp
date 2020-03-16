@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import Dimensions from 'Dimensions';
+
 import {
   StyleSheet,
   TouchableOpacity,
@@ -10,6 +10,7 @@ import {
   Image,
   Alert,
   View,
+  Dimensions
 } from 'react-native';
 //import {Actions, ActionConst} from 'react-native-router-flux';
 
