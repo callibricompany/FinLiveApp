@@ -99,7 +99,7 @@ const withAuthentication = Component => {
               // notification (rather than just tapping the app icon to open it),
               // this function will fire on the next tick after the app starts
               // with the notification data.
-              this._notificationSubscription = Notifications.addListener(this._handleNotification);
+              //this._notificationSubscription = Notifications.addListener(this._handleNotification);
               
             },
             () => {
@@ -118,42 +118,7 @@ const withAuthentication = Component => {
 
 
 
-    //gestion de la reception des notifications
-    _handleNotification = notification => {
-          // do whatever you want to do with the notification
-          console.log("Notification recu : "+notification.origin);
-          //console.log(notification.remote);
 
-          //retourne un ticket donné
-          getTicket(this.props.firebase, notification.data.idTicket)
-          .then((ticket) => {
-                  console.log("ticket retrouvé");
-                  //console.log(notification.data);
-                  //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
-                    if (notification.origin == 'received') {
-                      
-                      this.props.setNotification(notification.data, ticket);
-                    } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
-
-                      this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
-                        ticket: new CWorkflowTicket(ticket),
-                        //ticketType: TICKET_TYPE.PSCREATION
-                      })
-                    }
-                  //this.setState({ notification : notification });
-                  //this.setState({ tatayoyo : notification.data });
-          })
-          .catch((error) => {
-            console.log(error);
-            alert("Impossible de récupérer les changements du ticket " + notification.data.idTicket);
-          });
-          //this.setState({ notification: notification });
-          let localnotificationId = notification.notificationId;
-          setTimeout(function () {
-            Notifications.dismissNotificationAsync(localnotificationId);
-          }, 10000);
-          //console.log(Object.keys(notification));
-    };
 
 
 
@@ -214,7 +179,7 @@ const withAuthentication = Component => {
 
       //let mac = await Network.getMacAddressAsync();
       let mac='';
-      let token =  await this._recordDeviceForNoticiation();
+      let token =  Constants.isDevice ? await this._recordDeviceForNoticiation() : '';
       let type = await Device.getDeviceTypeAsync();
       //on recupere toutes les donnes sur le device
       let d = {};
@@ -303,9 +268,10 @@ const withAuthentication = Component => {
                 ];
 
              
-               
+                
                 //console.log(toto);
-                console.log(userDatas.notifications);
+                
+                this.props.addNotification(userDatas.notifications);
                 //console.log(userDatas.categories);
                 //console.log(userDatas.workflow);
                 //console.log(userDatas.startPage.bestCoupon);
@@ -432,7 +398,10 @@ const withAuthentication = Component => {
       //this._notificationSubscription();
     }
 
-    //ajoute un ticket des qu'il est crée
+    ////////////////////////////////////////
+    //           TICKETS
+    //  ajoute un ticket des qu'il est crée 
+    ////////////////////////////////////////
     addTicket(ticket) {
       let t = this.state.tickets;
       t.unshift(ticket);

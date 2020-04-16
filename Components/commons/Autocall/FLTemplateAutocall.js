@@ -9,6 +9,10 @@ import AnimatedProgressWheel from 'react-native-progress-wheel';
 
 import RobotBlink from "../../../assets/svg/robotBlink.svg";
 
+import { WebView } from 'react-native-webview';
+
+import { URL_AWS } from '../../../API/APIAWS';
+
 import {  
     generalFontColor, 
     blueFLColor,
@@ -163,12 +167,19 @@ _renderRecalculateProduct() {
                     <Text style={setFont('300', 14, 'white')}>{this.state.messageLoading}</Text>
                   </View>
                   */
+                 //<RobotBlink width={120} height={120} />
+
         if (this.state.messageLoading !== '') {
-          return (
-                <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white'}}>
-                  <RobotBlink width={120} height={120} />
-                </View>
-          );
+              return (
+                    <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 170}}>
+                      <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: -70, marginLeft : -50}} scalesPageToFit={false}
+                        startInLoadingState={true}
+                        renderLoading={() => <RobotBlink width={120} height={120} />}
+                        />
+                        
+                  
+                    </View>
+              );
         } 
 }
 
@@ -264,7 +275,8 @@ _updateValue=(id, value, valueLabel) =>{
 }
 
 _recalculateProduct(){
-  this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true});
+
+  this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true, isRobotFlashSVGLoafingFinished : false });
   searchProducts(this.props.firebase, this.request.getCriteria())
   .then((data) => {
     this.setState({ messageLoading : 'Réception et analyse des prix' });

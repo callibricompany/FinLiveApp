@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Dimensions, 
-        StyleSheet, Easing, View, Text, FlatList, SafeAreaView } from 'react-native';
+        StyleSheet, Easing, View, Text, FlatList, SafeAreaView, Modal} from 'react-native';
 import { Icon } from 'native-base';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { globalStyle , blueFLColor, backgdColor, apeColor, FLFontFamily, headerTabColor} from '../../Styles/globalStyle'
+import { globalStyle , blueFLColor, backgdColor, apeColor, FLFontFamily, headerTabColor, setFont, setColor } from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
+import { withNotification } from '../../Session/NotificationProvider';
 import { withNavigation } from 'react-navigation';
 
 import { withUser } from '../../Session/withAuthentication';
@@ -24,9 +25,7 @@ import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
 import * as TEMPLATE_TYPE from '../../constants/template';
 
 
-
 import Moment from 'moment';
-
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -38,6 +37,19 @@ const NAVBAR_HEIGHT = 45;
 const STATUS_BAR_HEIGHT = sizeByDevice(44, 20, StatusBar.currentHeight);
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
+
+const sortDatas = [
+  {'LASTUPDATE' : "Date de modification"},
+  {'DUEDATE' : "Date de réponse attendue"},
+  {'CREATIONDATE' : "Date de création"}
+];
+
+const filterDatas = [
+  {'LIVETICKETS' : "Mes tickets en cours"},
+  {'UNREADTICKETS' : "Mes tickets non lus"},
+  {'CLOSEDTICKETS' : "Mes tickets fermés"},
+  {'ALLTICKETS' : "Tous mes tickets"}
+];
 
 class TicketScreen extends React.Component {
  
@@ -51,17 +63,17 @@ class TicketScreen extends React.Component {
     //liste de tous les tickets à afficher classé
     //console.log(this.props.tickets.slice(1,2));
     this.allTickets = [];
+    
     this.props.tickets.forEach((t) =>  t.type === "Produit structuré" ? this.allTickets.push(new CWorkflowTicket(t)) : null);
     this.props.broadcasts.forEach((t) => this.allTickets.push(new CBroadcastTicket(t)));
-    this.allTickets.sort(CTicket.compareLastUpdate);
+    this.allTickets.sort(CTicket.compareLastUpdateDown);
     //this.allTickets.forEach((t) => console.log(t.getId() +" : " +Moment(t.getLastUpdateDate()).format('lll')));
+    //console.log(this.props.tickets[0]);
 
     this.state = {
 
       //animation barre de recherche
-      positionLeft: new Animated.Value(DEVICE_WIDTH), //indicateur si recherche ou pas 
-
-
+      positionLeft: new Animated.Value(DEVICE_WIDTH), //indicateur si recherche ou pas
       scrollAnim,
       offsetAnim,
       clampedScroll: Animated.diffClamp(
@@ -76,6 +88,15 @@ class TicketScreen extends React.Component {
         0,
         NAVBAR_HEIGHT ,
       ),
+      //gestion de la fenetre modale
+      showModalDrawner : false,
+
+      //classement
+      sortDataDown : true,
+      sortSelected : 'LASTUPDATE',
+
+      //filttre
+      filterSelected : 'LIVETICKETS'
     };
     //this.dataSource = Array(19).fill().map((_, index) => ({id: index}));
     this.filterOnAir = false;
@@ -145,6 +166,129 @@ class TicketScreen extends React.Component {
   };
 
 
+  //classement des tickets
+  _sortTicket(field, down) {
+    if (field === 'LASTUPDATE') {
+      down ? this.allTickets.sort(CTicket.compareLastUpdateDown) : this.allTickets.sort(CTicket.compareLastUpdateUp);
+    } else if (field === 'CREATIONDATE') {
+      down ? this.allTickets.sort(CTicket.compareCeationDateDown) : this.allTickets.sort(CTicket.compareCeationDateUp);
+    } else if (field === 'DUEDATE') {
+      down ? this.allTickets.sort(CTicket.compareDueDateDown) : this.allTickets.sort(CTicket.compareDueDateUp);
+    }
+  }
+
+
+  _renderModalDrawner () {
+    return (
+      <Modal  animationType="slide" transparent={true} visible={this.state.showModalDrawner}
+              onRequestClose={() => {
+              console.log('Modal has been closed');
+            }}
+      >
+          <View 
+              style={{flex:1, backgroundColor:'transparent'}} 
+              onStartShouldSetResponder={() => true}
+              onResponderRelease={(evt) =>{
+                let x = evt.nativeEvent.pageX;
+                let y = evt.nativeEvent.pageY;
+                //si on a clické en dehors du module view cidessous on ferme le modal
+                let verifX = x < DEVICE_WIDTH*0  || x > DEVICE_WIDTH ? true : false;
+                let verifY = y < DEVICE_HEIGHT*0.5  || y > DEVICE_HEIGHT ? true : false;
+                if (verifX || verifY) {
+                  //console.log("passe la ");
+                  this.setState({showModalDrawner : false})
+                }
+              }}
+          >
+            <View style={{ flexDirection: 'column',backgroundColor: 'white', borderWidth :0, borderColor : 'black', borderRadius:5,width: DEVICE_WIDTH, height: DEVICE_HEIGHT*0.5, top:  DEVICE_HEIGHT*0.5, left : DEVICE_WIDTH*0}}>
+                <View style={{ marginTop : 15, justifyContent : 'center', alignItems: 'flex-start', paddingLeft : 15}}>
+                        <Text style={setFont('200', 14, 'gray')}>
+                            Trier par : 
+                        </Text>
+                </View>
+                {sortDatas.map((s,i) => {
+                      let sortName = Object.values(s)[0]
+                      let sortCode = Object.keys(s)[0]
+                      return (
+                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}}
+                                          onPress={() => {
+                                              //si le type de classement est le meme que precedemment selectionné : on change juste le sens
+                                              if (sortCode === this.state.sortSelected) {
+                                                this._sortTicket(sortCode, !this.state.sortDataDown);
+                                                this.setState({ sortDataDown : !this.state.sortDataDown , showModalDrawner : false });
+                                              } else {
+                                                this._sortTicket(sortCode, this.state.sortDataDown);
+                                                this.setState({ sortSelected : sortCode , showModalDrawner : false});
+                                              }
+                                          }}
+                        >
+                              <View style={{flex : sortCode === this.state.sortSelected ? 0.8 : 1, justifyContent : 'center', alignItems: 'flex-start', paddingLeft : 15}}>
+                                  <View style={{flexDirection: 'row'}}>
+                                      <View>
+                                          <Text style={setFont('200', 16, sortCode === this.state.sortSelected ? setColor('vertpomme') : 'black', 'Regular')}>
+                                              {sortName}
+                                          </Text>
+                                      </View>
+                                      {sortCode === this.state.sortSelected  
+                                        ?
+                                          <View style={{paddingLeft : 5, justifyContent :'center'}}>
+                                              <MaterialCommunityIcons name={this.state.sortDataDown ? 'arrow-down' : 'arrow-up'} size={22} color={setColor('vertpomme')}/>
+                                          </View>
+                                        : null
+                                      }
+                                  </View>
+                              </View>
+                              {sortCode === this.state.sortSelected  
+                                ?
+                                    <View style={{flex: 0.2, justifyContent : 'center', alignItems: 'flex-start'}}>
+                                      <MaterialCommunityIcons name='check' size={22} color={setColor('vertpomme')}/>
+                                    </View>
+                                : null
+                              }
+                        </TouchableOpacity>
+                      );
+                    })
+                }
+ 
+                <View style={{marginTop : 25, justifyContent : 'center', alignItems: 'flex-start', paddingLeft : 15}}>
+                    <Text style={setFont('200', 14, 'gray')}>
+                        Voir : 
+                    </Text>
+                </View>
+                {filterDatas.map((f,i) => {
+                      let filterName = Object.values(f)[0]
+                      let filterCode = Object.keys(f)[0]
+                      return (
+                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}}
+                                          onPress={() => {
+
+                                                //apppel au rechargement des tickets
+                                                this.setState({ filterSelected : filterCode , showModalDrawner : false});
+
+                                          }}
+                        >
+                              <View style={{flex : filterCode === this.state.filterSelected ? 0.8 : 1, justifyContent : 'center', alignItems: 'flex-start', paddingLeft : 15}}>
+                                  <Text style={setFont('200', 16, filterCode === this.state.filterSelected ? setColor('vertpomme') : 'black', 'Regular')}>
+                                      {filterName}
+                                  </Text>
+                              </View>
+                              {filterCode === this.state.filterSelected  
+                                ?
+                                    <View style={{flex: 0.2, justifyContent : 'center', alignItems: 'flex-start'}}>
+                                      <MaterialCommunityIcons name='check' size={22} color={setColor('vertpomme')}/>
+                                    </View>
+                                : null
+                              }
+                        </TouchableOpacity>
+                      );
+                    })
+                }
+
+            </View>
+          </View>
+      </Modal>
+    );
+  }
 
   render() {
     const { clampedScroll } = this.state;
@@ -166,229 +310,230 @@ class TicketScreen extends React.Component {
       extrapolate: 'clamp',
     });
 
+    
     //console.log(this.props.tickets);
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
       <SafeAreaView style={{flex : 1}}>
+        {this._renderModalDrawner()}
+ 
+        <View style={{height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH, backgroundColor: backgdColor, opacity : this.state.showModalDrawner ? 0.3 : 1}}>
+          <AnimatedFlatList
+            contentContainerStyle={{alignItems : 'center', marginTop :  20 + NAVBAR_HEIGHT}}
+            data={this.allTickets}
+            //data={this.props.broadcasts}
+            keyExtractor={(item)  => {
+              return item.getId().toString();
+            }}
+            renderItem={({item, index}) => {
+              //let ticket = new CTicket(item);
+              //console.log("TICKET TYPE : " + item.getId() + "   :  " + item.getType() +  "   :  " + item.getTemplate());
 
-      <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH, backgroundColor: backgdColor}}>
-        <AnimatedFlatList
-          //contentContainerStyle={styles.contentContainer}
-          contentContainerStyle={{alignItems : 'center', marginTop :  20 + NAVBAR_HEIGHT}}
-          data={this.allTickets}
-          //data={this.props.broadcasts}
-          keyExtractor={(item)  => {
-            return item.getId().toString();
-          }}
-          renderItem={({item, index}) => {
-            //let ticket = new CTicket(item);
-            //console.log("TICKET TYPE : " + ticket.getId() + "   :  " + ticket.getType() +  "   :  " + ticket.getTemplate());
-            switch(item.getType()) {
-                case "Broadcasting" :
-                    //let ticketB = new CBroadcastTicket(item);
-                    //console.log("TICKET BROADCAST : " + ticketB.getId() + "   :  " + ticketB.getType() +  "   :  " + ticketB.getTemplate()+":templ : ");
-                    //console.log(item);
-                    switch (item.getTemplate()) {
-                      case TEMPLATE_TYPE.PSBROADCAST :
-                        return (
-                          <View style={{marginBottom : 15}} >
-                            <FLTemplatePSBroadcast ticket={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'} screenWidth={0.95} />
-                          </View>
-                        );
-                      default:
-                        return null;
-                    };
-                    break;
-                case "Produit structuré" :
-                    //let ticketC = new CWorkflowTicket(item);
-                    //console.log("TICKET WORKFLOW : " + ticketC.getId() + "   :  " + ticketC.getType() +  "   :  " + ticketC.getTemplate());
-     
-                    switch (item.getTemplate()) {
-                      case TEMPLATE_TYPE.PSAPE : 
-                        return null;
-                      case TEMPLATE_TYPE.PSPP :         
-                        return (
-                          <View style={{ marginBottom : 15}} >
-                              <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Ticket'} screenWidth={0.95} />
-                          </View>
-                        );
-                      default : return null;
-                    };
-                    break;
-                default : return null;  
+              //on verifie si la selection est les tickets non lus et on ne montre pas les lus
+              if (this.state.filterSelected === 'UNREADTICKETS') {
+                let isNotified = this.props.isNotified('TICKET', item.getId());
+                if (!isNotified) {
+                  return null;
+                }
               }
-          }}
-          scrollEventThrottle={1}
-          onMomentumScrollBegin={this._onMomentumScrollBegin}
-          onMomentumScrollEnd={this._onMomentumScrollEnd}
-          onScrollEndDrag={this._onScrollEndDrag}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: this.state.scrollAnim } } }],
-            { useNativeDriver: true },
-          )}
-          ListFooterComponent={() => {
-            return (
-              <TouchableOpacity onPress={() => {
-                      Alert.alert("FinLive SAS","Copyright ©")
-                  }}
-                  style={{height : 100, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
 
-        <Animated.View style={[styles.navbar, { transform: [{ translateY: this.filterOnAir ? 0 : navbarTranslate }] }]}>
-         
-        <Animated.View style={{
-                  display: 'flex',
-                  backgroundColor: 'white',
-                  //borderRadius: 3,
-                  borderWidth:0,
-                  opacity: this.filterOnAir ? 1 : navbarOpacity,
-                  height: 45,
-                  marginTop: 0,
-                  width: DEVICE_WIDTH*1,
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}> 
-                  <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.925,flexDirection: 'row'}}>   
-                    <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
-                      <TouchableOpacity onPress={() => {
-                                  console.log("qsjhfjhdfjd");
-                      }}>
-                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:blueFLColor}}>Mes tickets</Text>    
+              switch(item.getType()) {
+                  case "Broadcasting" :
+                      //let ticketB = new CBroadcastTicket(item);
+                      //console.log("TICKET BROADCAST : " + ticketB.getId() + "   :  " + ticketB.getType() +  "   :  " + ticketB.getTemplate()+":templ : ");
+                      //console.log(item);
+                      switch (item.getTemplate()) {
+                        case TEMPLATE_TYPE.PSBROADCAST :
+                          return (
+                            <View style={{marginBottom : 15}} >
+                              <FLTemplatePSBroadcast ticket={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'} screenWidth={0.95} />
+                            </View>
+                          );
+                        default:
+                          return null;
+                      };
+                      break;
+                  case "Produit structuré" :
+                      //let ticketC = new CWorkflowTicket(item);
+                      //console.log("TICKET WORKFLOW : " + ticketC.getId() + "   :  " + ticketC.getType() +  "   :  " + ticketC.getTemplate());
+      
+                      switch (item.getTemplate()) {
+                        case TEMPLATE_TYPE.PSAPE : 
+                          return null;
+                        case TEMPLATE_TYPE.PSPP :         
+                          return (
+                            <View style={{ marginBottom : 15 , height : 250}} >
+                                <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Ticket'} screenWidth={0.95} />
+                            </View>
+                          );
+                        default : return null;
+                      };
+                      break;
+                  default : return null;  
+                }
+            }}
+            scrollEventThrottle={1}
+            onMomentumScrollBegin={this._onMomentumScrollBegin}
+            onMomentumScrollEnd={this._onMomentumScrollEnd}
+            onScrollEndDrag={this._onScrollEndDrag}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: this.state.scrollAnim } } }],
+              { useNativeDriver: true },
+            )}
+            ListFooterComponent={() => {
+              return (
+                <TouchableOpacity onPress={() => {
+                        Alert.alert("FinLive SAS","Copyright ©")
+                    }}
+                    style={{height : 250, justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+          
+          <Animated.View style={[styles.navbar, { transform: [{ translateY: this.filterOnAir ? 0 : navbarTranslate }] }]}>
+          
+          <Animated.View style={{
+                    display: 'flex',
+                    backgroundColor: 'white',
+                    //borderRadius: 3,
+                    borderWidth:0,
+                    opacity: this.filterOnAir ? 1 : navbarOpacity,
+                    height: 45,
+                    marginTop: 0,
+                    width: DEVICE_WIDTH*1,
+                    alignSelf: 'center',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}> 
+                    <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.925,flexDirection: 'row'}}>   
+                      <TouchableOpacity style={{flex: 0.1, height : 45, justifyContent: 'center', alignItems: 'flex-start'}}
+                                              onPress={() => {
+                                                this.setState ({ showModalDrawner : true });
+                                              }}
+                            >
+                                      <MaterialIcons name='filter-list' size={22} color={blueFLColor}/>
                       </TouchableOpacity>
-                    </View>   
+                      <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
+                        <TouchableOpacity onPress={() => {
+                                    console.log("qsjhfjhdfjd");
+                        }}>
+                          <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:blueFLColor}}>
+                          {filterDatas.map((f,i) => Object.keys(f)[0] === this.state.filterSelected ? Object.values(f)[0] : null)}  
+                          </Text>    
+                        </TouchableOpacity>
+                      </View>   
 
-                    <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
-                         onPress={() => {
-                          this.props.navigation.setParams({ hideBottomTabBar : true});
-                           this.setState ({ showModalTitle : !this.state.showModalTitle });
-                           this.filterOnAir = true;
-                            Animated.parallel([
-                              Animated.timing(
-                                  this.state.positionLeft,
+                      <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
+                          onPress={() => {
+                            this.props.navigation.setParams({ hideBottomTabBar : true});
+                            
+                            this.filterOnAir = true;
+                              Animated.parallel([
+                                Animated.timing(
+                                    this.state.positionLeft,
+                                      {
+                                        toValue: 0,
+                                        duration : 1000,
+                                        easing: Easing.elastic(),
+                                        speed : 1
+                                      }
+                                ),
+                                  /*Animated.timing(
+                                    this.state.categoryHeight,
                                     {
                                       toValue: 0,
                                       duration : 1000,
                                       easing: Easing.elastic(),
                                       speed : 1
                                     }
-                              ),
-                                /*Animated.timing(
-                                  this.state.categoryHeight,
-                                  {
-                                    toValue: 0,
-                                    duration : 1000,
-                                    easing: Easing.elastic(),
-                                    speed : 1
-                                  }
-                                )  */
-                            ]).start(() => {
-                              //force le render avec un changement de state dont on se fiche 
-                              //this.setState ({ showModalTitle : !this.state.showModalTitle });
-                              
+                                  )  */
+                              ]).start(() => {
   
+                            });
                               
-                          });
+                              if (this.inputSearch !== null && this.inputSearch !== undefined) {
+                                this.inputSearch.focus();
+                              }
                             
-                            if (this.inputSearch !== null && this.inputSearch !== undefined) {
-                              this.inputSearch.focus();
-                            }
-                           
 
-                        }}>  
-                          <MaterialIcons
-                            name='search' 
-                            size={25} 
-                            color={blueFLColor}
-                          />
-                      </TouchableOpacity>
-                      <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
-                                        onPress={() => {
-                                          alert("Vers ecran des notifs");
-                                        }}> 
-                         <Icon
-                            name='ios-notifications-outline' 
-                            size={25} 
-                            style={{color : blueFLColor}}
-                          />
-                      </TouchableOpacity>
-                    
-                  </View>
-                  <Animated.View style={{flexDirection:'row', top: 0, width: DEVICE_WIDTH, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
-                      <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
-                          <TouchableOpacity onPress={() => {
-                                       //this.setState ({ showModalTitle : !this.state.showModalTitle });
-                                       //console.log("SCROLL Y : "+ JSON.stringify(animation.scrollY));
-                                       this.filterOnAir = false;
-                                       
-                                        Animated.parallel([
-                                          Animated.timing(
-                                              this.state.positionLeft,
+                          }}>  
+                            <MaterialIcons name='search' size={25} color={blueFLColor} />
+                        </TouchableOpacity>
+          
+                      
+                    </View>
+                    <Animated.View style={{flexDirection:'row', top: 0, width: DEVICE_WIDTH, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
+                        <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
+                            <TouchableOpacity onPress={() => {
+                                        this.filterOnAir = false;
+                                        
+                                          Animated.parallel([
+                                            Animated.timing(
+                                                this.state.positionLeft,
+                                                  {
+                                                    toValue: DEVICE_WIDTH,
+                                                    duration : 1000,
+                                                    easing: Easing.elastic(),
+                                                    speed : 1
+                                                  }
+                                            ),
+                                              /*Animated.timing(
+                                                this.state.categoryHeight,
                                                 {
-                                                  toValue: DEVICE_WIDTH,
+                                                  toValue: 45,
                                                   duration : 1000,
                                                   easing: Easing.elastic(),
                                                   speed : 1
                                                 }
-                                          ),
-                                            /*Animated.timing(
-                                              this.state.categoryHeight,
-                                              {
-                                                toValue: 45,
-                                                duration : 1000,
-                                                easing: Easing.elastic(),
-                                                speed : 1
-                                              }
-                                            )  */
-                                        ]).start(() => {
-                                              //force le render avec un changement de state dont on se fiche 
-                                              this.setState ({ showModalTitle : !this.state.showModalTitle });
-                                              this.props.navigation.setParams({ hideBottomTabBar : false});
-                                        });
+                                              )  */
+                                          ]).start(() => {
+                                                //force le render avec un changement de state dont on se fiche 
+                                                
+                                                this.props.navigation.setParams({ hideBottomTabBar : false});
+                                          });
 
-                                        if (this.inputSearch !== null && this.inputSearch !== undefined) {
-                                          this.inputSearch.blur();
-                                        }
-                                        this.searchText = '';
-                                        //this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, '');
-                              }}>  
-                                <MaterialIcons
-                                      name='arrow-back' 
-                                      size={22} 
-                                      color='lightgray'
-                                      style={{paddingLeft: 20}}
-                                    />
-                            </TouchableOpacity>
-                       </View>
-                       <View style={{flex: 0.9}}>
-                          <TextInput 
-                              style={styles.inputText}
-                              placeholder={'Filtre ...'}
-                              placeholderTextColor={'#999'}        
-                              underlineColorAndroid={'#fff'}
-                              autoCorrect={false}
-                              //editable={false}
-                              onSubmitEditing={() => {
-                                this.props.navigation.setParams({ hideBottomTabBar : false});
-                                //this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
-                              }}
-                              ref={(inputSearch) => {
-                                //if (this.inputSearch !== null && this.inputSearch !== undefined) {
-                                  this.inputSearch = inputSearch;
-                                  //inputSearch.focus();
-                              //  }
-                              }}
-                              onChangeText={(text) => this.searchText = text}
-                            />
-                          </View>
-                  </Animated.View>                    
+                                          if (this.inputSearch !== null && this.inputSearch !== undefined) {
+                                            this.inputSearch.blur();
+                                          }
+                                          this.searchText = '';
+                                          //this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, '');
+                                }}>  
+                                  <MaterialIcons
+                                        name='arrow-back' 
+                                        size={22} 
+                                        color='lightgray'
+                                        style={{paddingLeft: 20}}
+                                      />
+                              </TouchableOpacity>
+                        </View>
+                        <View style={{flex: 0.9}}>
+                            <TextInput 
+                                style={styles.inputText}
+                                placeholder={'Filtre ...'}
+                                placeholderTextColor={'#999'}        
+                                underlineColorAndroid={'#fff'}
+                                autoCorrect={false}
+                                //editable={false}
+                                onSubmitEditing={() => {
+                                  this.props.navigation.setParams({ hideBottomTabBar : false});
+                                  //this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
+                                }}
+                                ref={(inputSearch) => {
+                                  //if (this.inputSearch !== null && this.inputSearch !== undefined) {
+                                    this.inputSearch = inputSearch;
+                                    //inputSearch.focus();
+                                //  }
+                                }}
+                                onChangeText={(text) => this.searchText = text}
+                              />
+                            </View>
+
+                    </Animated.View>                    
+              </Animated.View>
             </Animated.View>
-           </Animated.View>
-      </View>
+        </View>
       </SafeAreaView>
     );
   }
@@ -430,6 +575,7 @@ const composedPricerScreen = compose(
  withAuthorization(condition),
   withUser,
   withNavigation,
+  withNotification
 );
 
 //export default HomeScreen;

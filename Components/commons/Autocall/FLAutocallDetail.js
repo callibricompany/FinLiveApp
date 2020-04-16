@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, Dimensions, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput} from 'react-native';
+import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, Dimensions, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput, ActivityIndicator} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
@@ -28,6 +29,9 @@ import FLTemplateAutocall from "../Autocall/FLTemplateAutocall";
 
 import logo_white from '../../../assets/LogoWithoutTex_white.png';
 import logo from '../../../assets/LogoWithoutText.png';
+
+
+import FLAnimatedSVG from '../../commons/FLAnimatedSVG';
 
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../../Utils';
 
@@ -82,14 +86,11 @@ class FLAutocallDetail extends React.Component {
     this.autocall= this.props.autocall;
     //console.log(this.autocall.getObject());
     
-  console.log("NOMINAL : "+ this.autocall.getNominal());
+    console.log("NOMINAL : "+ this.autocall.getNominal());
     this.state = {
 
       nominal :  this.autocall.getNominal(),
       finalNominal :  this.autocall.getNominal(),
-
-      //affchage du modal description avant traiter
-      showModalDescription : false,
 
       //gestion des sections
       activeSections: [],
@@ -99,10 +100,12 @@ class FLAutocallDetail extends React.Component {
       keyboardHeight: 0,
       isKeyboardVisible: false,
 
-      //modal
+      //affchage du modal description avant traiter
       showModalDescription : false,
       description : '',
+      isAutomatique : true,
 
+      isLoading : false,
       toto : true,
     }
     
@@ -492,7 +495,7 @@ class FLAutocallDetail extends React.Component {
                   let y = evt.nativeEvent.pageY;
                   //si on a clické en dehors du module view cidessous on ferme le modal
                   let verifX = x < DEVICE_WIDTH*0.1  || x > DEVICE_WIDTH*0.9 ? true : false;
-                  let verifY = y < DEVICE_HEIGHT*0.15  || y > DEVICE_HEIGHT*0.55 ?true : false;
+                  let verifY = y < DEVICE_HEIGHT*0.35  || y > DEVICE_HEIGHT*0.75 ?true : false;
                   if (verifX || verifY) {
                     this.setState({showModalDescription : false})
                   }
@@ -509,8 +512,8 @@ class FLAutocallDetail extends React.Component {
                       borderColor : setColor(''),
                       borderRadius: 4,
                       width: DEVICE_WIDTH*0.8,
-                      height: DEVICE_HEIGHT*0.4,
-                      top:  DEVICE_HEIGHT*0.15,
+                      //height: DEVICE_HEIGHT*0.4,
+                      top:  DEVICE_HEIGHT*0.35,
                       left : DEVICE_WIDTH*0.1,
                       borderRadius: 4
 
@@ -518,11 +521,11 @@ class FLAutocallDetail extends React.Component {
                 >
 
 
-                  <View style={{flex:0.2, backgroundColor: setColor(''), alignItems:'center', justifyContent: 'center'}}>
+                  <View style={{backgroundColor: setColor(''), alignItems:'center', justifyContent: 'center', padding: 10}}>
                       <Text style={setFont('500',14,'white', 'Regular')}>INSTRUCTIONS DE COTATION</Text>
                   </View>
-                  <View style={{flex:0.6, backgroundColor: globalStyle.bgColor, alignItems:'flex-start', justifyContent: 'flex-start'}}>
-                      <Text style={[setFont('300', 12), {padding: 10}]}>Ajoutez vos instructions pour les émetteurs :</Text>
+                  <View style={{ backgroundColor: globalStyle.bgColor, alignItems:'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={[setFont('300', 14), {padding: 10}]}>Ajoutez vos instructions pour les émetteurs :</Text>
                       <View style={{backgroundColor: globalStyle.bgColor, borderWidth :0}}>
                         <TextInput  style={{color: 'black', textAlignVertical:'top', backgroundColor: 'white' , margin : 10, padding: 5, borderWidth :1, borderRadius: 2,width: DEVICE_WIDTH*0.8-20, height: DEVICE_HEIGHT*0.15}}
                                   multiline={true}
@@ -535,11 +538,25 @@ class FLAutocallDetail extends React.Component {
                         />
                       </View>
                   </View>
-                  <View style={{flex:0.2, alignItems:'center', justifyContent: 'center'}}>
+                  <View style={{flexDirection: 'row', backgroundColor: globalStyle.bgColor, borderWidth : 0, paddingLeft : 10, paddingRight : 10, paddingTop : 10}}>
+                      <View style={{flex: 0.8, borderWidth : 0}}>
+                          <Text style={setFont('300', 14, 'black')}>
+                              Avez-vous décrit une spécifité au produit non standard ?
+                          </Text>
+                      </View>
+                      <TouchableOpacity style={{flex: 0.2, alignItems:'center', justifyContent: 'center', borderWidth : 0}}
+                                        onPress={() => {
+                                          this.setState({ isAutomatique : !this.state.isAutomatique })
+                                        }}
+                      >
+                          <MaterialCommunityIcons name={this.state.isAutomatique ? "checkbox-blank-outline" : "check-box-outline"} size={25} />
+                      </TouchableOpacity>
+                  </View>
+                  <View style={{alignItems:'center', justifyContent: 'center', margin : 15}}>
                     <TouchableOpacity style={{backgroundColor: setColor('turquoise')}}
                                       onPress={() => {
                                         //on envoie le ticket 
-                                        this.setState({ isLoading : true });
+                                        this.setState({ isLoading : true , showModalDescription : false });
                                  
                                         
                                         let productToSend = this.autocall.getProduct();;
@@ -554,6 +571,9 @@ class FLAutocallDetail extends React.Component {
                                           productToSend['cf_step_ape'] = "APEDVB";
                                         }
                                     
+                                        //quel mode va rentrer le ticket
+                                        productToSend['cf_ps_mode'] = this.state.isAutomatique ? "Automatique" : "Specifique";
+
                                         //productToSend['UF'] = 0.03;
                                         //productToSend['UFAsso'] =0.001;
                                         //console.log(productToSend);
@@ -565,14 +585,14 @@ class FLAutocallDetail extends React.Component {
                                           //console.log(data.data);
                                           this.props.addTicket(data.data);
                                           console.log("TICKET AJOUTE");
-                                          this.setState({ isLoading : false , showModalDescription : false}, () => this.props.navigation.navigate('Tickets'));
+                                          this.setState({ isLoading : false }, () => this.props.navigation.navigate('Tickets'));
                                         })
                                         .catch(error => {
                                           console.log("ERREUR CREATION TICKET: " + error);
-                                          this.setState({ isLoading : false , showModalDescription : false}, () => alert('ERREUR CREATION DE TICKET', '' + error));
+                                          this.setState({ isLoading : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
                                           
                                         }) 
-                                
+                                        
                                       }}
                     >
                       <Text style={[setFont('400',14,'white', 'Bold'), {margin : 5}]}>ENVOYER LA DEMANDE</Text>
@@ -585,11 +605,15 @@ class FLAutocallDetail extends React.Component {
 
     );
   }
+
+
+
   render() { 
 
       return(
-            <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.1 : 1}}> 
+            <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : this.state.isLoading ? 0.2 : 1}}> 
               {this._renderModal()}
+              <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoading} text={String("création d'une demande de cotation").toUpperCase()}/>
               {this.autocall.getFinalNominal() === -1 ?
                   <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'white'}}>
                       <View style={{width : 0.6*DEVICE_WIDTH,  justifyContent: 'center'}}>

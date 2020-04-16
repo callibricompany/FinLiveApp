@@ -1,5 +1,5 @@
 import * as TEMPLATE_TYPE from '../constants/template';
-
+import { withNotification } from '../Session/NotificationProvider';
 
 
 
@@ -100,4 +100,7 @@ export class CObject {
 
         return name;
       }
+
+
+
 }

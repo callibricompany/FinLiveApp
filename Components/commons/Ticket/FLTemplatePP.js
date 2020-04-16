@@ -35,6 +35,7 @@ import 'numeral/locales/fr'
 import { withUser } from '../../../Session/withAuthentication';
 import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
+import { withNotification } from '../../../Session/NotificationProvider';
 import { compose, hoistStatics } from 'recompose';
 
 import Moment from 'moment';
@@ -105,7 +106,6 @@ class FLTemplatePP extends React.Component {
       toto : true,
     }
 
-
     //console.log(this.props.object);
 
     //type de tycket
@@ -133,8 +133,41 @@ class FLTemplatePP extends React.Component {
       this.ticket = null;
     }
 
-    this.labels = Array(this.ticket.getCurrentStepsDepth()).fill().map((_, index) => (""+index));
- 
+    //labels de la progression et détermination des boutons a montrer sur le stepde progression
+    this.nbOfStepsToShow = Math.min(6, this.ticket.getStepDepth());
+    this.labels = Array(this.nbOfStepsToShow).fill().map((_, index) => (""+index));
+    /*let currentStep = this.ticket.getCurrentCodeStep();
+    console.log(currentStep);
+    if (currentStep === 'PPSDSE' || currentStep === 'PPSDRO') {//offre echue ou refusée
+      this.nbOfStepsToShow = 5;
+      console.log("getStepDepth : " + this.ticket.getStepDepth());
+      console.log("getCurrentStepsDepth : "+this.ticket.getCurrentStepsDepth());
+    }*/
+    this.currentPositionToShow = this.ticket.getCurrentLevel();
+    this.show2ndButton = false;
+    this.show1stButton = false;
+    if (this.ticket.getStepDepth() > this.nbOfStepsToShow) { //il va falloir trogner le début et/ou la fin des steps
+      if (this.ticket.getCurrentLevel() + this.nbOfStepsToShow)
+      if (this.currentPositionToShow > 2) {
+        this.show1stButton = true;
+      // caca prout//
+      } 
+      if (this.ticket.getStepsToGoCount() > 3) {
+        this.show2ndButton = true;
+        
+      } 
+      
+      if (this.show1stButton) {
+        if (this.show2ndButton) {
+          this.currentPositionToShow = 2;
+        }
+        else{
+          this.currentPositionToShow = this.nbOfStepsToShow - this.ticket.getStepsToGoCount();
+        }
+      } 
+    }
+    console.log("Ticket Id : "+ this.ticket.getId() + " - Level : "+ this.ticket.getCurrentCodeStep() + " ("+ this.ticket.getCurrentLevel()+"/"+this.ticket.getStepDepth() + ") Stpets to go : " + this.ticket.getStepsToGoCount() + " - Level to show : "+ this.currentPositionToShow + " ( Left : "+ this.show1stButton +" || Right : " +this.show2ndButton+")");
+    //console.log(this.ticket.getSteps());
     //this.labels =  ["Cart","Delivery Address","Order Summary","Payment Method","Track","Track","Track","Track"];
   }
 
@@ -143,6 +176,7 @@ class FLTemplatePP extends React.Component {
   
     return (
       <View style={{flexDirection: 'row'}}>
+                 
                   <View style={{flex: 0.8, 
                                 paddingLeft : 20,  
                                 paddingTop: 3,
@@ -174,29 +208,35 @@ class FLTemplatePP extends React.Component {
     );
   }
 _renderHeaderMediumTemplate() {
-  
+  let isNotified = this.props.isNotified('TICKET', this.props.ticket.getId());
   return (
             <View style={{flexDirection: 'row', height : 70}}>
+               
                 <View style={{
                               flex : 0.9,
                               paddingLeft : 20,  
                               paddingRight : 3,
-                              paddingTop: 3,
+                              paddingTop:  3,
                               paddingBottom: 5,
                               backgroundColor: setColor('vertpomme'), 
                               borderTopLeftRadius: 10, 
                               //borderTopRightRadius: 10, 
                               borderBottomWidth :  0,
                               }}
-                >                                                    
-                      <View style={{justifyContent: 'center' }}>
+                >         
+                {  isNotified
+                    ?
+                      <View style={{position: 'relative', top : 25, left : -15, backgroundColor: setColor('subscribeticket'), width: 8, height: 8, borderRadius : 4, borderWidth : 1, borderColor: setColor('subscribeticket'), zIndex : 1}} />                                            
+                    : null 
+                }
+                      <View style={{justifyContent: 'center' , marginTop : isNotified ? -8 : 0}}>
 
               
                               <Text style={setFont('400', isAndroid() ? 16 : 18, 'white')} numberOfLines={2}>
                                   {this.ticket.getSubject()} 
                               </Text>
                         </View>
-                        <View style={{flex: 1, borderWidth: 0, justifyContent : 'flex-end', paddingTop : 3}}>
+                        <View style={{borderWidth: 0, justifyContent : 'flex-end', paddingTop : 3}}>
                                 <Text style={setFont('300', 14,  'white')}>
                                   Placement privé : {this.ticket.getType()} 
                                 </Text>
@@ -276,7 +316,7 @@ _renderMediumTemplate() {
                                 
                                   }}
                 >
-                    <Text style={[setFont('500',15, this.ticket.isUserTrigger() ? 'white' : 'gray', 'Bold'), {textAlign: 'center', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}]} numberOfLines={this.ticket.isUserTrigger() ? 1 : 2}>
+                    <Text style={[setFont('500',14, this.ticket.isUserTrigger() ? 'white' : 'gray', 'Bold'), {textAlign: 'center', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}]} numberOfLines={this.ticket.isUserTrigger() ? 1 : 2}>
                       {this.ticket.isUserTrigger() ? 'Répondre' : 'Demande\nen cours'}
                     </Text>
                 </TouchableOpacity>
@@ -292,12 +332,12 @@ _renderMediumTemplate() {
 
               <StepIndicator
                   customStyles={customStyles}
-                  currentPosition={this.ticket.getStepPosition()}
-                  labels={this.labels.slice(0,6)}
-                  stepCount={Math.min(this.labels.length, 6)}
+                  currentPosition={this.currentPositionToShow}
+                  labels={this.labels.slice(0,this.nbOfStepsToShow)}
+                  stepCount={this.nbOfStepsToShow}
                   renderLabel={({position, label}) => {
                     switch(position) {
-                      case this.ticket.getStepPosition() :
+                      case this.currentPositionToShow :
                         let duedate = this.ticket.getDueBy();
                         //console.log(duedate);
                         if (duedate > Date.now()) {
@@ -328,21 +368,39 @@ _renderMediumTemplate() {
                       default : 
                         return null;
                     }
-                  
-            
                   }}
                   renderStepIndicator={({position}) => {
-                    //console.log("POSITION : "+position +" / " + );
-                    if ((position+1) === Math.min(this.labels.length, 6)){   //derniere position
-                        return (
-                              <View style={{backgroundColor: 'white', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
-                        );
-                    } else if (position === Math.min(this.labels.length, 6) - 2) {//avant-dernier
-                        return (
+                    //console.log("POSITION : "+position +" / " +this.labels.length);
+ 
+                    switch (position) {
+                      case 1 :
+                        if (this.show1stButton){
+                          return (
+                            <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
+                                <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
+                            </View>  
+                          );  
+                        }
+                        break;    
+                      case 4 :
+                          if (this.show2ndButton){
+                            return (
                               <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
                                   <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
                               </View>  
-                        );  
+                            );  
+                          }
+                          break;
+                      case this.nbOfStepsToShow -1 :
+                            if (this.show2ndButton){
+                              return (
+                                <View style={{backgroundColor: 'white', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
+                              );  
+                            }
+                            break;
+                      default :
+                        return null;
+                        break;
                     }
                     return null;
                   }}
@@ -392,9 +450,9 @@ _renderFooterFullTemplate() {
   );
 }
 _renderFooterMediumTemplate(isFavorite) {
-
+ 
   return (
-        <View style={{flex : 0.10, flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 2, paddingBottom : 2, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+        <View style={{flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 2, paddingBottom : 2, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
                 <View style={{paddingLeft : 15}}>
                  
                  <Text style={setFont('200', 12)}>
@@ -439,18 +497,20 @@ _renderFooterMediumTemplate(isFavorite) {
 
 
 render () {
+
       if (this.ticket == null) {
+        
         return null;
       }
       //check if it is in favorites
       let isFavorite = false;
       isFavorite = this.ticket.isFavorite(this.props.favorite);
-      
-    
+       
       let render = <View></View>;
+
       switch (this.type) {
         case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE : 
-            render = <View>
+            render = <View style={{flexDirection : 'column'}}>
                           {this._renderHeaderMediumTemplate()}
                           {this._renderMediumTemplate()}
                           {this._renderFooterMediumTemplate(isFavorite)}
@@ -470,7 +530,9 @@ render () {
 
 
       return (
-            <View style={{flexDirection : 'column', 
+            <View style={{ 
+                          //flex: 1,
+                          
                           width: this.screenWidth, 
                           //marginLeft : 0.025*DEVICE_WIDTH,
                           shadowColor: 'rgb(75, 89, 101)',
@@ -499,7 +561,8 @@ render () {
   const composedWithNav = compose(
     withAuthorization(condition),
      withNavigation,
-     withUser
+     withUser,
+     withNotification
    );
    
    //export default HomeScreen;

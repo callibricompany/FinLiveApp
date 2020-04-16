@@ -8,6 +8,9 @@ export class  CWorkflowTicket extends CTicket {
   constructor(ticket) {
     super(ticket); // appelle le constructeur parent avec le paramètre
     //console.log("constructeur workflow");
+    if (ticket.id === 152) {
+      console.log(ticket.currentStep);
+    }
     switch(ticket.type) {
       case "Produit structuré": 
         //on remet le bon template
@@ -34,6 +37,8 @@ export class  CWorkflowTicket extends CTicket {
     this._previousStepsTab = [];
     this.currentStep = ticket.currentStep[0];
     this.previousSteps=[];
+
+ 
   }
 
   getWorkflowName() {
@@ -65,20 +70,32 @@ export class  CWorkflowTicket extends CTicket {
   }
 
   //calcule l'a position ou l'on se trouve dans les steps
-  getStepPosition() {
+  getCurrentLevel() {
 
     return this.currentStep.level;
   }
 
   //calcule le nombre maximums de steps restants
-  getCurrentStepsDepth() {
-    let toto = [
+  getStepsToGoCount() {
+
+    return (this.getStepDepth() - this.currentStep.level - 1);
+  }
+
+  //calcule le nombre maximums de steps 
+  getStepDepth() {
+    let s = [
       ...new Set(this.steps.map(x => x.level))
     ];
-    return Math.max(...toto);
+    //return Math.max(...toto);
     //return this._getStepsDepth(this.getCurrentCodeStep());
+    
+    if (this.getCurrentCodeStep() === 'PPSDSE' || this.getCurrentCodeStep() === 'PPSDRO') {//offre echue ou refusée
+      return 6;
+    }
+    return s.length;
   }
-  _getStepsDepth(code) {
+
+  /*_getStepsDepth(code) {
     //retrouve le code du step
     let steps = this.steps.filter(({codeStep}) => codeStep === code);
 
@@ -100,7 +117,7 @@ export class  CWorkflowTicket extends CTicket {
     console.log(tabMax);
     return (Math.max(...tabMax));
 
-  }
+  }*/
  
   getUF() {
     return this.ticket['custom_fields']['cf_rtro'] === null ? 0 : this.ticket['custom_fields']['cf_rtro'];

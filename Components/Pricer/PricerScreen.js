@@ -10,6 +10,7 @@ import AnimatedProgressWheel from 'react-native-progress-wheel';
 import { globalStyle, setColor, backgdColor, FLFontFamily, subscribeColor, setFont, headerTabColor } from '../../Styles/globalStyle'
 
 import Robot from "../../assets/svg/robotBlink.svg";
+import FLAnimatedSVG from '../commons/FLAnimatedSVG';
 
 import { ifIphoneX, ifAndroid, isAndroid, isIphoneX, isEqual } from '../../Utils';
 import { interpolateBestProducts } from '../../Utils/interpolatePrices';
@@ -44,7 +45,6 @@ import { FLBadge } from '../commons/FLBadge'
 import botImage from '../../assets/bot.png'
 
 import { searchProducts } from '../../API/APIAWS';
-
 
 
 import FLBottomPanel from '../commons/FLBottomPanel';
@@ -1093,7 +1093,7 @@ render() {
               </View>
           );
     }
-
+    // <FLAnimatedSVG name={'robotFlash'} visible={this.state.isLoading} text={this.state.messageLoading}/>
     
     let dataOptions = ['SRP', 'Shadow'];
     return (
@@ -1107,6 +1107,7 @@ render() {
               </TouchableOpacity>
           </View>
           */}
+         
 
           <View style={[globalStyle.bgColor, {flex:1, borderWidth:0, justifyContent: 'space-between', marginTop:  isAndroid() ? 0 : STATUSBAR_HEIGHT}]}>
 

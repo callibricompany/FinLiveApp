@@ -19,6 +19,7 @@ import { setFont, setColor , backgdColor } from '../../../Styles/globalStyle';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 import { withAuthorization } from '../../../Session';
+import { withNotification } from '../../../Session/NotificationProvider';
 import { withNavigation } from 'react-navigation';
 import { withUser } from '../../../Session/withAuthentication';
 import { withFirebase } from '../../../Database';
@@ -41,12 +42,13 @@ import HTMLView from 'react-native-htmlview';
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
 
-
+import { Dropdown } from 'react-native-material-dropdown';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import { CTicket } from '../../../Classes/Tickets/CTicket';
 
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -68,9 +70,6 @@ class FLTicketDetail extends React.Component {
       nominal :  this.autocall.getNominal(),
       finalNominal :  this.autocall.getNominal(),
 
-      //affchage du modal description avant traiter
-      showModalDescription : false,
-
 
       //messages des conversations
       messages : [],
@@ -80,8 +79,7 @@ class FLTicketDetail extends React.Component {
       isKeyboardVisible: false,
 
       //modal
-      showModalDescription : false,
-      description : '',
+      showModalDrawnerPriority : false,
 
       //gestion des conversations et notes
       notes : [],
@@ -95,8 +93,7 @@ class FLTicketDetail extends React.Component {
         { key: 'DETAIL', title: 'Détail' },
         { key: 'ACTIVITY', title: 'Activité' },
         { key: 'CONVERSATION', title: 'Conversation' },
- 
-        { key: 'DOCUMENTS', title: 'docs' },
+        { key: 'DOCUMENTS', title: 'Docs' },
       ]
     }
     
@@ -117,7 +114,6 @@ class FLTicketDetail extends React.Component {
 
     //chargement de la conversation
     this.setState({ isLoading : true });
-
     getConversation(this.props.firebase, this.ticket.getId())
     .then((data) => {
 
@@ -131,6 +127,10 @@ class FLTicketDetail extends React.Component {
       this.setState({ isLoading : false });
       
     }) 
+
+    //on specifie que le ticket est lu
+    this.props.removeNotification('TICKET', this.ticket.getId());
+
 
     this.setState({
       messages: [
@@ -267,9 +267,11 @@ class FLTicketDetail extends React.Component {
                </View>  
                <View style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'center'}}>
                     <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5, justifyContent: 'center', alignItems: 'center'}} />
-                    <View style={{paddingLeft: 2, justifyContent: 'center', alignItems: 'center'}}>
+                    <TouchableOpacity style={{paddingLeft: 2, justifyContent: 'center', alignItems: 'center'}}
+                                      onPress={() => this.setState( {showModalDrawnerPriority : true })}
+                    >
                         <Text style={setFont('200', 12)}>{this.ticket.getPriority().name}</Text>
-                    </View>
+                    </TouchableOpacity>
                </View>  
 
           </View>
@@ -417,13 +419,13 @@ class FLTicketDetail extends React.Component {
               //labelStyle={setFont('300', 12)}
               renderLabel={({ route, focused }) => {
                 switch(route.key) {
-                  case 'DOCUMEN':
+                  case 'DOCUME':
                     return <MaterialCommunityIcons name={'file-document-outline'} size={30} style={{color: focused ? 'black' : setColor('light')}}/>;  
                   default:
-                    return  <View><Text style={setFont('300', 12, focused ? 'black' : setColor('light'), focused ? 'Regular': 'Light')}>{route.title}</Text></View>;
+                    return  <View style={{borderWidth: 0, marginLeft : -10, marginRight : -10}}><Text style={[setFont('300', 14, focused ? 'black' : setColor(''), focused ? 'Regular': 'Light'),{textAlign: 'center'}]} numberOfLines={1}>{route.title}</Text></View>;
                 }
               }}
-              tabStyle={{width: DEVICE_WIDTH/(this.state.routes.length)}}
+              tabStyle={{flex: 1, width: DEVICE_WIDTH/(this.state.routes.length), justifyContent : 'center', alignItems : 'stretch', borderWidth : 0}}
               //tabStyle={{width:'auto'}}
               {...props}
         />
@@ -452,11 +454,93 @@ class FLTicketDetail extends React.Component {
     });
   }
 
-  render() { 
 
+  _renderModalDrawnerPriority () {
+    return (
+      <Modal  animationType="slide" transparent={true} visible={this.state.showModalDrawnerPriority}
+              onRequestClose={() => {
+              console.log('Modal has been closed');
+            }}
+      >
+          <View 
+              style={{flex:1, backgroundColor:'transparent'}} 
+              onStartShouldSetResponder={() => true}
+              onResponderRelease={(evt) =>{
+                let x = evt.nativeEvent.pageX;
+                let y = evt.nativeEvent.pageY;
+                //si on a clické en dehors du module view cidessous on ferme le modal
+                let verifX = x < DEVICE_WIDTH*0  || x > DEVICE_WIDTH ? true : false;
+                let verifY = y < DEVICE_HEIGHT*0.65  || y > DEVICE_HEIGHT ? true : false;
+                if (verifX || verifY) {
+                  //console.log("passe la ");
+                  this.setState({showModalDrawnerPriority : false})
+                }
+              }}
+          >
+            <View style={{ flexDirection: 'column',backgroundColor: 'white', borderWidth :0, borderColor : 'black', borderRadius:5,width: DEVICE_WIDTH, height: DEVICE_HEIGHT*0.35, top:  DEVICE_HEIGHT*0.65, left : DEVICE_WIDTH*0}}>
+                <View style={{ marginTop : 15, justifyContent : 'center', alignItems: 'flex-start', paddingLeft : 15}}>
+                        <Text style={setFont('200', 12, 'gray')}>
+                            {String('priorité').toUpperCase()}
+                        </Text>
+                </View>
+                {CTicket.PRIORITY().map((s,i) => {
+                      
+                      let isSelected = this.ticket.getPriority().id === s.id;
+                      
+                      return (
+                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}}
+                                          onPress={() => {
+                                              if(!isSelected) {
+                                                this.ticket.setPriority(s.id);
+                                                var productcharacmodif = {
+                                                  priority: s.id,
+                                                  idTicket: this.ticket.getId()
+                                                };
+                                                
+                                                ssModifyTicket(this.props.firebase, productcharacmodif);
+                                                this.setState( {showModalDrawnerPriority : false });
+                                              }
+                                          }}
+                        >
+                              <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
+                                <View style={{borderWidth : 1, backgroundColor : s.color, borderColor : s.color, height : 8, width : 8, borderRadius : 4}} />
+                              </View>
+                              <View style={{flex : isSelected ? 0.7 : 0.9, justifyContent : 'center', alignItems: 'flex-start', paddingLeft : 15}}>
+                                  <View style={{flexDirection: 'row'}}>
+                                      <View>
+                                          <Text style={setFont('200', 16, 'black', isSelected ? 'Bold' : 'Regular')}>
+                                              {s.name}
+                                          </Text>
+                                      </View>
+                                  </View>
+                              </View>
+                              {isSelected  
+                                ?
+                                    <View style={{flex: 0.2, justifyContent : 'center', alignItems: 'flex-start'}}>
+                                      <MaterialCommunityIcons name='check' size={22} color={setColor('vertpomme')}/>
+                                    </View>
+                                : null
+                              }
+                        </TouchableOpacity>
+                      );
+                    })
+                }
+
+            </View>
+          </View>
+      </Modal>
+    );
+  }
+
+
+
+  render() { 
+      let dataOptions = ['PRIORITY', 'PRODUCT', 'CANCEL'];
       return(
-            <View style={{flex:1, flexDirection : 'column', height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : 1}}> 
+            <View style={{flex:1, flexDirection : 'column', height: DEVICE_HEIGHT, opacity: this.state.showModalDrawnerPriority ? 0.3 : 1}}> 
+              
               <View style={{flexDirection : 'row', paddingLeft : 10, backgroundColor: setColor('vertpomme'), paddingTop: isAndroid() ?  0 : STATUSBAR_HEIGHT, padding : 5, alignItems: 'flex-start',justifyContent: 'space-between'}}>
+                      {this._renderModalDrawnerPriority()}
                       <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', padding : 5}}
                                         onPress={() => this.props.navigation.goBack()}
                       >
@@ -468,9 +552,85 @@ class FLTicketDetail extends React.Component {
                            
                       </View>
                       <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.025*DEVICE_WIDTH}}>
-                              <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
-                                  <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
-                              </TouchableOpacity>
+
+                                  <ModalDropdown
+                                                //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                                                //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
+                                                dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                                                dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
+                                                onSelect={(index, value) => {
+                                                  switch(value) {
+                                                    case 'PRIORITY' : 
+                                                      this.setState({ showModalDrawnerPriority : true });
+                                                      break;
+                                                    deafult : break;
+                                                  }
+                                                }}
+                                                adjustFrame={(f) => {
+                                                  return {
+                                                    width: DEVICE_WIDTH/2,
+                                                    height: Math.min(DEVICE_HEIGHT/3, dataOptions.length * 40),
+                                                    left : f.left,
+                                                    right : f.right,
+                                                    top: f.top,
+                                                  }
+                                                }}
+                                                renderRow={(option, index, isSelected) => {
+                                                  switch(option) {
+                                                    case 'PRIORITY' :
+                                                          return (
+                                                                  <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start', height: 40}}>
+                                                                      <Text style={setFont('500', 14, setColor(''), 'Regular')}>Changer la priorité</Text>
+                                                                  </View>
+                                                          );
+                                                    case 'PRODUCT' :
+                                                          return (
+                                                              <View style={{flexDirection : 'row', height: 40}}>
+                                                                  <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                                      <Text style={setFont('500', 16, setColor(''), 'Bold')}>Voir le produit</Text>
+                                                                  </View>
+                                                                  <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+                                                                                    onPress={() => {
+                                                                                      //  this.setState({ searchSRP : !this.state.searchSRP });
+                                                                                    }}
+                                                                  >
+                                                                      <FontAwesome name={"toggle-on"}  size={25} style={{color: setColor('')}}/> 
+                                                                  </TouchableOpacity>
+                                                              </View>
+                                                          );
+                                                      case 'CANCEL' :
+                                                        return (
+                                                            <View style={{flexDirection : 'row', height: 40}}>
+                                                                <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                                    <Text style={setFont('500', 16, setColor(''), 'Bold')}>Annuler ma demande</Text>
+                                                                </View>
+                                                                <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+                                                                                  onPress={() => {
+                                                                                    //  this.setState({ searchSRP : !this.state.searchSRP });
+                                                                                  }}
+                                                                >
+                                                                    <FontAwesome name={"toggle-on"}  size={25} style={{color: setColor('')}}/> 
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                        );
+                                                    default : 
+                                                            return (
+                                                              <View style={{paddingLeft : 4, paddingRight : 4, height: 40, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                                <Text style={setFont('500', 16, 'gray', 'Regular')}>{option}</Text>
+                                                              </View>
+                                                          );
+                                                  }
+                      
+                                                }}
+                                                //defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
+                                                options={dataOptions}
+                                                //ref={component => this._dropdown['options'] = component}
+                                                disabled={false}
+                              >
+                                  <View style={{ borderWidth : 0, width : 0.1*DEVICE_WIDTH,  height: 40, justifyContent: 'center', alignItems: 'center'}}>
+                                    <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
+                                  </View>
+                              </ModalDropdown>
                       </View>
               </View>
               <View style={{ paddingRight : 10, paddingLeft : 10, paddingBottom : 10,backgroundColor: setColor('vertpomme'), alignItems: 'center',justifyContent: 'center'}}>
@@ -502,7 +662,8 @@ const composedFLTicketDetail = compose(
  // withAuthorization(condition),
   withNavigation,
   withFirebase,
-  withUser
+  withUser,
+  withNotification
 );
 
 //export default HomeScreen;

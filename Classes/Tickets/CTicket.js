@@ -47,7 +47,7 @@ export class CTicket extends CObject {
 
       this.conversations.forEach((c) => {
         if (c.source === 2000 || c.source === 15) {
-          console.log(c);
+          //console.log(c);
           notes.push(c);
         } 
       });
@@ -113,6 +113,10 @@ export class CTicket extends CObject {
     getPriority() {
       //priorite FD
        return CTicket.PRIORITY().filter(({id}) => id === this.ticket.priority)[0];
+    }
+
+    setPriority(priority) {
+      this.ticket['priority'] = priority;
     }
 
     //est-ce que le ticket a été vu ou pas 
@@ -182,17 +186,17 @@ export class CTicket extends CObject {
        "color" : "green"
      },
      {
-       "name": "Normal",
+       "name": "Normale",
        "id": 2,
        "color" : setColor(''),
      },
      {
-       "name": "Accéléré",
+       "name": "Accélérée",
        "id": 3,
        "color" : "pink"
      },
      {
-       "name": "Urgent",
+       "name": "Urgente",
        "id": 4,
        "color" : "red"
      }
@@ -200,9 +204,55 @@ export class CTicket extends CObject {
    return data;
   }
 
-  static compareLastUpdate(a, b) {
+  static compareLastUpdateDown(a, b) {
     let comparison = -1;
+
     if (a.getLastUpdateDate() < b.getLastUpdateDate()) {
+      comparison = 1;
+    } 
+    return comparison;
+  }
+
+  static compareLastUpdateUp(a, b) {
+    let comparison = -1;
+
+    if (a.getLastUpdateDate() > b.getLastUpdateDate()) {
+      comparison = 1;
+    } 
+    return comparison;
+  }
+
+  static compareCeationDateDown(a, b) {
+    let comparison = -1;
+
+    if (a.getCreationDate() < b.getCreationDate()) {
+      comparison = 1;
+    } 
+    return comparison;
+  }
+
+  static compareCeationDateUp(a, b) {
+    let comparison = -1;
+
+    if (a.getCreationDate() > b.getCreationDate()) {
+      comparison = 1;
+    } 
+    return comparison;
+  }
+
+  static compareDueDateDown(a, b) {
+    let comparison = -1;
+
+    if (a.getDueBy() < b.getDueBy()) {
+      comparison = 1;
+    } 
+    return comparison;
+  }
+
+  static compareDueDateUp(a, b) {
+    let comparison = -1;
+
+    if (a.getDueBy() > b.getDueBy()) {
       comparison = 1;
     } 
     return comparison;

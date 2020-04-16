@@ -11,10 +11,12 @@ import {
   Alert,
   Dimensions
 } from "react-native";
+import { NavigationActions } from 'react-navigation';
 
 import { FLScrollView } from "../SearchBar/searchBarAnimation";
 
 import { withAuthorization } from '../../Session';
+import { withNotification } from '../../Session/NotificationProvider';
 import { withUser } from "../../Session/withAuthentication";
 import { withNavigation } from "react-navigation";
 import { compose, hoistStatics } from "recompose";
@@ -25,7 +27,7 @@ import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 import RobotBlink from "../../assets/svg/robotBlink.svg";
 
 
-import { setFont } from "../../Styles/globalStyle";
+import { setFont, setColor } from "../../Styles/globalStyle";
 
 import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
 import FLTemplateEmpty from "../commons/Autocall/FLTemplateEmpty";
@@ -61,6 +63,9 @@ class TabHome extends React.PureComponent {
 
       //gestion affichage activityindicator en fin des flatlist
       apeSRPRefreshing : false,
+
+      //rentre le nombre de ticket non lus
+      allNotificationsCount : this.props.notificationList.length,
     };
 
     this.bestCoupons = [];
@@ -89,30 +94,24 @@ class TabHome extends React.PureComponent {
           break;
       }
     });
-    this.tickets.sort(CTicket.compareLastUpdate);
+    this.tickets.sort(CTicket.compareLastUpdateDown);
 
-    //console.log(this.allProducts[0]);
-    /* this.allProducts.forEach((product) => {
-        //console.log(product);
-        switch(product.template) {
-            case 'PSLIST' :
-              product['obj'] = new CAutocall(product.data);
-              break;
-            default : break;
-        }
-      });*/
     //le produit-ticket est filtre ou pas
     this.isFiltered = false;
+
+    //
   }
 
   UNSAFE_componentWillReceiveProps(props) {
-    //console.log("RECEIVE PROPS HOME : "+ props.filters);
+    console.log("RECEIVE PROPS HOME : ");
+    this.setState({ allNotificationsCount :props.notificationList.length });
     this.setState({ scrollTo: props.marginSearch, refreshing: false });
     typeof props.filters !== "undefined"
       ? this.updateFilters(props.filters)
       : null;
   }
 
+  
   componentDidMount(){
     //chargement des meilleurs coupons
     let allUnderlyings = this.props.getAllUndelyings();
@@ -289,22 +288,33 @@ class TabHome extends React.PureComponent {
 
             {this.tickets.length !== 0  ?
                 <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
-                  <View style={{marginLeft: DEVICE_WIDTH * 0.025, marginRight: DEVICE_WIDTH * 0.025, alignItems: "flex-start", borderWidth: 0}}>
+                  <TouchableOpacity style={{marginLeft: DEVICE_WIDTH * 0.025, marginRight: DEVICE_WIDTH * 0.025, alignItems: "flex-start", borderWidth: 0}}
+                                    onPress={()=>{
+                                      this.props.navigation.dispatch(NavigationActions.navigate({
+                                        routeName: 'Tickets',
+                                        action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
+                                      }));
+                                      //this.props.navigate('Tickets');
+                                    }}
+                  >
                     <Text style={setFont("400", 18, "black", "FLFontFamily")}>
                       Mes tickets en cours
                     </Text>
-                  </View>
+                  </TouchableOpacity>
                   <FlatList
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
                     contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
                     data={this.tickets}
+                    extraData={this.state.allNotificationsCount}
                     horizontal={true}
                     renderItem={({ item, index }) => {
                       
+                      //let isNotified = this.props.isNotified('TICKET', item.getId());
+                      //console.log("Notifié : " + isNotified + " - " + item.getId());
                       switch(item.getType()) {
                         case "Broadcasting" :
-                        console.log("TEMPLATE : " + item.getTemplate());
+                        
                             switch (item.getTemplate()) {
                               case TEMPLATE_TYPE.PSBROADCAST :
                                 return (
@@ -322,8 +332,9 @@ class TabHome extends React.PureComponent {
                                 return null;
                               case TEMPLATE_TYPE.PSPP :         
                                 return (
-                                  <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
-                                      <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'}/>
+                                  <View style={{marginLeft: DEVICE_WIDTH * 0.025,}}>
+                   
+                                    <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'}/>
                                   </View>
                                 );
                               default : return null;
@@ -496,7 +507,8 @@ const condition = authUser => !!authUser;
 const composedWithNav = compose(
   withAuthorization(condition),
   withNavigation,
-  withUser
+  withUser,
+  withNotification
 );
 
 //export default HomeScreen;

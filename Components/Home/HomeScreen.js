@@ -16,7 +16,7 @@ import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
-
+import { withNotification } from '../../Session/NotificationProvider'; 
 
 
 import { SearchBarProvider } from '../SearchBar/searchBarAnimation';
@@ -86,19 +86,23 @@ const initialLayout = {
         //or
         StatusBar.setBarStyle('dark-content')
       });
+
+      this._loadAllUserIndos();
+      
     }
     componentWillUnmount() {
       this._navListener.remove();
     }
 
     UNSAFE_componentWillMount () {
-      this._loadAllUserIndos();
+      //this._loadAllUserIndos();
     }
 
     async _loadAllUserIndos() {
       //console.log(CATEGORIES);
       try {
         await this.props.getUserAllInfo();
+        //this.props.resetCurrentNotification();
         this.setState({ isServerOk : true, isLoading: false});
       } catch(error) {
         console.log("ERREUR RESEAU : "+error);
@@ -212,7 +216,7 @@ const initialLayout = {
           </Animated.View>
         );
       }
-
+      return null;
       return (
            <TouchableOpacity style={{height : 200, width: 200}}
                              onPress={() => {
@@ -318,7 +322,8 @@ const condition = authUser => !!authUser;
 const composedWithNavAndAuthorization = compose(
  withAuthorization(condition),
   withNavigation,
-  withUser
+  withUser,
+  withNotification
 );
 
 //export default HomeScreen;

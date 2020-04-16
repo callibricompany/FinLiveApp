@@ -31,7 +31,7 @@ import { Icon } from 'native-base';
 
 import { blueFLColor, FLFontFamily, setFont, setColor} from '../Styles/globalStyle';
 
-import { withUser } from '../Session/withAuthentication';
+
 
 import Numeral from 'numeral';
 
@@ -355,6 +355,7 @@ function labelStyle (focused, tintColor) {
         
         if (params.hasOwnProperty('badge')){
             badgeCount = params['badge'];
+            //console.log("HANDLE BADGES : " + badgeCount);
             if (Numeral(badgeCount).value() > 99) {
               badgeCount = '+99';
             }

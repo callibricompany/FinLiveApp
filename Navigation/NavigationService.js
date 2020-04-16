@@ -18,6 +18,7 @@ function navigate(routeName, params) {
 function handleBadges(key, count) {
 
   //console.log(_navigator);
+
   _navigator.dispatch(NavigationActions.setParams({
     key ,
     params: { badge: count }

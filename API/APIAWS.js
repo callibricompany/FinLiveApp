@@ -2,7 +2,7 @@
 import axios from 'axios'
 const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
 const URL_FAKE_JSON ="";
-const URL_AWS = "http://99.80.211.255:8080"
+export const URL_AWS = "http://99.80.211.255:8080"
 
 export function getFilmsFromApiWithSearchedText (text) {
   const url = 'http://34.245.143.173:8080'
@@ -75,7 +75,10 @@ export function getOpenTickets () {
   );*/
 }
 
-
+///////////////////////////
+//    USER
+//    creation
+///////////////////////////
 export function ssCreateUser (idToken, email, name, firstName, phone, independant, company, organization) {
   let userIdentity = {
     email: email,
@@ -97,8 +100,6 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
     }
   };
 
-
-  console.log("APPELLE AXIOS");
   return new Promise(
     (resolve, reject) => {
       axios.post(URL_AWS + '/createUser', userIdentity, axiosConfig)
@@ -114,6 +115,12 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
     });
   }
 
+
+
+///////////////////////////
+//    TICKET
+//    creation de ticket
+///////////////////////////
 export function ssCreateStructuredProduct (firebase, product) {
 
   var FormData = require('form-data');
@@ -123,7 +130,6 @@ export function ssCreateStructuredProduct (firebase, product) {
     //console.log(key + "   -   " + product[key]);
     form.append(key, typeof product[key] != 'boolean' ? product[key] : product[key].toString());
   });
-
 
   //console.log("BOUNDARY : "+form._boundary);
   //var filesuploaded = req.files;
@@ -135,10 +141,6 @@ export function ssCreateStructuredProduct (firebase, product) {
           // formData.append('fileinput', filesuploaded[i].buffer, { filename : filesuploaded[i].originalname });
         }
   }*/
-  
-
-
-
 
   return new Promise((resolve, reject) => {
     firebase.doGetIdToken()
@@ -169,38 +171,60 @@ export function ssCreateStructuredProduct (firebase, product) {
   });
 }
 
+///////////////////////////
+//    TICKET
+//    modification
+///////////////////////////
+export function ssModifyTicket (firebase, product) {
 
-export function ssModifyTicket (idToken, product) {
+  var FormData = require('form-data');
+  var form = new FormData();
 
-    var FormData = require('form-data');
-    var form = new FormData();
-  
+  Object.keys(product).forEach(key => {
+    console.log(key + "   -   " + product[key]);
+    form.append(key, typeof product[key] != 'boolean' ? product[key] : product[key].toString());
+  });
 
-
-    var axiosConfig = {
-      headers :{
-        //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
-        'bearer'      : idToken,
-      }
-    };
-  
-  
-    return new Promise(
-      (resolve, reject) => {
-        axios.post(URL_AWS + '/modifyticket', product, axiosConfig)
+  return new Promise((resolve, reject) => {
+    firebase.doGetIdToken()
+    .then(token => {
+        var axiosConfig = {
+          headers :{
+            //'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json; charset=utf-8',
+            //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+            'Accept'      : 'application/json',
+            'bearer'      : token,
+            //'type'        : 'Produit structuré'
+          }
+        };
+        /*var axiosConfig = {
+          headers :{
+            'Content-Type'  : `multipart/form-data; boundary=${form._boundary}`,
+            'bearer'        : token,
+          }
+        };  */
+        axios.post(URL_AWS + '/modifyTicket', product, axiosConfig)
         .then((response) => {
           //console.log(response);
           resolve(response)
           //res.render('pages/register',{email: email, isConnected: isConnected});
         })
         .catch(function (error) {
-          console.log("Erreur requete aws (modifyticket): " + error);
+          console.log("Erreur requete aws : " + error);
           reject(error)
         });
-      });
+    })
+    .catch((error) => reject(error));
+    
+  });
 }
-  
 
+  
+///////////////////////////
+//    TICKET
+//    getConversation
+///////////////////////////
 export function getConversation (firebase, idTicket) {
 
     var FormData = require('form-data');
@@ -241,8 +265,12 @@ export function getConversation (firebase, idTicket) {
       });
 }
 
-export function getTicket (firebase, idTicket) {
 
+///////////////////////////
+//    TICKET
+//    retourne un ticket unique
+///////////////////////////
+export function getTicket (firebase, idTicket) {
   return new Promise(
     (resolve, reject) => {
 
@@ -271,6 +299,11 @@ export function getTicket (firebase, idTicket) {
     });
 }
 
+
+///////////////////////////
+//    INFOS DE DEPART
+//    retiourne toutes les infos
+///////////////////////////
 export function getUserAllInfoAPI (idToken, device) {
   var axiosConfig = {
     headers :{
@@ -395,6 +428,37 @@ export function searchProducts (firebase, criteria) {
           })
           .catch(function (error) {
             console.log("Erreur requete prix aws : " + error);
+            reject(error)
+          });
+      })
+      .catch((error) => reject(error));
+    });
+  }
+
+
+/**************************************
+         NOTIFICATIONS
+*/
+export function deleteNotification (firebase, type, id) {
+
+
+  
+  return new Promise(
+    (resolve, reject) => {
+
+      firebase.doGetIdToken()
+      .then(token => {
+
+          axios.delete(URL_AWS + "/notification", {  headers:{'Content-Type': 'application/json; charset=utf-8', 'bearer' : token ,'type' : type, 'id' : id  }})
+          //axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
+          .then((response) => {
+            console.log("Succes delete notification : " + response.data);
+ 
+            resolve(response)
+            //res.render('pages/register',{email: email, isConnected: isConnected});
+          })
+          .catch(function (error) {
+            console.log("Erreur delete notification : " + error);
             reject(error)
           });
       })
