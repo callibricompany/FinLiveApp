@@ -141,6 +141,10 @@ export class CTicket extends CObject {
       return this.product.getCurrency();
     }
 
+    getNominal() {
+
+      return this.ticket['custom_fields']['cf_ps_nominal'] === null ? 0 : this.ticket['custom_fields']['cf_ps_nominal'];
+    }
        
    static STATUS () {
     let data = [

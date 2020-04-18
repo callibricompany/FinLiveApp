@@ -16,7 +16,7 @@ import { NavigationActions } from 'react-navigation';
 import { FLScrollView } from "../SearchBar/searchBarAnimation";
 
 import { withAuthorization } from '../../Session';
-import { withNotification } from '../../Session/NotificationProvider';
+
 import { withUser } from "../../Session/withAuthentication";
 import { withNavigation } from "react-navigation";
 import { compose, hoistStatics } from "recompose";
@@ -64,8 +64,8 @@ class TabHome extends React.PureComponent {
       //gestion affichage activityindicator en fin des flatlist
       apeSRPRefreshing : false,
 
-      //rentre le nombre de ticket non lus
-      allNotificationsCount : this.props.notificationList.length,
+      //rentre le nombre de ticket non lus pour mettre à jour les template
+      allNotificationsCount : this.props.allNotificationsCount,
     };
 
     this.bestCoupons = [];
@@ -103,8 +103,8 @@ class TabHome extends React.PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(props) {
-    console.log("RECEIVE PROPS HOME : ");
-    this.setState({ allNotificationsCount :props.notificationList.length });
+    //console.log("RECEIVE PROPS HOME : ");
+    this.setState({ allNotificationsCount :props.allNotificationsCount });
     this.setState({ scrollTo: props.marginSearch, refreshing: false });
     typeof props.filters !== "undefined"
       ? this.updateFilters(props.filters)
@@ -290,12 +290,26 @@ class TabHome extends React.PureComponent {
                 <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
                   <TouchableOpacity style={{marginLeft: DEVICE_WIDTH * 0.025, marginRight: DEVICE_WIDTH * 0.025, alignItems: "flex-start", borderWidth: 0}}
                                     onPress={()=>{
+                                      
                                       this.props.navigation.dispatch(NavigationActions.navigate({
-                                        routeName: 'Tickets',
-                                        action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
+                                       routeName: 'Tickets',
+                                       action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
                                       }));
-                                      //this.props.navigate('Tickets');
-                                    }}
+                                      // notif = {
+                                      //   "event": "{priority:{from:2,to:3}}",
+                                      //   "id": 110,
+                                      //   "read": false,
+                                      //   "subTitle": "Athéna 8 ans sur CAC Large 60 Index / mensuel",
+                                      //   "subType": "Produit structuré",
+                                      //   "timestamp": 1587143240454,
+                                      //   "title": "TICKET : Athéna 8 ans sur CAC Large 60 Index / mensuel",
+                                      //   "type": "TICKET",
+                                      //   "uid": "xjoRccvRXBVo5Tqe3iaWuGBe0aX2",
+                                      // };
+                                      
+                                      //this.props.addNotification([].concat(notif));
+                                      //this.props._showToast(notif, this.props.tickets[0]);
+                                   }}
                   >
                     <Text style={setFont("400", 18, "black", "FLFontFamily")}>
                       Mes tickets en cours
@@ -508,7 +522,7 @@ const composedWithNav = compose(
   withAuthorization(condition),
   withNavigation,
   withUser,
-  withNotification
+
 );
 
 //export default HomeScreen;

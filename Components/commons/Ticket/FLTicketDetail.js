@@ -19,7 +19,6 @@ import { setFont, setColor , backgdColor } from '../../../Styles/globalStyle';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 import { withAuthorization } from '../../../Session';
-import { withNotification } from '../../../Session/NotificationProvider';
 import { withNavigation } from 'react-navigation';
 import { withUser } from '../../../Session/withAuthentication';
 import { withFirebase } from '../../../Database';
@@ -64,11 +63,12 @@ class FLTicketDetail extends React.Component {
 
     this.ticket= this.props.ticket;
     this.autocall = this.ticket.getProduct();
-
+    console.log("Constructeur ticket");
+    this.props._removeToast();
     this.state = {
 
-      nominal :  this.autocall.getNominal(),
-      finalNominal :  this.autocall.getNominal(),
+      nominal :  this.ticket.getNominal(),
+      finalNominal :  this.ticket.getNominal(),
 
 
       //messages des conversations
@@ -131,7 +131,7 @@ class FLTicketDetail extends React.Component {
     //on specifie que le ticket est lu
     this.props.removeNotification('TICKET', this.ticket.getId());
 
-
+    this.props.setCurrentFocusedObject('TICKET', this.ticket.getId());
     this.setState({
       messages: [
         {
@@ -190,7 +190,11 @@ class FLTicketDetail extends React.Component {
       ],
     })
   }
+
   componentWillUnmount() {
+    //on enleve le focus sur ticket
+    this.props.setCurrentFocusedObject('', '');
+
     if (!isAndroid()) {
       this._navListener.remove();
     }
@@ -265,14 +269,14 @@ class FLTicketDetail extends React.Component {
                         <Text style={setFont('200', 12)} numberOfLines={2}>{this.ticket.getAgentName()}</Text>
                     </View>
                </View>  
-               <View style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'center'}}>
+               <TouchableOpacity style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'center'}}
+                                  onPress={() => this.setState( {showModalDrawnerPriority : true })} 
+               >
                     <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5, justifyContent: 'center', alignItems: 'center'}} />
-                    <TouchableOpacity style={{paddingLeft: 2, justifyContent: 'center', alignItems: 'center'}}
-                                      onPress={() => this.setState( {showModalDrawnerPriority : true })}
-                    >
+                    <View style={{paddingLeft: 2, justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={setFont('200', 12)}>{this.ticket.getPriority().name}</Text>
-                    </TouchableOpacity>
-               </View>  
+                    </View>
+               </TouchableOpacity>  
 
           </View>
           <View style={{justifyContent: 'center', alignItems: 'flex-start', borderWidth : 0, paddingLeft : 0.025*DEVICE_WIDTH, marginTop : 25, backgroundColor: 'white'}}>
@@ -488,7 +492,7 @@ class FLTicketDetail extends React.Component {
                       let isSelected = this.ticket.getPriority().id === s.id;
                       
                       return (
-                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}}
+                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}} key={i} 
                                           onPress={() => {
                                               if(!isSelected) {
                                                 this.ticket.setPriority(s.id);
@@ -663,7 +667,7 @@ const composedFLTicketDetail = compose(
   withNavigation,
   withFirebase,
   withUser,
-  withNotification
+  //withNotification
 );
 
 //export default HomeScreen;

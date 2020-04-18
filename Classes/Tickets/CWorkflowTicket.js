@@ -128,10 +128,7 @@ export class  CWorkflowTicket extends CTicket {
     return this.ticket['custom_fields']['cf_rtro_asso'] === null ? 0 : this.ticket['custom_fields']['cf_rtro_asso'];
   }
 
-  getNominal() {
-    return this.ticket['custom_fields']['cf_ps_nominal'] === null ? 0 : this.ticket['custom_fields']['cf_ps_nominal'];
-    
-  }
+
 
   getCurrency() {
     return this.ticket['custom_fields']['cf_devise'] === null ? 0 : this.ticket['custom_fields']['cf_devise'];

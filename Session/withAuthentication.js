@@ -29,10 +29,16 @@ const withAuthentication = Component => {
         //device
         device : '',
 
-        //notifications recues
+        //notifications recues et acces au HOC withNotification (passe plats)
         notification: {},
-   
-
+        //chech if it is read
+        isNotified : (type, id) => this.props.isNotified(type, id),
+        _showToast: (notification, obj) => this.props._showToast(notification, obj),
+        removeNotification: (type, id) => this.props.removeNotification(type, id),
+        _removeToast : () => this.props._removeToast(),
+        addNotification : (notifications) => this.props.addNotification(notifications),
+        allNotificationsCount : props.notificationList.length,
+        setCurrentFocusedObject : (type , id) => this.props.setCurrentFocusedObject(type, id),
 
         //tickets
         tickets: [],
@@ -117,6 +123,12 @@ const withAuthentication = Component => {
     }
 
 
+    UNSAFE_componentWillReceiveProps(props) {
+      //console.log("RECEIVE PROPS HOME : ");
+      this.setState({ allNotificationsCount : props.notificationList.length });
+
+    }
+
 
 
 
@@ -176,7 +188,9 @@ const withAuthentication = Component => {
       } catch(error) {
         console.log("ERROR GET IP ADDRESS : " + error);
       };
-
+      
+      console.log("DEVICE ID : " + Constants.deviceId);
+      //console.log(Constants);
       //let mac = await Network.getMacAddressAsync();
       let mac='';
       let token =  Constants.isDevice ? await this._recordDeviceForNoticiation() : '';
@@ -393,7 +407,7 @@ const withAuthentication = Component => {
     componentWillUnmount() {
       console.log("withAUTHENTICATION : Appel this.listener() ");
 
-      this.ticketListener();
+      //this.ticketListener();
       this.listener();
       //this._notificationSubscription();
     }

@@ -116,12 +116,15 @@ function labelStyle (focused, tintColor) {
   
   //Ecran ticket
   const TicketScreenStack = createStackNavigator({
-    Tickets: {
-      screen: TicketScreen,
-    },
-    FLTicketDetailTicket : {
-      screen : FLTicketDetailTicket
-    }
+      Tickets: {
+        screen: TicketScreen,
+      },
+      FLTicketDetailTicket : {
+        screen : FLTicketDetailTicket
+      },
+      FLTicketDetail : {
+        screen : FLTicketDetail
+      }
 
     })
     //Ecran broadcast
@@ -342,7 +345,7 @@ function labelStyle (focused, tintColor) {
     let tabBarVisible = true;
     let badgeCount = 0
     
-
+    
     if(routes[index].routeName === 'Tickets' || routes[index].routeName === 'FLTicketDetailTicket'){
       
       if (typeof routes[index].params !== 'undefined') {
@@ -365,6 +368,7 @@ function labelStyle (focused, tintColor) {
       }
       
     }
+    //console.log("PASSE PAR ROUTE TICKEY : nbr badges : " +badgeCount);
     return {
  
         tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet

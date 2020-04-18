@@ -86,7 +86,6 @@ class FLAutocallDetail extends React.Component {
     this.autocall= this.props.autocall;
     //console.log(this.autocall.getObject());
     
-    console.log("NOMINAL : "+ this.autocall.getNominal());
     this.state = {
 
       nominal :  this.autocall.getNominal(),

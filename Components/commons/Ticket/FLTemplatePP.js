@@ -35,7 +35,6 @@ import 'numeral/locales/fr'
 import { withUser } from '../../../Session/withAuthentication';
 import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
-import { withNotification } from '../../../Session/NotificationProvider';
 import { compose, hoistStatics } from 'recompose';
 
 import Moment from 'moment';
@@ -562,7 +561,6 @@ render () {
     withAuthorization(condition),
      withNavigation,
      withUser,
-     withNotification
    );
    
    //export default HomeScreen;

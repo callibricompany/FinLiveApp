@@ -45,9 +45,14 @@ class NotificationProvider extends Component {
         messageNotification : '',
         object : '',
     
+        //page visité en cours
+        setCurrentFocusedObject : (type , id) => this.setCurrentFocusedObject(type, id),
+        typeFocused : '',
+        idFocused : '',
         
         handleNotificationReception: (notification, obj) => this.handleNotificationReception(notification, obj),
         _removeToast : () => this._removeToast(),
+        _showToast: (notification, obj) => this._showToast(notification, obj),
 
         //handle all notification list
         notificationList : [],
@@ -57,17 +62,16 @@ class NotificationProvider extends Component {
         //chech if it is read
         isNotified : (type, id) => this.isNotified(type, id),
 
-        testalacon : 'alouette je te plumerai',
-
         //gere l'apparition de l'alerte
         positionTop : new Animated.Value(DEVICE_HEIGHT),
       };
 
       this.ticketBadgesCount = 0;
+
     }
 
     registerForPushNotificationsAsync = async () => {
-      console.log("PASSE ICICICICICICICICI");
+      
       if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
         let finalStatus = existingStatus;
@@ -111,16 +115,22 @@ class NotificationProvider extends Component {
               
     }
 
+    //determine la page focusé en ce moment
+    setCurrentFocusedObject (type, id) {
+      this.setState({ typeFocused : type, idFocused : id }, () => console.log("FOCUS SUR : " + this.state.typeFocused + "  #"+this.state.idFocused));
+    }
+
+
     //une notification a été recue : on montre un bandeau à l'ecran
     _showToast(notification, obj) { 
       if (notification !== '') {
-        //console.log(props.notification.subject);
+        console.log("showToast : " + notification.subTitle);
         this.setState({ typeNotification : notification.type, titleNotification : notification.type , messageNotification : notification.subTitle, object : obj}, () => {
           
           Animated.spring(
             this.state.positionTop,
               {
-                toValue: DEVICE_HEIGHT - 180,
+                toValue: DEVICE_HEIGHT - 200,
                 duration : 1500,
                 //easing: Easing.elastic(),
                 speed : 1
@@ -143,6 +153,7 @@ class NotificationProvider extends Component {
     _handleCounter(type, newNumber) {
       if (type === 'TICKET') {
         this.ticketBadgesCount = newNumber;
+        console.log("Nouveau comptage de badge : "+ this.ticketBadgesCount);
         NavigationService.handleBadges('Tickets', this.ticketBadgesCount);
       }
     }
@@ -160,7 +171,7 @@ class NotificationProvider extends Component {
       //  "type": "TICKET",
       //  "uid": "xjoRccvRXBVo5Tqe3iaWuGBe0aX2",
       //},
- 
+      //console.log(notifications);
       //nouvelles notifications TICKETs
       let ticketNotifs = notifications.filter(({ type }) => type === 'TICKET');
       this._handleCounter('TICKET', ticketNotifs.length + this.ticketBadgesCount);
@@ -173,88 +184,98 @@ class NotificationProvider extends Component {
 
     //removeNotification
     removeNotification(typeObject, idObject) {
-
-      //verifie si il est dans la liste
-      let arrayTemp = [];
-      this.state.notificationList.map((n, i) => {
-        //console.log(n.id + "   "+ n.type);
-        if (n.type !== typeObject || n.id !== idObject) {
-          arrayTemp.push(n);
-        } 
-      })
-
-      deleteNotification(this.props.firebase, typeObject, idObject);
       
-      this._handleCounter(typeObject, arrayTemp.filter(({ type }) => type === typeObject).length);
-      
-      this.setState({ notificationList : arrayTemp }, () => console.log(this.state.notificationList));
+      if (this.state.typeFocused !== 'TICKET' || this.state.idFocused !== notification.data.id) {
+          //verifie si il est dans la liste
+          let arrayTemp = [];
+          this.state.notificationList.map((n, i) => {
+            //console.log(n.id + "   "+ n.type);
+            if (n.type !== typeObject || n.id !== idObject) {
+              arrayTemp.push(n);
+            } 
+          })
+
+          deleteNotification(this.props.firebase, typeObject, idObject);
+          
+          this._handleCounter(typeObject, arrayTemp.filter(({ type }) => type === typeObject).length);
+          
+          //this.setState({ notificationList : arrayTemp }, () => console.log(this.state.notificationList));
+          this.setState({ notificationList : arrayTemp });
+        }
     }
 
 
 
     //verifie si cela a été lu ou pas 
     isNotified(typeObject, idObject) {
-      /*let found = true;
-      //console.log(this.state.notificationList);
-      let notifs = this.state.notificationList;
-      notifs = notifs.filter(({ type }) => type === typeObject);
-      let finalNotifs = notifs.filter(({ id }) => id === idObject);
-      if (finalNotifs.length < 1) {
-        return false;
-      }
-      //console.log(finalNotifs);
-      return found;*/
       return (this.state.notificationList.filter(({ type, id }) => (type === typeObject && id === idObject)).length >= 1);
     }
 
-    //gestion de la reception des notifications
-    _handleNotification = notification => {
-      console.log(notification);
-      console.log("Notification recu : "+notification.origin);
-      console.log(notification.data);
-      console.log(notification.data.event);
-      switch(notification.data.type) {
-          case 'TICKET' : 
-                //retourne un ticket donné
-                getTicket(this.props.firebase, notification.data.id)
-                .then((ticket) => {
-                        console.log("ticket retrouvé");
-                        //console.log(notification.data);
-                        NavigationService.handleBadges(this.ticketBadgesCount);
-                        //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
+  //gestion de la reception des notifications
+  _handleNotification = notification => {
+    console.log(notification);
+    //console.log("Notification recu : "+notification.origin);
+    //console.log(notification.data.event);
+    switch(notification.data.type) {
+        case 'TICKET' : 
+                      //console.log(notification.data);
+                      if (this.state.typeFocused !== 'TICKET' || this.state.idFocused !== notification.data.id) {
+                          this.addNotification([].concat(notification.data));
+                          NavigationService.handleBadges(this.ticketBadgesCount);
+                      
+                          //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
                           if (notification.origin == 'received') {
-                              //this.addNotification(notification.data);
-                              this._showToast(notification.data, ticket);
+                              
+                              //retourne un ticket donné
+                              getTicket(this.props.firebase, notification.data.id)
+                              .then((ticket) => {
+                                  console.log("ticket retrouvé : " + notification.data.id);
+                                  this._showToast(notification.data, ticket);
+                                  let localnotificationId = notification.notificationId;
+                                  setTimeout(function () {
+                                    console.log("desactivation de la notification : "+ localnotificationId);
+                                    Notifications.dismissNotificationAsync(localnotificationId);
+                                  }, 10000);
+                                  
+                              })
+                              .catch((error) => {
+                                console.log(error);
+                                alert("Impossible de récupérer les changements du ticket " + notification.data.idTicket);
+                              });
                           } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
 
-                              this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
-                                ticket: new CWorkflowTicket(ticket),
-                              //ticketType: TICKET_TYPE.PSCREATION
-                            })
+                              getTicket(this.props.firebase, notification.data.id)
+                              .then((ticket) => {
+                                  let localnotificationId = notification.notificationId;
+                                  console.log("ticket retrouvé en mode selected : " + notification.data.id);
+                                  console.log("desactivation de la notification : "+ localnotificationId);
+                                  Notifications.dismissNotificationAsync(localnotificationId);
+                                  NavigationService.navigate('FLTicketDetailTicket', { ticket: new CWorkflowTicket(ticket) });
+                                  //this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
+                                  // ticket: new CWorkflowTicket(ticket),
+                                  //})
+                                })
+                                .catch((error) => {
+                                  console.log(error);
+                                  alert("Impossible de récupérer les changements du ticket " + notification.data.idTicket);
+                                });
                           }
-                        //this.setState({ notification : notification });
-                        //this.setState({ tatayoyo : notification.data });
-                })
-                .catch((error) => {
-                  console.log(error);
-                  alert("Impossible de récupérer les changements du ticket " + notification.data.idTicket);
-                });
-                break;
+                        } else { //on est déja au bon endroit il faut juste consumer la notification
+                          let localnotificationId = notification.notificationId;
+                          console.log("desactivation de la notification : "+ localnotificationId);
+                          Notifications.dismissNotificationAsync(localnotificationId);
+
+                          //on l'efface aussi de la base
+                          deleteNotification(this.props.firebase, 'TICKET', notification.data.id);
+                        }
+              break;
+
+        default :
+              break;
+    }
+  };
 
 
-          default :
-                break;
-      }
-
-
-      //this.setState({ notification: notification });
-      let localnotificationId = notification.notificationId;
-      setTimeout(function () {
-        console.log("desactivation de la notification : "+ localnotificationId);
-        Notifications.dismissNotificationAsync(localnotificationId);
-      }, 10000);
-      //console.log(Object.keys(notification));
-    };
 
 
   render() {
@@ -280,37 +301,43 @@ export const withNotification = Component => props => (
     
     {store => {
         //console.log(store);
+        
         return (
         <View style={{flex: 1}}>
               <View style={{flex: 1}}>
                     <Component {...props} {...store} />
               </View>
               { store.titleNotification !== ''
+              //1 === 1
                 ?
-                  <Animated.View style={{ flexDirection : 'row', position: 'absolute', top: store.positionTop, left : DEVICE_WIDTH/10, width :4*DEVICE_WIDTH/5, borderWidth : 1, borderColor: 'transparent', borderRadius : 4}}>
+                  <Animated.View style={{position: 'absolute', top: store.positionTop, left : DEVICE_WIDTH/10, width :4*DEVICE_WIDTH/5, borderWidth : 1, borderColor: 'transparent', borderRadius : 4}}>
+                      <TouchableOpacity style={{ flexDirection : 'row'}}
+                                          onPress={() => {
+                                              if (store.typeNotification === 'TICKET') {
+                                                  let t = new CWorkflowTicket(store.object);
+                                                  //let t = store.object;
+                                                  //console.log("TICKET creeeeeee ");
+                                                  //store._removeToast();
+                                                  NavigationService.navigate('FLTicketDetailTicket' , {
+                                                    ticket: t,
+                                                  });
+                                                  //console.log(t.getDescription());
+                                              }
+                                          
+                                      }}          
+                            >
                             <View style={{flex: 0.9, flexDirection : 'column',justifyContent: 'center', backgroundColor: setColor('vertpomme')}}>
                                 <View style={{flex: 0.4, padding : 5}}>
                                   <Text style={setFont('400', 12, 'white')}> {store.titleNotification} {String("mis à jour").toUpperCase()}</Text>
                                 </View>
                                 <View style={{ padding : 5}}>
                                   <Text style={setFont('400', 14, 'white')}>{store.messageNotification}</Text>
-                                </View>               
+                               </View>              
                             </View>
-                            <TouchableOpacity style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', backgroundColor: setColor('subscribeticket')}}
-                                              onPress={() => {
-                                                      if (store.typeNotification === 'TICKET') {
-                                                          let ticket = new CWorkflowTicket(store.object);
-                                                          //this.setState({ titleNotification : '', messageNotification : '', positionTop : new Animated.Value(DEVICE_HEIGHT) });
-                                                          store._removeToast();
-                                                          NavigationService.navigate('FLTicketDetailHome' , {
-                                                          ticket: ticket,
-                                                          });
-                                                      }
-                                                  
-                                              }}          
-                            >
+                            <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', backgroundColor: setColor('subscribeticket')}}>
                                 <Text style={setFont('400', 18, 'white', 'Regular')}>></Text>
-                            </TouchableOpacity>
+                            </View>
+                      </TouchableOpacity>
                   </Animated.View>
                 : null
               }

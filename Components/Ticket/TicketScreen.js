@@ -7,7 +7,6 @@ import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { globalStyle , blueFLColor, backgdColor, apeColor, FLFontFamily, headerTabColor, setFont, setColor } from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
-import { withNotification } from '../../Session/NotificationProvider';
 import { withNavigation } from 'react-navigation';
 
 import { withUser } from '../../Session/withAuthentication';
@@ -95,6 +94,9 @@ class TicketScreen extends React.Component {
       sortDataDown : true,
       sortSelected : 'LASTUPDATE',
 
+      //notifications
+      allNotificationsCount : this.props.allNotificationsCount,
+
       //filttre
       filterSelected : 'LIVETICKETS'
     };
@@ -136,6 +138,10 @@ class TicketScreen extends React.Component {
       //or
       StatusBar.setBarStyle('dark-content')
     });
+  }
+
+  UNSAFE_componentWillReceiveProps(props) {
+    this.setState({ allNotificationsCount :props.allNotificationsCount });
   }
 
   componentWillUnmount() {
@@ -193,14 +199,14 @@ class TicketScreen extends React.Component {
                 let y = evt.nativeEvent.pageY;
                 //si on a clické en dehors du module view cidessous on ferme le modal
                 let verifX = x < DEVICE_WIDTH*0  || x > DEVICE_WIDTH ? true : false;
-                let verifY = y < DEVICE_HEIGHT*0.5  || y > DEVICE_HEIGHT ? true : false;
+                let verifY = y < DEVICE_HEIGHT*0.4  || y > DEVICE_HEIGHT ? true : false;
                 if (verifX || verifY) {
                   //console.log("passe la ");
                   this.setState({showModalDrawner : false})
                 }
               }}
           >
-            <View style={{ flexDirection: 'column',backgroundColor: 'white', borderWidth :0, borderColor : 'black', borderRadius:5,width: DEVICE_WIDTH, height: DEVICE_HEIGHT*0.5, top:  DEVICE_HEIGHT*0.5, left : DEVICE_WIDTH*0}}>
+            <View style={{ flexDirection: 'column',backgroundColor: 'white', borderWidth :0, borderColor : 'black', borderRadius:5,width: DEVICE_WIDTH, height: DEVICE_HEIGHT*0.6, top:  DEVICE_HEIGHT*0.4, left : DEVICE_WIDTH*0}}>
                 <View style={{ marginTop : 15, justifyContent : 'center', alignItems: 'flex-start', paddingLeft : 15}}>
                         <Text style={setFont('200', 14, 'gray')}>
                             Trier par : 
@@ -210,7 +216,7 @@ class TicketScreen extends React.Component {
                       let sortName = Object.values(s)[0]
                       let sortCode = Object.keys(s)[0]
                       return (
-                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}}
+                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}} key={i}
                                           onPress={() => {
                                               //si le type de classement est le meme que precedemment selectionné : on change juste le sens
                                               if (sortCode === this.state.sortSelected) {
@@ -259,7 +265,7 @@ class TicketScreen extends React.Component {
                       let filterName = Object.values(f)[0]
                       let filterCode = Object.keys(f)[0]
                       return (
-                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}}
+                        <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}} key={i}
                                           onPress={() => {
 
                                                 //apppel au rechargement des tickets
@@ -373,6 +379,7 @@ class TicketScreen extends React.Component {
                 }
             }}
             scrollEventThrottle={1}
+            extraData={this.state.allNotificationsCount}
             onMomentumScrollBegin={this._onMomentumScrollBegin}
             onMomentumScrollEnd={this._onMomentumScrollEnd}
             onScrollEndDrag={this._onScrollEndDrag}
@@ -575,7 +582,6 @@ const composedPricerScreen = compose(
  withAuthorization(condition),
   withUser,
   withNavigation,
-  withNotification
 );
 
 //export default HomeScreen;

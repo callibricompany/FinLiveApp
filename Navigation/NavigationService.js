@@ -7,6 +7,7 @@ function setTopLevelNavigator(navigatorRef) {
 }
 
 function navigate(routeName, params) {
+ 
   _navigator.dispatch(
     NavigationActions.navigate({
       routeName,
@@ -29,5 +30,6 @@ function handleBadges(key, count) {
 export default {
   navigate,
   setTopLevelNavigator,
-  handleBadges
+  handleBadges,
+
 };

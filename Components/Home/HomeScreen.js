@@ -16,7 +16,7 @@ import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
-import { withNotification } from '../../Session/NotificationProvider'; 
+
 
 
 import { SearchBarProvider } from '../SearchBar/searchBarAnimation';
@@ -87,7 +87,7 @@ const initialLayout = {
         StatusBar.setBarStyle('dark-content')
       });
 
-      this._loadAllUserIndos();
+      this._loadAllUserInfos();
       
     }
     componentWillUnmount() {
@@ -98,7 +98,7 @@ const initialLayout = {
       //this._loadAllUserIndos();
     }
 
-    async _loadAllUserIndos() {
+    async _loadAllUserInfos() {
       //console.log(CATEGORIES);
       try {
         await this.props.getUserAllInfo();
@@ -323,7 +323,7 @@ const composedWithNavAndAuthorization = compose(
  withAuthorization(condition),
   withNavigation,
   withUser,
-  withNotification
+
 );
 
 //export default HomeScreen;

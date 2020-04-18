@@ -28,11 +28,7 @@ import SwitchSelector from "react-native-switch-selector";
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
-import { VictoryBar, VictoryChart, VictoryTheme, VictoryGroup, VictoryStack } from 'victory-native'
-
-
-import { withNotification } from '../../Session/NotificationProvider';
-
+import { VictoryBar, VictoryChart, VictoryTheme, VictoryGroup, VictoryStack } from 'victory-native';
 
 import { currencyFormatDE } from '../../Utils';
 

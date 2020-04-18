@@ -5,7 +5,7 @@ import NavigationService from '../../Navigation/NavigationService';
 
 import { withAuthentication , withAuthorization} from '../../Session';
 import { withUser } from '../../Session/withAuthentication';
-import { withNotification } from '../../Session/NotificationProvider'; 
+
 import { setColor, setFont } from '../../Styles/globalStyle';
 import { compose, hoistStatics } from 'recompose';
 
@@ -92,7 +92,7 @@ class Application extends React.Component {
      //withUser,
      withAuthentication,
      //withNavigation
-     //withNotification
+
   );
 
   export default hoistStatics(composedBothAuth)(Application);

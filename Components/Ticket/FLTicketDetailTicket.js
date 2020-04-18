@@ -17,7 +17,8 @@ class FLTicketDetailTicket extends React.Component {
       this.ticket =  this.props.navigation.getParam('ticket', '...');
       this.showModal =  this.props.navigation.getParam('showModal', false);
 
-      
+      console.log(this.ticket.getDescription());
+      console.log(this.showModal);
 
       this.props.navigation.setParams({ hideBottomTabBar : true });
     }

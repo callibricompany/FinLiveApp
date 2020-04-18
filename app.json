@@ -3,7 +3,6 @@
     "name": "20200226 - FinLive",
     "slug": "FinLiveApp",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android"
