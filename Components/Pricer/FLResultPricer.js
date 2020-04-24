@@ -56,12 +56,12 @@ class FLResultPricer extends React.PureComponent {
       //recupération des résultats
       
       this.bestProducts =  this.props.navigation.getParam('bestProducts', '...');
-
+      this.optimizer = this.props.navigation.getParam('optimizer', 'CPN');
+      // console.log(this.bestProducts);
+      // console.log(this.optimizer);
       this.state = {
       
       };
-
-
     }
 
     static navigationOptions = {
@@ -71,7 +71,7 @@ class FLResultPricer extends React.PureComponent {
     componentDidMount() {
       if (!isAndroid()) {
         this._navListener = this.props.navigation.addListener('didFocus', () => {
-          StatusBar.setBarStyle('dark-content');
+          StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
         });
       }
     }
@@ -87,7 +87,7 @@ class FLResultPricer extends React.PureComponent {
       //console.log('id : ' +id);
       return (
             <View style={{marginTop: 20, alignItems: 'center', justifyContent:'center', borderWidth: 0, marginLeft : 0, paddingLeft : 0, paddingRight: 2}}>
-              <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Pricer'}/>
+              <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Pricer'} optimizer={this.optimizer}/>
             </View>
       );
     }
@@ -97,7 +97,7 @@ class FLResultPricer extends React.PureComponent {
       return (
 
         <View style={[globalStyle.bgColor, {width: DEVICE_WIDTH, height: DEVICE_HEIGHT}]}> 
-            <View style={{height: 30 + STATUSBAR_HEIGHT , paddingLeft : 10, paddingRight: 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, backgroundColor: 'white'}}>
+            <View style={{height: 30 + (isAndroid() ? 0 : STATUSBAR_HEIGHT) , paddingLeft : 10, paddingRight: 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, backgroundColor: 'white'}}>
                   <TouchableOpacity style={{flex : 0.25,flexDirection : 'row',  justifyContent: 'flex-start', alignItems: 'center', borderWidth: 0}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
@@ -114,10 +114,10 @@ class FLResultPricer extends React.PureComponent {
                   </View>
             </View>
 
-            <ScrollView contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', marginTop: 5}} >
+           
     
 
-              <View style={{borderWidth: 0, alignItems: 'center'}}>
+              
                   <FlatList
                     //style={{alignItems : 'center'}}
                     data={this.bestProducts}
@@ -130,6 +130,7 @@ class FLResultPricer extends React.PureComponent {
                       this._renderPrice(item, id)    
               
                     )}
+                    horizontal={false}
                     ListFooterComponent={() => {
                       return (
                         <View style={{height : 150, marginTop: 100,  alignItems: 'center'}}>
@@ -138,8 +139,8 @@ class FLResultPricer extends React.PureComponent {
                       );
                     }}
                   />
-              </View>
-          </ScrollView>
+            
+       
         </View>
 
       );

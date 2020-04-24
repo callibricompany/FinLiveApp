@@ -134,9 +134,7 @@ class TicketScreen extends React.Component {
     });
 
     this._navListener = this.props.navigation.addListener('didFocus', () => {
-      //StatusBar.setBarStyle('light-content');
-      //or
-      StatusBar.setBarStyle('dark-content')
+      //StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
     });
   }
 

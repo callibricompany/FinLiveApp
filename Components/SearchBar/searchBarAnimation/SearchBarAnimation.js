@@ -1,7 +1,7 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
 import { Animated, StatusBar, Platform } from 'react-native'; 
-import { ifIphoneX, isAndroid } from '../../../Utils';
+import { ifIphoneX, isAndroid, isIphoneX } from '../../../Utils';
 
 
 
@@ -142,7 +142,7 @@ export default class SearchBarAnimation {
 
   _changeStatusBarStyle() {
     let statusBarStyle = Math.round(this._clampedScrollValue) != this.maxClamp ? 
-                        Platform.OS === 'ios' ? 'light-content': 'dark-content' : 
+                        Platform.OS === 'Android' ? 'light-content': 'dark-content' : 
                         'dark-content';
     
     //StatusBar.setTranslucent(false);

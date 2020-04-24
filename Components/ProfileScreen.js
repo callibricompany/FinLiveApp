@@ -80,6 +80,7 @@ class ProfileScreen extends React.Component {
           <Text>{this.props.authUser.firstName} {this.props.authUser.name}</Text>
           <Text>{this.props.authUser.email}</Text>
           <Text>{this.props.authUser.codeTS}</Text>
+          <Text>{this.props.authUser.roles}</Text>
           {this.props.authUser.roles ? this.props.authUser.roles.map((role)=> <Text key={role}>{role}</Text>) : <Text></Text>}    
         <Button title="Me déconnecter" onPress={this._signOutAlert} />
     

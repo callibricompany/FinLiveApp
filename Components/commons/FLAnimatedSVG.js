@@ -18,7 +18,7 @@ class FLAnimatedSVG extends React.Component{
             isVisible : this.props.visible,
             text : this.props.text
         };
-        console.log(URL_AWS);
+        //console.log(URL_AWS);
     }
 
     UNSAFE_componentWillReceiveProps(props) {

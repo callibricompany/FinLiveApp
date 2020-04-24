@@ -312,6 +312,7 @@ export class CPSRequest extends CRequest {
       this._fillCriteria('isMemory', autocall.isMemory(), autocall.isMemory() ? 'Effet mémoire' : 'Non mémoire');
       this._fillCriteria('degressiveStep', autocall.getDegressivity(), autocall.getDegressivity() === 0 ? '' : 'Stepdown ' + Numeral(autocall.getDegressivity()).format('0%') + " / an");
       this._fillCriteria('UF', autocall.getUF(), autocall.getUF());
+      this._fillCriteria('coupon', autocall.getCoupon(), autocall.getCoupon());
       this._fillCriteria('UFAssoc', autocall.getUFAssoc(), autocall.getUFAssoc());
       this._fillCriteria('nominal', autocall.getNominal(), autocall.getNominal());
       /*
@@ -480,7 +481,7 @@ export class CPSRequest extends CRequest {
           'title': 'RETROCESSIONS'
         },
         'coupon': {
-          'value': autocall.getCouponTitle(),
+          'value': autocall.getCoupon(),
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': Numeral(0.03).format('0.00%'),

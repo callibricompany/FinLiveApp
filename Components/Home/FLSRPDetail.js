@@ -125,7 +125,7 @@ class FLSRPDetail extends React.Component {
   componentDidMount() {
     if (!isAndroid()) {
       this._navListener = this.props.navigation.addListener('didFocus', () => {
-        StatusBar.setBarStyle('light-content');
+        StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
       });
     }
     Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);

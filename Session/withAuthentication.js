@@ -37,7 +37,7 @@ const withAuthentication = Component => {
         removeNotification: (type, id) => this.props.removeNotification(type, id),
         _removeToast : () => this.props._removeToast(),
         addNotification : (notifications) => this.props.addNotification(notifications),
-        allNotificationsCount : props.notificationList.length,
+        allNotificationsCount : props.notificationList !== 'undefined' ? props.notificationList.length : 0,
         setCurrentFocusedObject : (type , id) => this.props.setCurrentFocusedObject(type, id),
 
         //tickets
@@ -125,7 +125,7 @@ const withAuthentication = Component => {
 
     UNSAFE_componentWillReceiveProps(props) {
       //console.log("RECEIVE PROPS HOME : ");
-      this.setState({ allNotificationsCount : props.notificationList.length });
+      this.setState({ allNotificationsCount : props.notificationList !== 'undefined' ? props.notificationList.length : 0 });
 
     }
 

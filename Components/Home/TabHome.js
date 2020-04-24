@@ -185,7 +185,7 @@ class TabHome extends React.PureComponent {
                           this._getBarrierPhoenixTitle() +
                           this._getBarrierAirbagTitle() +
                           this._getDegressivityCallableTitle() +
-                          this._getCouponTitle() +
+                          this._getCoupon() +
                           this._getOrganization() +
                           this._getTypePlacement() +
                           this.item["data"]["code"];
@@ -293,7 +293,7 @@ class TabHome extends React.PureComponent {
                                       
                                       this.props.navigation.dispatch(NavigationActions.navigate({
                                        routeName: 'Tickets',
-                                       action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
+                                       action: NavigationActions.navigate({ routeName: 'Tickets' , params : {}} ),
                                       }));
                                       // notif = {
                                       //   "event": "{priority:{from:2,to:3}}",

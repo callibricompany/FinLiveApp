@@ -41,6 +41,11 @@ export class  CWorkflowTicket extends CTicket {
  
   }
 
+  isAutomatic() {
+    let automatic = this.ticket['custom_fields']['cf_ps_mode'] === null ? 'Specifique' : this.ticket['custom_fields']['cf_ps_mode'];
+    return automatic === "Automatique";
+  }
+
   getWorkflowName() {
     if (this.currentStep.codeOperation === 'pp') {
         return 'Placement privé';

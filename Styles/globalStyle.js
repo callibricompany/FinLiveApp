@@ -24,7 +24,7 @@ export const FLFontFamily = Platform.OS !== 'ios' ? 'sans-serif-condensed' :'Ari
 export const FLFontFamilyBold = Platform.OS !== 'ios' ? 'notoserif' :'Papyrus';
 
 
-export const backgdColorPricerParameter = 'snow';
+export const backgdColorPricerParameter = 'white';
 
 
 

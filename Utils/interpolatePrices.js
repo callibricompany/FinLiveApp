@@ -13,7 +13,7 @@ function print(df, tab) {
 
 function getBumps(type, vega, maturity, nominal) {
     //on renorme les bumps vega avec la maturite
-    bump = maturity * Math.abs(0.8*vega) / 10;
+    let bump = maturity * Math.abs(0.8*vega) / 10;
 
     //estimation CC vendeur emetteur
     bump = 1.5 * bump;
@@ -22,7 +22,7 @@ function getBumps(type, vega, maturity, nominal) {
 }
 
 function getFLMargin(nominal) {
-    return 0.000;
+    return 0.002;
 }
 
 export function interpolatePDI (df, pdi) {
@@ -386,8 +386,11 @@ export function interpolateBarrierPhoenix (df, barrierPhoenix) {
     return df;
 }
 
-export  function interpolateBestProducts(data, request) {
+export  function interpolateBestProducts(data, request, optimizer='CPN') {
+    //optimzer = 'CPN'  --> c'esst le coupon qui est recherché la marge étant fixé : valeur par défaut
+    //optimzer = 'CC'  --> c'est la marge qui est recherchée le coupon étant minipimé
 
+    
     var product = request.getProduct();
     var criteria = request.getCriteria();
     var nominal = request.getValue('nominal');
@@ -489,7 +492,7 @@ export  function interpolateBestProducts(data, request) {
     //BARRIER PHOENIX
     //print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "barrierPhoenix", "code"]);
     df = interpolateBarrierPhoenix (df, criteria.hasOwnProperty('barrierPhoenix') ? criteria['barrierPhoenix'] : product.barrierPhoenix.value);
-    interpolateBarrierPhoenix
+    //interpolateBarrierPhoenix
     //print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "barrierPhoenix", "code"]);
 
     //console.log("Taille apres BARRIER PHOENIX : " + df.toRows().length);
@@ -560,7 +563,7 @@ export  function interpolateBestProducts(data, request) {
                             //vega = Number(d10.getSeries('vega').bake().toArray().toString());
                             d10 = d10.transformSeries({
                               maturity: value => mat + "Y",
-                              price: value => f(mat) + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, fVega(mat), mat, nominal) + getFLMargin(),
+                              price: value => f(mat),
                               vega: value => fVega(mat),
                               //il faut reconstituer le code
                               code: value => value.replace('_M:' + matToChange, '_M:' + mat + "Y")
@@ -577,7 +580,7 @@ export  function interpolateBestProducts(data, request) {
 
       df = dfToAdd;
     }
-    print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "barrierPhoenix", "code"]);
+    print(df, ["coupon", "maturity", "barrierPDI", "airbagLevel", "price", "barrierPhoenix", "code","UF"]);
     //console.log("Taille apres MATURITY : " + df.toRows().length);
 
     //on passe sur tous les produits distincts et on interpoler
@@ -594,46 +597,94 @@ export  function interpolateBestProducts(data, request) {
                     //calcul du prix a cette barriere
                     d9 = d3.where((row) => row.maturity === mat).bake();
 
-                    coupons = d9.getSeries('coupon').bake().toArray();
-                    prix = d9.getSeries('price').bake().toArray();
-                    vega = d9.getSeries('vega').bake().toArray();
+                        if (optimizer === 'CPN') {
 
-                    points = [];
-                    coupons.map((x, i) => points[i] = [prix[i], coupons[i]]);
-                    f = interpolator(points);
-                    CPN = f(0);
+                              coupons = d9.getSeries('coupon').bake().toArray();
+                              prix = d9.getSeries('price').bake().toArray();
+                              vega = d9.getSeries('vega').bake().toArray();
 
-                    pointsVega = [];
-                    coupons.map((x, i) => pointsVega[i] = [prix[i], vega[i]]);
-                    fVega = interpolator(pointsVega);
-                    newVega = fVega(0);
+                              
+                              points = [];
+                              coupons.map((x, i) => {prix[i] = prix[i] + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, vega[i],  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin()});
+                              
+                              //coupons.map((x, i) => points[i] = [(prix[i] + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, vega[i],  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin()), coupons[i]]);
+                              coupons.map((x, i) => points[i] = [prix[i] , coupons[i]]);
+                              
+                              f = interpolator(points);
+                              let CPN = f(0);
+                              
+                              pointsVega = [];
+                              coupons.map((x, i) => pointsVega[i] = [prix[i], vega[i]]);
+                              fVega = interpolator(pointsVega);
+                              newVega = fVega(0);
 
-                    if (CPN >= 0) {//on conserve le produit
-                      dTemp = d9.head(1);
-                      cpnToChange = dTemp.getSeries('coupon').toArray().toString();
-                      //console.log("COUPON : " + cpnToChange + "      ->   "+ CPN);
-                      //codeAvant = dTemp.getSeries('code').toArray().toString();
-                      //console.log(codeAvant);
-                      //console.log(codeAvant.replace('_C:' + cpnToChange, '_C:' + CPN));
-                      dTemp = dTemp.transformSeries({
-                        price: value => 0,
-                        coupon: value => CPN,
-                        vega: value => newVega,
-                        //il faut reconstituer le code
-                        code: value => value.replace('_C:' + cpnToChange, '_C:' + CPN),
-                      });
-                    
-                      //console.log(dfPrint.toString());
-                      
-                      interpolatedProducts = interpolatedProducts.concat(new dataForge.DataFrame(dTemp));
-                    }
+                              if (CPN >= 0) {//on conserve le produit
+                                dTemp = d9.head(1);
+                                cpnToChange = dTemp.getSeries('coupon').toArray().toString();
+                                //console.log("COUPON : " + cpnToChange + "      ->   "+ CPN);
+                                //codeAvant = dTemp.getSeries('code').toArray().toString();
+                                //console.log(codeAvant);
+                                //console.log(codeAvant.replace('_C:' + cpnToChange, '_C:' + CPN));
+                                dTemp = dTemp.transformSeries({
+                                  price: value => 0,
+                                  coupon: value => CPN,
+                                  vega: value => newVega,
+                                  //il faut reconstituer le code
+                                  code: value => value.replace('_C:' + cpnToChange, '_C:' + CPN),
+                                });
+                              
+                                //console.log(dfPrint.toString());
+                                
+                                interpolatedProducts = interpolatedProducts.concat(new dataForge.DataFrame(dTemp));
+                              }
+                        } else { //on optimize la CC
+
+                                coupons = d9.getSeries('coupon').bake().toArray();
+                                prix = d9.getSeries('price').bake().toArray();
+                                vega = d9.getSeries('vega').bake().toArray();
+
+                          
+                                points = [];
+                                //coupons.map((x, i) => {prix[i] = prix[i] + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, vega[i],  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin()});
+                                
+                                //coupons.map((x, i) => points[i] = [(prix[i] + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, vega[i],  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin()), coupons[i]]);
+                                coupons.map((x, i) => points[i] = [coupons[i], prix[i]]);
+                                
+                                f = interpolator(points);
+                                let PRICE = f(product.coupon.value);
+                                
+                                pointsVega = [];
+                                coupons.map((x, i) => pointsVega[i] = [prix[i], vega[i]]);
+                                fVega = interpolator(pointsVega);
+                                newVega = fVega(PRICE);
+
+                                PRICE = PRICE + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, newVega,  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin();
+                                console.log(product.coupon.value);
+                                if (PRICE <= 0) {//on conserve le produit
+                                  dTemp = d9.head(1);
+                                  cpnToChange = dTemp.getSeries('coupon').toArray().toString();
+                                  //console.log("COUPON : " + cpnToChange + "      ->   "+ CPN);
+                                  //codeAvant = dTemp.getSeries('code').toArray().toString();
+                                  //console.log(codeAvant);
+                                  //console.log(codeAvant.replace('_C:' + cpnToChange, '_C:' + CPN));
+                                  dTemp = dTemp.transformSeries({
+                                    price: value => PRICE,
+                                    vega: value => newVega,
+                                    coupon: value => product.coupon.value,
+                                    //il faut reconstituer le code
+                                    code: value => value.replace('_C:' + cpnToChange, '_C:' + product.coupon.value),
+                                  });
+                                  console.log(d9.toString()); 
+                                  //console.log(dfPrint.toString());
+                                  
+                                  interpolatedProducts = interpolatedProducts.concat(new dataForge.DataFrame(dTemp));
+                                 }
+                        }
                   })
     });
 
     //on classe par coupon descendant
-    
     print(interpolatedProducts, ["coupon", "maturity", "barrierPDI", "airbagLevel", "vega", "code"]);
-
     interpolatedProducts = interpolatedProducts.orderByDescending(row => row.coupon);
 
     //on rajoute comme info les UF

@@ -15,6 +15,8 @@ import FLResultPricer from '../Components/Pricer/FLResultPricer'
 import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
 import FLTicketDetailTicket from '../Components/Ticket/FLTicketDetailTicket';
 
+import FLCouponMinDetailAndroid from '../Components/Pricer/description/FLCouponMinDetailAndroid';
+
 import ProfileScreen from '../Components/ProfileScreen';
 
 import TicketScreen from '../Components/Ticket/TicketScreen';
@@ -89,7 +91,8 @@ function labelStyle (focused, tintColor) {
     },
     FLTicketDetailHome: {
       screen : FLTicketDetailHome
-    }
+    },
+
   }, 
   {
     initialRouteName: 'Home'
@@ -111,7 +114,11 @@ function labelStyle (focused, tintColor) {
     },
     FLResultPricer : {
       screen : FLResultPricer
-    }
+    },
+    FLCouponMinDetailAndroid: {
+      screen : FLCouponMinDetailAndroid
+    },
+
   })
   
   //Ecran ticket
@@ -127,17 +134,19 @@ function labelStyle (focused, tintColor) {
       }
 
     })
-    //Ecran broadcast
-    const BroadcastingScreenStack = createStackNavigator({
-      Broadcasting: {
-        screen: BroadcastingScreen,
-        navigationOptions: {
-          title: 'Broadcast',
 
-        }
-      },
+  //Ecran broadcast
+  const BroadcastingScreenStack = createStackNavigator({
+    Broadcasting: {
+      screen: BroadcastingScreen,
+      navigationOptions: {
+        title: 'Broadcast',
 
-      })
+      }
+    },
+
+    })
+
   //Ecran profil
   const ProfilScreenStack = createStackNavigator({
   Profil: {
@@ -296,7 +305,9 @@ function labelStyle (focused, tintColor) {
     //console.log(routes[index].params);
     //console.log("PASSE PAR ROUTE HOME");
     //console.log(navigation);
-    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'){
+    //console.log(routes[index].routeName);
+    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'
+    || routes[index].routeName === 'FLAutocallDetail'){
       if (typeof routes[index].params !== 'undefined') {
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params);
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params['hideBottomTabBar']);

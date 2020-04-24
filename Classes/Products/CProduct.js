@@ -90,6 +90,13 @@ export class CProduct extends CObject {
       return uf;
     }
 
+    setUF(UF) {
+      this.product.UF = UF;
+    }
+
+    setUFAssoc(UFAssoc) {
+      this.product.UFAssoc = UFAssoc;
+    }
 
     getISIN() {
       let name = "[X]";
@@ -99,6 +106,16 @@ export class CProduct extends CObject {
       }
   
       return name;
+    }
+
+    getPrice() {
+      let price = 0;
+  
+      if (this.product.hasOwnProperty("price")) {
+        price = this.product.price;
+      }
+  
+      return price;
     }
 
     getNominal() {

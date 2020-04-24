@@ -81,11 +81,10 @@ const initialLayout = {
       header: null
     }*/
     componentDidMount() {
-      this._navListener = this.props.navigation.addListener('didFocus', () => {
-        //StatusBar.setBarStyle('light-content');
-        //or
-        StatusBar.setBarStyle('dark-content')
-      });
+      // this._navListener = this.props.navigation.addListener('didFocus', () => {
+      //   StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
+
+      // });
 
       this._loadAllUserInfos();
       

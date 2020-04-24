@@ -132,13 +132,15 @@ class FLBottomPanel extends React.Component {
         maxDurationMs={100000}
         ref={this.masterdrawer}
         maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
-        <View style={[StyleSheet.absoluteFillObject, {zIndex: 99, }]} pointerEvents="box-none">
+        <View style={[StyleSheet.absoluteFillObject, {zIndex: 99,}]} 
+        pointerEvents={'box-none'}
+        >
           <Animated.View
             style={[
               StyleSheet.absoluteFillObject,
               {
                 transform: [{ translateY: this._translateY }],
-                opacity: 0.95
+                opacity: 1
               },
             ]}>
             <PanGestureHandler

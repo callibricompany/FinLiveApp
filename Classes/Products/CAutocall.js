@@ -316,7 +316,7 @@ export class CAutocall extends CProduct {
 
 
   //renvoie le coupon annualisé
-  getCouponTitle() {
+  getCoupon() {
     let name = "[CPN]";
 
     if (this.product.hasOwnProperty("coupon")) {
@@ -676,7 +676,7 @@ export class CAutocall extends CProduct {
           obj["level"] = Math.min(obj["level"], Number(this.getAirbagLevel()))
         }
         incrementalMultiplier = this.isMemory() ? currentYear : freq/12;
-        obj["coupon"] = this.isPhoenix() ? 1 : (1+(incrementalMultiplier * Number(this.getCouponTitle())));
+        obj["coupon"] = this.isPhoenix() ? 1 : (1+(incrementalMultiplier * Number(this.getCoupon())));
         
         callableDatas.push(obj);
       }

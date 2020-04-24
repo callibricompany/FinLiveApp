@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, Modal, Alert} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, Modal, Alert, StatusBar} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -53,7 +53,7 @@ import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
 import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid } from '../../../Utils';
+import { isIphoneX, ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid } from '../../../Utils';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
@@ -64,9 +64,9 @@ import { Dropdown } from 'react-native-material-dropdown';
 import ModalDropdown from 'react-native-modal-dropdown';
 
 
-
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
+const STATUSBAR_HEIGHT =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
 
 
 class FLTemplateAutocall extends React.Component {
@@ -93,6 +93,11 @@ class FLTemplateAutocall extends React.Component {
     //type de tycket
     this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE;
     this.originalType = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE;
+
+    //ce qui a été calculé sur le ticket : CPN ou CC
+    this.optimizer = this.props.hasOwnProperty('optimizer')  ? this.props.optimizer : 'CPN';
+
+   
     this.stdColor = setColor('');
     this.stdLightColor = setColor('light');
     this.separateBorderColor = 'black'; 
@@ -120,6 +125,9 @@ class FLTemplateAutocall extends React.Component {
           
     //l'objet autocall Classe
     this.autocall = new CAutocall(this.props.object);
+    if (this.optimizer === 'CC') {
+      this.autocall.setUF(-this.autocall.getPrice());
+    }
     this.autocallResult = new CAutocall(this.props.object);
 
     this.request = new CPSRequest();
@@ -172,7 +180,7 @@ _renderRecalculateProduct() {
         if (this.state.messageLoading !== '') {
               return (
                     <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 170}}>
-                      <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: -70, marginLeft : -50}} scalesPageToFit={false}
+                      <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: -70, marginLeft : -50}} scalesPageToFit={true}
                         startInLoadingState={true}
                         renderLoading={() => <RobotBlink width={120} height={120} />}
                         />
@@ -275,7 +283,7 @@ _updateValue=(id, value, valueLabel) =>{
 }
 
 _recalculateProduct(){
-
+  //console.log("OPTIMIZER : "+ this.optimizer);
   this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true, isRobotFlashSVGLoafingFinished : false });
   searchProducts(this.props.firebase, this.request.getCriteria())
   .then((data) => {
@@ -313,15 +321,13 @@ _renderHeaderShortTemplate() {
 
   return (
 
-                <View style={{
-                              paddingLeft : 20,  
-                              backgroundColor: setColor('blue'), 
-                              borderTopLeftRadius: 10, 
-                              borderTopRightRadius: 10, 
-                              flexDirection: 'row',
-                              //paddingTop: 5,
-                              //paddingBottom: 5,
-                              }}
+                <TouchableOpacity   style={{paddingLeft : 20, backgroundColor: setColor('blue'), borderTopLeftRadius: 10, borderTopRightRadius: 10, flexDirection: 'row'}}
+                        onPress={() => {
+                          this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailPricer', {
+                            autocall: this.autocallResult,
+                            //ticketType: TICKET_TYPE.PSCREATION
+                          })
+                        }}
                 >                                                    
                   <View style={{flex : 0.85, flexDirection: 'column', justifyContent: 'center' , paddingTop: 3, paddingBottom: 3}}>
                     <View>
@@ -336,17 +342,10 @@ _renderHeaderShortTemplate() {
                         </Text>   
                     </View>
                   </View>
-                  <TouchableOpacity style={{flex : 0.15,  justifyContent: 'center', alignItems: 'center',backgroundColor: setColor('turquoise'), borderTopRightRadius: 10}}
-                                    onPress={() => {
-                                      this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailPricer', {
-                                        autocall: this.autocallResult,
-                                        //ticketType: TICKET_TYPE.PSCREATION
-                                      })
-                                    }}
-                  >
+                  <View style={{flex : 0.15,  justifyContent: 'center', alignItems: 'center',backgroundColor: setColor('turquoise'), borderTopRightRadius: 10}}>
                       <Text style={setFont('300', 20, 'white', 'Regular')}>></Text>
-                  </TouchableOpacity>
-                </View>
+                  </View>
+                </TouchableOpacity>
   
   );
 }
@@ -539,9 +538,9 @@ _renderHeaderMediumTemplate() {
                   </View>
                   <View style={{ padding: 5, alignItems: 'center', justifyContent: 'center', paddingRight: 5, borderWidth: 0}}>
                       <Text style={setFont('400', 24, 'green')} numberOfLines={1}>        
-                          { Numeral(this.autocallResult.getCouponTitle()).format('0.00%')} <Text style={setFont('200', 12)}>p.a.
+                          { Numeral(this.autocallResult.getCoupon()).format('0.00%')} <Text style={setFont('200', 12)}>p.a.
                       </Text></Text>   
-                      <Text style={setFont('200', 12)}>UF : {this.state.nominal === 0 ? Numeral(this.autocallResult.getUF()).format('0.00%') : currencyFormatDE(this.autocallResult.getUF() * this.state.nominal, 0)} {this.autocallResult.getCurrency()}</Text>
+                      <Text style={setFont('200', 12)}>R : {this.state.nominal === 0 ? Numeral(this.autocallResult.getUF()).format('0.00%') : currencyFormatDE(this.autocallResult.getUF() * this.state.nominal, 0)} {this.autocallResult.getCurrency()}</Text>
                   </View>  
                 </View>
   
@@ -569,14 +568,14 @@ _renderHeaderFullTemplate() {
                               }}
                 >                                                    
                   <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
-                  <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0}}
+                  <TouchableOpacity style={{flexDirection: 'row'}}
                             onPress={() => {
                               this.state.isEditable ? this._dropdown['type'].show() : null;
                               
                             }}
                             activeOpacity={this.state.isEditable ? 0.2 : 1}
                     >
-                    <View style={{ borderWidth: 0, paddingTop : isAndroid() ? 0 : 5}}>
+                    <View style={{ borderWidth: 0, paddingTop : isAndroid() ? 0 : 2}}>
                           <ModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
@@ -640,7 +639,7 @@ _renderHeaderFullTemplate() {
                         : null
                           }
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flexDirection: 'row', paddingTop : 5}}
+                    <TouchableOpacity style={{flexDirection: 'row', paddingTop : 0, borderWidth: 0, justifyContent: 'flex-start', alignItems : 'flex-start'}}
                             onPress={() => {
                               this.state.isEditable ? this._dropdown['underlying'].show() : null;
                               
@@ -687,88 +686,53 @@ _renderHeaderFullTemplate() {
                     </TouchableOpacity>
                   </View>
                 </View>
-                <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
-                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
-                    <Text style={setFont('400', 24, this.state.messageLoading !== '' ? this.stdColor : 'green')} numberOfLines={1}>
-                        { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCouponTitle()).format('0.00%')}
-                        <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
-                    </Text>  
-                  </View> 
-                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
-                                                   onPress={() => {
-                                                    //envoi du produit
-                                          
-                                                      /*if (this.request.isUpdated()) {
-                                                          //on va recalculer le produit
-                                                            //console.log("AVANT LACEMENT CALCUL");
-                                                            this.setState({ messageLoading : 'Interrogation du marché...', isGoodToShow : true});
-                                                            searchProducts(this.props.firebase, this.request.getCriteria())
-                                                            .then((data) => {
-                                                              this.setState({ messageLoading : 'Réception et analyse des prix' });
-                                                
-                                                              autocall = interpolateBestProducts(data, this.request);
-
-                                                              if (autocall.length === 1){
-                                                                console.log(autocall);
-                                                                this.autocallResult.updateProduct(autocall[0]);
-                                                                //this.request.setRequestFromCAutocall(this.autocallResult);
-                                                              }
-
-                                                              this.setState({ messageLoading : '', isGoodToShow : true});
-                                                            
-                                                            })
-                                                            .catch(error => {
-                                                              console.log("ERREUR recup prix: " + error);
-                                                              alert('ERREUR calcul des prix', '' + error);
-                                                              this.setState({ isLoading : false , messageLoading : ''});
-                                                            });
-
-                                                            Alert.alert(
-                                                              'Votre choix :',
-                                                              "Concernant l'ancien produit et le nouveau : ",
-                                                              [
-                                                                {
-                                                                  text: 'Garder les deux', 
-                                                                  onPress: () => console.log('Ask me later pressed')
-                                                                },
-                                                                {
-                                                                  text: "Revenir au produit initial",
-                                                                  onPress: () => {
-                                                                    this.autocallResult = new CAutocall(this.data);
-
-                                                                    this.request = new CPSRequest();
-                                                                    this.request.setRequestFromCAutocall(this.autocall);
-                                                                    //console.log('Cancel Pressed');
-                                                                    this.setState({ toto: !this.state.toto });
-                                                                  },
-                                                                  style: 'cancel',
-                                                                },
-                                                                {
-                                                                  text: 'Ne garder que le nouveau', 
-                                                                  onPress: () => {
-                                                                    this.request = new CPSRequest();
-                                                                    this.request.setRequestFromCAutocall(this.autocallResult);
-                                                                    this.autocall = this.autocallResult;
-                                                                    this.setState({ toto: !this.state.toto });
-                                                                  }, 
-                                                                  style: 'cancel',},
-                                                              ],
-                                                              {cancelable: true},
-                                                            );
-                                                        
-                                                      } else {*/
-                                                        this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailPricer', {
-                                                          autocall: this.autocallResult,
-                                                          //ticketType: TICKET_TYPE.PSCREATION
-                                                        })
-                                                      //}
-                                                  }}
-                  >
-                    <Text style={setFont('400', 14, 'white')}>
-                   VOIR >
-                    </Text>   
-                  </TouchableOpacity>
-                </View>
+                {this.optimizer === 'CPN' 
+                ?
+                    <TouchableOpacity style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}
+                                      onPress={() => {
+                                          this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailPricer', {
+                                            autocall: this.autocallResult,
+                                          })
+                                      }}
+                    >
+                      <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
+                        <Text style={setFont('400', 24, this.state.messageLoading !== '' ? this.stdColor : 'green')} numberOfLines={1}>
+                            { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCoupon()).format('0.00%')}
+                            <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
+                        </Text>  
+                      </View> 
+                      <View style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}>
+                        <Text style={setFont('400', 14, 'white')}>
+                      VOIR >
+                        </Text>   
+                      </View>
+                    </TouchableOpacity>
+                :
+                    <TouchableOpacity style={{flex : 0.4, flexDirection : 'row', borderWidth: 0,  borderTopRightRadius: 10}}
+                                    onPress={() => {
+                                        this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailPricer', {
+                                          autocall: this.autocallResult,
+                                        })
+                                    }}
+                    >
+                        <View style={{flex : 0.9, flexDirection : 'column'}}>
+                            <View style={{backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white'}}>
+                              <Text style={setFont('400', 24, this.state.messageLoading !== '' ? this.stdColor : 'green')} numberOfLines={1}>
+                                  { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCoupon()).format('0.00%')}
+                                  <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
+                              </Text>  
+                            </View> 
+                            <View style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  'white', justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}>
+                              <Text style={setFont('400', 14, 'black')}>
+                                    R : {Numeral(this.autocall.getUF()).format('0.00%')}
+                              </Text>   
+                            </View>
+                        </View>
+                        <View style={{flex : 0.1, padding: 3, backgroundColor:  subscribeColor, alignItems: 'center', justifyContent : 'center',  borderTopRightRadius: 10}}>
+                          <Text style={setFont('400', 20, 'white')}>></Text>
+                        </View>
+                    </TouchableOpacity>
+                  }
 
               </View>
   
@@ -855,7 +819,7 @@ _renderAutocallFullTemplate() {
              </View>
              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
                 <Text style={[setFont('200', 11, this.request.isUpdated() ? setColor('turquoise') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
-                 {Numeral(this.autocallResult.getCouponTitle()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} 
+                 {Numeral(this.autocallResult.getCoupon()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} 
                  <Text style={setFont('200', 11, this.request.isUpdated('freq') ? setColor('turquoise') : this.stdColor,'Regular')}>{' '+ this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
                </Text>
              </View>
@@ -1048,7 +1012,7 @@ _renderAutocallFullTemplate() {
           </View>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
              <Text style={[setFont('200', 11, this.request.isUpdated() ? setColor('turquoise') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
-              {Numeral(this.autocallResult.getCouponTitle()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} 
+              {Numeral(this.autocallResult.getCoupon()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} 
               <Text style={setFont('200', 11, this.request.isUpdated('freq') ? setColor('turquoise') : this.stdColor,'Regular')}>{' '+ this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
             </Text>
           </View>
@@ -1461,7 +1425,6 @@ _renderAutocallFullTemplate() {
   )
 }
 
-
 _renderAutocallMediumTemplate() {
 
   //remplissage des dropdown
@@ -1474,9 +1437,216 @@ _renderAutocallMediumTemplate() {
   let dataDSAutocall = ['sans stepdown','1% / an','2% / an','3% / an','4% / an','5% / an'];
   let dataMaturityAutocall = ['1 an','2 ans','3 ans','4 ans','5 ans','6 ans','7 ans','8 ans','9 ans','10 ans'];
 
+  //console.log("this.autocall : " + this.autocall.getProductName());
+  //console.log("this.autocallResult : " + this.autocallResult.getProductName());
+
+  //il s'agit d'un reverse convertible
+  if (this.autocallResult.getProductShortName() === 'reverse'){
+    return (
+      <View style={{flexDirection : 'row', backgroundColor: 'white', paddingTop:5, height : 150, borderBottomRightRadius: 10, borderBottomLeftRadius: 10 }}>
+        <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
+          <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
+           <Text style={[setFont('300', 10, this.stdColor, 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
+                {String('maturité\n').toUpperCase()}
+            </Text>         
+          </View>
+          <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center' }}
+                             onPress={() => {
+                               this.state.isEditable ? this._dropdown['maturity'].show() : null;
+                               
+                             }}
+                             activeOpacity={this.state.isEditable? 0.2 : 1}
+           >
+               <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                 <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: this.request.isUpdated('maturity') ? setColor('turquoise') : this.stdLightColor}}/> 
+               </View>
+               <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
+                 <ModalDropdown
+                       //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                       //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
+                       dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                       dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
+                       onSelect={(index, value) => {
+                           let code = [ Number(index)+1, Number(index) +1 ];
+             
+                           this._updateValue('maturity', code, value);
+                           this._recalculateProduct();
+                       }}
+                       adjustFrame={(f) => {
+                         return {
+                           width: DEVICE_WIDTH/3,
+                           height: Math.min(DEVICE_HEIGHT/3, dataMaturityAutocall.length * 40),
+                           left : f.left,
+                           right : f.right,
+                           top: f.top,
+                         }
+                       }}
+                       defaultIndex={this.autocallResult.getMaturityInMonths()/12-1}
+                       ref={component => this._dropdown['maturity'] = component}
+                       options={dataMaturityAutocall}
+                       disabled={!this.state.isEditable}
+                   >
+                     <Text style={setFont('500', 16, (this.request.isUpdated('maturity')) ? setColor('turquoise'): this.stdLightColor, 'Bold')}>
+                         {this.autocallResult.getMaturityName()}
+                     </Text>
+                   </ModalDropdown>
+               </View>
+               { this.state.isEditable ?
+                               <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                                 <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('maturity') ? setColor('turquoise') : this.stdLightColor}}/> 
+                               </View>
+                             : null
+               }
+           </TouchableOpacity>
+   
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderWidth: 0, paddingTop: 10}}>
+             <View style={{ width :25, borderWidth: 0,  alignItems: 'center', justifyContent: 'center',}}>
+               <MaterialCommunityIconsIcon name={"ticket-percent"}  size={18} style={{color: this.request.isUpdated() ? setColor('turquoise') : this.stdLightColor}}/> 
+             </View>
+             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                <Text style={[setFont('200', 11, this.request.isUpdated() ? setColor('turquoise') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+                 {Numeral(this.autocallResult.getCoupon()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} 
+                 <Text style={setFont('200', 11, this.request.isUpdated('freq') ? setColor('turquoise') : this.stdColor,'Regular')}>{' '+ this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
+               </Text>
+             </View>
+          </View>
+
+        </View>   
+        <View style={{flex: 0.33, flexDirection : 'column', padding: 5}}>
+          <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
+            <Text style={[setFont('300', 10, this.stdColor, 'Light', 'top'), {textAlign: 'center'}]}>
+                {String('fréquence\n').toUpperCase()}
+            </Text>         
+          </View>
+
+          <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center' }}
+                             onPress={() => {
+                               this.state.isEditable  ? this._dropdown['freq'].show() : null;
+                               
+                             }}
+                             activeOpacity={this.state.isEditable ? 0.2 : 1}
+          >
+               <View style={{ width: 25, borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                 <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: this.request.isUpdated('freq') ? setColor('turquoise') : this.stdLightColor}}/> 
+               </View>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+                   <ModalDropdown
+                           //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                           //textStyle={setFont('500', 9, (this.request.isUpdated('nncp')) ? 'white' : this.stdColor, 'Regular')}
+                           dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                           dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
+                           onSelect={(index, value) => {
+                               let f = '1Y';
+                               switch(dataFreqAutocall.indexOf(value)){
+                                 case 0 : 
+                                   f = '1M';
+                                   break;
+                                 case 1 :
+                                   f = '3M';
+                                   break;
+                                 case 2 : 
+                                   f = '6M';
+                                   break;
+                                 case 3 : 
+                                   f = '1Y';
+                                   break;
+                                 default : break;
+                               }
+                               this._updateValue('freq', f, value);
+                               this._recalculateProduct();
+   
+                           }}
+                           adjustFrame={(f) => {
+                             return {
+                               width: DEVICE_WIDTH/3,
+                               height: Math.min(DEVICE_HEIGHT/3, dataFreqAutocall.length * 40),
+                               left : f.left,
+                               right : f.right,
+                               top: f.top,
+                             }
+                           }}
+                           defaultIndex={dataFreqAutocall.indexOf(this.autocallResult.getFrequencyAutocallTitle())}
+                           //defaultValue={'1er rappel dans ' + this.request.getNNCPLabel()}
+                           ref={component => this._dropdown['freq'] = component}
+                           options={dataFreqAutocall}
+                           disabled={!this.state.isEditable}
+                       >
+                         <Text style={[setFont('500', 16, this.request.isUpdated('freq') ? setColor('turquoise') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+                           {this.autocallResult.getFrequencyAutocallTitle().toLowerCase()} 
+                         </Text>
+                       </ModalDropdown>
+                 </View>
+                 { this.state.isEditable ?
+                               <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                                 <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('freq') ? setColor('turquoise') : this.stdLightColor}}/> 
+                               </View>
+                             : null
+               }
+         </TouchableOpacity>
+        </View>                                             
+        <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
+          <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
+            <Text style={[setFont('300', 10, this.stdColor, 'Light', 'top'), {textAlign: 'center'}]}>
+             {String('protection \ncapital').toUpperCase()}
+            </Text>         
+          </View>
+          <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
+                           onPress={() => {
+                             this.state.isEditable ? this._dropdown['barrierPDI'].show() : null;
+                             
+                           }}
+                           activeOpacity={this.state.isEditable? 0.2 : 1}
+          >
+               <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+                 <MaterialCommunityIconsIcon name={"shield"}  size={18} style={{color: this.request.isUpdated('barrierPDI') ? setColor('turquoise') : this.stdLightColor}}/> 
+               </View>
+               <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
+                 <ModalDropdown
+                   //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                   textStyle={setFont('500', 16, (this.request.isUpdated('barrierPDI')) ? setColor('turquoise'): this.stdLightColor, 'Bold')}
+                   dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                   dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
+                     onSelect={(index, value) => {
+                       this._updateValue('barrierPDI', Math.round(100*(Numeral(value).value() +1))/100, value);
+                       this._recalculateProduct();
+   
+                   }}
+                   adjustFrame={(f) => {
+                     return {
+                       width: DEVICE_WIDTH/3,
+                       height: Math.min(DEVICE_HEIGHT/3, dataPDIBarrier.length * 40),
+                       left : f.left,
+                       right : f.right,
+                       top: f.top,
+                     }
+                   }}
+                   defaultIndex={dataPDIBarrier.indexOf(Numeral(this.autocallResult.getBarrierPDI() - 1).format('0%'))}
+                   defaultValue={Numeral(this.autocallResult.getBarrierPDI()- 1).format('0%')}
+                   ref={component => this._dropdown['barrierPDI'] = component}
+                   options={dataPDIBarrier}
+                   disabled={!this.state.isEditable}
+                 />
+               </View>
+               { this.state.isEditable ?
+                               <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+                                 <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('barrierPDI') ? setColor('turquoise') : this.stdLightColor}}/> 
+                               </View>
+                             : null
+               }
+           </TouchableOpacity>  
+        </View>          
+      </View>
+     )
+  }
+
   return (
-   <View style={{flexDirection : 'row', backgroundColor: 'white', paddingTop:5 }}>
-     <View style={{flex : 0.33, flexDirection : 'column', padding: 5, alignItems: 'flex-start'}}>
+   <View style={{flexDirection : 'row', backgroundColor: 'white', paddingTop:5 , height : 165, borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+     <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
+       <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2,}}>
+        <Text style={[setFont('300', 10, this.stdColor, 'Light', 'top'), {textAlign: 'center'}]} numberOfLines={2}>
+             {String('protection \ncoupon').toUpperCase()}
+         </Text>         
+       </View>
        <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
                         onPress={() => {
                           (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1) ? this._dropdown['barrierPhoenix'].show() : null;
@@ -1511,7 +1681,7 @@ _renderAutocallMediumTemplate() {
                     defaultValue={Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}
                     ref={component => this._dropdown['barrierPhoenix'] = component}
                     options={dataPhoenixBarrier}
-                    disabled={this.state.isEditable ? this.autocallResult.getProductShortName() === 'athena' ? true : false : !this.state.isEditable}
+                    disabled={this.state.isEditable ? this.autocallResult.getBarrierPhoenix() === 1 ? true : false : !this.state.isEditable}
                 />
             </View>
             { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() !== 1)   ?
@@ -1522,17 +1692,28 @@ _renderAutocallMediumTemplate() {
             }
        </TouchableOpacity>
 
+       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderWidth: 0, paddingTop: 10}}>
+          <View style={{ width :25, borderWidth: 0,  alignItems: 'center', justifyContent: 'center',}}>
+            <MaterialCommunityIconsIcon name={"ticket-percent"}  size={18} style={{color: this.request.isUpdated() ? setColor('turquoise') : this.stdLightColor}}/> 
+          </View>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
+             <Text style={[setFont('200', 11, this.request.isUpdated() ? setColor('turquoise') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+              {Numeral(this.autocallResult.getCoupon()*this.autocallResult.getFrequencyPhoenixNumber()/12).format('0.00%')} 
+              <Text style={setFont('200', 11, this.request.isUpdated('freq') ? setColor('turquoise') : this.stdColor,'Regular')}>{' '+ this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
+            </Text>
+          </View>
+       </View>
 
-       <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 }}
+       <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'space-between', alignItems: 'center', paddingTop : 10}}
                           onPress={() => {
                                 this.state.isEditable ? this._dropdown['isMemory'].show() : null;
                               }}
                           activeOpacity={this.state.isEditable ? 0.2 : 1}
        >
-            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+            <View style={{ width : 25, borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"memory"}  size={18} style={{color: this.request.isUpdated('isMemory') ? setColor('turquoise') : this.stdLightColor}}/> 
             </View>
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2 }}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0 }}>
                 <ModalDropdown
                         //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                         //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('turquoise') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
@@ -1571,7 +1752,7 @@ _renderAutocallMediumTemplate() {
             }
       </TouchableOpacity>
       { (this.state.isEditable && (this.autocallResult.getBarrierPhoenix() === 1))  ?
-      <TouchableOpacity style={{flexDirection: 'row', flex: 1, borderWidth: 0, justifyContent: 'space-between', alignItems: 'flex-start', }}
+      <TouchableOpacity style={{flexDirection: 'row',  borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', paddingTop : 10}}
                                     onPress={() => {
                                       (this.state.isEditable && (this.autocallResult.getBarrierPhoenix() === 1)) ? this._dropdown['airbag'].show() : null;
                                       
@@ -1579,7 +1760,7 @@ _renderAutocallMediumTemplate() {
                                     activeOpacity={(this.state.isEditable && (this.autocallResult.getBarrierPhoenix() === 1)) ? 0.2 : 1}
       > 
 
-            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}
+            <View style={{ width: 25, borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}
 
             >
               <MaterialCommunityIconsIcon name={"airbag"}  size={18} style={{color: this.request.isUpdated('airbagLevel') ? setColor('turquoise') : this.stdLightColor}}/> 
@@ -1629,6 +1810,11 @@ _renderAutocallMediumTemplate() {
     }
      </View>   
      <View style={{flex: 0.33, flexDirection : 'column', padding: 5}}>
+       <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
+         <Text style={[setFont('300', 10, this.stdColor, 'Light', 'top'), {textAlign: 'center'}]}>
+             RAPPELS DU {'\n'}PRODUIT
+         </Text>         
+       </View>
        <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center'}}>
             <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"gavel"}  size={18} style={{color: this.stdLightColor}}/> 
@@ -1646,13 +1832,13 @@ _renderAutocallMediumTemplate() {
                           }}
                           activeOpacity={this.state.isEditable ? 0.2 : 1}
        >
-            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
+            <View style={{ width: 25, borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: this.request.isUpdated('freq') ? setColor('turquoise') : this.stdLightColor}}/> 
             </View>
              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
                 <ModalDropdown
                         //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
-                        //textStyle={setFont('500', 9, (this.request.isUpdated('nncp')) ? 'white' : setColor(''), 'Regular')}
+                        //textStyle={setFont('500', 9, (this.request.isUpdated('nncp')) ? 'white' : this.stdColor, 'Regular')}
                         dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
                         dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
                         onSelect={(index, value) => {
@@ -1703,20 +1889,20 @@ _renderAutocallMediumTemplate() {
                           : null
             }
       </TouchableOpacity>
-      <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
+      <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', paddingTop : 10}}
                         onPress={() => {
                           this.state.isEditable  ? this._dropdown['nncp'].show() : null;
                           
                         }}
                         activeOpacity={this.state.isEditable ? 0.2 : 1}
       >
-            <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
+            <View style={{ width: 25, borderWidth: 0,  alignItems: 'center', justifyContent: 'center',}}>
               <MaterialCommunityIconsIcon name={"clock-start"}  size={18} style={{color: this.request.isUpdated('nncp') ? setColor('turquoise') : this.stdLightColor}}/> 
             </View>
              <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
              <ModalDropdown
                 //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
-                //textStyle={setFont('500', 9, (this.request.isUpdated('nncp')) ? 'white' : setColor(''), 'Regular')}
+                //textStyle={setFont('500', 9, (this.request.isUpdated('nncp')) ? 'white' : this.stdColor, 'Regular')}
                 dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
                 dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
                   onSelect={(index, value) => {
@@ -1765,14 +1951,14 @@ _renderAutocallMediumTemplate() {
             }
       </TouchableOpacity>
       { (this.state.isEditable && this.autocallResult.getBarrierPhoenix() === 1)  ?
-      <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center'}}
+      <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', paddingTop : 10}}
                                    onPress={() => {
                                     (this.state.isEditable && this.autocallResult.getBarrierPhoenix() === 1)  ? this._dropdown['degressiveStep'].show() : null;
                                     
                                   }}
                                   activeOpacity={(this.state.isEditable && this.autocallResult.getBarrierPhoenix() === 1) ? 0.2 : 1}
        >
-            <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'space-between'}}>
+            <View style={{ width: 25, borderWidth: 0, alignItems: 'center', justifyContent: 'space-between'}}>
               <MaterialCommunityIconsIcon name={"trending-down"}  size={18} style={{color: this.stdLightColor}}/> 
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2}}>
@@ -1815,6 +2001,11 @@ _renderAutocallMediumTemplate() {
       }
      </View>                                             
      <View style={{flex : 0.33, flexDirection : 'column', padding: 5}}>
+       <View style={{justifyContent: 'flex-start', alignItems: 'center', padding: 2}}>
+         <Text style={[setFont('300', 10, this.stdColor, 'Light', 'top'), {textAlign: 'center'}]}>
+          {String('protection \ncapital').toUpperCase()}
+         </Text>         
+       </View>
        <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}
                         onPress={() => {
                           this.state.isEditable ? this._dropdown['barrierPDI'].show() : null;
@@ -1823,7 +2014,7 @@ _renderAutocallMediumTemplate() {
                         activeOpacity={this.state.isEditable? 0.2 : 1}
        >
             <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-              <MaterialCommunityIconsIcon name={"shield"}  size={18} style={{color: setColor(this.request.isUpdated('barrierPDI') ? 'turquoise' : 'light')}}/> 
+              <MaterialCommunityIconsIcon name={"shield"}  size={18} style={{color: this.request.isUpdated('barrierPDI') ? setColor('turquoise') : this.stdLightColor}}/> 
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
               <ModalDropdown
@@ -1859,8 +2050,12 @@ _renderAutocallMediumTemplate() {
                           : null
             }
         </TouchableOpacity>
-
-        <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', paddingTop: 10 }}
+        <View style={{ justifyContent: 'flex-start', alignItems: 'center', padding: 2, paddingTop : 16, borderLeftWidth : 0}}>
+          <Text style={[setFont('300', 10, this.stdColor, 'Light', 'top'), {textAlign: 'center'}]}>
+              {String('maturité').toUpperCase()}
+          </Text>         
+       </View>
+        <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', borderLeftWidth : 0}}
                           onPress={() => {
                             this.state.isEditable ? this._dropdown['maturity'].show() : null;
                             
@@ -1868,7 +2063,7 @@ _renderAutocallMediumTemplate() {
                           activeOpacity={this.state.isEditable? 0.2 : 1}
         >
             <View style={{ borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-              <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor(this.request.isUpdated('maturity') ? 'turquoise' : 'light')}}/> 
+              <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: this.request.isUpdated('maturity') ? setColor('turquoise') : this.stdLightColor}}/> 
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 2}}>
               <ModalDropdown
@@ -1896,14 +2091,14 @@ _renderAutocallMediumTemplate() {
                     options={dataMaturityAutocall}
                     disabled={!this.state.isEditable}
                 >
-                  <Text style={setFont('200', 11, (this.request.isUpdated('maturity')) ? setColor('turquoise'): this.stdLightColor, 'Regular')}>
+                  <Text style={setFont('500', 16, (this.request.isUpdated('maturity')) ? setColor('turquoise'): this.stdLightColor, 'Bold')}>
                       {this.autocallResult.getMaturityName()}
                   </Text>
                 </ModalDropdown>
             </View>
             { this.state.isEditable ?
                             <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
-                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('maturity') ? setColor('turquoise') : this.stdColor}} numberOfLines={1}/> 
+                              <MaterialCommunityIconsIcon name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('maturity') ? setColor('turquoise') : this.stdLightColor}}/> 
                             </View>
                           : null
             }
@@ -1916,11 +2111,7 @@ _renderAutocallMediumTemplate() {
   )
 }
 
-
 _renderAutocallShortTemplate() {
-
-  
-
   return (
    <View style={{flexDirection : 'row', backgroundColor: 'white', paddingTop:1}}>
      <View style={{flex : 0.7, flexDirection : 'column', padding: 10, borderWidth: 0}}>
@@ -1948,7 +2139,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIconsIcon name={this.request.getValue('barrierPhoenix') === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: this.stdLightColor}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.request.getValue('barrierPhoenix') === 1  ? this.autocallResult.getAirbagTitle() : Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}</Text>
+                  <Text style={setFont('300', 12, setColor(''), 'Light')} numberOfLines={1}>{this.request.getValue('barrierPhoenix') === 1  ? this.autocallResult.getAirbagTitle() : Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}</Text>
                 </View>
             </View>
             { this.request.getValue('isMemory') ? 
@@ -1984,7 +2175,7 @@ _renderAutocallShortTemplate() {
      </View>
      <View style={{flex : 0.3,  padding: 5, alignItems: 'center', justifyContent: 'center'}}>
         <Text style={setFont('400', 16, 'green')} numberOfLines={1}>        
-            { Numeral(this.autocallResult.getCouponTitle()).format('0.00%')}
+            { Numeral(this.autocallResult.getCoupon()).format('0.00%')}
         </Text>
         <Text style={setFont('200', 12)}>p.a.</Text>   
      </View>   
@@ -2175,8 +2366,8 @@ render () {
                                                                       shadowColor: 'rgb(75, 89, 101)',
                                                                       shadowOffset: { width: 0, height: 2 },
                                                                       shadowOpacity: this.stdShadowOpacity,
-                                                                      borderWidth :  isAndroid() ? 0 : 1,
-                                                                      borderColor : 'white',
+                                                                      borderWidth :  isAndroid() ? 1 : 1,
+                                                                      borderColor : isAndroid() ? 'rgb(75, 89, 101)' :  'white',
                                                                       //borderTopLeftRadius: 15,
                                                                       borderRadius: this.stdBorderRadius,
                                                                       //overflow: "hidden",
@@ -2193,13 +2384,13 @@ render () {
                 }
 
                 {this.state.messageLoading === '' ? this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE ? this._renderAutocallFullTemplate() 
-                                                                                                       : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderAutocallFullTemplate()
+                                                                                                       : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderAutocallMediumTemplate()
                                                                                                                                                               : this._renderAutocallShortTemplate()
                                                   : this._renderRecalculateProduct()
                 }
 
                 {this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE ? this._renderFooterFullTemplate(isFavorite) 
-                                                                    : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderFooterMediumTemplate(isFavorite)
+                                                                    : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? null
                                                                                                                           : this._renderFooterShortTemplate(isFavorite)
                 }
             </View>

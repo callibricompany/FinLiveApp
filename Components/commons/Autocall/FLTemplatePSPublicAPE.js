@@ -148,7 +148,7 @@ _renderHeaderFullTemplate() {
                 <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
                   <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
                     <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
-                        { Numeral(this.autocall.getCouponTitle()).format('0.00%')}
+                        { Numeral(this.autocall.getCoupon()).format('0.00%')}
                         <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                     </Text>  
                   </View> 
@@ -188,7 +188,7 @@ _renderHeaderMediumTemplate() {
                         <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10, borderTopRightRadius: 10}}>
                                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
                                       <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
-                                          { Numeral(this.autocall.getCouponTitle()).format('0.00%')}
+                                          { Numeral(this.autocall.getCoupon()).format('0.00%')}
                                           <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                                       </Text>  
                                  </View> 
@@ -301,7 +301,7 @@ _renderAutocallMediumTemplate() {
               </View>
               <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}>
                 <Text style={[setFont('200', 11,  setColor(''),'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
-                  {Numeral(this.autocall.getCouponTitle()*this.autocall.getFrequencyAutocallNumber()/12).format('0.00%')} 
+                  {Numeral(this.autocall.getCoupon()*this.autocall.getFrequencyAutocallNumber()/12).format('0.00%')} 
                   <Text style={setFont('200', 11, setColor(''),'Regular')}>{' '+ this.autocall.getFrequencyAutocallTitle().toLowerCase()} </Text>
                 </Text>
               </View>

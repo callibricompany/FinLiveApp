@@ -140,7 +140,7 @@ _renderHeaderFullTemplate() {
                 <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
                   <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
                     <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
-                        { Numeral(this.autocall.getCouponTitle()).format('0.00%')}
+                        { Numeral(this.autocall.getCoupon()).format('0.00%')}
                         <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                     </Text>  
                   </View> 

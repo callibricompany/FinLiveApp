@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, StyleSheet, SafeAreaView, TextInput, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, StatusBar, Dimensions } from 'react-native'
+import { Modal, StyleSheet, SafeAreaView, TextInput, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, StatusBar, Dimensions, Easing } from 'react-native'
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -42,6 +42,7 @@ import botImage from '../../assets/bot.png'
 
 import { searchProducts } from '../../API/APIAWS';
 
+import Ruler from 'react-native-animated-ruler';
 
 import FLBottomPanel from '../commons/FLBottomPanel';
 import { SNAP_POINTS_FROM_TOP } from '../commons/FLBottomPanel';
@@ -62,6 +63,7 @@ import { FLCouponMinDetail } from './description/FLCouponMinDetail';
 import logo from '../../assets/LogoWithoutText.png';
 import logo_gray from '../../assets/LogoWithoutTex_gray.png';
 import logo_white from '../../assets/LogoWithoutTex_white.png';
+import Animated from 'react-native-reanimated';
 
 
 
@@ -96,12 +98,17 @@ class PricerScreen extends React.Component {
       //recherche aussi les produits SRP
       searchSRP : false,
 
+      showModalDropdown : false,
+ 
+
+
       nominal : 1000000,
       toto : true,
     }
 
     //parametre courant qui a été touché pour passer l'info à FLBottomPanel
     this.currentParameter = '';
+
 
     //ensemble des modal dropdown
     this._dropdown = {};
@@ -129,7 +136,7 @@ class PricerScreen extends React.Component {
   async componentDidMount() {
     if (!isAndroid()) {
         this._navListener = this.props.navigation.addListener('didFocus', () => {
-          StatusBar.setBarStyle('dark-content');
+          StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
         });
     }
    // this.calculateProducts();
@@ -169,7 +176,7 @@ class PricerScreen extends React.Component {
   }
 
   _snapChange=(bottomPanelPosition) => {
-    //console.log(bottomPanelPosition);
+
     this.setState({ bottomPanelPosition });
   }
 
@@ -195,7 +202,9 @@ class PricerScreen extends React.Component {
 
   }
 
-  async calculateProducts() {
+  async calculateProducts(optimizer) {
+    //optimzer = 'CPN'  --> c'esst le coupon qui est recherché la marge étant fixé : valeur par défaut
+    //optimzer = 'CC'  --> c'est la marge qui est recherchée le coupon étant minipimé
 
     //this.state.isLoading === false ? this.setState({ isLoading: true }) : null;
     this.setState({ isLoading: true }) ;
@@ -248,11 +257,12 @@ class PricerScreen extends React.Component {
 
       //calcul du produit
 
-      this.bestProducts = interpolateBestProducts(data, this.request);
+      this.bestProducts = interpolateBestProducts(data, this.request, optimizer);
       //console.log(this.bestProducts);
       this.setState({ isLoading: false }, () => {
           this.props.navigation.navigate('FLResultPricer', {
           bestProducts: this.bestProducts,
+          optimizer 
           //ticketType: TICKET_TYPE.PSCREATION
         })
       });
@@ -1000,7 +1010,7 @@ _renderTiles() {
 
   //console.log("RENDER TILES / "+ this.request.getValue('type') );
   return (
-     <View>
+     <View style={{opacity : this.state.bottomPanelPosition !== SNAP_POINTS_FROM_TOP[2]  ? 0.3 : 1}}>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
             {this._renderAuctionTile()}
             {this._renderProductTile()}
@@ -1041,7 +1051,13 @@ _renderUFOrCoupon(what) {
       <TouchableOpacity style={{width : 0.85*DEVICE_WIDTH - 80 , flexDirection : 'row', justifyContent: 'center', padding: 10, backgroundColor : 'white', borderWidth : 1, borderColor: setColor(''), borderRadius : 4}}
                         onPress={() => {                          
                             this.currentParameter = what;
-                            this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                            //console.log('WHAT : '  + what);
+                            //what === 'UF' ? this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] }) : this.setState({ showModalBootomPanel : true });
+                            if (what === 'UF') {
+                              this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                            } else {
+                              isAndroid() ? this.props.navigation.navigate('FLCouponMinDetailAndroid', {updateValue: this._updateValue}) : this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
+                            }
                         }}
       >
           <View style={{justifyContent: 'center', alignItems: 'center', paddinng : 5}}>
@@ -1060,12 +1076,7 @@ _renderCalculateButton(position='right') {
   return (
     <TouchableOpacity style ={{  position: "absolute" , left : position==='right' ? (0.9*DEVICE_WIDTH-80) : (DEVICE_WIDTH/2 - 60), height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('turquoise'), borderRadius: 40, padding : 10, backgroundColor: setColor('turquoise')}}
           onPress={() => {
-            if (this.state.optimizer === 'CC') {
-              alert("'J'optimise ma marge' en cours de développement\nChoisissez 'J'optimise mon coupon'");
-              return;
-
-            }
-            this.calculateProducts();
+            this.calculateProducts(this.state.optimizer);
           }}  
       >
         <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
@@ -1077,6 +1088,7 @@ _renderCalculateButton(position='right') {
     </TouchableOpacity>
   )
 }
+
 
 render() {
     if (this.state.isLoading) {
@@ -1093,7 +1105,7 @@ render() {
     
     let dataOptions = ['SRP', 'Shadow'];
     return (
-      <View style={{flex:1, height: DEVICE_HEIGHT  }}> 
+      <View style={{flex:1, height: DEVICE_HEIGHT  , opacity : (this.state.showModalDropdown) ? 0.3 : 1}}> 
         {/*  <View style={{flexDirection: 'row', height: 40 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: 'white', paddingTop: isAndroid() ? 0 : STATUSBAR_HEIGHT, justifyContent: 'space-between', alignItems: 'center'}}>
               <View style={{justifyContent: 'center'}}>    
                 <Text style={setFont('300', 24, setColor(''), 'FLFontTitle')}>Evaluer</Text>
@@ -1104,7 +1116,6 @@ render() {
           </View>
           */}
          
-
           <View style={[globalStyle.bgColor, {flex:1, borderWidth:0, justifyContent: 'space-between', marginTop:  isAndroid() ? 0 : STATUSBAR_HEIGHT}]}>
 
 
@@ -1165,6 +1176,8 @@ render() {
                                     onSelect={(index, value) => {
                                       
                                     }}
+                                    onDropdownWillShow={() => this.setState({ showModalDropdown : true })}
+                                    onDropdownWillHide={() => this.setState({ showModalDropdown : false })}
                                     adjustFrame={(f) => {
                                       return {
                                         width: DEVICE_WIDTH/2,
@@ -1179,8 +1192,8 @@ render() {
                                         case 'Shadow' :
                                               return (
                                                   <View style={{flexDirection : 'row', height: 40}}>
-                                                      <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                          <Text style={setFont('500', 16, setColor(''), 'Bold')}>Mode shadow</Text>
+                                                      <View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                          <Text style={setFont('500', 16, setColor(''), 'Regular')}>Mode shadow</Text>
                                                       </View>
                                                       <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
                                                                         onPress={() => {
@@ -1195,8 +1208,8 @@ render() {
                                         case 'SRP' :
                                               return (
                                                   <View style={{flexDirection : 'row', height: 40}}>
-                                                      <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                          <Text style={setFont('500', 16, setColor(''), 'Bold')}>Inclure les APE</Text>
+                                                      <View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                          <Text style={setFont('500', 16, setColor(''), 'Regular')}>Inclure les APE</Text>
                                                       </View>
                                                       <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
                                                                         onPress={() => {
@@ -1270,16 +1283,17 @@ render() {
           <View style={[globalStyle.bgColor, {height: 20}]}>
 
           </View>
-          <FLBottomPanel position={this.state.bottomPanelPosition} 
-                              snapChange={this._snapChange} 
-                              renderFLBottomPanel={this._renderFLBottomPanel()} 
-                              renderTitle={this.request.getTitle(this.currentParameter)}
-                              activateParameter={this._activateParameter}
-                              isActivated={this.request.isActivated(this.currentParameter)}
-                              isMandatory={this.request.isMandatory(this.currentParameter)}
+          <FLBottomPanel  position={this.state.bottomPanelPosition} 
+                          snapChange={this._snapChange} 
+                          renderFLBottomPanel={this._renderFLBottomPanel()} 
+                          renderTitle={this.request.getTitle(this.currentParameter)}
+                          activateParameter={this._activateParameter}
+                          isActivated={this.request.isActivated(this.currentParameter)}
+                          isMandatory={this.request.isMandatory(this.currentParameter)}
           />
-
+          
         </View>
+        
     );
   }
 }
