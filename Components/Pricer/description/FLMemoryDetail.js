@@ -4,13 +4,14 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { FLSlider2 } from '../../commons/FLSlider2';
 
-import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, setFont } from '../../../Styles/globalStyle'
+import { getConstant } from '../../../Utils';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 export class FLMemoryDetail extends Component{
 
@@ -27,7 +28,7 @@ export class FLMemoryDetail extends Component{
     render() {
 
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}>
  
 
        

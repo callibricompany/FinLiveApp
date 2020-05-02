@@ -19,6 +19,7 @@ export class CProduct extends CObject {
 
     getFinalNominal() {
       return this.finalNominal;
+
     }
 
     setEditable(editable) {

@@ -16,11 +16,11 @@ import {
 
 import spinner from '../../assets/loading.gif';
 
+import { getConstant } from '../../Utils';
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-//const MARGIN = 0.2*DEVICE_WIDTH;
+
+//const MARGIN = 0.2*getConstant('width');
 const MARGIN = 40;
 
 export default class ButtonSubmit extends Component {
@@ -83,7 +83,7 @@ export default class ButtonSubmit extends Component {
   render() {
     const changeWidth = this.buttonAnimated.interpolate({
       inputRange: [0, 1],
-      outputRange: [0.9*DEVICE_WIDTH , MARGIN],
+      outputRange: [0.9*getConstant('width') , MARGIN],
     });
     const changeScale = this.growAnimated.interpolate({
       inputRange: [0, 1],

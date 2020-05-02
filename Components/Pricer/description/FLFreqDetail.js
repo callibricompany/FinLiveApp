@@ -5,13 +5,15 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-
 
 import Feather from 'react-native-vector-icons/Feather';
 
-import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, setColor, setFont } from '../../../Styles/globalStyle';
+import { getConstant } from '../../../Utils';
+
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 
@@ -48,15 +50,15 @@ export class FLFreqDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, marginTop : 20, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), marginTop : 20, borderWidth:0}}>
               <View style={{flexDirection: 'row'}}>
-                <View style={{flex : 0.45, alignItems:'center', borderBottomWidth: 3, borderBottomColor: blueFLColor, backgroundColor: 'white'}}>
+                <View style={{flex : 0.45, alignItems:'center', borderBottomWidth: 3, borderBottomColor: setColor(''), backgroundColor: 'white'}}>
                   <Text style={setFont('600', 14)}>RAPPELS TOUS LES : </Text>
                 </View>
                 <View style={{flex : 0.1, alignItems:'center'}}>
                   
                 </View>
-                <View style={{flex : 0.45, alignItems:'center', borderBottomWidth: 3, borderBottomColor: blueFLColor, backgroundColor: 'white'}}>
+                <View style={{flex : 0.45, alignItems:'center', borderBottomWidth: 3, borderBottomColor: setColor(''), backgroundColor: 'white'}}>
                   <Text style={setFont('600', 14)}>1er RAPPEL DANS : </Text>
                 </View>
               </View>

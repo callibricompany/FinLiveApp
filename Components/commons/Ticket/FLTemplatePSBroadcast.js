@@ -11,22 +11,7 @@ import RobotBlink from "../../../assets/svg/robotBlink.svg";
 import banniere from '../../../assets/yourTeam.png';
 import YourTeam_SVG from "../../../assets/svg/yourTeam.svg";
 
-import {  
-    generalFontColor, 
-    blueFLColor,
-    headerTabColor,
-    selectElementTab,
-    progressBarColor,
-    subscribeColor,
-    FLFontFamily,
-    FLFontFamilyBold,
-    apeColor,
-    backgdColorPricerParameter,
-    globalStyle,
-    backgdColor,
-    setFont,
-    setColor
- } from '../../../Styles/globalStyle'
+import {  globalStyle, setFont, setColor } from '../../../Styles/globalStyle'
 
 
 import Numeral from 'numeral'
@@ -52,7 +37,7 @@ import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
 import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid } from '../../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
@@ -63,8 +48,8 @@ import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 class FLTemplatePSBroadcast extends React.Component {
@@ -88,7 +73,7 @@ class FLTemplatePSBroadcast extends React.Component {
     this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE;
 
     //largeur de la cartouche sur l'ecran
-    this.screenWidth = this.props.hasOwnProperty('screenWidth') ? this.props.screenWidth*DEVICE_WIDTH : 0.9 * DEVICE_WIDTH;
+    this.screenWidth = this.props.hasOwnProperty('screenWidth') ? this.props.screenWidth*getConstant('width') : 0.9 * getConstant('width');
 
           
     //gestion des classes autocall et ticket broadcast
@@ -110,7 +95,7 @@ _renderHeaderFullTemplate() {
                               flex : 0.6, 
                               flexDirection : 'column', 
                               paddingLeft : 20,  
-                              backgroundColor: blueFLColor, 
+                              backgroundColor: setColor(''), 
                               borderTopLeftRadius: 10, 
                               //borderRadius: 14,
                               borderBottomWidth :  0,
@@ -144,7 +129,7 @@ _renderHeaderFullTemplate() {
                         <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                     </Text>  
                   </View> 
-                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  subscribeColor, justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
+                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  setColor('subscribeBlue'), justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
                                                    onPress={() => {
                                                   }}
                   >
@@ -171,7 +156,7 @@ _renderAutocallShortTemplate() {
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"gavel"}  size={15} style={{color: setColor('light')}}/> 
+                  <MaterialCommunityIconsIcon name={"gavel"}  size={15} style={{color: setColor('lightBlue')}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, setColor(''), 'Light')}>{ Numeral(this.autocall.getAutocallLevel()).format('0%')} </Text>
@@ -179,7 +164,7 @@ _renderAutocallShortTemplate() {
             </View>
             <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: setColor('light')}}/> 
+                  <MaterialCommunityIconsIcon name={"alarm-multiple"}  size={18} style={{color: setColor('lightBlue')}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocall.getFrequencyPhoenixTitle().toLowerCase()} </Text>
@@ -189,7 +174,7 @@ _renderAutocallShortTemplate() {
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={this.autocall.getBarrierPhoenix() === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: setColor('light')}}/> 
+                  <MaterialCommunityIconsIcon name={this.autocall.getBarrierPhoenix() === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: setColor('lightBlue')}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocall.getBarrierPhoenix()  === 1  ? this.autocall.getAirbagTitle() : Numeral(this.autocall.getBarrierPhoenix()  - 1).format('0%')}</Text>
@@ -198,7 +183,7 @@ _renderAutocallShortTemplate() {
             { this.autocall.isMemory() ? 
                   <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
                       <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                        <MaterialCommunityIconsIcon name={"memory"}  size={15} style={{color: setColor('light')}}/>
+                        <MaterialCommunityIconsIcon name={"memory"}  size={15} style={{color: setColor('lightBlue')}}/>
                       </View>
                       <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                           <Text style={setFont('300', 12, setColor(''), 'Light')}>{(this.autocall.isMemory() ? 'mémoire': 'non mémoire')} </Text>
@@ -210,7 +195,7 @@ _renderAutocallShortTemplate() {
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"shield"}  size={15} style={{color: setColor('light')}}/> 
+                  <MaterialCommunityIconsIcon name={"shield"}  size={15} style={{color: setColor('lightBlue')}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, setColor(''), 'Light')}>{Numeral(this.autocall.getBarrierPDI() - 1).format('0%')}</Text>
@@ -218,7 +203,7 @@ _renderAutocallShortTemplate() {
             </View>
             <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor('light')}}/> 
+                  <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor('lightBlue')}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                     <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocall.getMaturityName()} </Text>
@@ -250,7 +235,7 @@ _renderFooterFullTemplate(isFavorite) {
                                     .catch((error) => console.log("Erreur de mise en favori : " + error));
                                   }}
                 >
-                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor('light')}/>
+                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor('lightBlue')}/>
                 </TouchableOpacity>
 
    
@@ -266,7 +251,7 @@ _renderFooterFullTemplate(isFavorite) {
                                                 }}
                  >
                  
-                   <Ionicons name="md-help" size={20} style={{color: setColor('light')}}/>
+                   <Ionicons name="md-help" size={20} style={{color: setColor('lightBlue')}}/>
                 </TouchableOpacity>   
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
                                                 onPress={() => {
@@ -274,7 +259,7 @@ _renderFooterFullTemplate(isFavorite) {
                                                 }}
                  >
                  
-                  <FontAwesome name={"file-text-o"}  size={20} style={{color: setColor('light')}}/> 
+                  <FontAwesome name={"file-text-o"}  size={20} style={{color: setColor('lightBlue')}}/> 
                 </TouchableOpacity>   
 
                 
@@ -296,7 +281,7 @@ render () {
             <View style={{flexDirection : 'column',
                           //flex: 1,
                           width: this.screenWidth, 
-                          //marginLeft : 0.025*DEVICE_WIDTH,
+                          //marginLeft : 0.025*getConstant('width'),
                           shadowColor: 'rgb(75, 89, 101)',
                           shadowOffset: { width: 0, height: 2 },
                           shadowOpacity: 0.9,
@@ -311,7 +296,7 @@ render () {
                         }}
                   opacity={this.broadcast.hasBeenSeen() ? 0.7 : 1}
             >
-              <View style={{position: 'absolute', top : -5, left : DEVICE_WIDTH/2 -30, zIndex: 20}}>
+              <View style={{position: 'absolute', top : -5, left : getConstant('width')/2 -30, zIndex: 20}}>
                   <YourTeam_SVG width={50} height={80} />
               </View>
               <View style={{zIndex : 1}}>
@@ -332,7 +317,7 @@ render () {
                                 </Text>
                             </View>
                         </View>
-                        <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.025*DEVICE_WIDTH}}>
+                        <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.025*getConstant('width')}}>
                             <View>
                                 <Text style={setFont('300', 14, 'black', 'Regular')}>
                                   Objectif : {currencyFormatDE(this.broadcast.getBroadcastAmount())} {this.broadcast.getCurrency()}
@@ -343,7 +328,7 @@ render () {
                                      <Ionicons name="ios-podium" size={20} style={{color: setColor('gray')}}/> 
                                 </View>
                                 <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Progress.Bar progress={0.3} width={(DEVICE_WIDTH/2)} color={setColor('')}/>
+                                  <Progress.Bar progress={0.3} width={(getConstant('width')/2)} color={setColor('')}/>
                                </View>
                                <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
                                   <Text style={setFont('300', 10)}>{Moment(this.broadcast.getEndDate()).format("ll")}</Text>

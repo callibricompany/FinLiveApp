@@ -4,7 +4,7 @@ import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar
 import { Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { globalStyle , blueFLColor, subscribeColor, FLFontFamily} from '../../Styles/globalStyle'
+import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
@@ -12,18 +12,16 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice , getConstant } from '../../Utils';
 
 
-
-
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
 const NAVBAR_HEIGHT = 45;
-//const STATUS_BAR_HEIGHT = Platform.select({ ios: 20, android: 24 });
-const STATUS_BAR_HEIGHT = sizeByDevice(44, 20, StatusBar.currentHeight);
+
+
+
+
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 
@@ -41,7 +39,7 @@ class BroadcastingScreen extends React.Component {
       dataSource: data,
 
       //animation barre de recherche
-      positionLeft: new Animated.Value(DEVICE_WIDTH), //indicateur si recherche ou pas 
+      positionLeft: new Animated.Value(getConstant('width')), //indicateur si recherche ou pas 
 
 
       scrollAnim,
@@ -105,7 +103,7 @@ class BroadcastingScreen extends React.Component {
 
   _onMomentumScrollEnd = () => {
     const toValue = this._scrollValue > NAVBAR_HEIGHT &&
-      this._clampedScrollValue > (NAVBAR_HEIGHT - STATUS_BAR_HEIGHT) / 2
+      this._clampedScrollValue > (NAVBAR_HEIGHT - getConstant('statusBar')) / 2
       ? this._offsetValue + NAVBAR_HEIGHT
       : this._offsetValue - NAVBAR_HEIGHT;
 
@@ -143,15 +141,15 @@ class BroadcastingScreen extends React.Component {
 
     const navbarTop = clampedScroll.interpolate({
       inputRange: [0, NAVBAR_HEIGHT ],
-      outputRange: [0, -STATUS_BAR_HEIGHT],
+      outputRange: [0, -getConstant('statusBar')],
       extrapolate: 'clamp',
     });
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
-      <SafeAreaView style={{flex : 1, backgroundColor: blueFLColor}}>
+      <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
 
-      <View style={{flex :1, height: DEVICE_HEIGHT, WIDTH: DEVICE_WIDTH}}>
-        <AnimatedFlatList
+      <View style={{flex :1, height: getConstant('height'), WIDTH: getConstant('width')}}>
+        {/* <AnimatedFlatList
           contentContainerStyle={styles.contentContainer}
           //dataSource={this.state.dataSource}
           data={data}
@@ -174,33 +172,38 @@ class BroadcastingScreen extends React.Component {
                       Alert.alert("FinLive SAS","Copyright ©")
                   }}
                   style={{height : 150, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontFamily : 'FLFontFamily'}}>F i n L i v e</Text>
+                <Text style={{}}>F i n L i v e</Text>
               </TouchableOpacity>
             );
           }}
-        />
+        /> */}
+        <View style={{backgroundColor : 'white', width : getConstant('width'), height : getConstant('height'), alignItems :'flex-start', justifyContent : 'flex-start', marginTop : 45}}>
+          <Text style={setFont('400', 18, 'black','Regular')}>En construction</Text>
+        </View>
 
         <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
          
         <Animated.View style={{
                   display: 'flex',
-                  backgroundColor: blueFLColor,
+                  backgroundColor: setColor(''),
                   //borderRadius: 3,
                   borderWidth:0,
                   opacity: navbarOpacity,
                   height: 45,
                   marginTop: 0,
-                  width: DEVICE_WIDTH*1,
+                  width: getConstant('width')*1,
                   alignSelf: 'center',
                   justifyContent: 'center',
                   alignItems: 'center'
                 }}> 
-                  <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.925,flexDirection: 'row'}}>   
+                  <View style={{flex: 1, height: 45, borderWidth: 0, width: getConstant('width')*0.925,flexDirection: 'row'}}>   
                     <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
                       <TouchableOpacity onPress={() => {
                                   console.log("qsjhfjhdfjd");
                       }}>
-                        <Text style={{paddingLeft : 5,fontFamily: this.state.fontLoaded ? 'FLFontTitle' : FLFontFamily, fontWeight:'200', fontSize : 18, color:'white'}}>Test restaus FinLive</Text>    
+                        <Text style={setFont('200', 18, 'white')}>
+                            Vos produits suivis
+                        </Text>    
                       </TouchableOpacity>
                     </View>   
 
@@ -260,7 +263,7 @@ class BroadcastingScreen extends React.Component {
                       </TouchableOpacity>
                     
                   </View>
-                  <Animated.View style={{flexDirection:'row', top: 0, width: DEVICE_WIDTH, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
+                  <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
                       <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                           <TouchableOpacity onPress={() => {
                                        //this.setState ({ showModalTitle : !this.state.showModalTitle });
@@ -271,7 +274,7 @@ class BroadcastingScreen extends React.Component {
                                           Animated.timing(
                                               this.state.positionLeft,
                                                 {
-                                                  toValue: DEVICE_WIDTH,
+                                                  toValue: getConstant('width'),
                                                   duration : 1000,
                                                   easing: Easing.elastic(),
                                                   speed : 1
@@ -349,7 +352,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     height: NAVBAR_HEIGHT,
     justifyContent: 'center',
-    //paddingTop: STATUS_BAR_HEIGHT,
+    //paddingTop: getConstant('statusBar),
   },
   contentContainer: {
     paddingTop: NAVBAR_HEIGHT,

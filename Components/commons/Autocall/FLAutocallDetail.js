@@ -8,10 +8,10 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FLTemplateAutocall from "./FLTemplateAutocall";
-import { setFont, setColor , globalStyle , backgdColor} from '../../../Styles/globalStyle';
+import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 
 import { ssCreateStructuredProduct } from '../../../API/APIAWS';
-import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../../Utils';
+import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant } from '../../../Utils';
 import FLAnimatedSVG from '../FLAnimatedSVG';
 
 import Accordion from 'react-native-collapsible/Accordion';
@@ -33,10 +33,11 @@ import logo_white from '../../../assets/LogoWithoutTex_white.png';
 import logo from '../../../assets/LogoWithoutText.png';
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
+import { CWorkflowTicket } from "../../../Classes/Tickets/CWorkflowTicket";
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
+
+
+
 
 
 
@@ -53,7 +54,7 @@ class FLAutocallDetail extends React.Component {
 
         //gestio, du menu dynamique
         text: "",
-        scrollOffset: new Animated.Value(0),
+        
 
         //gestion du nominal (deja traité ou pas)
         nominal :  this.autocall.getNominal(),
@@ -61,7 +62,10 @@ class FLAutocallDetail extends React.Component {
   
         //gestion des sections
         activeSections: [0],
-        scrollViewHeight : 50,
+
+        //gestion du fondu de l'en tete
+        scrollOffset: new Animated.Value(0),
+        isScrollAtTop : true,
   
         //gestion du clavier
         keyboardHeight: 0,
@@ -141,7 +145,7 @@ class FLAutocallDetail extends React.Component {
     this.setState({
       keyboardHeight: e.endCoordinates.height,
       isKeyboardVisible: true
-    }, ()=> console.log("HAUTEUR CLAVIER : " + this.state.keyboardHeight));
+    });
   }
 
   _updateAutocall=(autocall) => {
@@ -177,8 +181,8 @@ class FLAutocallDetail extends React.Component {
                   let x = evt.nativeEvent.pageX;
                   let y = evt.nativeEvent.pageY;
                   //si on a clické en dehors du module view cidessous on ferme le modal
-                  let verifX = x < DEVICE_WIDTH*0.1  || x > DEVICE_WIDTH*0.9 ? true : false;
-                  let verifY = y < Math.min(DEVICE_HEIGHT*0.35, DEVICE_HEIGHT-300-STATUSBAR_HEIGHT-this.state.keyboardHeight)  || y > DEVICE_HEIGHT*0.75 ?true : false;
+                  let verifX = x < getConstant('width')*0.1  || x > getConstant('width')*0.9 ? true : false;
+                  let verifY = y < Math.min(getConstant('height')*0.35, getConstant('height')-300-getConstant('statusBar')-this.state.keyboardHeight)  || y > getConstant('height')*0.75 ?true : false;
                   if (verifX || verifY) {
                     this.setState({showModalDescription : false})
                   }
@@ -194,10 +198,10 @@ class FLAutocallDetail extends React.Component {
                       borderWidth :1,
                       borderColor : setColor(''),
                       borderRadius: 4,
-                      width: DEVICE_WIDTH*0.8,
-                      //height: DEVICE_HEIGHT*0.4,
-                      top:  Math.min(DEVICE_HEIGHT*0.35, DEVICE_HEIGHT-300-STATUSBAR_HEIGHT-this.state.keyboardHeight),
-                      left : DEVICE_WIDTH*0.1,
+                      width: getConstant('width')*0.8,
+                      //height: getConstant('height')*0.4,
+                      top:  Math.min(getConstant('height')*0.35, getConstant('height')-300-getConstant('statusBar')-this.state.keyboardHeight),
+                      left : getConstant('width')*0.1,
                       borderRadius: 4,
        
 
@@ -208,10 +212,10 @@ class FLAutocallDetail extends React.Component {
                   <View style={{backgroundColor: setColor(''), alignItems:'center', justifyContent: 'center', padding: 10}}>
                       <Text style={setFont('500',14,'white', 'Regular')}>INSTRUCTIONS DE COTATION</Text>
                   </View>
-                  <View style={{ backgroundColor: globalStyle.bgColor, alignItems:'flex-start', justifyContent: 'flex-start'}}>
+                  <View style={{ backgroundColor: setColor('background'), alignItems:'flex-start', justifyContent: 'flex-start'}}>
                       <Text style={[setFont('300', 14), {padding: 10}]}>Ajoutez vos instructions pour les émetteurs :</Text>
-                      <View style={{backgroundColor: globalStyle.bgColor, borderWidth :0}}>
-                        <TextInput  style={{color: 'black', textAlignVertical:'top', backgroundColor: 'white' , margin : 10, padding: 5, borderWidth :1, borderRadius: 2,width: DEVICE_WIDTH*0.8-20, height: DEVICE_HEIGHT*0.15}}
+                      <View style={{backgroundColor: setColor('background'), borderWidth :0}}>
+                        <TextInput  style={{color: 'black', textAlignVertical:'top', backgroundColor: 'white' , margin : 10, padding: 5, borderWidth :1, borderRadius: 2,width: getConstant('width')*0.8-20, height: getConstant('height')*0.15}}
                                   multiline={true}
                                   numberOfLines={5}
                                   placeholder={'Vos instructions...'}
@@ -222,7 +226,7 @@ class FLAutocallDetail extends React.Component {
                         />
                       </View>
                   </View>
-                  <View style={{flexDirection: 'row', backgroundColor: globalStyle.bgColor, borderWidth : 0, paddingLeft : 10, paddingRight : 10, paddingTop : 10}}>
+                  <View style={{flexDirection: 'row', backgroundColor: setColor('background'), borderWidth : 0, paddingLeft : 10, paddingRight : 10, paddingTop : 10}}>
                       <View style={{flex: 0.8, borderWidth : 0}}>
                           <Text style={setFont('300', 14, 'black')}>
                               Avez-vous décrit une spécifité au produit non standard ?
@@ -237,7 +241,7 @@ class FLAutocallDetail extends React.Component {
                       </TouchableOpacity>
                   </View>
                   <View style={{alignItems:'center', justifyContent: 'center', margin : 15}}>
-                    <TouchableOpacity style={{backgroundColor: setColor('turquoise')}}
+                    <TouchableOpacity style={{backgroundColor: setColor('subscribeBlue')}}
                                       onPress={() => {
                                         //on envoie le ticket 
                                         this.setState({ isLoading : true , showModalDescription : false });
@@ -245,7 +249,7 @@ class FLAutocallDetail extends React.Component {
                                         
                                         let productToSend = this.autocall.getProduct();;
                                         productToSend['subject'] = this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.autocall.getFrequencyAutocallTitle().toLowerCase();
-                                        productToSend['description'] = this.state.description;
+                                        productToSend['description'] = this.state.description ==='' ? "Aucune instruction particulière" : this.state.description;
                                         productToSend['type'] = 'Produit structuré';
                                         productToSend['department'] = 'FIN';
                                         productToSend['nominal'] = Number(this.state.nominal);
@@ -254,28 +258,41 @@ class FLAutocallDetail extends React.Component {
                                         } else {
                                           productToSend['cf_step_ape'] = "APEDVB";
                                         }
-                                    
+                                        
+                                        //date de fin de resolution du ticket 
+                                        //si PP dans 3 jours fin de journée
+                                        let due_byDate = Moment(Date.now()).add(3, 'days').set({"hour": 17, "minute": 30, "second" : 0}).toDate();
+                                        productToSend['due_by'] = Moment.utc(due_byDate).format();
+                                        let fr_due_byDate = Moment(Date.now()).add(1, 'days').set({"hour": 17, "minute": 15, "second" : 0}).toDate();
+                                        productToSend['fr_due_by'] = Moment.utc(fr_due_byDate).format();
+
+
                                         //quel mode va rentrer le ticket
                                         productToSend['cf_ps_mode'] = this.state.isAutomatique ? "Automatique" : "Specifique";
+                                        
+                                        productToSend['UF'] = this.autocall.getUF();
+                                        productToSend['UFAsso'] = this.autocall.getUFAssoc();
+                                        //console.log(productToSend);
 
-                                        //productToSend['UF'] = 0.03;
-                                        //productToSend['UFAsso'] =0.001;
-                                        // console.log(productToSend);
+                                       //"due_by": 2020-05-03T15:30:00.912Z,
+
                                         ssCreateStructuredProduct(this.props.firebase, productToSend)
-                                        .then((data) => {
+                                       .then((data) => {
                                           //console.log("USER CREE AVEC SUCCES DANS ZOHO");
                                           
                                           console.log("SUCCES CREATION TICKET");
-       
-                                          this.props.addTicket(data.data);
+                                          let t = new CWorkflowTicket(data.data);
+                                          this.props.addTicket(t);
                                           console.log("TICKET AJOUTE");
-                                          this.setState({ isLoading : false }, () => this.props.navigation.navigate('Tickets'));
+                                          this.setState({ isLoading : false }, () => {
+                                            this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
+                                          })
                                         })
                                         .catch(error => {
-                                          console.log("ERREUR CREATION TICKET: " + error);
-                                          this.setState({ isLoading : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
+                                           console.log("ERREUR CREATION TICKET: " + error);
+                                           this.setState({ isLoading : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
                                           
-                                        }) 
+                                        });
                                         
                                       }}
                     >
@@ -297,7 +314,7 @@ class FLAutocallDetail extends React.Component {
       return <View style={{height : 0}}></View>;
     }
     return (
-      <View style={{width : 0.9*DEVICE_WIDTH, borderWidth : 1, borderColor : setColor(''), backgroundColor : setColor(''),  justifyContent: 'center', alignItems: 'center', borderTopRightRadius : 10, borderTopLeftRadius : 10}}>
+      <View style={{width : 0.9*getConstant('width'), borderWidth : 1, borderColor : setColor(''), backgroundColor : setColor(''),  justifyContent: 'center', alignItems: 'center', borderTopRightRadius : 10, borderTopLeftRadius : 10}}>
         <Text style={setFont('400', 18, 'white', 'Regular')}>
            {String(content.title).toUpperCase()}
         </Text>
@@ -597,7 +614,7 @@ class FLAutocallDetail extends React.Component {
     }
 
     return (
-      <View style={{width : 0.9*DEVICE_WIDTH, padding : 10}}>
+      <View style={{width : 0.9*getConstant('width'), padding : 10}}>
           {renderSections}
       </View>
     )
@@ -610,114 +627,16 @@ class FLAutocallDetail extends React.Component {
       return null;
     }
     return (
-      <View style={{height: 10, backgroundColor: setColor(''),opacity : 0.3,  width : DEVICE_WIDTH*0.9,borderColor: setColor(''), borderBottomWidth : 1, borderBottomLeftRadius : 10, borderBottomRightRadius : 10}}>
+      <View style={{height: 10, backgroundColor: setColor(''),opacity : 0.3,  width : getConstant('width')*0.9,borderColor: setColor(''), borderBottomWidth : 1, borderBottomLeftRadius : 10, borderBottomRightRadius : 10, paddingBottom : 1}}>
       </View>
     );
   };
 
-  render() {
-
-    const scrollEvent = Animated.event(
-        [{ nativeEvent: { contentOffset: { y: this.state.scrollOffset } } }],
-        { useNativeDriver: true },
-
-      );
-
-    
-    return (
-      <Animated.ScrollView  style={{ flex: 1, backgroundColor: "white" , opacity: this.state.showModalDescription ? 0.3 : this.state.isLoading ? 0.2 : 1}}
-                            pointerEvents={"auto"}
-                            // Mis à jour de scrollOffset sur l'évènement onScroll
-                            onScroll={scrollEvent}
-                            scrollEventThrottle={1} //est nécessaire afin d'être notifié
-                            // de tous les évènements de défilement
-                            scrollEventThrottle={1}
-                            
-      >
-         
-            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoading} text={String("création d'une demande de cotation").toUpperCase()}/>
-            {this._renderModal()}
-            {this.renderHeader()}
-            {this.renderContent()}
-        
-            <View style={{position : 'absolute', top : 0, left : 0, flexDirection : 'row', marginTop : STATUSBAR_HEIGHT-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 140 + STATUSBAR_HEIGHT, width : DEVICE_WIDTH, paddingLeft : 10, backgroundColor: setColor(''), opacity : 0.9, paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'flex-start', zIndex: 5}}  >
-                            <TouchableOpacity style={{ flex: 0.5, flexDirection : 'row', borderWidth: 0, padding : 5}}
-                                                onPress={() => this.props.navigation.goBack()}
-                            >
-                                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                                        <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
-                                    </View>
-                                    <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
-                                        <Text style={setFont('300', 16, 'white', 'Regular')}>Retour</Text>
-                                    </View>
-                            </TouchableOpacity>
-                            <View style={{flex: 0.5, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*DEVICE_WIDTH}}>
-    
-                                    <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}
-                                                        onPress={() => {
-                                                        let r = new CPSRequest();
-                                                        r.setRequestFromCAutocall(this.autocall);
-                                                        this.props.navigation.dispatch(NavigationActions.navigate({
-                                                            routeName: 'Pricer',
-                                                            action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
-                                                        }));
-                                                        }}
-                                    >
-                                        <FontAwesome name={'gears'} size={25} style={{color: 'white'}}/>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}
-                                                                        onPress={() => {
-                                                            
-                                                                        this.props.navigation.navigate('FLAutocallDetail2' , {autocall : this.autocall});
-                                                                
-                                                                        }}
-                                    >
-                                        <EvilIcons name={'share-apple'} size={35} style={{color: 'white'}}/>
-                                    </TouchableOpacity>
-                   
-                            </View>
-            </View>
-            <View style={{position : 'absolute', top : isAndroid() ? 40 : 40 + STATUSBAR_HEIGHT, left : 0, width : DEVICE_WIDTH, justifyContent : 'center', alignItems : 'center', zIndex : 10}}>
-                <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} />
-            </View>
-            {this.autocall.getFinalNominal() === -1 ?
-                 
-                      <Animated.View style={{position : 'absolute',top: DEVICE_HEIGHT-110-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : DEVICE_WIDTH -120,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent', transform: [{ translateY: this.state.scrollOffset }]}}>
-                  
-
-                                <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 80, width: 80, borderColor: setColor('turquoise'), borderRadius: 40, marginLeft : 10, padding : 10, backgroundColor: setColor('turquoise')}}
-                                                onPress={() => {
-                                                    if(this.state.nominal === 0) {
-                                                    alert("Renseigner un nominal avant de demander une cotation");
-                                                    return;
-                                                    } else if(this.state.nominal < 50000) {
-                                                        alert("Renseigner un nominal supérieur à 50 000 EUR pour demander une cotation");
-                                                        return;
-                                                    }
-                                                    this.setState({ showModalDescription: true });
-                                                }}  
-                                >
-                                    <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
-                                        <Image style={{width: 50, height: 50}} source={logo_white} />
-                                    </View>
-                                    <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
-                                        <Text style={setFont('400', 12, 'white', 'Regular')}>{String('traiter').toUpperCase()}</Text>
-                                    </View>
-                                </TouchableOpacity>
-      
-                    </Animated.View>
-                  
-                : <View style={{position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : DEVICE_WIDTH*0.025, zIndex: 10, backgroundColor: setColor('turquoise'), width : DEVICE_WIDTH*0.95, borderRadius: 5}}>
-                      <Text style={[setFont('400', 24, 'white', 'Regular'), {textAlign: 'center'}]}>{currencyFormatDE(this.autocall.getFinalNominal())} {this.autocall.getCurrency()}</Text>
-                  </View>
-              }    
-      </Animated.ScrollView>
-    );
-  }
+ 
 
   renderHeader() {
     //const headerHeight = 240;
-    const expandedHeaderHeight = isIphoneX() ? 320 : 300;
+    const expandedHeaderHeight = isIphoneX() ? 330 : 300;
     const collapsedHeaderHeight = 64 + (isIphoneX() ? 30 : 0);
     const titleHeight = 44;
     const { scrollOffset } = this.state;
@@ -744,7 +663,8 @@ class FLAutocallDetail extends React.Component {
                                     },
                                 ],
                                 // zIndex est utilisé pour que l'entête soit toujours au dessus du contenu
-                                zIndex: 3,
+                                zIndex: this.state.isScrollAtTop ? 0 : 15,
+                                
                                 justifyContent : 'center',
                                 alignItems : 'center',
                                 borderWidth : 0
@@ -783,11 +703,15 @@ class FLAutocallDetail extends React.Component {
                         backgroundColor: setColor(''),
                         // Apparition d'un overlay noir semi-transparent
                         opacity: scrollOffset.interpolate({
-                            inputRange: [scrollSpan / 2, scrollSpan],
+                            //inputRange: [scrollSpan / 2, scrollSpan],
+                            inputRange: [0, scrollSpan/2],
                             outputRange: [0, 0.85],
                             extrapolate: "clamp",
                         }),
                         },
+                        {
+                        //zIndex : 20
+                        }
                     ]}
                 />
                 <Animated.Text
@@ -804,12 +728,14 @@ class FLAutocallDetail extends React.Component {
                         transform: [
                         {
                             translateY: scrollOffset.interpolate({
-                            inputRange: [scrollSpan, scrollSpan + titleHeight],
-                            outputRange: [titleHeight, 0],
+                            inputRange: [0, scrollSpan + titleHeight],
+                            //outputRange: [titleHeight, 0],
+                            outputRange: [titleHeight , 0],
                             extrapolate: "clamp",
                             }),
                         },
                         ],
+                        //zIndex : 25
                     }}
                 >
                 {this.autocall.getProductName()} {this.autocall.getMaturityName()} {this.autocall.getFullUnderlyingName()} : {Numeral(this.autocall.getCoupon()).format('0.00%')}
@@ -828,15 +754,16 @@ class FLAutocallDetail extends React.Component {
         <Text style={setFont('500', 26, 'black', 'Bold')}>
           NOMINAL
         </Text>
-        <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', marginTop : 12}}>
-                                <View style={{width : 0.7*DEVICE_WIDTH,  justifyContent: 'center'}}>
+        { this.autocall.getFinalNominal() === -1    
+             ?     <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', marginTop : 12}}>
+                                <View style={{width : 0.7*getConstant('width'),  justifyContent: 'center'}}>
                                     <TextInput 
                                             style={{    
                                                     display: 'flex',
                                                     backgroundColor: 'white',
                                                     height : 40,
                                                     fontSize: 28,
-                                                    color: setColor('light'),
+                                                    color: setColor('lightBlue'),
                                                     borderColor : setColor(''),
                                                     borderWidth: 1,
                                                     borderRadius: 4,
@@ -872,13 +799,17 @@ class FLAutocallDetail extends React.Component {
                                             }}
                                     />
                                 </View>
-                                <View style={{width : 0.2*DEVICE_WIDTH, borderWidth : 0, justifyContent : 'center', paddingLeft : 5}}>
+                                <View style={{width : 0.2*getConstant('width'), borderWidth : 0, justifyContent : 'center', paddingLeft : 5}}>
                                     <Text style={setFont('400', 28, 'gray', 'Regular')}>
                                         {this.autocall.getCurrency()}
                                     </Text>
                                 </View>
  
-        </KeyboardAvoidingView>
+                  </KeyboardAvoidingView>
+              :   <View style={{  width : getConstant('width')*0.95 - 20,  alignItems: 'flex-start'}}>
+                      <Text style={[setFont('400', 24, 'black', 'Regular'), {textAlign: 'center'}]}>{currencyFormatDE(this.autocall.getFinalNominal())} {this.autocall.getCurrency()}</Text>
+                  </View>
+        }
         <View style={{height : 20}} />
         <Accordion
             sections={this.SECTIONS}
@@ -892,7 +823,7 @@ class FLAutocallDetail extends React.Component {
                 this.setState( { activeSections : activeSections })  
             }}
             sectionContainerStyle={{
-                                    width : 0.9*DEVICE_WIDTH,
+                                    width : 0.9*getConstant('width'),
                                     backgroundColor: 'white', 
                                     justifyContent: 'center', 
                                     alignItems: 'center', 
@@ -913,6 +844,116 @@ class FLAutocallDetail extends React.Component {
     );
   }
 
+
+  render() {
+
+    const scrollEvent = Animated.event(
+        [{ nativeEvent: { contentOffset: { y: this.state.scrollOffset } } }],
+        { useNativeDriver: true },
+    );
+
+    
+
+    return (
+      <Animated.ScrollView  style={{ flex: 1, backgroundColor: "white" , opacity: this.state.showModalDescription ? 0.3 : this.state.isLoading ? 0.2 : 1}}
+                            pointerEvents={"auto"}
+                            // Mis à jour de scrollOffset sur l'évènement onScroll
+                            onScroll={scrollEvent}
+                            scrollEventThrottle={1} //est nécessaire afin d'être notifié
+                            // de tous les évènements de défilement
+                            scrollEventThrottle={1}
+                    
+                            onScrollBeginDrag={(event) => { 
+                              // scroll animation began
+                             // gestion des zIndex et de la possiblité de faire passer le statusbar (bouton retour et autres) au dessus pour etre clickable
+                             this.setState({ isScrollAtTop : event.nativeEvent.contentOffset.y === 0 ? false : null})
+                           
+                           }}
+                           onScrollEndDrag={(event) => { 
+                            // scroll animation ended
+                            // gestion des zIndex et de la possiblité de faire passer le statusbar (bouton retour et autres) au dessus pour etre clickable
+                            this.setState({ isScrollAtTop : event.nativeEvent.contentOffset.y <= 0 ? true : false})
+                         }}
+                            
+      >
+         
+            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoading} text={String("création d'une demande de cotation").toUpperCase()}/>
+            {this._renderModal()}
+            {this.renderHeader()}
+            {this.renderContent()}
+        
+            <View style={{position : 'absolute', top : 0, left : 0, flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 140 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), opacity : 0.9, paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'flex-start', zIndex: 5}}  >
+                            <TouchableOpacity style={{ flex: 0.5, flexDirection : 'row', borderWidth: 0, padding : 5}}
+                                                onPress={() => this.props.navigation.goBack()}
+                            >
+                                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                                        <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
+                                    </View>
+                                    <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
+                                        <Text style={setFont('300', 16, 'white', 'Regular')}>Retour</Text>
+                                    </View>
+                            </TouchableOpacity>
+                            <View style={{flex: 0.5, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
+    
+                                    <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}
+                                                        onPress={() => {
+                                                        let r = new CPSRequest();
+                                                        r.setRequestFromCAutocall(this.autocall);
+                                                        this.props.navigation.dispatch(NavigationActions.navigate({
+                                                            routeName: 'Pricer',
+                                                            action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
+                                                        }));
+                                                        }}
+                                    >
+                                        <FontAwesome name={'gears'} size={25} style={{color: 'white'}}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}
+                                                                        onPress={() => {
+                                                            
+                                                                        this.props.navigation.navigate('FLAutocallDetail2' , {autocall : this.autocall});
+                                                                
+                                                                        }}
+                                    >
+                                        <EvilIcons name={'share-apple'} size={35} style={{color: 'white'}}/>
+                                    </TouchableOpacity>
+                   
+                            </View>
+            </View>
+            <View style={{position : 'absolute', top : isAndroid() ? 40 : 40 + getConstant('statusBar'), left : 0, width : getConstant('width'), justifyContent : 'center', alignItems : 'center', zIndex: 6}}>
+                <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} />
+            </View>
+            
+            {this.autocall.getFinalNominal() === -1 ?
+                 
+                      <Animated.View style={{position : 'absolute',top: getConstant('height')-110-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : getConstant('width') -120,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent', transform: [{ translateY: this.state.scrollOffset }]}}>
+                  
+
+                                <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 80, width: 80, borderColor: setColor('subscribeBlue'), borderRadius: 40, marginLeft : 10, padding : 10, backgroundColor: setColor('subscribeBlue')}}
+                                                onPress={() => {
+                                                    if(this.state.nominal === 0) {
+                                                    alert("Renseigner un nominal avant de demander une cotation");
+                                                    return;
+                                                    } else if(this.state.nominal < 50000) {
+                                                        alert("Renseigner un nominal supérieur à 50 000 EUR pour demander une cotation");
+                                                        return;
+                                                    }
+                                                    this.setState({ showModalDescription: true });
+                                                }}  
+                                >
+                                    <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
+                                        <Image style={{width: 50, height: 50}} source={logo_white} />
+                                    </View>
+                                    <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
+                                        <Text style={setFont('400', 12, 'white', 'Regular')}>{String('traiter').toUpperCase()}</Text>
+                                    </View>
+                                </TouchableOpacity>
+      
+                    </Animated.View>
+                    : null
+              }    
+      </Animated.ScrollView>
+    );
+  }
 
 }
 

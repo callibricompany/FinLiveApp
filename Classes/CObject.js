@@ -90,6 +90,11 @@ export class CObject {
         return this.object;
       }
 
+      //set l'objet
+      setObject(obj) {
+        this.object = obj;
+      }
+
       //determine si de l'organisation
       isOrg() {
         let name = false;

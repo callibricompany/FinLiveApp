@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { ifIphoneX, ifAndroid } from '../../../Utils';
+import { ifIphoneX, ifAndroid , getConstant } from '../../../Utils';
 import {
   View,
   StyleSheet,

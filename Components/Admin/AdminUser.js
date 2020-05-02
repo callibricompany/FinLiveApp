@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import { ssCreateStructuredProduct } from '../../API/APIAWS';
 
-import { blueFLColor, FLFontFamily, generalFontColor, subscribeColor } from '../../Styles/globalStyle';
+import { setColor, setFont } from '../../Styles/globalStyle';
 
 
 
@@ -23,12 +23,12 @@ import 'numeral/locales/fr'
 
 import StepIndicator from 'react-native-step-indicator';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE} from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, getConstant } from '../../Utils';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 
@@ -92,7 +92,7 @@ class AdminUser extends React.Component {
     render() {
 
       return(
-        <View style={{flex:1 , flexDirection: 'column', marginTop : 5, backgroundColor: this.user.validated ? globalStyle.bgColor : 'lavenderblush', width: DEVICE_WIDTH, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{flex:1 , flexDirection: 'column', marginTop : 5, backgroundColor: this.user.validated ? setColor('background') : 'lavenderblush', width: getConstant('width'), justifyContent: 'center', alignItems: 'center'}}>
             <View style={{flexDirection : 'row', marginTop: 15}}>
                 <View style={{flex: 0.45, justifyContent: 'center', paddingLeft:15}}>
                   <Text style={{fontSize : 16}}>
@@ -115,91 +115,91 @@ class AdminUser extends React.Component {
                 </View>
             </View>
 
-          <ScrollView style={{flexDirection: 'column',borderWidth: 0, width: DEVICE_WIDTH*0.95}}>
+          <ScrollView style={{flexDirection: 'column',borderWidth: 0, width: getConstant('width')*0.95}}>
              
             <View style={{flexDirection:'column', borderWidth: 1, marginTop: 10}}>   
-              <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+              <View style={{backgroundColor: setColor(''), borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                 <Text style={{color: 'white'}}>COORDONEES</Text>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                     Nom
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   {this.user.lastName}
                   </Text>
                 </View>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   Prénom
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   {this.user.firstName}
                   </Text>
                 </View>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   E-mail
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   {this.user.email}
                   </Text>
                 </View>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   Téléphone
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   {this.user.phone}
                   </Text>
                 </View>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   Société
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   {this.user.company}
                   </Text>
                 </View>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   Organisme de rattachement
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   {this.user.organization}
                   </Text>
                 </View>
               </View>
-              <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+              <View style={{backgroundColor: setColor(''), borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                 <Text style={{color: 'white'}}>RÔLES</Text>
               </View>
               <View style={{flexDirection : 'column', borderBottomWidth: 1}}>
                 <View style={{flex: 0.33, flexDirection: 'row'}}>
                   <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 10}}>
-                    <Text style={styles.textProperty}>
+                    <Text style={setFont('300', 16)}>
                       Indépendant
                     </Text>
                   </View>
@@ -220,7 +220,7 @@ class AdminUser extends React.Component {
                 </View>
                 <View style={{flex: 0.33, flexDirection: 'row'}}>
                   <View style={{flex: 0.4, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 10}}>
-                    <Text style={styles.textProperty}>
+                    <Text style={setFont('300', 16)}>
                       Superviseur
                     </Text>
                   </View>
@@ -241,29 +241,29 @@ class AdminUser extends React.Component {
                 </View>
 
               </View>
-              <View style={{backgroundColor: blueFLColor, borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
+              <View style={{backgroundColor: setColor(''), borderBottomWidth: 1, justifyContent: 'center', alignItems: 'center', padding: 5}}>
                 <Text style={{color: 'white'}}>IDENTICATION</Text>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                     FS
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1, justifyContent: 'center'}}>
-                  <Text style={[styles.textProperty, {fontSize :12}]}>
+                  <Text style={[setFont('300', 16), {fontSize :12}]}>
                   {this.user.id}
                   </Text>
                 </View>
               </View>
               <View style={{flexDirection : 'row', borderBottomWidth: 1}}>
                 <View style={{flex: 0.35}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                     FD
                   </Text>
                 </View>
                 <View style={{flex: 0.65,  borderLeftWidth: 1}}>
-                  <Text style={styles.textProperty}>
+                  <Text style={setFont('300', 16)}>
                   {this.user.codeTS}
                   </Text>
                 </View>
@@ -275,16 +275,7 @@ class AdminUser extends React.Component {
       }
 }
 
-const styles = StyleSheet.create({
-  textProperty: {
-    fontSize: 16, 
-    fontWeight: '300', 
-    fontFamily : 'FLFontFamily', 
-    textAlign: 'left',
-    paddingLeft : 5
-  },
 
-});
 
 const condition = authUser => !!authUser;
 const composedStructuredProductDetail = compose(

@@ -4,12 +4,12 @@ import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'reac
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 
-import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, setFont } from '../../../Styles/globalStyle'
+import { getConstant } from '../../../Utils';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
 
 export class FLAuctionDetail extends Component{
 
@@ -39,7 +39,7 @@ export class FLAuctionDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, marginTop : 20, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), marginTop : 20, borderWidth:0}}>
                 <View style={{alignItems:'center'}}>
              
 
@@ -75,7 +75,7 @@ export class FLAuctionDetail extends Component{
                                 index={i}
                                 labelHorizontal={true}
                                 onPress={() => console.log()}
-                                labelStyle={{fontSize: 16, fontFamily : FLFontFamily, color: 'black', marginTop: 10}}
+                                labelStyle={[setFont('300', 16), {marginTop: 10}]}
                                 labelWrapStyle={{}}
                                 onPress={(itemValue) =>{
                                   //console.log(i +"-ITEM VALUE : "+itemValue);

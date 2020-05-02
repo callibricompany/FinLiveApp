@@ -1,11 +1,26 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
-import { Dimensions, Platform, NativeModules } from 'react-native';
+import { Dimensions, Platform, NativeModules, StatusBar } from 'react-native';
+import CONTENT_TYPE from "./contentType.json";
+
+const deviceWidth = Dimensions.get('window').width;
+const deviceHeight = Dimensions.get('window').height;
+const statusBarHeight =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
 
 
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
 
+
+//retourne les constantes 
+export function getConstant(constant=''){
+
+  switch(constant) {
+    case 'statusBar' : return statusBarHeight;
+    case 'width' : return deviceWidth;
+    case 'height' : return deviceHeight;
+
+    default : return blueFL;
+  }
+}
 export function isIphoneX() {
 
   //const majorVersionIOS = parseInt(Platform.Version, 10);
@@ -17,7 +32,7 @@ export function isIphoneX() {
   //console.log("Device : " + JSON.stringify(DeviceInfo));
 
   //var isX = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS && (height === 812 || width === 812);
-  var isX = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS && (height/width > 2.16) && (height/width < 2.17);
+  var isX = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTVOS && (deviceHeight/deviceWidth > 2.16) && (deviceHeight/deviceWidth < 2.17);
   //console.log("isIPhoneX : " + isX);
 
   return isX;
@@ -101,4 +116,35 @@ export function isEqual( x, y ) {
       // allows x[ p ] to be set to undefined
   }
   return true;
+}
+
+/////////////////////////////////////////:
+//
+//       CONTENT-TYPE
+//
+/////////////////////////////////////////
+export function getContentTypeIcon(content) {
+
+  let nameIcon = 'file-outline';
+  let c = CONTENT_TYPE.filter(({ MIME_Type }) => MIME_Type === content);
+  if (c.length ===1) {
+
+    if (c[0].hasOwnProperty('icon')) {
+      nameIcon = c[0].icon;
+    }
+  } 
+  return nameIcon;
+}
+
+export function getContentTypeColor(content) {
+
+  let nameIcon = 'black';
+  let c = CONTENT_TYPE.filter(({ MIME_Type }) => MIME_Type === content);
+  if (c.length ===1) {
+
+    if (c[0].hasOwnProperty('color')) {
+      nameIcon = c[0].color;
+    }
+  } 
+  return nameIcon;
 }

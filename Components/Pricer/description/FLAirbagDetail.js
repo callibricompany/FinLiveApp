@@ -6,14 +6,15 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-
 import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
-import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor, setColor} from '../../../Styles/globalStyle'
+import { globalStyle, setFont, setColor} from '../../../Styles/globalStyle'
+import { getConstant } from '../../../Utils';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 export class FLAirbagDetail extends Component{
 
@@ -47,7 +48,7 @@ export class FLAirbagDetail extends Component{
 
     render() {
         return (
-          <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, marginTop : 20, borderWidth:0}}>
+          <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), marginTop : 20, borderWidth:0}}>
           {/*<TouchableWithoutFeedback style={{marginTop: 35}}
                                     onPress={() => {
                                         this.setState({ currentChoiceII: !this.state.currentChoiceII }, () => {
@@ -67,13 +68,13 @@ export class FLAirbagDetail extends Component{
             </View>
           </TouchableWithoutFeedback> */}
           <View style={{flexDirection: 'row', marginTop: 20}}>
-            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center', borderBottomWidth: 3, borderBottomColor: blueFLColor, backgroundColor: 'white'}}>
+            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center', borderBottomWidth: 3, borderBottomColor: setColor(''), backgroundColor: 'white'}}>
               <Text style={[setFont('600', 14), {textAlign : 'center', textAlignVertical: 'center'}]}>AIRBAG</Text>
             </View>
             <View style={{flex : 0.1, alignItems:'center'}}>
               
             </View>
-            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center',borderBottomWidth: 3, borderBottomColor: blueFLColor, backgroundColor: 'white'}}>
+            <View style={{flex : 0.45, alignItems:'center', alignItems: 'center',borderBottomWidth: 3, borderBottomColor: setColor(''), backgroundColor: 'white'}}>
               <Text style={[setFont('600', 14), {textAlign : 'center', textAlignVertical: 'center'}]}>STEPDOWN</Text>
             </View>
           </View>

@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons  from "react-native-vector-icons/Ionicons";
 
-import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
-import { getAllUnderlying } from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice , getConstant } from '../../Utils';
+
 
 import FadeInLeft  from '../../Animated/FadeInLeft';
 import {
@@ -24,20 +24,10 @@ import {
   Image
 } from 'react-native';
 
-import {  globalSyle, 
-          generalFontColor, 
-          blueFLColor,
-          headerTabColor,
-          selectElementTab,
-          FLFontFamily,
-          backgdColor,
-          setColor
-} from '../../Styles/globalStyle';
+import {  globalSyle, setFont, setColor } from '../../Styles/globalStyle';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 
 
@@ -90,7 +80,7 @@ export default class SearchBarHome extends Component {
       showModalTitle : true,
       
       //animation barre de recherche
-      positionLeft: new Animated.Value(DEVICE_WIDTH),
+      positionLeft: new Animated.Value(getConstant('width')),
       bgInputTextColor : new Animated.Value(0),
 
       //relatifs au modal de filtre
@@ -123,7 +113,7 @@ export default class SearchBarHome extends Component {
 
   /*async componentDidMount() {
     await Font.loadAsync({
-      'FLFontTitle': require('../../assets/fonts/Typo_Round_Regular_Demo.otf'),
+      'FLFont': require('../../assets/fonts/Typo_Round_Regular_Demo.otf'),
     });
 
     this.setState({ fontLoaded: true });
@@ -161,7 +151,7 @@ export default class SearchBarHome extends Component {
               Animated.timing(
                     this.state.leftPositionCategory,
                       {
-                        toValue: DEVICE_WIDTH*0.5,
+                        toValue: getConstant('width')*0.5,
                         duration : 1000,
                         easing: Easing.elastic(),
                         speed : 1
@@ -179,10 +169,10 @@ export default class SearchBarHome extends Component {
                 let x = evt.nativeEvent.pageX;
                 let y = evt.nativeEvent.pageY;
                 //si on a clické en dehors du module view cidessous on ferme le modal
-                let verifX = x < DEVICE_WIDTH*0.0  || x > DEVICE_WIDTH*0.5 ? true : false;
+                let verifX = x < getConstant('width')*0.0  || x > getConstant('width')*0.5 ? true : false;
                 let departY =  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 80) -30-4: 
                              animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 70)-4: sizeByDevice(86, 86-23, 1)-4;
-                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5) ? true : false;
+                let verifY = y < departY  || y > departY + Math.min(getConstant('height')*0.7, Object.keys(this.categories).length*40+5) ? true : false;
                 if (verifX || verifY) {
                   Animated.spring(
                     this.state.leftPositionCategory,
@@ -204,15 +194,15 @@ export default class SearchBarHome extends Component {
                       style={{
                         backgroundColor: 'white',
                         borderWidth :1,
-                        borderColor : headerTabColor,
+                        borderColor : setColor('darkBlue'),
                         //borderRadius:10,
                         width: this.state.leftPositionCategory,
-                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.categories).length*40+5),
+                        height: Math.min(getConstant('height')*0.7, Object.keys(this.categories).length*40+5),
                         top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(125, 125-23, 80) -30-4: 
                                   animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(115, 115-23, 70) - 30-4 : sizeByDevice(86, 86-23, 1)-4,
-                        left : DEVICE_WIDTH*0,
-                        //marginTop:DEVICE_HEIGHT*0.15,                       
-                        //borderRadius: DEVICE_HEIGHT*0.03,
+                        left : getConstant('width')*0,
+                        //marginTop:getConstant('height')*0.15,                       
+                        //borderRadius: getConstant('height')*0.03,
                         //alignItems: 'absolute'
                     }}
                   >
@@ -248,12 +238,12 @@ export default class SearchBarHome extends Component {
                         }}>
                         <View style={{
                                             height : 40, 
-                                            width : DEVICE_WIDTH*0.925, 
+                                            width : getConstant('width')*0.925, 
                                             backgroundColor:'white', 
                                             justifyContent: 'center', 
                                             alignItems: 'center'
                                             }}>
-                            <View style={{flex : 1, backgroundColor: this.state.selectedCategory === value ? selectElementTab :'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925, borderColor : this.categories.active ? 'black' : 'lightgray'}}>
+                            <View style={{flex : 1, backgroundColor: this.state.selectedCategory === value ? setColor('darkBlue') :'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : getConstant('width')*0.925, borderColor : this.categories.active ? 'black' : 'lightgray'}}>
                               <View style={{flex:1, alignItems:'flex-start', justifyContent: 'center'}}>
                                   <Text style={{color: this.state.selectedCategory === value ? 'white' : value.active ? 'black' : 'lightgray' }}>{value.categoryName.toUpperCase()}</Text>
                               </View>
@@ -288,11 +278,11 @@ export default class SearchBarHome extends Component {
                 let x = evt.nativeEvent.pageX;
                 let y = evt.nativeEvent.pageY;
                 //si on a clické en dehors du module view cidessous on ferme le modal
-                let verifX = x < DEVICE_WIDTH*0.0375 || x > DEVICE_WIDTH*0.9625 ? true : false;
-                //let verifY = y < animation.topPartHeight + 45  || y > Math.min(DEVICE_HEIGHT*0.7, Object.keys(this.subCategoriesSelected).length*40+5) ? true : false;
+                let verifX = x < getConstant('width')*0.0375 || x > getConstant('width')*0.9625 ? true : false;
+                //let verifY = y < animation.topPartHeight + 45  || y > Math.min(getConstant('height')*0.7, Object.keys(this.subCategoriesSelected).length*40+5) ? true : false;
                 let departY = animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30 -4: 
                               animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) - 30 - 4: sizeByDevice(86, 86-23, 42) - 4;
-                let verifY = y < departY  || y > departY + Math.min(DEVICE_HEIGHT*0.7, Object.keys(subCategories).length*40+5) ? true : false;
+                let verifY = y < departY  || y > departY + Math.min(getConstant('height')*0.7, Object.keys(subCategories).length*40+5) ? true : false;
                 if (verifX || verifY) {
                   this.setState({showModalSubCategory : false})
                 }
@@ -306,14 +296,14 @@ export default class SearchBarHome extends Component {
                         backgroundColor: 'white',
                         borderWidth :1,
                         //borderRadius:10,
-                        borderColor : headerTabColor,
-                        width: DEVICE_WIDTH*0.925,
-                        height: Math.min(DEVICE_HEIGHT*0.7, Object.keys(subCategories).length*40+5),
+                        borderColor : setColor('darkBlue'),
+                        width: getConstant('width')*0.925,
+                        height: Math.min(getConstant('height')*0.7, Object.keys(subCategories).length*40+5),
                         top: animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(165, 165-23, 120) -30-4: 
                                         animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(155, 155-23, 111) -30-4: sizeByDevice(86, 86-23, 42)-4 ,
-                        left : DEVICE_WIDTH*0.075/2,
-                        //marginTop:DEVICE_HEIGHT*0.15,                       
-                        //borderRadius: DEVICE_HEIGHT*0.03,
+                        left : getConstant('width')*0.075/2,
+                        //marginTop:getConstant('height')*0.15,                       
+                        //borderRadius: getConstant('height')*0.03,
                         //alignItems: 'absolute'
                     }}
                   >
@@ -335,13 +325,13 @@ export default class SearchBarHome extends Component {
                             }}>
                               <View style={{
                                                   height : 40, 
-                                                  width : DEVICE_WIDTH*0.925, 
+                                                  width : getConstant('width')*0.925, 
                                                   backgroundColor: 'white', 
                                                   justifyContent: 'center', 
                                                   alignItems: 'center',
                                                   //borderBottomWidth: 1,
                                                   }}>
-                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategory === subValue ? selectElementTab :subValue.subCategoryHead ? subValue.codeSubCategory === "PS" ? 'darkgray' : 'gainsboro' : subValue.groupingHead ? 'lavender' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : DEVICE_WIDTH*0.925,borderBottomWidth :subValue.subCategoryHead ? 1 : 1, borderBottomColor : 'gainsboro'}}>
+                                  <View style={{flex : 1, backgroundColor: this.state.selectedSubCategory === subValue ? setColor('darkBlue') :subValue.subCategoryHead ? subValue.codeSubCategory === "PS" ? 'darkgray' : 'gainsboro' : subValue.groupingHead ? 'lavender' : 'white' , marginTop: 0, paddingLeft: 7, paddingRight: 7,flexDirection : 'row', width : getConstant('width')*0.925,borderBottomWidth :subValue.subCategoryHead ? 1 : 1, borderBottomColor : 'gainsboro'}}>
                                     <View style={{flex:1, 
                                                   //alignItems: subValue.type === 'SubCategory' ? 'flex-start' : 'center', 
                                                   alignItems: 'flex-start', 
@@ -372,15 +362,15 @@ export default class SearchBarHome extends Component {
                   //borderRadius: 3,
                   borderWidth:0,
                   //borderBottomWidth: 1,
-                  //borderBottomColor: blueFLColor,
+                  //borderBottomColor: setColor(''),
                   height: 45,
                   marginTop: 0,
-                  width: DEVICE_WIDTH*1,
+                  width: getConstant('width')*1,
                   alignSelf: 'center',
                   justifyContent: 'center',
                   alignItems: 'center'
                 }]}> 
-                  <View style={{flex: 1, height: 45, borderWidth: 0, width: DEVICE_WIDTH*0.975,flexDirection: 'row'}}>   
+                  <View style={{flex: 1, height: 45, borderWidth: 0, width: getConstant('width')*0.975,flexDirection: 'row'}}>   
                     <TouchableOpacity style={{flex:0.1, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 3}}
                                       onPress={() => {
                                         this.setState({showModalCategory : true});
@@ -389,7 +379,7 @@ export default class SearchBarHome extends Component {
                         <IonIcons name={'ios-menu'}  size={25} style={{color: setColor('')}}/> 
                     </TouchableOpacity>
                     <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{paddingLeft : 5,fontFamily: 'FLFontTitle' , fontWeight:'200', fontSize : 24, color: blueFLColor}}>F i n L i v e</Text>    
+                        <Text style={{paddingLeft : 5,fontFamily: 'FLFont' , fontWeight:'200', fontSize : 24, color: setColor('')}}>F i n L i v e</Text>    
                     </View>   
 
                     <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
@@ -438,12 +428,12 @@ export default class SearchBarHome extends Component {
                           <IonIcons
                             name='ios-search' 
                             size={25} 
-                            color={blueFLColor}
+                            color={setColor('')}
                           />
                       </TouchableOpacity>
                     
                   </View>
-                  <Animated.View style={{flexDirection:'row', top: 0, width: DEVICE_WIDTH, backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
+                  <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
                       <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                           <TouchableOpacity onPress={() => {
                                        //this.setState ({ showModalTitle : !this.state.showModalTitle });
@@ -454,7 +444,7 @@ export default class SearchBarHome extends Component {
                                           Animated.timing(
                                               this.state.positionLeft,
                                                 {
-                                                  toValue: DEVICE_WIDTH,
+                                                  toValue: getConstant('width'),
                                                   duration : 1000,
                                                   easing: Easing.elastic(),
                                                   speed : 1
@@ -517,40 +507,40 @@ export default class SearchBarHome extends Component {
         {
           //renderTabBar()
         }
-        {/*<Animated.View style={ { flexDirection:'row' , borderBottomWidth: 4, borderBottomColor : backgdColor,alignSelf: 'center', height: this.state.categoryHeight, width: DEVICE_WIDTH, borderWidth: 0, borderColor: 'black'}}>     
+        {/*<Animated.View style={ { flexDirection:'row' , borderBottomWidth: 4, borderBottomColor : setColor('background'),alignSelf: 'center', height: this.state.categoryHeight, width: getConstant('width'), borderWidth: 0, borderColor: 'black'}}>     
                       <View style={{flex: 0.0375, backgroundColor: 'white'}}>
                       </View>
-                      <View style={{ borderWidth:0, flex:0.4625, backgroundColor: this.state.showModalCategory ? headerTabColor : 'white'}}>
+                      <View style={{ borderWidth:0, flex:0.4625, backgroundColor: this.state.showModalCategory ? setColor('darkBlue') : 'white'}}>
                         { this.state.showModalTitle ?<TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalCategory : true})}>  
-                            <View style={{  flexDirection: 'row',flex:1, backgroundColor: this.state.showModalCategory ? headerTabColor : 'white'}}>
+                            <View style={{  flexDirection: 'row',flex:1, backgroundColor: this.state.showModalCategory ? setColor('darkBlue') : 'white'}}>
                                 <View style={{flexWrap: 'wrap',flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>
                               
-                                  <Text style={{paddingLeft: 5,flexWrap: 'wrap',fontFamily:  FLFontFamily, fontWeight: '400', fontSize: 12, color: headerTabColor}}>
+                                  <Text style={{paddingLeft: 5,flexWrap: 'wrap',ffontWeight: '400', fontSize: 12, color: setColor('darkBlue')}}>
                                       {this.state.selectedCategory.categoryName.toUpperCase()}
                                   </Text>
                                   
                                 </View>
                                 <View style={{flex:0.3, justifyContent : 'center', alignItems: 'center'}}>
                                   
-                                  <Icon name={this.state.showModalCategory ? "ios-arrow-up" :"ios-arrow-down"}  style={{color : this.state.showModalCategory ? 'white' : headerTabColor}}/>
+                                  <Icon name={this.state.showModalCategory ? "ios-arrow-up" :"ios-arrow-down"}  style={{color : this.state.showModalCategory ? 'white' : setColor('darkBlue')}}/>
                                 
                                 </View> 
                             </View>
                           </TouchableOpacity> : null }
                         </View>
-                        <View style={{ flex:0.4625, backgroundColor: this.state.showModalSubCategory ? headerTabColor : 'white'}}>
+                        <View style={{ flex:0.4625, backgroundColor: this.state.showModalSubCategory ? setColor('darkBlue') : 'white'}}>
                         { this.state.showModalTitle ? <TouchableOpacity style={{flex: 1}} onPress={() => this.setState({showModalSubCategory : true})}>
-                            <View style={{ flexDirection: 'row',flex:1,  backgroundColor: this.state.showModalSubCategory ? headerTabColor : 'white'}}>
+                            <View style={{ flexDirection: 'row',flex:1,  backgroundColor: this.state.showModalSubCategory ? setColor('darkBlue') : 'white'}}>
                                 <View style={{flexWrap: 'wrap',paddingLeft: 3, flex:0.7, alignItems: 'flex-start', justifyContent : 'space-evenly', borderWidth:0}}>  
                                 
-                                  <Text style={{flexWrap: 'wrap',fontFamily: FLFontFamily, fontWeight: '400', fontSize: 12, color: headerTabColor}}>
+                                  <Text style={{flexWrap: 'wrap', fontWeight: '400', fontSize: 12, color: setColor('darkBlue')}}>
                                     {this.state.selectedSubCategory.subCategoryName.toUpperCase()}
                                   </Text>
                                 
                                 </View>
                                 <View style={{flex:0.3, justifyContent : 'center', alignItems: 'center'}}>
                                   
-                                    <Icon name={this.state.showModalSubCategory ? "ios-arrow-up" :"ios-arrow-down"}   style={{color : this.state.showModalSubCategory ? 'white' : headerTabColor}}/>
+                                    <Icon name={this.state.showModalSubCategory ? "ios-arrow-up" :"ios-arrow-down"}   style={{color : this.state.showModalSubCategory ? 'white' : setColor('darkBlue')}}/>
                                   
                                 </View>
                             </View>
@@ -604,12 +594,12 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 45,
     marginTop: 3,
-    width: DEVICE_WIDTH*0.925,
+    width: getConstant('width')*0.925,
     marginRight : 0,
     marginLeft : Platform.OS === 'ios' ? 0 : 0,
     alignSelf: 'center'
-   //marginLeft: DEVICE_WIDTH*0.0375,
-   // marginRight:  DEVICE_WIDTH*0.0375,
+   //marginLeft: getConstant('width')*0.0375,
+   // marginRight:  getConstant('width')*0.0375,
   },
   locationInput: {
     marginTop: 10,

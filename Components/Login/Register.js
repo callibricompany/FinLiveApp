@@ -22,6 +22,8 @@ import React, {Component} from 'react';
 import ButtonSubmit from './ButtonSubmit'
 
 import { setColor, setFont } from '../../Styles/globalStyle';
+import { isAndroid, isIphoneX , getConstant } from '../../Utils';
+
 import splashImage from '../../assets/LogoWithoutText.png';
 
 import { withFirebase } from '../../Database';
@@ -36,9 +38,9 @@ import { ssCreateUser } from '../../API/APIAWS';
 // import Signup from './Signup';
 //import Account from './Main'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
+
+
+
 
 const Register = () => (
     
@@ -251,7 +253,7 @@ class RegisterFormBase extends Component {
       }
       return (
         <InputGroup>
-        <Item style={{width: 0.9*DEVICE_WIDTH}} >
+        <Item style={{width: 0.9*getConstant('width')}} >
         <Icon name="ios-people"  style={{color : setColor('')}}/>
         <Input
         onChangeText={e => {this.typingInputText('organization',e)}}
@@ -345,7 +347,7 @@ class RegisterFormBase extends Component {
                 <View style={[styles.container, {paddingTop:5}]}>
                 
                   <InputGroup >
-                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                    <Item style={{width: 0.9*getConstant('width')}}>
                         <Icon name="ios-person" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('name',e)}}
@@ -365,7 +367,7 @@ class RegisterFormBase extends Component {
                     </Item>
                     </InputGroup>
                     <InputGroup>
-                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                    <Item style={{width: 0.9*getConstant('width')}}>
                        <Icon name="ios-person" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('firstName',e)}}
@@ -388,7 +390,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>  
                   
                   <InputGroup>
-                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                    <Item style={{width: 0.9*getConstant('width')}}>
                     <Icon name="ios-phone-portrait" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('phone',e)}}
@@ -411,7 +413,7 @@ class RegisterFormBase extends Component {
                     </Item>
                   </InputGroup>  
                   <InputGroup>
-                    <Item style={{width: 0.9*DEVICE_WIDTH}}>
+                    <Item style={{width: 0.9*getConstant('width')}}>
                     <Icon name="md-star-outline" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('company',e)}}
@@ -437,7 +439,7 @@ class RegisterFormBase extends Component {
                     </Item>
                   </InputGroup>              
                   <InputGroup>
-                    <Item style={{width: 0.9*DEVICE_WIDTH}} >
+                    <Item style={{width: 0.9*getConstant('width')}} >
                         <Icon name="ios-mail" style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('email',e)}}
@@ -458,7 +460,7 @@ class RegisterFormBase extends Component {
                   </InputGroup>
                 
                   <InputGroup>
-                  <Item style={{width: 0.9*DEVICE_WIDTH}} >
+                  <Item style={{width: 0.9*getConstant('width')}} >
                         <Icon name="ios-unlock"  style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('password',e)}}
@@ -478,7 +480,7 @@ class RegisterFormBase extends Component {
                     </Item>
                   </InputGroup>
                   <InputGroup>
-                  <Item style={{width: 0.9*DEVICE_WIDTH}} >
+                  <Item style={{width: 0.9*getConstant('width')}} >
                         <Icon name="ios-unlock"  style={{color : setColor('')}}/>
                         <Input
                         onChangeText={e => {this.typingInputText('passwordVerif',e)}}
@@ -500,7 +502,7 @@ class RegisterFormBase extends Component {
                     </Item>
                   </InputGroup> 
                      <InputGroup>
-                     <ListItem style={{width: 0.9*DEVICE_WIDTH}} >
+                     <ListItem style={{width: 0.9*getConstant('width')}} >
                         <Text style={{ color: setColor(''),}}>CGPI Indépendant  </Text>
                         <CheckBox 
                             checked={this.state.isIndependant} 
@@ -525,7 +527,7 @@ class RegisterFormBase extends Component {
                 <View style={styles.container_buttons}>
                     
                     <Button light  
-                        style={{ justifyContent:'center', marginBottom:50, width : DEVICE_WIDTH/2}}
+                        style={{ justifyContent:'center', marginBottom:50, width : getConstant('width')/2}}
                         onPress={this.backToLogin.bind(this)}
                         >
                         <Icon name="md-arrow-dropleft" style={{color : setColor('')}}/>                      
@@ -545,7 +547,7 @@ class RegisterFormBase extends Component {
 
         //console.log('statusBarHeight: ', StatusBar.currentHeight);
         return (
-            <SafeAreaView style={{flex: 1,paddingTop : STATUSBAR_HEIGHT}}>
+            <SafeAreaView style={{flex: 1,paddingTop : getConstant('statusBar')}}>
 
   
                 {content}
@@ -586,11 +588,11 @@ const styles = StyleSheet.create({
       },
     picture: {
           //lex: 1,
-          top: DEVICE_HEIGHT/5, left: 0, right: 0, bottom: 0,
+          top: getConstant('height')/5, left: 0, right: 0, bottom: 0,
           opacity: 0.05,
           position: "absolute",
-          width: DEVICE_WIDTH,
-          height: 4*DEVICE_HEIGHT/5,
+          width: getConstant('width'),
+          height: 4*getConstant('height')/5,
           resizeMode: 'cover',
         },
 
@@ -607,7 +609,7 @@ const styles = StyleSheet.create({
            paddingBottom: 10,
            marginBottom: 40,
            // top: -95,
-             width: 0.9*DEVICE_WIDTH,
+             width: 0.9*getConstant('width'),
             flexDirection: 'column',
             
            

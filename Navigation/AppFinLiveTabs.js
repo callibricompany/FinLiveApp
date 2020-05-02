@@ -14,6 +14,7 @@ import PricerScreen from '../Components/Pricer/PricerScreen'
 import FLResultPricer from '../Components/Pricer/FLResultPricer'
 import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
 import FLTicketDetailTicket from '../Components/Ticket/FLTicketDetailTicket';
+import FLAutocallDetailTicket from '../Components/Ticket/FLAutocallDetailTicket';
 
 import FLCouponMinDetailAndroid from '../Components/Pricer/description/FLCouponMinDetailAndroid';
 
@@ -31,7 +32,7 @@ import FontAwesomeI from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Icon } from 'native-base';
 
-import { blueFLColor, FLFontFamily, setFont, setColor} from '../Styles/globalStyle';
+import { setFont, setColor} from '../Styles/globalStyle';
 
 
 
@@ -42,7 +43,7 @@ import * as ROLES from '../constants/roles';
 
 const tabIconFocused = 'white';
 //const tabIconNonFocused = '#C8D1DB';
-const tabIconNonFocused = blueFLColor;
+const tabIconNonFocused = setColor('');
 
 
 
@@ -51,7 +52,7 @@ function labelStyle (focused, tintColor) {
       couleur = tintColor }
     else {
        //couleur = '#707070' }
-       couleur = blueFLColor }
+       couleur = setColor('') }
   
     
     return {
@@ -62,7 +63,7 @@ function labelStyle (focused, tintColor) {
       justifyContent: 'center',
       alignItems: 'center',
       color: couleur,
-      fontFamily : FLFontFamily
+      fontFamily : 'Regular'
     }
   }
 
@@ -131,7 +132,10 @@ function labelStyle (focused, tintColor) {
       },
       FLTicketDetail : {
         screen : FLTicketDetail
-      }
+      },
+      FLAutocallDetailTicket: {
+        screen : FLAutocallDetailTicket
+      },
 
     })
 

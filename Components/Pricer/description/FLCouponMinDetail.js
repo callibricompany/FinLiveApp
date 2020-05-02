@@ -1,17 +1,18 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
-import Ruler from 'react-native-animated-ruler';
+import FLRuler from '../../commons/FLRuler';
 import { FLSlider2 } from '../../commons/FLSlider2';
 
-import { setFont, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { setFont, setColor } from '../../../Styles/globalStyle'
+import { getConstant } from '../../../Utils';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 export class FLCouponMinDetail extends Component{
 
@@ -29,7 +30,7 @@ export class FLCouponMinDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}
                     pointerEvents={'auto'}
 
             >
@@ -40,7 +41,7 @@ export class FLCouponMinDetail extends Component{
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
 
-                <Ruler
+                <FLRuler
                     style={{ borderRadius: 10, elevation: 3 }}
                     width={350}
                     height={170}
@@ -97,7 +98,7 @@ value={(this.state.couponMin)*100}
 isPercent={true}
 spreadScale={2}
 //activated={!this.state.product["UF"].isActivated}
-sliderLength={DEVICE_WIDTH*0.9}
+sliderLength={getConstant('width')*0.9}
 callback={(value) => {
     //console.log("MATS : "+ value);
     this.setState({ couponMin : (value)/100 }, () => {

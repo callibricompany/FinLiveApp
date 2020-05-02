@@ -1,7 +1,7 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
 import { Animated, StatusBar, Platform } from 'react-native'; 
-import { ifIphoneX, isAndroid, isIphoneX } from '../../../Utils';
+import { ifIphoneX, isAndroid, isIphoneX , getConstant } from '../../../Utils';
 
 
 

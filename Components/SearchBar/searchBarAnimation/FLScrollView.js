@@ -1,7 +1,7 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
 import React from 'react';
-import { ifIphoneX, isAndroid } from '../../../Utils';
+import { ifIphoneX, isAndroid , getConstant } from '../../../Utils';
 import { ScrollView, Animated, View, Text } from 'react-native'; 
 import { SearchBarContext } from './SearchBarContext';
 

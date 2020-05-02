@@ -6,7 +6,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { FLScrollView } from '../SearchBar/searchBarAnimation';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, isAndroid, isIphoneX} from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, isAndroid, isIphoneX, getConstant } from '../../Utils';
 
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
@@ -23,17 +23,7 @@ import 'numeral/locales/fr'
 
 
 
-import {  globalStyle, 
-  setFont,
-  setColor,
-  generalFontColor, 
-  blueFLColor,
-  headerTabColor,
-  selectElementTab,
-  subscribeColor,
-  FLFontFamily,
-  FLFontFamilyBold
-} from '../../Styles/globalStyle';
+import {  globalStyle, setFont, setColor } from '../../Styles/globalStyle';
 
 import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
 
@@ -44,9 +34,9 @@ import * as TEMPLATE_TYPE from '../../constants/template'
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
+
+
+
 
 class FLResultPricer extends React.PureComponent {
   
@@ -96,8 +86,8 @@ class FLResultPricer extends React.PureComponent {
       //console.log("RENDER TAB RESULTS");
       return (
 
-        <View style={[globalStyle.bgColor, {width: DEVICE_WIDTH, height: DEVICE_HEIGHT}]}> 
-            <View style={{height: 30 + (isAndroid() ? 0 : STATUSBAR_HEIGHT) , paddingLeft : 10, paddingRight: 10, backgroundColor: 'white', paddingTop: STATUSBAR_HEIGHT+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, backgroundColor: 'white'}}>
+        <View style={{width: getConstant('width'), height: getConstant('height'), backgroundColor : setColor('background')}}> 
+            <View style={{height: 30 + (isAndroid() ? 0 : getConstant('statusBar')) , paddingLeft : 10, paddingRight: 10, backgroundColor: 'white', paddingTop: getConstant('statusBar')+ (isAndroid() ? -15 : 0), flexDirection : 'row', borderWidth: 0, backgroundColor: 'white'}}>
                   <TouchableOpacity style={{flex : 0.25,flexDirection : 'row',  justifyContent: 'flex-start', alignItems: 'center', borderWidth: 0}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
@@ -134,7 +124,7 @@ class FLResultPricer extends React.PureComponent {
                     ListFooterComponent={() => {
                       return (
                         <View style={{height : 150, marginTop: 100,  alignItems: 'center'}}>
-                          <Text style={{fontFamily : 'FLFontTitle'}}>F i n L i v e</Text>
+                          <Text style={{fontFamily : 'FLFont'}}>F i n L i v e</Text>
                         </View>
                       );
                     }}

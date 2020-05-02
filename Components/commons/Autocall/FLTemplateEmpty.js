@@ -9,22 +9,7 @@ import AnimatedProgressWheel from 'react-native-progress-wheel';
 
 import RobotBlink from "../../../assets/svg/robotBlink.svg";
 
-import {  
-    generalFontColor, 
-    blueFLColor,
-    headerTabColor,
-    selectElementTab,
-    progressBarColor,
-    subscribeColor,
-    FLFontFamily,
-    FLFontFamilyBold,
-    apeColor,
-    backgdColorPricerParameter,
-    globalStyle,
-    backgdColor,
-    setFont,
-    setColor
- } from '../../../Styles/globalStyle'
+import {  globalStyle, setFont,setColor} from '../../../Styles/globalStyle'
 
 
 import Numeral from 'numeral'
@@ -37,7 +22,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import * as TEMPLATE_TYPE from '../../../constants/template'
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid } from '../../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
@@ -49,8 +34,8 @@ import ModalDropdown from 'react-native-modal-dropdown';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 class FLTemplateEmpty extends React.Component {
@@ -75,7 +60,7 @@ class FLTemplateEmpty extends React.Component {
       case TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE : this.screenWidth = 0.6; break;
       default : this.screenWidth = 0.975; break;
     }
-    this.screenWidth = this.screenWidth * DEVICE_WIDTH;
+    this.screenWidth = this.screenWidth * getConstant('width');
 
     
 
@@ -109,7 +94,7 @@ _renderHeaderShortTemplate() {
 
                 <View style={{
                               paddingLeft : 20,  
-                              backgroundColor: setColor('light'), 
+                              backgroundColor: setColor('lightBlue'), 
                               borderTopLeftRadius: 10, 
                               borderTopRightRadius: 10, 
                               flexDirection: 'row',

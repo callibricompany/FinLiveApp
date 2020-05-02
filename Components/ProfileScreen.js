@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView } from 'react-native';
-import { Title } from 'native-base';
+
 import AlertAsync from 'react-native-alert-async';
 import { withFirebase } from '../Database';
 //import { AuthUserContext } from '../Session';
@@ -25,7 +25,7 @@ class ProfileScreen extends React.Component {
       <SafeAreaView style={globalStyle.header_safeviewarea}>
         <View style={globalStyle.header_left_view} />
         <View style={globalStyle.header_center_view} >
-          <Title style={globalStyle.header_center_text_big}>Profil</Title>
+          <Text style={globalStyle.header_center_text_big}>Profil</Text>
         </View>
         <View style={globalStyle.header_right_view} />
       </SafeAreaView>

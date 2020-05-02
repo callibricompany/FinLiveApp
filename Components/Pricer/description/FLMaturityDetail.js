@@ -5,12 +5,12 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-
 
 import { FLSlider2 } from '../../../Components/commons/FLSlider2';
 
-import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor, setFont, setColor } from '../../../Styles/globalStyle'
+import { globalStyle, setFont, setColor } from '../../../Styles/globalStyle'
+import { getConstant } from '../../../Utils';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
 
 export class FLMaturityDetail extends Component{
 
@@ -51,10 +51,10 @@ export class FLMaturityDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}>
         
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 20}}>
-                  <Text style={{fontSize: 16, fontWeight: '400', fontFamily : FLFontFamily}}>Maturité minimum (années): </Text> 
+                  <Text style={setFont('400', 16)}>Maturité minimum (années): </Text> 
                 </View>
                 <View style={{alignItems:'center', justifyContents: 'center', borderWidth: 0}}>  
                     <FLSlider2
@@ -66,7 +66,7 @@ export class FLMaturityDetail extends Component{
                           isPercent={false}
                           spreadScale={1}
                           //activated={!this.state.product["UF"].isActivated}
-                          sliderLength={DEVICE_WIDTH*0.9}
+                          sliderLength={getConstant('width')*0.9}
                           callback={(value) => {
                             console.log("ON EST DANS LE CALLBACK MIN");
                               this.setState({ maturities : [Math.trunc(value) <= this.state.maturities[1] ? Math.trunc(value) : this.state.maturities[1]-1, this.state.maturities[1]] }, () => {
@@ -80,7 +80,7 @@ export class FLMaturityDetail extends Component{
                         />
                 </View>
                 <View style={{alignItems:'flex-start', justifyContents: 'center', marginTop : 25, borderWidth: 0}}>
-                  <Text style={{fontSize: 16, fontWeight: '400', fontFamily : FLFontFamily}}>Maturité maximum (années): </Text> 
+                  <Text style={setFont('400', 16)}>Maturité maximum (années): </Text> 
                 </View>
                 <View style={{alignItems:'center', justifyContents: 'center', borderWidth: 0,  paddingBottom : 15}}>  
                     <FLSlider2
@@ -92,7 +92,7 @@ export class FLMaturityDetail extends Component{
                           isPercent={false}
                           spreadScale={1}
                           //activated={!this.state.product["UF"].isActivated}
-                          sliderLength={DEVICE_WIDTH*0.9}
+                          sliderLength={getConstant('width')*0.9}
                           callback={(value) => {
                             console.log("ON EST DANS LE CALLBACK MAX");
                               this.setState({ maturities : [this.state.maturities[0], Math.trunc(value) >= this.state.maturities[0] ? Math.trunc(value) : this.state.maturities[0] + 1] }, () => {

@@ -10,8 +10,8 @@ import { setColor, setFont } from '../../Styles/globalStyle';
 import { compose, hoistStatics } from 'recompose';
 
 import { CWorkflowTicket } from '../../Classes/Tickets/CWorkflowTicket';
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 

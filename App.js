@@ -8,15 +8,15 @@ import material from './native-base-theme/variables/commonColor'
 import NotificationProvider from './Session/NotificationProvider'
 import Firebase, { FirebaseContext } from './Database';
 
-
+import { getConstant } from './Utils';
 
 import Application from './Components/Login/Application'
 import Navigation from './Navigation/Navigation'
 import bgSrc from './assets/LogoWithText.png';
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 const _setTimeout = global.setTimeout;
@@ -78,13 +78,13 @@ class App extends React.Component {
     this.state = {
       loading : true,
     };
-    console.log(Platform.OS + "  -> WIDTH : "+ DEVICE_WIDTH+ "   HEIGHT : "+DEVICE_HEIGHT);
+    console.log(Platform.OS + "  -> WIDTH : "+ getConstant('width')+ "   HEIGHT : "+getConstant('height'));
   }
  
   async componentDidMount() {
     await Font.loadAsync({
-      'FLFontFamily': require('./assets/fonts/Arial.ttf'),
-      'FLFontTitle': require('./assets/fonts/Typo_Round_Regular_Demo.otf'),
+      //'FLFontFamily': require('./assets/fonts/Arial.ttf'),
+      'FLFont': require('./assets/fonts/Typo_Round_Regular_Demo.otf'),
 
       'Light' : require('./assets/fonts/roboto/Roboto-Light.ttf'),
       'Regular' : require('./assets/fonts/roboto/Roboto-Regular.ttf'),

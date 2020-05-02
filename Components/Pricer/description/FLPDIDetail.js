@@ -4,14 +4,15 @@ import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'reac
 
 import { FLSlider2 } from '../../commons/FLSlider2';
 
-import { setFont, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { setFont } from '../../../Styles/globalStyle';
+import { getConstant } from '../../../Utils';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 export class FLPDIDetail extends Component{
 
@@ -28,7 +29,7 @@ export class FLPDIDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}>
  
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
@@ -41,7 +42,7 @@ export class FLPDIDetail extends Component{
                           isPercent={true}
                           spreadScale={10}
                           //activated={!this.state.product["UF"].isActivated}
-                          sliderLength={DEVICE_WIDTH*0.9}
+                          sliderLength={getConstant('width')*0.9}
                           callback={(value) => {
                               //console.log("MATS : "+ value);
                               this.setState({ barrier : (value+100)/100 }, () => {

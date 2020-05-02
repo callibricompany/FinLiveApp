@@ -11,12 +11,12 @@ import { compose, hoistStatics } from 'recompose';
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
-import { globalStyle , blueFLColor, FLFontFamily} from '../../Styles/globalStyle'
+import { globalStyle , setColor, setFont } from '../../Styles/globalStyle'
+import { getConstant } from '../../Utils';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
 
 
 class TabNews extends React.PureComponent {
@@ -89,7 +89,7 @@ class TabNews extends React.PureComponent {
     //console.log(item);
         return (
         <TouchableOpacity onPress={this._NavToNewsList.bind(this,item)}>
-            <View style={{ backgroundColor:'white',flexDirection: 'row', justifyContent: 'space-evenly', width: DEVICE_WIDTH*0.475, height: 130, borderWidth: 1, borderColor:'lightgray'}}>
+            <View style={{ backgroundColor:'white',flexDirection: 'row', justifyContent: 'space-evenly', width: getConstant('width')*0.475, height: 130, borderWidth: 1, borderColor:'lightgray'}}>
                 <View style={{flex:1, flexWrap: "wrap",justifyContent: 'center', alignItems: 'center'}}>
                     <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap'}}>
                         <Thumbnail source={imageUri.length!=0?{uri: imageUri}: null} />
@@ -101,7 +101,7 @@ class TabNews extends React.PureComponent {
                 <View style={{flex:2, flexDirection:'column', flexWrap: 'wrap'}}>
                 <View style={{flex:5, flexDirection:'row',justifyContent: 'center', flexWrap: 'wrap', paddingRight:5, height : 0}}>
                   <View style={{flex: 1, flexWrap: 'wrap'}}>
-                    <Text style={{fontFamily: FLFontFamily, fontSize: 14,flexWrap: 'wrap', alignSelf:'stretch', paddingTop : 2, paddingLeft: 2}}>{item.title}</Text>
+                    <Text style={[setFont('300', 14), {flexWrap: 'wrap', alignSelf:'stretch', paddingTop : 2, paddingLeft: 2}]}>{item.title}</Text>
                     </View>
                     </View>
                     <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingRight:10, paddingBottom: 2}}>
@@ -144,7 +144,7 @@ class TabNews extends React.PureComponent {
         <FLFlatList
             data={this.state.news}
             renderItem={this._displayNews}
-            style={{width : DEVICE_WIDTH*0.95}}
+            style={{width : getConstant('width')*0.95}}
             //keyExtractor={(item, index) => item.key}
             keyExtractor={(item, index) => String(index)}
             numColumns={2}

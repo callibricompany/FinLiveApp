@@ -32,6 +32,28 @@ export class CTicket extends CObject {
       
     }
    
+    //reponse des emeteurs
+    getAllQuoteRequests() {
+      return this.object['data'].hasOwnProperty('quoteRequest') ? this.object['data'].quoteRequest : [];
+    }
+
+    getQuoteRequestsCount() {
+      return this.object['data'].hasOwnProperty('quoteRequest') ? this.object['data'].quoteRequest.responseIssuersQuote.length : 0;
+    }
+    
+    getResponseIssuerCode(position) {
+      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersCode.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersCode[position] : []: [];
+    }
+    getResponseIssuerTermSheet(position) {
+      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersTermSheet.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersTermSheet[position] : []: [];
+    }
+    getResponseIssuerQuote(position) {
+      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersQuote.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersQuote[position].quote : []: [];
+    }
+
+    getResponseIssuerExpiryDate(position) {
+      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersExpiryDate.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersExpiryDate[position] : 0 : 0;
+    }
 
     setConversations(conversations) {
       //console.log(conversations);
@@ -46,14 +68,35 @@ export class CTicket extends CObject {
       let notes = [];
 
       this.conversations.forEach((c) => {
-        if (c.source === 2000 || c.source === 15) {
+        if (c.source === 2 || c.source === 15) {
           //console.log(c);
-          notes.push(c);
+          if (c.private){
+            notes.push(c);
+          }
         } 
       });
- 
+      if (notes.length > 1) {
+        notes.sort(CTicket.compareNoteDateUp);
+      }
       return notes;
     }
+
+    getChat() {
+      let chat = [];
+
+      this.conversations.forEach((c) => {
+        if (c.source === 0) {
+          //console.log(c);
+    
+          chat.push(c);
+        } 
+      });
+      if (chat.length > 1) {
+        chat.sort(CTicket.compareNoteDateUp);
+      }
+      return chat;
+    }
+
 
     getId() {
       return this.ticket.id;
@@ -73,6 +116,16 @@ export class CTicket extends CObject {
       return agentName;
     }
 
+    getAgentEmail() {
+      //console.log(this.object);
+      let agentEmail = "";
+      if (this.ticket.hasOwnProperty('agentInfo')) {
+        agentEmail = this.ticket['agentInfo'].contact['name'];
+      }
+
+      return agentEmail;
+    }
+
     getProduct() {
 
       return this.product;
@@ -90,7 +143,7 @@ export class CTicket extends CObject {
     }
 
 
-    getFirstAnswerDate() {
+    getFrDueBy() {
       return new Date(this.ticket.fr_due_by);
     }
     getLastUpdateDate() {
@@ -144,6 +197,11 @@ export class CTicket extends CObject {
     getNominal() {
 
       return this.ticket['custom_fields']['cf_ps_nominal'] === null ? 0 : this.ticket['custom_fields']['cf_ps_nominal'];
+    }
+
+    getFinalNominal() {
+      //return this.finalNominal;
+      return super.getFinalNominal();
     }
        
    static STATUS () {
@@ -257,6 +315,15 @@ export class CTicket extends CObject {
     let comparison = -1;
 
     if (a.getDueBy() > b.getDueBy()) {
+      comparison = 1;
+    } 
+    return comparison;
+  }
+
+  static compareNoteDateUp(a, b) {
+    let comparison = -1;
+
+    if (a.updated_at < b.updated_at) {
       comparison = 1;
     } 
     return comparison;

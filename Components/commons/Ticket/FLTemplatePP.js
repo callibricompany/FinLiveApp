@@ -11,23 +11,7 @@ import RobotBlink from "../../../assets/svg/robotBlink.svg";
 import banniere from '../../../assets/yourTeam.png';
 import YourTeam_SVG from "../../../assets/svg/yourTeam.svg";
 
-import {  
-    generalFontColor, 
-    blueFLColor,
-    headerTabColor,
-    selectElementTab,
-    progressBarColor,
-    subscribeColor,
-    FLFontFamily,
-    FLFontFamilyBold,
-    apeColor,
-    backgdColorPricerParameter,
-    globalStyle,
-    backgdColor,
-    setFont,
-    setColor
- } from '../../../Styles/globalStyle'
-
+import { globalStyle, setFont, setColor } from '../../../Styles/globalStyle';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -52,7 +36,7 @@ import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
 import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid } from '../../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
@@ -89,8 +73,8 @@ const customStyles = {
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 
@@ -113,13 +97,13 @@ class FLTemplatePP extends React.Component {
     //largeur de la cartouche sur l'ecran
     switch (this.type) {
       case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE : 
-        this.screenWidth = 0.8 * DEVICE_WIDTH;
+        this.screenWidth = 0.8 * getConstant('width');
         break;
       default :  
-        this.screenWidth = 0.95 * DEVICE_WIDTH;
+        this.screenWidth = 0.95 * getConstant('width');
         break;
     }
-    this.screenWidth = this.props.hasOwnProperty('screenWidth')  ? this.props.screenWidth * DEVICE_WIDTH : this.screenWidth;
+    this.screenWidth = this.props.hasOwnProperty('screenWidth')  ? this.props.screenWidth * getConstant('width') : this.screenWidth;
 
 
           
@@ -180,7 +164,7 @@ class FLTemplatePP extends React.Component {
                                 paddingLeft : 20,  
                                 paddingTop: 3,
                                 paddingBottom: 3,
-                                backgroundColor: setColor('vertpomme'), 
+                                backgroundColor: setColor('granny'), 
                                 borderTopLeftRadius: 10, 
                                 borderBottomWidth :  0,
   
@@ -209,15 +193,21 @@ class FLTemplatePP extends React.Component {
 _renderHeaderMediumTemplate() {
   let isNotified = this.props.isNotified('TICKET', this.props.ticket.getId());
   return (
-            <View style={{flexDirection: 'row', height : 70}}>
-               
+            <TouchableOpacity style={{flexDirection: 'row', height : 70}}
+                              onPress={() => {
+                                this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
+                                  ticket: this.ticket,
+                                  //ticketType: TICKET_TYPE.PSCREATION
+                                })
+                              }}
+            >
                 <View style={{
                               flex : 0.9,
                               paddingLeft : 20,  
                               paddingRight : 3,
                               paddingTop:  3,
                               paddingBottom: 5,
-                              backgroundColor: setColor('vertpomme'), 
+                              backgroundColor: setColor('granny'), 
                               borderTopLeftRadius: 10, 
                               //borderTopRightRadius: 10, 
                               borderBottomWidth :  0,
@@ -225,7 +215,7 @@ _renderHeaderMediumTemplate() {
                 >         
                 {  isNotified
                     ?
-                      <View style={{position: 'relative', top : 25, left : -15, backgroundColor: setColor('subscribeticket'), width: 8, height: 8, borderRadius : 4, borderWidth : 1, borderColor: setColor('subscribeticket'), zIndex : 1}} />                                            
+                      <View style={{position: 'relative', top : 25, left : -15, backgroundColor: 'white', width: 8, height: 8, borderRadius : 4, borderWidth : 1, borderColor: 'white', zIndex : 1}} />                                            
                     : null 
                 }
                       <View style={{justifyContent: 'center' , marginTop : isNotified ? -8 : 0}}>
@@ -243,17 +233,10 @@ _renderHeaderMediumTemplate() {
                         </View>
 
                 </View>
-                <TouchableOpacity style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}
-                                  onPress={() => {
-                                    this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
-                                      ticket: this.ticket,
-                                      //ticketType: TICKET_TYPE.PSCREATION
-                                    })
-                                  }}
-                >
+                <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}>
                    <Text style={setFont('400', 22, 'white')}>></Text>
-                </TouchableOpacity>
-          </View>
+                </View>
+          </TouchableOpacity>
 
   );
 }
@@ -291,11 +274,12 @@ _renderMediumTemplate() {
                 <TouchableOpacity style={{backgroundColor : this.ticket.isUserTrigger() ? 'red' : 'white', borderColor: this.ticket.isUserTrigger()? 'red' : 'gray', borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center', margin: 10}}
                                   onPress={() => {
                                     if (this.ticket.isUserTrigger()) {
-
-                                      this.props.navigation.navigate('FLTicketDetail', {
-                                          ticket: this.ticket,
-                                          showModalResponse : true
-                                        });
+                                      
+                                      this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
+                                        ticket: this.ticket,
+                                        showModalResponse : true
+                                      })
+        
                                     } else {
                                         Alert.alert(
                                           'Vous attendez actuellement une réponse',
@@ -361,7 +345,7 @@ _renderMediumTemplate() {
                         case Math.min(this.labels.length, 6) - 1 :  //dernier
                           return (
                             <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
-                                <Text style={setFont('200', 8, setColor('light'))}>Traité</Text>
+                                <Text style={setFont('200', 8, setColor('lightBlue'))}>Traité</Text>
                             </View>
                           );
                       default : 
@@ -533,7 +517,7 @@ render () {
                           //flex: 1,
                           
                           width: this.screenWidth, 
-                          //marginLeft : 0.025*DEVICE_WIDTH,
+                          //marginLeft : 0.025*getConstant('width'),
                           shadowColor: 'rgb(75, 89, 101)',
                           shadowOffset: { width: 0, height: 2 },
                           shadowOpacity: 0.9,

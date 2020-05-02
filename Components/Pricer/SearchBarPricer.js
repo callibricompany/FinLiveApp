@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Icon, Button } from 'native-base'
-import { ifIphoneX, ifAndroid, sizeByDevice } from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice , getConstant } from '../../Utils';
 import {
   View,
   ScrollView,
@@ -16,19 +16,10 @@ import {
   SectionList
 } from 'react-native';
 
-import {  globalSyle, 
-          generalFontColor, 
-          blueFLColor,
-          headerTabColor,
-          selectElementTab,
-          FLFontFamily
-} from '../../Styles/globalStyle';
+import {  globalSyle, setColor, setFont } from '../../Styles/globalStyle';
 
 
 
-
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 export default class SearchBarPricer extends Component {
 
@@ -78,7 +69,7 @@ export default class SearchBarPricer extends Component {
                   
                   //height: 45,
                   //marginTop: 10,
-                  width: DEVICE_WIDTH,
+                  width: getConstant('width'),
                   alignSelf: 'center',
                   justifyContent: 'center',
                   //alignItems: 'center'
@@ -90,7 +81,7 @@ export default class SearchBarPricer extends Component {
                        <TouchableOpacity onPress={() => {
                                 console.log("test");
                         }}>
-                         <Text style={{paddingLeft : 15,fontFamily: FLFontFamily, fontWeight:'300', fontSize : 18, color:'white'}}>
+                         <Text style={[setFont('300', 18, 'white'), {paddingLeft : 15}]}>
                           Toto {this._getLabelText(this.state.title)}
                          </Text>    
                         </TouchableOpacity>
@@ -128,7 +119,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     //zIndex: 99,
-    backgroundColor: blueFLColor,
+    backgroundColor: setColor(''),
   
     width: '100%',
     //overflow: 'hidden',

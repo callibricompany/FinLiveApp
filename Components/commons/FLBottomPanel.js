@@ -9,9 +9,9 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, isIphoneX} from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice, isIphoneX, getConstant } from '../../Utils';
 
-import { globalStyle, backgdColor, blueFLColor, backgdColorPricerParameter , setFont, setColor } from '../../Styles/globalStyle'
+import { globalStyle , setFont, setColor } from '../../Styles/globalStyle'
 
 import logo from '../../assets/LogoWithoutText.png';
 import logo_gray from '../../assets/LogoWithoutTex_gray.png';
@@ -19,14 +19,14 @@ import logo_gray from '../../assets/LogoWithoutTex_gray.png';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 
 const HEADER_HEIGHT = 20;
-//export const SNAP_POINTS_FROM_TOP = [30, DEVICE_HEIGHT * 0.3, sizeByDevice(DEVICE_HEIGHT -260 , DEVICE_HEIGHT - 200 , DEVICE_HEIGHT - 215) ];
-export const SNAP_POINTS_FROM_TOP = [isIphoneX() ? 80 : 50, DEVICE_HEIGHT * 0.4, DEVICE_HEIGHT - 10 ];
+//export const SNAP_POINTS_FROM_TOP = [30, getConstant('height') * 0.3, sizeByDevice(getConstant('height') -260 , getConstant('height') - 200 , getConstant('height') - 215) ];
+export const SNAP_POINTS_FROM_TOP = [isIphoneX() ? 80 : 50, getConstant('height') * 0.4, getConstant('height') - 10 ];
 
 class FLBottomPanel extends React.Component {
  
@@ -150,7 +150,7 @@ class FLBottomPanel extends React.Component {
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHeaderHandlerStateChange}>
               <Animated.View style={styles.header} >
-               <View style={{width: DEVICE_WIDTH/3, height : HEADER_HEIGHT/5, backgroundColor: blueFLColor, borderRadius: 5}}><Text></Text></View>
+               <View style={{width: getConstant('width')/3, height : HEADER_HEIGHT/5, backgroundColor: setColor(''), borderRadius: 5}}><Text></Text></View>
               </Animated.View>
             </PanGestureHandler>
             <PanGestureHandler
@@ -159,7 +159,7 @@ class FLBottomPanel extends React.Component {
               shouldCancelWhenOutside={false}
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHandlerStateChange}>
-              <Animated.View style={[styles.container, {backgroundColor : this.props.isActivated ? backgdColorPricerParameter : backgdColorPricerParameter}]} clickable={this.props.isActivated}>
+              <Animated.View style={[styles.container, {backgroundColor : this.props.isActivated ? 'white' : 'white'}]} clickable={this.props.isActivated}>
                 <NativeViewGestureHandler
                   ref={this.scroll}
                   waitFor={this.masterdrawer}
@@ -175,7 +175,7 @@ class FLBottomPanel extends React.Component {
   
                         <View style={{flex:0.1 , flexDirection: 'row', justifyContent: 'space-evenly',alignItems: 'flex-start', borderWidth: 0}}>
                             {!this.props.isMandatory  ?
-                                  <TouchableOpacity style ={{ height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: this.props.isActivated ? setColor('gray') : setColor('turquoise'), borderRadius: 40,  backgroundColor: this.props.isActivated ? 'lightgray' : 'white'}}
+                                  <TouchableOpacity style ={{ height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: this.props.isActivated ? setColor('gray') : setColor('subscribeBlue'), borderRadius: 40,  backgroundColor: this.props.isActivated ? 'lightgray' : 'white'}}
                                                     onPress={() => {
                                                       this.props.activateParameter(!this.props.isActivated);
                                                     }}  
@@ -192,7 +192,7 @@ class FLBottomPanel extends React.Component {
                                 :  <View style ={{ flex: 0.2}}></View>
                             }
                             <View style={{flex : 0.6, justifyContent: 'center', alignItems: 'center', borderWidth: 0}}>
-                                  <Text style={{fontSize: 20, fontWeight: '600', fontFamily : 'FLFontFamily', textAlign: 'center'}}>
+                                  <Text style={[setFont('600', 20), {textAlign: 'center'}]}>
                                       {this.props.renderTitle}
                                   </Text>
                             </View>
@@ -226,12 +226,12 @@ class FLBottomPanel extends React.Component {
 const styles = StyleSheet.create({
 
   container: {
-    backgroundColor : backgdColorPricerParameter,
+    backgroundColor : 'white',
     flex: 1,
   },
   header: {
     height: HEADER_HEIGHT,
-    backgroundColor: backgdColorPricerParameter,
+    backgroundColor: 'white',
     justifyContent : 'center',
     alignItems : 'center',
     borderTopRightRadius : 10,

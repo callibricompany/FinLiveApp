@@ -4,10 +4,10 @@ import { Button } from 'native-base';
 import { Svg } from "expo";
 
 import bgSrc from '../../assets/LogoWithText.png';
+import { getConstant } from '../../Utils';
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
 
 class SplashScreen extends React.Component {
   performTimeConsumingTask = async() => {
@@ -38,7 +38,7 @@ class SplashScreen extends React.Component {
           <View style={styles.container}>
           <StatusBar hidden />
           
-          {/*<Svg width={DEVICE_WIDTH} height={DEVICE_HEIGHT} viewBox="0 0 100 100">
+          {/*<Svg width={getConstant('width')} height={getConstant('height')} viewBox="0 0 100 100">
              <Svg.Circle cx="100" cy="0" r="50" fill="#479ac8" opacity="0.2"/>
              <Svg.Circle cx="0" cy="100" r="50" fill="#479ac8" opacity="0.2"/>
     </Svg>*/}

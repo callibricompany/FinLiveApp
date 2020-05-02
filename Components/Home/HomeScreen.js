@@ -3,7 +3,9 @@ import React from 'react'
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions,Text,SafeAreaView,Platform, StatusBar, Animated, KeyboardAvoidingView} from 'react-native'
 import { Thumbnail, Toast, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
-import { globalStyle , blueFLColor, setColor, setFont} from '../../Styles/globalStyle'
+
+import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
+import { getConstant } from '../../Utils';
 
 import NavigationService from '../../Navigation/NavigationService';
 
@@ -29,14 +31,14 @@ import TabHome from './TabHome';
 
 //import Icon from 'react-native-vector-icons/FontAwesome'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
+
+
+
 
 
 const initialLayout = {
-  width: DEVICE_WIDTH,
-  height: DEVICE_HEIGHT
+  width: getConstant('width'),
+  height: getConstant('height')
 };
 
 //class HomeScreenFormBase extends React.Component {
@@ -159,7 +161,7 @@ const initialLayout = {
                   }
                 }}
                 getLabelText={this._getLabelText}
-                indicatorStyle={{    backgroundColor: blueFLColor, height : 0 }}
+                indicatorStyle={{    backgroundColor: setColor(''), height : 0 }}
                 style={{ backgroundColor: 'white', elevation: 0, height : 0 }}
                 labelStyle={{ color: 'pink', margin: 0, marginTop: 0, marginBottom: 0, fontWeight: '200', height: 0 }}
                 {...props}
@@ -230,7 +232,7 @@ const initialLayout = {
     
 
 
-    render() {
+   render() {
 
       let render =    <SearchBarProvider currentTab={this.state.currentTab}>
                         {(animation, { canJumpToTab }) => 
@@ -244,7 +246,7 @@ const initialLayout = {
                               />*/
                             }
                             <TabView
-                              style={[globalStyle.bgColor, {flex: 1}]}
+                              style={{flex: 1, backgroundColor : setColor('background')}}
                               navigationState={this.state}
                               renderScene={this._renderScene}
                               renderTabBar={this._renderHeader(animation, canJumpToTab)}
@@ -280,7 +282,16 @@ const initialLayout = {
                   <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', padding : 10, borderRadius : 3, backgroundColor: setColor('')}}
                                     onPress={() => {
                                           //this.props.navigation.setParams({ hideBottomTabBar : true });
-                                          this.setState({ isLoading : true}, () => this._loadAllUserIndos());
+                                          this.setState({ isLoading : true}, 
+                                          //   async() => {      try {
+                                          //   await this.props.getUserAllInfo();
+                                          //   //this.props.resetCurrentNotification();
+                                          //   this.setState({ isServerOk : true, isLoading: false});
+                                          // } catch(error) {
+                                          //   console.log("ERREUR RESEAU : "+error);
+                                          //   this.setState({ isServerOk : false, isLoading: false});
+                                          // }}
+                                          );
                                     }}
                   >
                         <Text style={setFont('400', 13, 'white', 'Regular')}>Essayer à nouveau</Text>

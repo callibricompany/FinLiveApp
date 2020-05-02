@@ -4,13 +4,14 @@ import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'reac
 
 import { FLSlider2 } from '../../commons/FLSlider2';
 
-import { globalStyle, blueFLColor, backgdColor, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, setFont } from '../../../Styles/globalStyle'
+import { getConstant } from '../../../Utils';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 export class FLDegressiveDetail extends Component{
 
@@ -42,7 +43,7 @@ export class FLDegressiveDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}>
  
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
@@ -55,7 +56,7 @@ export class FLDegressiveDetail extends Component{
                           isPercent={true}
                           spreadScale={1}
                           //activated={!this.state.product["UF"].isActivated}
-                          sliderLength={DEVICE_WIDTH*0.9}
+                          sliderLength={getConstant('width')*0.9}
                           callback={(value) => {
                               this.setState({ barrier : value }, () => {
                                 this.props.updateValue("degressiveStep", this.state.barrier, this._getDegressiveTitle());
@@ -67,7 +68,7 @@ export class FLDegressiveDetail extends Component{
                         />
                 </View>
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 40}}>
-                  <Text style={{fontSize: 12, fontWeight: '400', fontFamily : FLFontFamily}}>
+                  <Text style={setFont('400', 12)}>
                      {this._getDegressiveExplanation()}
                   </Text> 
                 </View>

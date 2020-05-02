@@ -30,7 +30,7 @@ import FLTemplatePSPublicAPE from "../commons/Autocall/FLTemplatePSPublicAPE";
 import logo_white from '../../assets/LogoWithoutTex_white.png';
 import logo from '../../assets/LogoWithoutText.png';
 
-import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual} from '../../Utils';
+import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant } from '../../Utils';
 
 
 import * as TEMPLATE_TYPE from '../../constants/template';
@@ -43,9 +43,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
+
+
+
 
 
 const SECTIONS = [    
@@ -150,7 +150,7 @@ class FLSRPDetail extends React.Component {
     this.setState({
       keyboardHeight: e.endCoordinates.height,
       isKeyboardVisible: true
-    }, ()=> console.log("HAUTEUR CLAVIER : " + this.state.keyboardHeight));
+    });
   }
 
 
@@ -390,10 +390,10 @@ class FLSRPDetail extends React.Component {
   render() { 
 
       return(
-            <View style={{flex:1, height: DEVICE_HEIGHT, opacity: this.state.showModalDescription ? 0.3 : 1}}> 
+            <View style={{flex:1, height: getConstant('height'), opacity: this.state.showModalDescription ? 0.3 : 1}}> 
          
-              <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: DEVICE_HEIGHT-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*DEVICE_WIDTH -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent'}}>
-                <View style={{width : 0.6*DEVICE_WIDTH,  justifyContent: 'center'}}>
+              <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', position : 'absolute',top: getConstant('height')-100-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : (0.4*getConstant('width') -80)/2 -20,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent'}}>
+                <View style={{width : 0.6*getConstant('width'),  justifyContent: 'center'}}>
                     <TextInput 
                             style={{    
                                       display: 'flex',
@@ -429,7 +429,7 @@ class FLSRPDetail extends React.Component {
                             }}
                     />
                   </View>
-                  <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 80, width: 80, borderColor: setColor('turquoise'), borderRadius: 40, marginLeft : 10, padding : 10, backgroundColor: setColor('turquoise')}}
+                  <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 80, width: 80, borderColor: setColor('subscribeBlue'), borderRadius: 40, marginLeft : 10, padding : 10, backgroundColor: setColor('subscribeBlue')}}
                                   onPress={() => {
                                
                                       alert("Fonctionalité prochainement disponible");
@@ -448,7 +448,7 @@ class FLSRPDetail extends React.Component {
 
               </KeyboardAvoidingView>
 
-              <View style={{height: 140 + STATUSBAR_HEIGHT, paddingLeft : 10, backgroundColor: setColor(''), paddingTop: isAndroid() ?  0 : STATUSBAR_HEIGHT}}>
+              <View style={{height: 140 + getConstant('statusBar'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop: isAndroid() ?  0 : getConstant('statusBar')}}>
                   <TouchableOpacity style={{flexDirection : 'row', borderWidth: 0, padding : 5}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
@@ -458,7 +458,7 @@ class FLSRPDetail extends React.Component {
                       <View style={{justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 5}}>
                            <Text style={setFont('300', 16, 'white', 'Regular')}>Retour</Text>
                       </View>
-                      <View style={{flex: 1, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*DEVICE_WIDTH}}>
+                      <View style={{flex: 1, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
                           <View style={{flexDirection : 'row'}}>
                               <TouchableOpacity style={{width : 40, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}
                                                 onPress={() => {
@@ -497,7 +497,7 @@ class FLSRPDetail extends React.Component {
                                       </Text>
                                   </View>   
                       } 
-                     <ScrollView style={{ width: 0.9*DEVICE_WIDTH}}>
+                     <ScrollView style={{ width: 0.9*getConstant('width')}}>
                         <Accordion
                             sections={SECTIONS}
                             underlayColor={'transparent'}

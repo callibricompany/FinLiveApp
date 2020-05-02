@@ -24,7 +24,7 @@ import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
 import { withAuthorization } from '../../Session';
 
-import { ifIphoneX } from '../../Utils/';
+import { ifIphoneX, getConstant } from '../../Utils/';
 
 import { compose, hoistStatics } from 'recompose';
 
@@ -35,9 +35,9 @@ import { setFont, setColor } from '../../Styles/globalStyle';
 // import Signup from './Signup';
 //import Account from './Main'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
+
+
+
 
 const Login2 = () => (
     
@@ -145,24 +145,24 @@ class LoginFormBase extends Component {
   
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={{width: DEVICE_WIDTH*0.9, marginLeft:0.05*DEVICE_WIDTH, height: DEVICE_HEIGHT, flexDirection: 'column', justifyContent:'center',alignItems: 'center', borderWidth: 0}}>
+        <View style={{width: getConstant('width')*0.9, marginLeft:0.05*getConstant('width'), height: getConstant('height'), flexDirection: 'column', justifyContent:'center',alignItems: 'center', borderWidth: 0}}>
           <View style={{flex :0.35, marginTop : ifIphoneX(45, 10), zIndex: 99}}>
             <Image
               source={logoImg}
               style={{  opacity: this.state.isOnFocus ? 0.1 : 0.3,
                         //position: "absolute",
-                        width: DEVICE_WIDTH,
-                        height: DEVICE_HEIGHT*0.35,
+                        width: getConstant('width'),
+                        height: getConstant('height')*0.35,
                         resizeMode: 'cover'
                 }}
               resizeMode="contain"
             />
           </View>
-          <KeyboardAvoidingView behavior={'padding'} style={{ flex: 0.65 , width: 0.9*DEVICE_WIDTH}} enabled={true}>  
+          <KeyboardAvoidingView behavior={'padding'} style={{ flex: 0.65 , width: 0.9*getConstant('width')}} enabled={true}>  
             <ScrollView keyboardShouldPersistTaps={"always"}>
                 <View style={{flexDirection: 'row', marginTop: 25, borderBottomWidth: 1, borderBottomColor : setColor('gray')}} >
                   <View style={{padding : 5}}>
-                        <Ionicons name="ios-mail" style={{color : setColor('light')}} size={25}/>
+                        <Ionicons name="ios-mail" style={{color : setColor('lightBlue')}} size={25}/>
                   </View>
                   <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft : 5}}>
                         <TextInput
@@ -198,7 +198,7 @@ class LoginFormBase extends Component {
                 </View>
                 <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
                   <View style={{padding : 5}}>
-                        <Ionicons name="ios-unlock" style={{color : setColor('light')}} size={25}/>
+                        <Ionicons name="ios-unlock" style={{color : setColor('lightBlue')}} size={25}/>
                   </View>
                   <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
                     <TextInput
@@ -232,13 +232,13 @@ class LoginFormBase extends Component {
           
                 <View  style={{flexDirection: 'row', justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}>
                   <TouchableOpacity   
-                      style={{width: 0.45*DEVICE_WIDTH, justifyContent:'center',marginRight: 5, height : 50}}
+                      style={{width: 0.45*getConstant('width'), justifyContent:'center',marginRight: 5, height : 50}}
                       onPress={this.goToRegister}
                   >
                         <Text style={styles.text_button}>Créer un compte</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
-                      style={{width: 0.45*DEVICE_WIDTH,  justifyContent:'center', marginLeft: 5, height : 50}}
+                      style={{width: 0.45*getConstant('width'),  justifyContent:'center', marginLeft: 5, height : 50}}
                       onPress={this.goToPasswordRecovery}
                   >
                           <Text style={styles.text_button}>Identifiants{'\n'}perdus</Text>

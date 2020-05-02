@@ -1,0 +1,390 @@
+[
+    {
+        "Extension": ".aac",
+        "Kind of document": "AAC audio",
+        "MIME_Type": "audio/aac"
+    },
+    {
+        "Extension": ".abw",
+        "Kind of document": "AbiWord document",
+        "MIME_Type": "application/x-abiword"
+    },
+    {
+        "Extension": ".arc",
+        "Kind of document": "Archive document (multiple files embedded)",
+        "MIME_Type": "application/x-freearc"
+    },
+    {
+        "Extension": ".avi",
+        "Kind of document": "AVI: Audio Video Interleave",
+        "MIME_Type": "video/x-msvideo"
+    },
+    {
+        "Extension": ".azw",
+        "Kind of document": "Amazon Kindle eBook format",
+        "MIME_Type": "application/vnd.amazon.ebook"
+    },
+    {
+        "Extension": ".bin",
+        "Kind of document": "Any kind of binary data",
+        "MIME_Type": "application/octet-stream"
+    },
+    {
+        "Extension": ".bmp",
+        "Kind of document": "Windows OS/2 Bitmap Graphics",
+        "MIME_Type": "image/bmp"
+    },
+    {
+        "Extension": ".bz",
+        "Kind of document": "BZip archive",
+        "MIME_Type": "application/x-bzip"
+    },
+    {
+        "Extension": ".bz2",
+        "Kind of document": "BZip2 archive",
+        "MIME_Type": "application/x-bzip2",
+        "icon": "archive"
+    },
+    {
+        "Extension": ".csh",
+        "Kind of document": "C-Shell script",
+        "MIME_Type": "application/x-csh"
+    },
+    {
+        "Extension": ".css",
+        "Kind of document": "Cascading Style Sheets (CSS)",
+        "MIME_Type": "text/css"
+    },
+    {
+        "Extension": ".csv",
+        "Kind of document": "Comma-separated values (CSV)",
+        "MIME_Type": "text/csv",
+        "icon": "file-excel-box"
+    },
+    {
+        "Extension": ".doc",
+        "Kind of document": "Microsoft Word",
+        "MIME_Type": "application/msword",
+        "icon": "file-word-box",
+        "color": "blue"
+    },
+    {
+        "Extension": ".docx",
+        "Kind of document": "Microsoft Word (OpenXML)",
+        "MIME_Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "icon": "file-word-box",
+        "color": "blue"
+    },
+    {
+        "Extension": ".eot",
+        "Kind of document": "MS Embedded OpenType fonts",
+        "MIME_Type": "application/vnd.ms-fontobject"
+    },
+    {
+        "Extension": ".epub",
+        "Kind of document": "Electronic publication (EPUB)",
+        "MIME_Type": "application/epub+zip"
+    },
+    {
+        "Extension": ".gz",
+        "Kind of document": "GZip Compressed Archive",
+        "MIME_Type": "application/gzip",
+        "icon": "archive"
+    },
+    {
+        "Extension": ".gif",
+        "Kind of document": "Graphics Interchange Format (GIF)",
+        "MIME_Type": "image/gif"
+    },
+    {
+        "Extension": ".htm",
+        "Kind of document": "HyperText Markup Language (HTML)",
+        "MIME_Type": "text/html",
+        "icon": "apple-safari"
+    },
+    {
+        "Extension": ".html",
+        "Kind of document": "HyperText Markup Language (HTML)",
+        "MIME_Type": "text/html",
+        "icon": "apple-safari"
+    },
+    {
+        "Extension": ".ico",
+        "Kind of document": "Icon format",
+        "MIME_Type": "image/vnd.microsoft.icon"
+    },
+    {
+        "Extension": ".ics",
+        "Kind of document": "iCalendar format",
+        "MIME_Type": "text/calendar"
+    },
+    {
+        "Extension": ".jar",
+        "Kind of document": "Java Archive (JAR)",
+        "MIME_Type": "application/java-archive"
+    },
+    {
+        "Extension": ".jpeg",
+        "Kind of document": "JPEG images",
+        "MIME_Type": "image/jpeg"
+    },
+    {
+        "Extension": ".jpg",
+        "Kind of document": "JPEG images",
+        "MIME_Type": "image/jpeg"
+    },
+    {
+        "Extension": ".json",
+        "Kind of document": "JSON format",
+        "MIME_Type": "application/json"
+    },
+    {
+        "Extension": ".jsonld",
+        "Kind of document": "JSON-LD format",
+        "MIME_Type": "application/ld+json"
+    },
+    {
+        "Extension": ".mid",
+        "Kind of document": "Musical Instrument Digital Interface (MIDI)",
+        "MIME_Type": "audio/midi audio/x-midi"
+    },
+    {
+        "Extension": ".midi",
+        "Kind of document": "Musical Instrument Digital Interface (MIDI)",
+        "MIME_Type": "audio/midi audio/x-midi"
+    },
+    {
+        "Extension": ".mjs",
+        "Kind of document": "JavaScript module",
+        "MIME_Type": "text/javascript"
+    },
+    {
+        "Extension": ".mp3",
+        "Kind of document": "MP3 audio",
+        "MIME_Type": "audio/mpeg"
+    },
+    {
+        "Extension": ".mpeg",
+        "Kind of document": "MPEG Video",
+        "MIME_Type": "video/mpeg"
+    },
+    {
+        "Extension": ".mpkg",
+        "Kind of document": "Apple Installer Package",
+        "MIME_Type": "application/vnd.apple.installer+xml"
+    },
+    {
+        "Extension": ".odp",
+        "Kind of document": "OpenDocument presentation document",
+        "MIME_Type": "application/vnd.oasis.opendocument.presentation"
+    },
+    {
+        "Extension": ".ods",
+        "Kind of document": "OpenDocument spreadsheet document",
+        "MIME_Type": "application/vnd.oasis.opendocument.spreadsheet"
+    },
+    {
+        "Extension": ".odt",
+        "Kind of document": "OpenDocument text document",
+        "MIME_Type": "application/vnd.oasis.opendocument.text",
+        "icon": "file-document-box-outline"
+    },
+    {
+        "Extension": ".oga",
+        "Kind of document": "OGG audio",
+        "MIME_Type": "audio/ogg"
+    },
+    {
+        "Extension": ".ogv",
+        "Kind of document": "OGG video",
+        "MIME_Type": "video/ogg"
+    },
+    {
+        "Extension": ".ogx",
+        "Kind of document": "OGG",
+        "MIME_Type": "application/ogg"
+    },
+    {
+        "Extension": ".opus",
+        "Kind of document": "Opus audio",
+        "MIME_Type": "audio/opus"
+    },
+    {
+        "Extension": ".otf",
+        "Kind of document": "OpenType font",
+        "MIME_Type": "font/otf"
+    },
+    {
+        "Extension": ".png",
+        "Kind of document": "Portable Network Graphics",
+        "MIME_Type": "image/png"
+    },
+    {
+        "Extension": ".pdf",
+        "Kind of document": "Adobe Portable Document Format (PDF)",
+        "MIME_Type": "application/pdf",
+        "icon": "file-pdf-box",
+        "color": "red"
+    },
+    {
+        "Extension": ".php",
+        "Kind of document": "Hypertext Preprocessor (Personal Home Page)",
+        "MIME_Type": "application/x-httpd-php"
+    },
+    {
+        "Extension": ".ppt",
+        "Kind of document": "Microsoft PowerPoint",
+        "MIME_Type": "application/vnd.ms-powerpoint",
+        "icon": "file-powerpoint-box",
+        "color": "firebrick"
+    },
+    {
+        "Extension": ".pptx",
+        "Kind of document": "Microsoft PowerPoint (OpenXML)",
+        "MIME_Type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "icon": "file-powerpoint-box",
+        "color": "firebrick"
+    },
+    {
+        "Extension": ".rar",
+        "Kind of document": "RAR archive",
+        "MIME_Type": "application/vnd.rar"
+    },
+    {
+        "Extension": ".rtf",
+        "Kind of document": "Rich Text Format (RTF)",
+        "MIME_Type": "application/rtf",
+        "icon": "file-document-box-outline"
+    },
+    {
+        "Extension": ".sh",
+        "Kind of document": "Bourne shell script",
+        "MIME_Type": "application/x-sh"
+    },
+    {
+        "Extension": ".svg",
+        "Kind of document": "Scalable Vector Graphics (SVG)",
+        "MIME_Type": "image/svg+xml"
+    },
+    {
+        "Extension": ".swf",
+        "Kind of document": "Small web format (SWF) or Adobe Flash document",
+        "MIME_Type": "application/x-shockwave-flash"
+    },
+    {
+        "Extension": ".tar",
+        "Kind of document": "Tape Archive (TAR)",
+        "MIME_Type": "application/x-tar"
+    },
+    {
+        "Extension": ".tif",
+        "Kind of document": "Tagged Image File Format (TIFF)",
+        "MIME_Type": "image/tiff"
+    },
+    {
+        "Extension": ".tiff",
+        "Kind of document": "Tagged Image File Format (TIFF)",
+        "MIME_Type": "image/tiff"
+    },
+    {
+        "Extension": ".ts",
+        "Kind of document": "MPEG transport stream",
+        "MIME_Type": "video/mp2t"
+    },
+    {
+        "Extension": ".ttf",
+        "Kind of document": "TrueType Font",
+        "MIME_Type": "font/ttf"
+    },
+    {
+        "Extension": ".txt",
+        "Kind of document": "Text, (generally ASCII or ISO 8859-n)",
+        "MIME_Type": "text/plain",
+        "icon": "file-document-box-outline"
+    },
+    {
+        "Extension": ".vsd",
+        "Kind of document": "Microsoft Visio",
+        "MIME_Type": "application/vnd.visio"
+    },
+    {
+        "Extension": ".wav",
+        "Kind of document": "Waveform Audio Format",
+        "MIME_Type": "audio/wav"
+    },
+    {
+        "Extension": ".weba",
+        "Kind of document": "WEBM audio",
+        "MIME_Type": "audio/webm"
+    },
+    {
+        "Extension": ".webm",
+        "Kind of document": "WEBM video",
+        "MIME_Type": "video/webm"
+    },
+    {
+        "Extension": ".webp",
+        "Kind of document": "WEBP image",
+        "MIME_Type": "image/webp"
+    },
+    {
+        "Extension": ".woff",
+        "Kind of document": "Web Open Font Format (WOFF)",
+        "MIME_Type": "font/woff"
+    },
+    {
+        "Extension": ".woff2",
+        "Kind of document": "Web Open Font Format (WOFF)",
+        "MIME_Type": "font/woff2"
+    },
+    {
+        "Extension": ".xhtml",
+        "Kind of document": "XHTML",
+        "MIME_Type": "application/xhtml+xml"
+    },
+    {
+        "Extension": ".xls",
+        "Kind of document": "Microsoft Excel",
+        "MIME_Type": "application/vnd.ms-excel",
+        "icon": "file-excel-box",
+        "color": "green"
+    },
+    {
+        "Extension": ".xlsx",
+        "Kind of document": "Microsoft Excel (OpenXML)",
+        "MIME_Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "icon": "file-excel-box",
+        "color": "green"
+    },
+    {
+        "Extension": ".xml",
+        "Kind of document": "XML",
+        "MIME_Type": "application/xml"
+    },
+    {
+        "Extension": ".xul",
+        "Kind of document": "XUL",
+        "MIME_Type": "application/vnd.mozilla.xul+xml"
+    },
+    {
+        "Extension": ".zip",
+        "Kind of document": "ZIP archive",
+        "MIME_Type": "application/zip",
+        "icon": "archive"
+    },
+    {
+        "Extension": ".3gp",
+        "Kind of document": "3GPP audio/video container",
+        "MIME_Type": "video/3gpp"
+    },
+    {
+        "Extension": ".3g2",
+        "Kind of document": "3GPP2 audio/video container",
+        "MIME_Type": "video/3gpp2"
+    },
+    {
+        "Extension": ".7z",
+        "Kind of document": "7-zip archive",
+        "MIME_Type": "application/x-7z-compressed"
+    }
+]

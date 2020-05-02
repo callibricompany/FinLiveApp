@@ -38,15 +38,13 @@ import FLTemplatePP from '../commons/Ticket/FLTemplatePP';
 import { CAutocall } from "../../Classes/Products/CAutocall";
 import * as TEMPLATE_TYPE from "../../constants/template";
 import { CPSRequest } from "../../Classes/Products/CPSRequest";
-import { isAndroid } from "../../Utils";
+import { isAndroid, isEqual, getConstant } from "../../Utils";
 import { CWorkflowTicket } from "../../Classes/Tickets/CWorkflowTicket";
 import { CBroadcastTicket } from '../../Classes/Tickets/CBroadcastTicket';
 import { CTicket } from '../../Classes/Tickets/CTicket';
 
 
 
-const DEVICE_WIDTH = Dimensions.get("window").width;
-const DEVICE_HEIGHT = Dimensions.get("window").height;
 
 class TabHome extends React.PureComponent {
   constructor(props) {
@@ -70,31 +68,33 @@ class TabHome extends React.PureComponent {
 
     this.bestCoupons = [];
 
-    this.tickets = [];
-    this.props.tickets.forEach((t) => {
-      //let tempTicket = new CTicket(t);
-      //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
+    // this.tickets = [];
+    // this.props.tickets.forEach((t) => {
+    //   //let tempTicket = new CTicket(t);
+    //   //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
       
-      //switch (tempTicket.getType()) {
-      switch(t.type) {
-        case "Broadcasting" :
-          console.log("Broadcast : "+t.id);
-          //console.log(t);
-          //let ticketB = new CBroadcastTicket(t);
-          //this.tickets.push(ticketB);
-          break;
-        case "Produit structuré" :
-          console.log("Workflow : "+t.id);
-          //console.log(t);
-          let ticketC = new CWorkflowTicket(t);
-          this.tickets.push(ticketC);
-          break;
-        default : 
-          //this.tickets.push(t);
-          break;
-      }
-    });
-    this.tickets.sort(CTicket.compareLastUpdateDown);
+    //   //switch (tempTicket.getType()) {
+    //   switch(t.type) {
+    //     case "Broadcasting" :
+    //       console.log("Broadcast : "+t.id);
+    //       //console.log(t);
+    //       //let ticketB = new CBroadcastTicket(t);
+    //       //this.tickets.push(ticketB);
+    //       break;
+    //     case "Produit structuré" :
+    //       console.log("Workflow : "+t.id);
+    //       //console.log(t);
+    //       let ticketC = new CWorkflowTicket(t);
+    //       this.tickets.push(ticketC);
+    //       break;
+    //     default : 
+    //       //this.tickets.push(t);
+    //       break;
+    //   }
+    // });
+    // this.tickets.sort(CTicket.compareLastUpdateDown);
+    this.tickets = this.props.tickets;
+
 
     //le produit-ticket est filtre ou pas
     this.isFiltered = false;
@@ -104,6 +104,11 @@ class TabHome extends React.PureComponent {
 
   UNSAFE_componentWillReceiveProps(props) {
     //console.log("RECEIVE PROPS HOME : ");
+    // if (!isEqual(props.tickets, this.props.tickets)) {
+    //   console.log("##########################################  ATTENTION TICKETS NON EGAUX IL FAUT LES RAJOUTER");
+    // } else {
+    //   console.log(" ATTENTION TICKETS sont  EGAUX  ---------------------------------------------");
+    // }
     this.setState({ allNotificationsCount :props.allNotificationsCount });
     this.setState({ scrollTo: props.marginSearch, refreshing: false });
     typeof props.filters !== "undefined"
@@ -222,7 +227,7 @@ class TabHome extends React.PureComponent {
     switch (item.template) {
       case "PSLIST":
         return (
-          <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+          <View style={{marginLeft: getConstant('width') * 0.025}}>
              <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
           </View>
         );
@@ -240,16 +245,16 @@ class TabHome extends React.PureComponent {
       >
 
           {this.props.broadcasts.length !== 0  ?
-                <View style={{marginRight: 0.025*DEVICE_WIDTH}}>
+                <View style={{marginRight: 0.025*getConstant('width')}}>
                   <View
                     style={{
 
-                      marginLeft: DEVICE_WIDTH * 0.025,
+                      marginLeft: getConstant('width') * 0.025,
                       alignItems: "flex-start",
                       borderWidth: 0
                     }}
                   >
-                    <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                    <Text style={setFont("400", 18)}>
                       APE sur mesure
                     </Text>
                   </View>
@@ -265,7 +270,7 @@ class TabHome extends React.PureComponent {
                       switch (ticket.getTemplate()) {
                         case TEMPLATE_TYPE.PSBROADCAST :
                           return (
-                            <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                            <View style={{marginLeft: getConstant('width') * 0.025}}>
                               <FLTemplatePSBroadcast ticket={ticket} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
                             </View>
                           );
@@ -287,8 +292,8 @@ class TabHome extends React.PureComponent {
             }
 
             {this.tickets.length !== 0  ?
-                <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
-                  <TouchableOpacity style={{marginLeft: DEVICE_WIDTH * 0.025, marginRight: DEVICE_WIDTH * 0.025, alignItems: "flex-start", borderWidth: 0}}
+                <View  style={{marginRight: getConstant('width') * 0.025}}>
+                  <TouchableOpacity style={{marginLeft: getConstant('width') * 0.025, marginRight: getConstant('width') * 0.025, alignItems: "flex-start", borderWidth: 0}}
                                     onPress={()=>{
                                       
                                       this.props.navigation.dispatch(NavigationActions.navigate({
@@ -311,7 +316,7 @@ class TabHome extends React.PureComponent {
                                       //this.props._showToast(notif, this.props.tickets[0]);
                                    }}
                   >
-                    <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                    <Text style={setFont("400", 18)}>
                       Mes tickets en cours
                     </Text>
                   </TouchableOpacity>
@@ -332,7 +337,7 @@ class TabHome extends React.PureComponent {
                             switch (item.getTemplate()) {
                               case TEMPLATE_TYPE.PSBROADCAST :
                                 return (
-                                  <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                                  <View style={{marginLeft: getConstant('width') * 0.025}}>
                                     <FLTemplatePSBroadcast ticket={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'} screenWidth={0.7} />
                                   </View>
                                 );
@@ -346,7 +351,7 @@ class TabHome extends React.PureComponent {
                                 return null;
                               case TEMPLATE_TYPE.PSPP :         
                                 return (
-                                  <View style={{marginLeft: DEVICE_WIDTH * 0.025,}}>
+                                  <View style={{marginLeft: getConstant('width') * 0.025,}}>
                    
                                     <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'}/>
                                   </View>
@@ -362,16 +367,16 @@ class TabHome extends React.PureComponent {
             : null
             }
 
-            <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
+            <View  style={{marginRight: getConstant('width') * 0.025}}>
                 <View
                   style={{
-                    marginLeft: DEVICE_WIDTH * 0.025,
-                    marginRight: DEVICE_WIDTH * 0.025,
+                    marginLeft: getConstant('width') * 0.025,
+                    marginRight: getConstant('width') * 0.025,
                     alignItems: "flex-start",
                     borderWidth: 0
                   }}
                 >
-                  <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                  <Text style={setFont("400", 18)}>
                     Les plus demandés 
                   </Text>
                 </View>
@@ -399,15 +404,15 @@ class TabHome extends React.PureComponent {
                 />
             </View>
 
-            <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
+            <View  style={{marginRight: getConstant('width') * 0.025}}>
                 <View
                   style={{
-                    marginLeft: DEVICE_WIDTH * 0.025,
+                    marginLeft: getConstant('width') * 0.025,
                     alignItems: "flex-start",
                     borderWidth: 0
                   }}
                 >
-                  <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                  <Text style={setFont("400", 18)}>
                     Meilleurs coupons par sous-jacent
                   </Text>
                 </View>
@@ -421,7 +426,7 @@ class TabHome extends React.PureComponent {
                   renderItem={({ item, index }) => {
 
                         return (
-                          <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                          <View style={{marginLeft: getConstant('width') * 0.025}}>
                           {this.bestCoupons.length === 0 ?
                               <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
                             : <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
@@ -448,16 +453,16 @@ class TabHome extends React.PureComponent {
 
 
             {this.props.apeSRP.length !== 0  ?
-                <View  style={{marginRight: DEVICE_WIDTH * 0.025}}>
+                <View  style={{marginRight: getConstant('width') * 0.025}}>
                   <View
                     style={{
-                      marginLeft: DEVICE_WIDTH * 0.025,
-                      marginRight: DEVICE_WIDTH * 0.025,
+                      marginLeft: getConstant('width') * 0.025,
+                      marginRight: getConstant('width') * 0.025,
                       alignItems: "flex-start",
                       borderWidth: 0
                     }}
                   >
-                    <Text style={setFont("400", 18, "black", "FLFontFamily")}>
+                    <Text style={setFont("400", 18)}>
                       APE du marché
                     </Text>
                   </View>
@@ -471,7 +476,7 @@ class TabHome extends React.PureComponent {
                       switch (item.template) {
                         case TEMPLATE_TYPE.PSSRPLIST:
                           return (
-                            <View style={{marginLeft: DEVICE_WIDTH * 0.025}}>
+                            <View style={{marginLeft: getConstant('width') * 0.025}}>
                               <FLTemplatePSPublicAPE object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
                             </View>
                           );
@@ -509,7 +514,7 @@ class TabHome extends React.PureComponent {
               }}
             >
               <RobotBlink width={100} height={100} />
-              <Text style={{ fontFamily: "FLFontTitle" }}>F i n L i v e</Text>
+              <Text style={{ fontFamily: "FLFont" }}>F i n L i v e</Text>
             </TouchableOpacity>*/}
       </FLScrollView>
     );

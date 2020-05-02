@@ -6,12 +6,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 
-import { globalStyle, blueFLColor, selectElementTab, FLFontFamily, backgdColorPricerParameter, setFont, setColor } from '../../../Styles/globalStyle'
+import { globalStyle, setFont, setColor } from '../../../Styles/globalStyle';
+import { getConstant } from '../../../Utils';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 
 
@@ -114,7 +115,7 @@ export class FLUnderlyingDetail extends React.Component{
 	    return (
             <View  key={i} style={{marginTop : i === 0 ? 20 : 0, flexDirection: 'row', alignItems:'center', backgroundColor: 'white', borderBottomWidth: 1, borderBottomColor : 'gainsboro', borderTopWidth: i===0 ? 1 : 0, borderTopColor : 'gainsboro'}}>
                 <View style={{flex : 0.7, alignItems : 'flex-start', justifyContent : 'center', borderWidth : 0}}>
-                    <Text style={{ color: underlying.active ? 'black' : 'gainsboro', fontFamily : FLFontFamily, fontSize : 18 }}>{underlying.subCategoryName}</Text>
+                    <Text style={setFont('400', 18, underlying.active ? 'black' : 'gainsboro')}>{underlying.subCategoryName}</Text>
                 </View>
                 <TouchableOpacity  style={{flex : 0.3, justifyContent: 'center',alignItems: 'flex-end', borderWidth: 0,backgroundColor : 'white'}}
                     onPress={() => {
@@ -135,7 +136,7 @@ export class FLUnderlyingDetail extends React.Component{
                         //console.log(selectedUnderlyingNameArray.toString());
                         this.props.updateValue("underlying", selectedUnderlyingArray ,selectedUnderlyingNameArray.toString().replace(/,/g,'\n'));
                     }}>
-                    <FontAwesome name={underlying.active ? "toggle-on" :  "toggle-off"}  size={30} style={{color : selectElementTab}}/> 
+                    <FontAwesome name={underlying.active ? "toggle-on" :  "toggle-off"}  size={30} style={{color : setColor('darkBlue')}}/> 
                 </TouchableOpacity>
             </View>
 	    )
@@ -145,14 +146,14 @@ export class FLUnderlyingDetail extends React.Component{
 
         let pickerDropDownButton = Platform.OS === 'ios' ?            
                                         <View style={{marginLeft : 5, flex : 0.1, height: 50, borderWidth : 0, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                <Icon name="arrow-dropdown-circle" style={{ color: blueFLColor, fontSize: 25 }} />   
+                                                <Icon name="arrow-dropdown-circle" style={{ color: setColor(''), fontSize: 25 }} />   
                                         </View>
                                         : null;
 
         let picker = this.state.currentType === "PSACTIONS" ?
         <View  style={{ flexDirection: 'row',alignItems:'center', justifyContent: 'center', borderWidth: 0}}>
             <View style={{flex : 0.3, alignItems:'flex-start', justifyContent: 'center', height: 50, borderWidth : 0}}>
-               <Text style={{ color: 'black', fontFamily : FLFontFamily, fontSize : 18 }}>Secteur : </Text>
+               <Text style={setFont('400', 18)}>Secteur : </Text>
             </View>
             <View style={{flex : Platform.OS === 'ios' ? 0.6 : 0.7, height: 50, borderWidth : 0}}>
                     <Picker
@@ -160,17 +161,17 @@ export class FLUnderlyingDetail extends React.Component{
                            <SafeAreaView/>}
                         selectedValue={this.state.currentSector}
                         style={{height: 50,  borderWidth:0}}
-                        //iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: blueFLColor, fontSize: 25 }} />}
+                        //iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: setColor(''), fontSize: 25 }} />}
                         //mode={"dropdown"}
                         //prompt={"Choisissez votre sous-jacent"}
                         iosHeader="Secteur : "
-                        textStyle={{ flexWrap: 'wrap', color: 'black', fontFamily : FLFontFamily, fontSize : 18 }}
+                        textStyle={[setFont('400', 18), { flexWrap: 'wrap' }]}
                         itemStyle={{
-                          backgroundColor: backgdColorPricerParameter,
+                          backgroundColor: 'white',
                           marginLeft: 0,
                           paddingLeft: 10
                         }}
-                        itemTextStyle={{ color: 'black', fontFamily : FLFontFamily, fontSize : 20 }}
+                        itemTextStyle={setFont('400', 20)}
                         onValueChange={(itemValue, itemIndex) => {
                             this.setState({ currentSector : itemValue}, () => this._updateUnderlyingList());
                             }
@@ -189,7 +190,7 @@ export class FLUnderlyingDetail extends React.Component{
         </View>
                                                       : null;
         return (
-            <ScrollView style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <ScrollView style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}>
                 <View  style={{marginTop : 20, flexDirection: 'row', alignItems:'center', borderWidth: 0}}>
                     <RadioForm formHorizontal={true} animation={true} >
                         {this.typeUnderlying.map((type, i) => {
@@ -217,7 +218,7 @@ export class FLUnderlyingDetail extends React.Component{
                                                 index={i}
                                                 labelHorizontal={true}
                                                 onPress={() => console.log()}
-                                                labelStyle={{fontSize: 16, fontFamily : FLFontFamily, color: 'black', marginTop: 10}}
+                                                labelStyle={[setFont('400', 16), {marginTop: 10}]}
                                                 labelWrapStyle={{}}
                                                 onPress={(itemValue) =>{
                                                     //console.log(i +"-ITEM VALUE : "+itemValue);
@@ -268,7 +269,7 @@ export class FLUnderlyingDetail extends React.Component{
 
 
                 <View style={{paddingTop :40}}>
-                    <Text style={{fontSize : 12, fontWeight: '600', fontFamily : 'FLFontFamily'}}>
+                    <Text style={setFont('600', 12)}>
                         F i n L i v e
                     </Text>
                 </View>

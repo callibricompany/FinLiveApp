@@ -1,41 +1,20 @@
 
 import { StyleSheet, Platform, StatusBar, Dimensions} from 'react-native'
 
-import { sizeByDevice } from '../Utils'
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
-
-export const blueFLColor = '#5980AB';//'#597fab'; //'#13223C'; //'whitesmoke';  //ghostwhite   //#45688e
-export const generalFontColor = 'white'; //#707070
-export const subscribeColor = '#00B6FF'; //#71CCF1
-export const lightBlueFLColor = '#9BB0CB';
-export const lightGrayFLColor = '#CFD9E5';
-export const backgdColor = '#edeef0';
-
-export const headerTabColor = '#13223C'; //'#749B14';
-export const apeColor = '#749B14';
-export const selectElementTab = '#13223C';//'#87B916';
-export const progressBarColor = '#87B916';
-
-
-
-export const FLFontFamily = Platform.OS !== 'ios' ? 'sans-serif-condensed' :'Arial';
-export const FLFontFamilyBold = Platform.OS !== 'ios' ? 'notoserif' :'Papyrus';
-
-
-export const backgdColorPricerParameter = 'white';
+import { sizeByDevice, isAndroid, isIphoneX, getConstant } from '../Utils'
 
 
 
 
 
+
+//applique les couleurs FinLive
 export function setFont ( weight, size, color='black', family='Light') {
-  //'FLFontFamily'
+
   return {
     fontWeight : weight,
-    //fontSize: sizeByDevice(size +2, size, DEVICE_WIDTH < 350  && size > 12 ? size - 4 : size ) ,
-    fontSize: sizeByDevice(size +1, size, DEVICE_WIDTH < 321 ? size < 10 ? size : size < 12 ? size - 1 : size < 16 ? size -2  : size < 20 ? size - 3 : size - 4  : size-1) ,
+    //fontSize: sizeByDevice(size +2, size, getConstant('width') < 350  && size > 12 ? size - 4 : size ) ,
+    fontSize: sizeByDevice(size +1, size, getConstant('width') < 321 ? size < 10 ? size : size < 12 ? size - 1 : size < 16 ? size -2  : size < 20 ? size - 3 : size - 4  : size-1) ,
     fontFamily : family,
     color,
     textAlignVertical : 'center',
@@ -43,33 +22,26 @@ export function setFont ( weight, size, color='black', family='Light') {
   }
 }
 
-export function setColor(color='blueFLColor') {
+
+//retourne les couleurs FinLive
+export function setColor(color) {
+  const blueFL  = '#5980AB';//'#597fab'; //'#13223C'; //'whitesmoke';  //ghostwhite   //#45688e
   switch(color) {
-    case 'blue' : return blueFLColor;
-    case 'light' : return lightBlueFLColor;
-    case 'gray' : return lightGrayFLColor;
-    case 'turquoise' : return subscribeColor;
-    case 'vertpomme' : return apeColor;
-    case 'subscribeticket' : return progressBarColor;
-    default : return blueFLColor
+    case 'blue' : return blueFL;
+    case 'darkBlue' : return '#13223C';
+    case 'lightBlue' : return '#9BB0CB';
+    case 'gray' : return '#CFD9E5';
+    case 'subscribeBlue' : return '#00B6FF';
+    case 'granny' : return '#749B14';
+    case 'subscribeticket' : return '#87B916';
+    case 'background' : return '#edeef0';
+    default : return blueFL;
   }
 }
 
 
 
 const globalStyle = StyleSheet.create({
-
-
-
-///////////////////////////////
-//        BACKGROUNG COLOR 
-///////////////////////////////
-  bgColor :{
-      backgroundColor: '#edeef0'//'#F9FAFC' //#edeef0
-      //backgroundColor:'linen'
-  },
-
-
 
 
 ///////////////////////////////
@@ -81,18 +53,18 @@ const globalStyle = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      borderBottomColor : blueFLColor,
+      borderBottomColor : setColor(''),
       borderBottomWidth : 1,
-      height: sizeByDevice(80, 65, 65 - STATUSBAR_HEIGHT),
+      height: sizeByDevice(80, 65, 65 - getConstant('statusBar')),
       marginTop: 0,
       backgroundColor : 'white',
       //flexWrap: "nowrap",
     },
 
     header_left_view : {
-      //marginRight: 0.05*DEVICE_WIDTH, 
+      //marginRight: 0.05*getConstant('width'), 
       //height: 40, 
-       width: DEVICE_WIDTH/4,  
+       width: getConstant('width')/4,  
       //borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'flex-start',
@@ -101,7 +73,7 @@ const globalStyle = StyleSheet.create({
       backgroundColor: 'transparent'
     },
     header_center_view : {
-      width: DEVICE_WIDTH/2,  
+      width: getConstant('width')/2,  
       //backgroundColor: 'pink',
       justifyContent : 'center',
       alignItems: 'center',
@@ -109,9 +81,9 @@ const globalStyle = StyleSheet.create({
     },
 
     header_right_view : {
-      //marginRight: 0.05*DEVICE_WIDTH, 
+      //marginRight: 0.05*getConstant('width'), 
       //height: 40, 
-      width: DEVICE_WIDTH/4,  
+      width: getConstant('width')/4,  
       //borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'flex-end',
@@ -131,7 +103,7 @@ const globalStyle = StyleSheet.create({
       alignItems : 'flex-start'
     },
     header_center_text_medium : {
-      color: blueFLColor, 
+      color: setColor(''), 
       fontWeight : '400',
       fontSize:16,
     },
@@ -140,7 +112,7 @@ const globalStyle = StyleSheet.create({
 
     header_icon : { 
       backgroundColor:'transparent',
-      color: blueFLColor,
+      color: setColor(''),
     },
 
 ///////////////////////////////
@@ -168,8 +140,8 @@ const globalStyle = StyleSheet.create({
 ///////////////////////////////
 
 news_detail_image : {
-  height: DEVICE_WIDTH*0.707, 
-  width: DEVICE_WIDTH,  
+  height: getConstant('width')*0.707, 
+  width: getConstant('width'),  
 },
 
 
@@ -178,10 +150,10 @@ news_detail_image : {
 ///////////////////////////////
  rectangle : {
    //flex: 1,
-  //width: DEVICE_WIDTH*0.75,
+  //width: getConstant('width')*0.75,
   //height: 150,
-  marginRight: DEVICE_WIDTH*0.01,
-  marginLeft:DEVICE_WIDTH*0.05,
+  marginRight: getConstant('width')*0.01,
+  marginLeft:getConstant('width')*0.05,
   marginVertical: 5,
   marginHorizontal: 2,
   borderWidth: 1,
@@ -199,7 +171,7 @@ news_detail_image : {
   },
 
   heeader_text_home : {
-    marginLeft: DEVICE_WIDTH*0.05,
+    marginLeft: getConstant('width')*0.05,
     marginTop: 20,
     marginBottom: 5,
     fontSize:26,
@@ -234,7 +206,7 @@ news_detail_image : {
       position: 'absolute',
       left: 0,
       right: 0,
-      top: DEVICE_HEIGHT/2,
+      top: getConstant('height')/2,
       bottom: 0,
       alignItems: 'center',
       justifyContent: 'center'

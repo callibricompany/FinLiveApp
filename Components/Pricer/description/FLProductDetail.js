@@ -2,12 +2,13 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
 
-import { globalStyle, blueFLColor, backgdColor, setFont, setColor, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, setFont, setColor } from '../../../Styles/globalStyle';
+import { getConstant } from '../../../Utils';
 
 
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 export class FLProductDetail extends Component{
 
@@ -26,7 +27,7 @@ export class FLProductDetail extends Component{
 
     render() {
         return (
-            <View style={{flex : 1, flexDirection : 'column',  marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column',  marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}>
                     
               <View style={{marginTop : 20, borderTopWidth : 1}}>
                     <Text style={setFont('400', 14, 'black', 'Regular')}>

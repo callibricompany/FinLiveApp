@@ -4,13 +4,14 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { FLSlider2 } from '../../commons/FLSlider2';
 
-import { globalStyle, blueFLColor, setFont, FLFontFamily, subscribeColor } from '../../../Styles/globalStyle'
+import { globalStyle, setFont } from '../../../Styles/globalStyle';
+import { getConstant } from '../../../Utils';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
+
+
 
 export class FLPhoenixBarrierDetail extends Component{
 
@@ -37,7 +38,7 @@ export class FLPhoenixBarrierDetail extends Component{
                                             :
                   'Votre coupon est garanti jusqu‘à '+Numeral(this.state.barrier-1).format('0%')+' de baisse.';
         return (
-            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*DEVICE_WIDTH, marginRight: 0.05*DEVICE_WIDTH, borderWidth:0}}>
+            <View style={{flex : 1, flexDirection : 'column', marginLeft: 0.05*getConstant('width'), marginRight: 0.05*getConstant('width'), borderWidth:0}}>
  
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
@@ -50,7 +51,7 @@ export class FLPhoenixBarrierDetail extends Component{
                           isPercent={true}
                           spreadScale={10}
                           //activated={!this.state.product["UF"].isActivated}
-                          sliderLength={DEVICE_WIDTH*0.9}
+                          sliderLength={getConstant('width')*0.9}
                           callback={(value) => {
                               //console.log("MATS : "+ value);
                               this.setState({ barrier : (value+100)/100 }, () => {
@@ -63,7 +64,7 @@ export class FLPhoenixBarrierDetail extends Component{
                         />
                 </View>
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 40}}>
-                  <Text style={{fontSize: 11, fontWeight: '400', fontFamily : FLFontFamily}}>{text}</Text> 
+                  <Text style={setFont('400', 11)}>{text}</Text> 
                 </View>
   
                 {/*<TouchableWithoutFeedback style={{marginTop: 35}}

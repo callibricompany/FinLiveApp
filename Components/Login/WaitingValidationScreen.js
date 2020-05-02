@@ -15,7 +15,8 @@ import {
 } from 'react-native';
 import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
 import React, {Component} from 'react';
-import { sendEmail } from '../../Utils/sendEmail'
+import { sendEmail } from '../../Utils/sendEmail';
+import { getConstant } from '../../Utils';
 import splashImage from '../../assets/LogoWithoutText.png';
 
 
@@ -25,9 +26,9 @@ import splashImage from '../../assets/LogoWithoutText.png';
 // import Signup from './Signup';
 //import Account from './Main'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 0 : StatusBar.currentHeight;
+
+
+
 
 class WaitingValidationScreen extends Component {
 
@@ -62,12 +63,12 @@ class WaitingValidationScreen extends Component {
  
 
             <View style={styles.container}>
-            <Button bordered warning  style={{flew:1, height: 60, width: 0.9*DEVICE_WIDTH,  marginBottom: 50, justifyContent:'center', alignItems:'center'}}>
+            <Button bordered warning  style={{flew:1, height: 60, width: 0.9*getConstant('width'),  marginBottom: 50, justifyContent:'center', alignItems:'center'}}>
             <Text numberOfLines={3} >Bonjour {this.firstName} {this.name}{"\n\n\n"}Votre compte est en cours de validation</Text>
           </Button>
             
                 <Button 
-                    style={{backgroundColor : '#85B3D3', width: 0.9*DEVICE_WIDTH, justifyContent:'center', alignItems: 'center'}}
+                    style={{backgroundColor : '#85B3D3', width: 0.9*getConstant('width'), justifyContent:'center', alignItems: 'center'}}
                     onPress={() => {
                         sendEmail(
                           'pierre@finlive.eu;vincent@finlive.eu',
@@ -99,7 +100,7 @@ class WaitingValidationScreen extends Component {
                         <Text style={styles.text_button}>Retour Connexion</Text>
                 </Button>
                 {/*<Button light rounded
-                    style={{flex:1, width: 0.45*DEVICE_WIDTH,  justifyContent:'center', alignItems:'center', marginLeft: 5}}
+                    style={{flex:1, width: 0.45*getConstant('width'),  justifyContent:'center', alignItems:'center', marginLeft: 5}}
                     //disabled={true}
                     onPress={() => this.props.navigation.navigate('App')}
                 >
@@ -130,8 +131,8 @@ class WaitingValidationScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         paddingTop: 100,
-        width: 0.9*DEVICE_WIDTH, 
-        //marginTop: STATUSBAR_HEIGHT,
+        width: 0.9*getConstant('width'), 
+
         flex: 1,
         flexDirection : 'column',
         alignItems: 'center',
@@ -154,11 +155,11 @@ const styles = StyleSheet.create({
       },
     picture: {
           flex: 1,
-          top: DEVICE_HEIGHT/5, left: 0, right: 0, bottom: 0,
+          top: getConstant('height')/5, left: 0, right: 0, bottom: 0,
           opacity: 0.05,
           position: "absolute",
-          width: DEVICE_WIDTH,
-          height: 4*DEVICE_HEIGHT/5,
+          width: getConstant('width'),
+          height: 4*getConstant('height')/5,
           resizeMode: 'cover',
         },
     container_buttons: {
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
             paddingTop:30,
             paddingBottom: 60,
            // top: -95,
-            // width: 0.2*DEVICE_WIDTH,
+            // width: 0.2*getConstant('width'),
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems : 'center',

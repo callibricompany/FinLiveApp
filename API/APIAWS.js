@@ -127,7 +127,7 @@ export function ssCreateStructuredProduct (firebase, product) {
   var form = new FormData();
 
   Object.keys(product).forEach(key => {
-    //console.log(key + "   -   " + product[key]);
+    //console.log(key + "   -   " + product[key] + "   :  " + typeof product[key]);
     form.append(key, typeof product[key] != 'boolean' ? product[key] : product[key].toString());
   });
 
@@ -141,7 +141,7 @@ export function ssCreateStructuredProduct (firebase, product) {
           // formData.append('fileinput', filesuploaded[i].buffer, { filename : filesuploaded[i].originalname });
         }
   }*/
-
+  
   return new Promise((resolve, reject) => {
     firebase.doGetIdToken()
     .then(token => {
@@ -230,8 +230,8 @@ export function getConversation (firebase, idTicket) {
     var FormData = require('form-data');
     var form = new FormData();
 
-    var ticket={};
-    ticket['idTicket'] = String(idTicket);
+    // var ticket={};
+    // ticket['idTicket'] = String(idTicket);
     
  
   
@@ -249,7 +249,7 @@ export function getConversation (firebase, idTicket) {
               }
             };
             
-            axios.post(URL_AWS + '/getConversation', ticket, axiosConfig)
+            axios.get(URL_AWS + '/getConversation/' + idTicket, axiosConfig)
             .then((response) => {
               //console.log(response);
               resolve(response)
@@ -265,6 +265,45 @@ export function getConversation (firebase, idTicket) {
       });
 }
 
+
+export function createreply (firebase, message) {
+
+  var FormData = require('form-data');
+  var form = new FormData();
+
+  Object.keys(message).forEach(key => {
+    //console.log(key + "   -   " + product[key]);
+    form.append(key, typeof message[key] != 'boolean' ? message[key] : message[key].toString());
+  });
+
+  return new Promise((resolve, reject) => {
+    firebase.doGetIdToken()
+    .then(token => {
+        var axiosConfig = {
+          headers :{
+            //'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json; charset=utf-8',
+            //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+            'Accept'      : 'application/json',
+            'bearer'      : token,
+          }
+        };
+
+        axios.post(URL_AWS + '/createreply', form, axiosConfig)
+        .then((response) => {
+          //console.log(response);
+          resolve(response)
+          //res.render('pages/register',{email: email, isConnected: isConnected});
+        })
+        .catch(function (error) {
+          console.log("Erreur requete aws : " + error);
+          reject(error)
+        });
+    })
+    .catch((error) => reject(error));
+    
+  });
+}
 
 ///////////////////////////
 //    TICKET

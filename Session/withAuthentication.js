@@ -2,20 +2,23 @@ import React from "react";
 import { View, Text } from 'react-native'; 
 import AuthUserContext from "./context";
 import { withFirebase } from "../Database";
-import { CWorkflowTicket } from '../Classes/Tickets/CWorkflowTicket';
 import * as Network from 'expo-network';
 import  Constants  from "expo-constants";
+import * as Application from 'expo-application';
 import * as Device from 'expo-device';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { getAPIIP } from '../API/APINetwork';
-import {
-  getUserAllInfoAPI,
-  setFavoriteAPI,
-  getUserFavorites,
-  getTicket
-} from "../API/APIAWS";
+import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket} from "../API/APIAWS";
+
+
+import { isAndroid , getConstant } from '../Utils'; 
+
 import { CObject } from "../Classes/CObject";
+import { CBroadcastTicket } from "../Classes/Tickets/CBroadcastTicket";
+import { CTicket } from '../Classes/Tickets/CTicket';
+import { CWorkflowTicket } from  "../Classes/Tickets/CWorkflowTicket";
+
 import { withNotification } from './NotificationProvider'; 
 
 const withAuthentication = Component => {
@@ -37,7 +40,7 @@ const withAuthentication = Component => {
         removeNotification: (type, id) => this.props.removeNotification(type, id),
         _removeToast : () => this.props._removeToast(),
         addNotification : (notifications) => this.props.addNotification(notifications),
-        allNotificationsCount : props.notificationList !== 'undefined' ? props.notificationList.length : 0,
+        allNotificationsCount : props.hasOwnProperty('notificationList') ? props.notificationList.length : 0,
         setCurrentFocusedObject : (type , id) => this.props.setCurrentFocusedObject(type, id),
 
         //tickets
@@ -125,7 +128,7 @@ const withAuthentication = Component => {
 
     UNSAFE_componentWillReceiveProps(props) {
       //console.log("RECEIVE PROPS HOME : ");
-      this.setState({ allNotificationsCount : props.notificationList !== 'undefined' ? props.notificationList.length : 0 });
+      this.setState({ allNotificationsCount : props.hasOwnProperty('notificationList')  ? props.notificationList.length : 0 });
 
     }
 
@@ -189,7 +192,8 @@ const withAuthentication = Component => {
         console.log("ERROR GET IP ADDRESS : " + error);
       };
       
-      console.log("DEVICE ID : " + Constants.deviceId);
+      //console.log("DEVICE ID : " + Constants.deviceId);
+      //console.log("INSTALLATION ID : " + Constants.installationId);
       //console.log(Constants);
       //let mac = await Network.getMacAddressAsync();
       let mac='';
@@ -197,11 +201,12 @@ const withAuthentication = Component => {
       let type = await Device.getDeviceTypeAsync();
       //on recupere toutes les donnes sur le device
       let d = {};
+      d['deviceId'] = isAndroid() ? Application.androidId : await Application.getIosIdForVendorAsync();
       d['expoVersion'] = Constants.expoVersion;
       d['installationId'] =Constants.installationId;
       d['deviceName'] =Constants.deviceName;
       d['isDevice'] =Constants.isDevice;
-      d['deviceId'] =Constants.deviceId;
+      //d['deviceId'] =Constants.deviceId;
       d['nativeAppVersion'] =Constants.nativeAppVersion;
       d['nativeBuildVersion'] =Constants.nativeBuildVersion;
       d['platform'] =Constants.platform;
@@ -225,25 +230,11 @@ const withAuthentication = Component => {
       if (Constants.isDevice) {
         d['TOKEN'] = token;
       }
+      console.log("DEVICE ID : "+ d['deviceId']);
+     
       //this.setState({ device : d}, () => console.log(this.state.device));
       this.setState({ device : d });
-      /*Network.getIpAddressAsync().then((ip) => {
-        d['IP'] = ip;
-        Network.getMacAddressAsync().then((mac) => {
-          d['MAC'] = mac;
-          Device.getDeviceTypeAsync().then((type) => {
-            d['TYPE'] = Device.DeviceType[type];
-            if (Constants.isDevice) {
-                console.log("AVANT TOKEN");
-                
-                console.log("APRES TOKEN : "+ token);
-                d['TOKEN'] = token;
-            }
-            this.setState({ device : d}, () => console.log(this.state.device));
-          })
-          
-        });
-      });*/
+
       //console.log("DEVICE : " );
       //console.log(this.state.device);
       return new Promise((resolve, reject) => {
@@ -256,13 +247,47 @@ const withAuthentication = Component => {
                 //console.log(userDatas.userTickets.slice(0,1));
                 //console.log(userDatas.userTickets.slice(0,1));
                 //console.log("Passage de withAuth");
+
+
+                //passage du workflow au ticket
+                CWorkflowTicket.WORKFLOW = userDatas.workflow;
+
+                //on va crer les objets tickets 
+                let tickets = [];
+                userDatas.userTickets.forEach((t) => {
+                  //let tempTicket = new CTicket(t);
+                  //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
+                  
+                  //switch (tempTicket.getType()) {
+                  switch(t.type) {
+                    case "Broadcasting" :
+                      console.log("Broadcast : "+t.id);
+                      //console.log(t);
+                      //let ticketB = new CBroadcastTicket(t);
+                      //this.tickets.push(ticketB);
+                      break;
+                    case "Produit structuré" :
+                      console.log("Workflow : "+t.id);
+                      //console.log(t);
+                      let ticketC = new CWorkflowTicket(t);
+                      tickets.push(ticketC);
+                      break;
+                    default : 
+                      //this.tickets.push(t);
+                      break;
+                  }
+                });
+                tickets.sort(CTicket.compareLastUpdateDown);
+
+
                 this.setState({
                   featured : userDatas.startPage.bestCoupon,
                   //featured : [],
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
                   favorites: userDatas.favorites,
-                  tickets: userDatas.userTickets,
+                  //tickets: userDatas.userTickets,
+                  tickets,
                   //tickets: userDatas.userTickets.slice(0,1),
 
                   apeTickets: userDatas.startPage.ape,
@@ -272,8 +297,7 @@ const withAuthentication = Component => {
                   //broadcasts : [],
                 });
 
-                //passage du workflow au ticket
-                CWorkflowTicket.WORKFLOW = userDatas.workflow;
+
                 //console.log("Enregistrement user id : ");
                 CObject.UID = this.state.authUser.uid;
 
@@ -420,6 +444,17 @@ const withAuthentication = Component => {
       let t = this.state.tickets;
       t.unshift(ticket);
       this.setState({ tickets: t });
+    }
+
+    updateTicket(ticket) {
+      let tickets = this.state.tickets;
+      tickets.forEach((t) => {
+        if (t.getId() === ticket.getId()){
+          t.setOject(ticket.getObject);
+        }
+      })
+      //const newItems = items.map(item => item === 3452 ? 1010 : item);
+      
     }
 
     render() {
