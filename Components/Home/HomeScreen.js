@@ -5,7 +5,7 @@ import { Thumbnail, Toast, Input, Container, Header, Title, Left, Icon, Right, B
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
-import { getConstant } from '../../Utils';
+import { getConstant, isAndroid } from '../../Utils';
 
 import NavigationService from '../../Navigation/NavigationService';
 
@@ -83,16 +83,19 @@ const initialLayout = {
       header: null
     }*/
     componentDidMount() {
-      // this._navListener = this.props.navigation.addListener('didFocus', () => {
-      //   StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
-
-      // });
+      if (!isAndroid()) {
+        this._navListener = this.props.navigation.addListener('didFocus', () => {
+          StatusBar.setBarStyle('light-content');
+        });
+      }
 
       this._loadAllUserInfos();
       
     }
     componentWillUnmount() {
-      this._navListener.remove();
+      if (!isAndroid()) {
+        this._navListener.remove();
+      }
     }
 
     UNSAFE_componentWillMount () {
@@ -301,7 +304,7 @@ const initialLayout = {
       }
       //this.props.navigation.setParams({ hideBottomTabBar : true });
       return(
-            <SafeAreaView style={{backgroundColor: 'white'}}>
+            <SafeAreaView style={{backgroundColor: setColor('')}}>
                    { Platform.OS === 'android' && 
                     <StatusBar
                     barStyle= "light-content"
@@ -313,7 +316,10 @@ const initialLayout = {
                     translucent={false}
                     //allowing light, but not detailed shapes
                     networkActivityIndicatorVisible={true}
-                  />}
+                  />
+                  
+                  
+                  }
 
   
             {render}

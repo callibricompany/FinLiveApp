@@ -18,9 +18,26 @@ export class  CWorkflowTicket extends CTicket {
 
         if (ticket['currentStep'][0].codeOperation === 'pp') {
           this.setTemplate(TEMPLATE_TYPE.PSPP);
-          this.steps = CWorkflowTicket.WORKFLOW.filter(({codeOperation}) => codeOperation === 'pp');
+          this.steps = JSON.parse(JSON.stringify(CWorkflowTicket.WORKFLOW.filter(({codeOperation}) => codeOperation === 'pp')));
+
           this.firstCode = 'PPDVB';
           this.lastStep = 'PPEND';
+
+          //si c'est en mode automatique il enleve les deux premier steps
+          if (this.isAutomatic()) {
+            
+              this.firsCode = 'PPDCC';
+              this.steps.shift();
+              this.steps.shift();
+              this.steps = this.steps.map((step, index) => {
+                step.level = step.level- 2;
+                return step; 
+              });
+              //console.log(this.steps);
+          }
+
+          
+          
         }
         //convertFresh(this.ticket['custom_fields']);
         this.product = new CAutocall(convertFresh(ticket['custom_fields']));
@@ -35,7 +52,10 @@ export class  CWorkflowTicket extends CTicket {
     this.firstCode = '';
     this.lastStep = '';
     this._previousStepsTab = [];
-    this.currentStep = ticket.currentStep[0];
+
+    //this.currentStep = ticket.currentStep[0];
+    this.currentStep = this.steps.filter(({ codeStep }) => codeStep === ticket.currentStep[0].codeStep)[0];
+    //console.log(this.currentStep);
     this.previousSteps=[];
 
  
@@ -43,6 +63,7 @@ export class  CWorkflowTicket extends CTicket {
 
   isAutomatic() {
     let automatic = this.ticket['custom_fields']['cf_ps_mode'] === null ? 'Specifique' : this.ticket['custom_fields']['cf_ps_mode'];
+    //console.log(this.getId() + " - EST AUTOMATIQUE : " + automatic);
     return automatic === "Automatique";
   }
 
@@ -91,12 +112,14 @@ export class  CWorkflowTicket extends CTicket {
     let s = [
       ...new Set(this.steps.map(x => x.level))
     ];
+
+    
     //return Math.max(...toto);
     //return this._getStepsDepth(this.getCurrentCodeStep());
     
-    if (this.getCurrentCodeStep() === 'PPSDSE' || this.getCurrentCodeStep() === 'PPSDRO') {//offre echue ou refusée
-      return 6;
-    }
+    // if (this.getCurrentCodeStep() === 'PPSDSE' || this.getCurrentCodeStep() === 'PPSDRO') {//offre echue ou refusée
+    //   return 6;
+    // }
     return s.length;
   }
 
@@ -133,7 +156,15 @@ export class  CWorkflowTicket extends CTicket {
     return this.ticket['custom_fields']['cf_rtro_asso'] === null ? 0 : this.ticket['custom_fields']['cf_rtro_asso'];
   }
 
+ getUFInCurrency() {
 
+   return this.getUF()*this.getNominal()/100;
+ }
+
+ getUFAssocInCurrency() {
+
+  return this.getUFAssoc()*this.getNominal()/100;
+}
 
   getCurrency() {
     return this.ticket['custom_fields']['cf_devise'] === null ? 0 : this.ticket['custom_fields']['cf_devise'];
@@ -144,26 +175,7 @@ export class  CWorkflowTicket extends CTicket {
     return this.getUnderlying().getResultAuction();
   }
   
-  getSteps() {
-    let steps = this.ticket.currentStep;
-    if (this.getCurrentCodeStep() === 'PPACO') { //il faut rajouter les offres des emetteurs
-      steps = [];
-      i = 0;
-      //recuperation de toutes les offres
-      this.getResultAuction().forEach((res) => {
-        steps[i] = JSON.parse(JSON.stringify(this.ticket.currentStep[1]));
-        steps[i].stepSolved = res.emetteur + " : " + Numeral(res.couponAutocall).format('0.00%');
-        steps[i].emetteur = res.emetteur;
-        steps[i].couponAutocall = res.couponAutocall;
-        steps[i].couponPhoenix = res.couponPhoenix;
-        i = i +1;
-      });
-      steps[i] = this.ticket.currentStep[0];
-      steps[i+1] = this.ticket.currentStep[2];
 
-    }
-    return steps;
-  }
 }
 
 

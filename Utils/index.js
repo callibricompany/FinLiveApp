@@ -7,7 +7,7 @@ const deviceWidth = Dimensions.get('window').width;
 const deviceHeight = Dimensions.get('window').height;
 const statusBarHeight =  isAndroid() ? StatusBar.currentHeight : isIphoneX() ? 44 : 20;
 
-
+const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
 
 //retourne les constantes 
@@ -83,6 +83,20 @@ export function currencyFormatDE(num, nbDecimals) {
   ) // use . as a separator
 }
 
+
+//convertit size en ko Mo etc....
+export function niceBytes(x){
+
+  let l = 0, n = parseInt(x, 10) || 0;
+
+  while(n >= 1024 && ++l){
+      n = n/1024;
+  }
+  //include a decimal point and a tenths-place digit if presenting 
+  //less than ten of KB or greater units
+  return(n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
+}
+
 export function isEqual( x, y ) {
   if ( x === y ) return true;
     // if both x and y are null or undefined and exactly the same
@@ -144,6 +158,19 @@ export function getContentTypeColor(content) {
 
     if (c[0].hasOwnProperty('color')) {
       nameIcon = c[0].color;
+    }
+  } 
+  return nameIcon;
+}
+
+export function getContentTypeFromExtension(extension) {
+
+  let nameIcon = 'none';
+  let c = CONTENT_TYPE.filter(({ Extension }) => Extension === ('.' + extension));
+  if (c.length ===1) {
+
+    if (c[0].hasOwnProperty('MIME_Type')) {
+      nameIcon = c[0].MIME_Type;
     }
   } 
   return nameIcon;

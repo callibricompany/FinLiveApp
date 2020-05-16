@@ -1,16 +1,34 @@
 import React from 'react';
-import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView } from 'react-native';
+import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Keyboard, Image } from 'react-native';
+
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
+
+import Accordion from 'react-native-collapsible/Accordion';
+import SwitchSelector from "react-native-switch-selector";
 
 import AlertAsync from 'react-native-alert-async';
+
 import { withFirebase } from '../Database';
-//import { AuthUserContext } from '../Session';
 import { withUser } from '../Session/withAuthentication';
 import { withAuthorization } from '../Session';
 import { compose, hoistStatics } from 'recompose';
-import { globalStyle } from '../Styles/globalStyle'
+import { globalStyle, setColor, setFont } from '../Styles/globalStyle'
 
+import { isIphoneX, getConstant, isAndroid } from '../Utils';
+import { interpolateColorFromGradient } from '../Utils/color';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
+import { updateUser } from '../API/APIAWS';
 
+import { CUser } from '../Classes/CUser';
+import { Row } from 'native-base';
 
 class ProfileScreen extends React.Component {
 
@@ -18,26 +36,72 @@ class ProfileScreen extends React.Component {
   constructor(props) {
     super(props)
 
+    this.user = this.props.user;
+
+    this.state = { 
+      
+
+      //gestion des sections
+      activeSections: [0, 1],
+
+      toto : true,
+    }
+
+
   }
 
-  static navigationOptions = {
-    header: (
-      <SafeAreaView style={globalStyle.header_safeviewarea}>
-        <View style={globalStyle.header_left_view} />
-        <View style={globalStyle.header_center_view} >
-          <Text style={globalStyle.header_center_text_big}>Profil</Text>
-        </View>
-        <View style={globalStyle.header_right_view} />
-      </SafeAreaView>
-    )
+  static navigationOptions = ({ navigation }) => {
+    return ({
+      header : null,
+    }
+    );
+}
+
+ async componentDidMount() {
+  if (!isAndroid()) {
+    this._navListener = this.props.navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('light-content' );
+    });
+  }
+  Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
+  Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
+
+}
+  componentWillUnmount() {
+    if (!isAndroid()) {
+      this._navListener.remove();
+    }
+    Keyboard.removeListener('keyboardDidShow');
+    Keyboard.removeListener('keyboardDidHide');
   }
 
+  keyboardDidHide() {
+    this.setState({
+      keyboardHeight: 0,
+      isKeyboardVisible: false
+    });
+  }
+
+  keyboardDidShow(e) {
+    this.setState({
+      keyboardHeight: e.endCoordinates.height,
+      isKeyboardVisible: true
+    });
+  }
+
+
+
+  ////////////////////////////
+  //
+  //      DECONNEXION
+  ////////////////////////////
   _signOutAsync = async () => {
     await AsyncStorage.clear();
     this.props.navigation.navigate('Login');
   };
 
-  _deconnexionDB = () => {
+  async _deconnexionDB () {
+    await AsyncStorage.clear();
     console.log("Debut deconnxion ...");
     this.props.firebase.doSignOut()
     .then(() => {
@@ -73,19 +137,168 @@ class ProfileScreen extends React.Component {
   };
 
 
+
+
   render() {
-    console.log("RENDER PROFILE SCRRENN : " + this.props.authUser);
     return (
-      <ScrollView style={{flex: 1}}>
-          <Text>{this.props.authUser.firstName} {this.props.authUser.name}</Text>
-          <Text>{this.props.authUser.email}</Text>
-          <Text>{this.props.authUser.codeTS}</Text>
-          <Text>{this.props.authUser.roles}</Text>
-          {this.props.authUser.roles ? this.props.authUser.roles.map((role)=> <Text key={role}>{role}</Text>) : <Text></Text>}    
-        <Button title="Me déconnecter" onPress={this._signOutAlert} />
-    
-    
-       </ScrollView>
+      <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
+      <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
+
+          <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'center', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15}}>
+                            {/* <View /> */}
+                            <TouchableOpacity style={{borderWidth: 0}}
+                                              onPress={() => {
+                                                this.props.navigation.navigate('ProfileScreenDetail');
+                                              }}
+                            >
+                              <Text style={setFont('400', 28, 'white', 'Regular')}>
+                                Profil
+                              </Text>
+                            </TouchableOpacity>
+                            {/* <TouchableOpacity style={{ alignItems : 'center', justifyContent : 'center'}}
+                                  onPress={() => {
+                                    this.props.navigation.navigate('ProfileScreenDetail');
+                                  }}
+                            >
+                                <Ionicons name={'ios-options'} size={30} color={'white'}/>
+                            </TouchableOpacity> */}
+          </View>
+
+
+          <TouchableOpacity style={{flexDirection : 'row',  alignItems : 'center', justifyContent : 'space-between'}}
+                            onPress={() => {
+                              this.props.navigation.navigate('ProfileScreenDetail');
+                            }}
+          >
+              <View style={{flex : 0.3, borderWidth : 0, alignItems : 'center'}}>
+                    <View style={{height : 70, width : 70, borderWith : 0, borderColor : 'white', borderRadius : 35, backgroundColor : setColor(''),  marginTop : 10, marginBottom : 10, alignItems : 'center', justifyContent : 'center'}}  >
+                      {this.user.getAvatar() == null 
+                        ?
+                          <Text style={setFont('400', 24, 'white', 'Regular')}>{this.user.getFirstName().charAt(0)}.{this.user.getLastName().charAt(0)}.</Text>
+                          : 
+                          <Image style={{width: 70, height: 70, borderWidth : 0, borderRadius : 35, borderColor : 'white'}} source={{uri : this.user.getAvatar() }} />
+                      }
+
+                    </View>
+              </View>
+              <View style={{flex : 0.7, borderWidth : 0, marginRight : 15, alignContent : 'flex-start', justifyContent : 'flex-start' }}>
+                  <View style={{borderWidth : 0, marginTop : 5, alignItems : 'flex-start', justifyContent : 'flex-start'}}>
+                        <Text style={setFont('500', 22, 'black', 'Regular')}>
+                          {this.user.getName()}
+                        </Text>
+                        {
+                        this.user.isSupervisor()
+                          ?
+                              <Text style={setFont('500', 12, 'gray')}>
+                                Superviseur
+                              </Text>
+                          : null
+                        }
+                  </View>
+                  <View style={{flex : 1, flexDirection : 'row', borderWidth : 0}} >
+                          <View style={{flex : 0.7, alignItems : 'flex-start', justifyContent : 'flex-start'}}>
+                                <Text style={setFont('500', 18, 'black', 'Regular')}>
+                                  {this.user.getCompany()}
+                              </Text>
+                          </View>
+                          <View style={{flex : 0.3, borderWidth : 0, marginTop : -20, justifyContent : 'center'}}>
+                             <Image style={{ borderWidth : 0, height : 35}} source={{uri : this.props.userOrg.logoUrl}} resizeMode={'contain'} />
+                          </View>
+                  </View>
+                  
+              </View>
+
+
+          </TouchableOpacity>
+  
+          <ScrollView style={{flex : 1}}>
+ 
+                <View style={{flexDirection : 'row', marginTop : 30, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
+                      <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}>
+                          <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5,}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                                Placements Privés
+                              </Text>
+                          </View>
+                          <View style={{paddingLeft : 5, paddingRight : 5, paddingBottom : 5, borderWidth :0}}>
+                              <Text style={setFont('200', 22, setColor('granny'), 'Regular')}>
+                                8
+                              </Text>
+                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
+                                2 300 400 €
+                              </Text>
+                          </View>
+
+                      </View>
+                      <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}>
+                        <View style={{padding : 5}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                                A.P.E.
+                              </Text>
+                          </View>
+                          <View style={{padding : 5, borderWidth :0}}>
+                              <Text style={setFont('200', 22, 'red', 'Regular')}>
+                                2
+                              </Text>
+                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
+                                900 000 €
+                              </Text>
+                          </View>
+
+                      </View>
+                      <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}>
+                          <View style={{padding : 5}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                                Pricings
+                              </Text>
+                          </View>
+                          <View style={{padding : 5, borderWidth :0}}>
+                              <Text style={setFont('200', 22, 'black', 'Regular')}>
+                                542
+                              </Text>
+                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
+                                
+                              </Text>
+                          </View>
+
+                      </View>
+                </View>
+
+                <View style={{flexDirection : 'row', marginTop : 10, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}
+                                        onPress={() => {
+                                          this.props.navigation.navigate('ProfileScreenDetail',{option :  'ISSUER'});
+                                        }}
+                      >
+                          <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5,}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                                Emetteurs Autorisés
+                              </Text>
+                          </View>
+                          <View style={{paddingLeft : 5, paddingRight : 5, paddingBottom : 5, borderWidth :0}}>
+                              <Text style={setFont('200', 22, 'black', 'Regular')}>
+                                {this.props.issuers.length - this.user.getIssuersRejectedCount()}
+                              </Text>
+  
+                          </View>
+
+                      </TouchableOpacity>
+
+                </View>      
+
+
+                {/* <TouchableOpacity style={{alignSelf : 'center', marginTop : 65, marginBottom : 5,width : getConstant('width')/2, padding : 5, alignItems : 'center',  borderWidth : 1, borderColor : 'white', borderRadius : 20, backgroundColor :setColor('red')}}
+                                  onPress={() => this._signOutAlert()}
+                >
+                    <Text style={setFont('400', 12, 'white', 'Regular')}>
+                      DECONNEXION
+                    </Text>
+                </TouchableOpacity> */}
+
+          </ScrollView>
+
+      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -102,18 +315,8 @@ const composedFB = compose(
 
 export default hoistStatics(composedFB)(ProfileScreen);
 
-//export default withUser(ProfileScreen);
-//export default withFirebase(withAuthentication(ProfileScreen));*/
-
-//export default withFirebase(ProfileScreen);
-
-/*
-         <AuthUserContext.Consumer>
-          {authUser => authUser ? <View>
-                          <Text>{authUser.firstName} {authUser.name}</Text>
-                          <Text>{authUser.roles} </Text>
-                        </View> : <Text> </Text>
-                      }
-          </AuthUserContext.Consumer>
-
-*/
+{/* <Text>{this.props.authUser.firstName} {this.props.authUser.name}</Text>
+<Text>{this.props.authUser.email}jjhj</Text>
+<Text>{this.props.authUser.codeTS}</Text>
+<Text>{this.props.authUser.roles}</Text>
+{this.props.authUser.roles ? this.props.authUser.roles.map((role)=> <Text key={role}>{role}</Text>) : <Text></Text>}     */}

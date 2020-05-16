@@ -12,7 +12,7 @@ import { globalStyle, setColor, setFont } from '../../Styles/globalStyle'
 import Robot from "../../assets/svg/robotBlink.svg";
 import FLAnimatedSVG from '../commons/FLAnimatedSVG';
 
-import { ifIphoneX, ifAndroid, isAndroid, isIphoneX, isEqual , currencyFormatDE, getConstant } from '../../Utils';
+import { ifIphoneX, ifAndroid, isAndroid, isIphoneX, isEqual , currencyFormatDE, getConstant, sizeByDevice } from '../../Utils';
 import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 
 import SwipeGesture from '../../Gesture/SwipeGesture';
@@ -134,7 +134,7 @@ class PricerScreen extends React.Component {
   async componentDidMount() {
     if (!isAndroid()) {
         this._navListener = this.props.navigation.addListener('didFocus', () => {
-          StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
+          StatusBar.setBarStyle('dark-content');
         });
     }
    // this.calculateProducts();
@@ -341,7 +341,14 @@ _renderProductTile() {
                         marginRight :0, 
                         marginBottom: 5, 
                         backgroundColor:  'white' ,
-                        borderRadius : 4
+                        borderRadius : 10,
+                        shadowColor: setColor('shadow'),
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        borderWidth : 1,
+                        borderColor : isAndroid() ? 'black' :  'white',
+                                                        
+
                         }}
             >
                 <TouchableOpacity style={{flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
@@ -447,7 +454,12 @@ _renderGenericTile=(criteria) => {
                         //marginRight :0, 
                         marginBottom: 5, 
                         backgroundColor:  this.request.isActivated(criteria) ? 'white' : setColor('') ,
-                        borderRadius : 4
+                        borderRadius : 10,
+                        shadowColor: setColor('shadow'),
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        borderWidth : 1,
+                        borderColor : isAndroid() ? 'black' :  'white',
                         }}
             >
                 <TouchableOpacity style={{flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
@@ -524,7 +536,12 @@ _renderPhoenixTile=() => {
                         //marginRight :0, 
                         marginBottom: 5, 
                         backgroundColor:  'white',
-                        borderRadius : 4
+                        borderRadius : 10,
+                        shadowColor: setColor('shadow'),
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        borderWidth : 1,
+                        borderColor : isAndroid() ? 'black':  'white',
                         }}
             >
                 <View style={{flexDirection: 'row', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth : 0, padding: 2, flexGrow: 1}}>
@@ -641,7 +658,12 @@ _renderFreqTile() {
                           //marginRight :0, 
                           marginBottom: 5, 
                           backgroundColor:  (this.request.isActivated('freq') || this.request.isActivated('nncp') ) ? 'white' : setColor(''),
-                          borderRadius : 4
+                          borderRadius : 10,
+                          shadowColor: setColor('shadow'),
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          borderWidth : 1,
+                          borderColor : isAndroid() ? 'black' :  'white',
                           }}
               >
                   <View style={{flexDirection: 'row', height: 2*(getConstant('width')*0.925-20)/3/3, flexGrow: 1}}>
@@ -743,7 +765,12 @@ _renderAirbagTile() {
                         //marginRight :0, 
                         marginBottom: 5, 
                         backgroundColor:  bgColor,
-                        borderRadius : 4
+                        borderRadius : 10,
+                        shadowColor: setColor('shadow'),
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        borderWidth : 1,
+                        borderColor : isAndroid() ? 'black' :  'white',
                         }}
             >
                 <View style={{flexDirection: 'row', paddingTop: 2, flexGrow: 1}}>
@@ -851,7 +878,12 @@ _renderAuctionTile() {
                         marginRight :0, 
                         marginBottom: 5, 
                         backgroundColor:  'white' ,
-                        borderRadius : 4
+                        borderRadius : 10,
+                        shadowColor: setColor('shadow'),
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        borderWidth : 1,
+                        borderColor : isAndroid() ? 'black' :  'white',
                         }}
             >
                 <TouchableOpacity style={{flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
@@ -921,7 +953,12 @@ _renderMemoryTile=() => {
                         //marginRight :0, 
                         marginBottom: 5, 
                         backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
-                        borderRadius : 4
+                        borderRadius : 10,
+                        shadowColor: setColor('shadow'),
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        borderWidth : 1,
+                        borderColor : isAndroid() ? 'black' :  'white',
                         }}
             >
                 <TouchableOpacity style={{flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
@@ -1046,7 +1083,14 @@ _renderTiles() {
 _renderUFOrCoupon(what) {
 
   return (
-      <TouchableOpacity style={{width : 0.85*getConstant('width') - 80 , flexDirection : 'row', justifyContent: 'center', padding: 10, backgroundColor : 'white', borderWidth : 1, borderColor: setColor(''), borderRadius : 4}}
+      <TouchableOpacity style={{width : 0.85*getConstant('width') - 80 , flexDirection : 'row', justifyContent: 'center', 
+                                padding: 10, backgroundColor : 'white', 
+                                borderWidth : 1, 
+                                borderColor : isAndroid() ? 'black' :  'white',
+                                shadowColor: setColor('shadow'),
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.3,
+                                borderRadius : 10}}
                         onPress={() => {                          
                             this.currentParameter = what;
                             //console.log('WHAT : '  + what);
@@ -1072,16 +1116,16 @@ _renderUFOrCoupon(what) {
 
 _renderCalculateButton(position='right') {
   return (
-    <TouchableOpacity style ={{  position: "absolute" , left : position==='right' ? (0.9*getConstant('width')-80) : (getConstant('width')/2 - 60), height: 80, width: 80, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius: 40, padding : 10, backgroundColor: setColor('subscribeBlue')}}
+    <TouchableOpacity style ={{  position: "absolute" , top : position==='right' ? -7 : getConstant('height') -sizeByDevice(230, 170, 180), left : position==='right' ? (0.9*getConstant('width')-80) : (0.9*getConstant('width')-50) , height: 70, width: 70, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius: 35, padding : 10, backgroundColor: setColor('subscribeBlue')}}
           onPress={() => {
             this.calculateProducts(this.state.optimizer);
           }}  
       >
         <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
-        <Image style={{width: 50, height: 50}} source={logo_white} />
+        <Image style={{width: 40, height: 40}} source={logo_white} />
         </View>
-        <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
-        <Text style={setFont('400', 12, 'white', 'Regular')}>{String('évaluer').toUpperCase()}</Text>
+        <View style={{ alignItems: 'center', justifyContent: 'center'}}>
+        <Text style={setFont('400', 10, 'white', 'Regular')}>{String('évaluer').toUpperCase()}</Text>
         </View>
     </TouchableOpacity>
   )
@@ -1183,7 +1227,21 @@ render() {
                                         left : f.left,
                                         right : f.right,
                                         top: f.top,
+                                        borderWidth : 1,
+                                        borderColor : 'black',
+                                        borderRadius : 10
                                       }
+                                    }}
+                                    renderRow={(rowData,index,isSelected) => {
+                                      return (
+                                        <TouchableHighlight underlayColor={setColor('')}>
+                                          <View style={{height : 35, alignItems : 'flex-start', justifyContent : 'center', paddingLeft : 5}}>
+                                            <Text style={setFont('400', 20, setColor('darkBlue'), isSelected ? 'Bold' : 'Light')} numberOfLines={1} ellipsizeMode={'tail'}>
+                                              {rowData}
+                                            </Text>
+                                          </View>
+                                        </TouchableHighlight>
+                                      )
                                     }}
                                     renderRow={(option, index, isSelected) => {
                                       switch(option) {
@@ -1244,43 +1302,46 @@ render() {
             <ScrollView contentContainerStyle={{justifyContent: 'flex-start',borderWidth:0, alignItems: 'center', marginTop: 20}}> 
               {this._renderTiles()}
             </ScrollView>
-            <View style={{width: getConstant('width'), marginTop : 10, paddingBottom : 10, paddingTop : 10, paddingLeft : 0.05*getConstant('width'), paddingRight : 0.05*getConstant('width'),  marginLeft :0, backgroundColor: 'white'}}>
-                {!this.state.hideCC ?
-                    <View>
-                      <SwitchSelector
-                        initial={1}
-                        onPress={obj => {
-                          this.setState({ optimizer : obj.value });
-                          
-                          //this._updateValue("typeAuction", obj.value, obj.label);
-                          //this.setState({ gender: value });
-                        }}
-                        textColor={setColor('lightBlue')} 
-                        selectedColor={'white'}
-                        buttonColor={setColor('')} 
-                        borderColor={setColor('')} 
-                        returnObject={true}
-                        hasPadding
-                        options={[
-                          { label: "J'optimise ma marge", value: "CC" , customIcon:null}, 
-                          { label: "J'optimise le coupon", value: "CPN", customIcon: null} 
-                        ]}
-                      />
+            {!this.state.hideCC ?
+              <View style={{width: getConstant('width'), borderTopWidth : 1,  paddingTop : 10, paddingLeft : 0.05*getConstant('width'), paddingRight : 0.05*getConstant('width'),  marginLeft :0, backgroundColor: setColor('background'),
+                                    shadowColor: setColor('shadow'),
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowOpacity: 0.9,
+                                    borderTopColor : isAndroid() ? setColor('') :  'white',
+                          }}>
+                  
+                      <View>
+                        <SwitchSelector
+                          initial={1}
+                          onPress={obj => {
+                            this.setState({ optimizer : obj.value });
+                            
+                            //this._updateValue("typeAuction", obj.value, obj.label);
+                            //this.setState({ gender: value });
+                          }}
+                          textColor={setColor('lightBlue')} 
+                          selectedColor={'white'}
+                          buttonColor={setColor('')} 
+                          borderColor={setColor('')} 
+                          returnObject={true}
+                          hasPadding
+                          options={[
+                            { label: "J'optimise ma marge", value: "CC" , customIcon:null}, 
+                            { label: "J'optimise le coupon", value: "CPN", customIcon: null} 
+                          ]}
+                        />
 
-                      <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginTop: 15, paddingBottom : 10}}>
-                         {this.state.optimizer === 'CPN' ? this._renderUFOrCoupon('UF') : this._renderUFOrCoupon('coupon')}
-                        {this._renderCalculateButton()}
+                        <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginTop: 15, paddingBottom : 10}}>
+                          {this.state.optimizer === 'CPN' ? this._renderUFOrCoupon('UF') : this._renderUFOrCoupon('coupon')}
+                          {this._renderCalculateButton()}
+                        </View>
                       </View>
-                    </View>
-                : <View style={{ alignItems: 'center', height: 80}}>
-                      {this._renderCalculateButton('center')}
-                  </View>
-              }
-            </View>
+              </View>
+              : this._renderCalculateButton('center')
+              
+          }
           </View>
-          <View style={{height: 20, backgroundColor : setColor('background')}}>
-
-          </View>
+ 
           <FLBottomPanel  position={this.state.bottomPanelPosition} 
                           snapChange={this._snapChange} 
                           renderFLBottomPanel={this._renderFLBottomPanel()} 

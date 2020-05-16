@@ -2,7 +2,6 @@
 import {
   ImageBackground,
   KeyboardAvoidingView,
-  AsyncStorage,
   View,
   ScrollView,
   ActivityIndicator,

@@ -31,7 +31,7 @@ class FLAutocallDetailTicket extends React.Component {
 
     render() {
       return (
-        <FLAutocallDetail autocall={this.autocall} />
+        <FLAutocallDetail autocall={this.autocall} isEditable={false}/>
       );
     }
   };

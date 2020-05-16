@@ -12,7 +12,7 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { ifIphoneX, ifAndroid, sizeByDevice , getConstant } from '../../Utils';
+import { ifIphoneX, ifAndroid, sizeByDevice , getConstant, isAndroid } from '../../Utils';
 
 import { CBroadcastTicket } from "../../Classes/Tickets/CBroadcastTicket";
 import { CTicket } from '../../Classes/Tickets/CTicket';
@@ -53,6 +53,10 @@ class TicketScreen extends React.Component {
  
   constructor(props) {
     super(props);
+
+    //recuperation de type de templtate a affichier
+    this.templateType = this.props.navigation.getParam('templateType', TEMPLATE_TYPE.TICKET_FULL_TEMPLATE);
+
 
     //utiliser pour dispzarition en-tete
     const scrollAnim = new Animated.Value(0);
@@ -96,6 +100,7 @@ class TicketScreen extends React.Component {
 
       //notifications
       allNotificationsCount : this.props.allNotificationsCount,
+      idFocused : this.props.idFocused,
 
       //filttre
       filterSelected : 'LIVETICKETS'
@@ -133,17 +138,21 @@ class TicketScreen extends React.Component {
       this._offsetValue = value;
     });
 
-    this._navListener = this.props.navigation.addListener('didFocus', () => {
-      //StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
-    });
+    if (!isAndroid()) {
+      this._navListener = this.props.navigation.addListener('didFocus', () => {
+        StatusBar.setBarStyle('dark-content');
+      });
+    }
   }
 
   UNSAFE_componentWillReceiveProps(props) {
-    this.setState({ allNotificationsCount :props.allNotificationsCount });
+    this.setState({ allNotificationsCount :props.allNotificationsCount , idFocused : props.idFocuse});
   }
 
   componentWillUnmount() {
-    this._navListener.remove();
+    if (!isAndroid()) {
+      this._navListener.remove();
+    }
     this.state.scrollAnim.removeAllListeners();
     this.state.offsetAnim.removeAllListeners();
   }
@@ -318,7 +327,7 @@ class TicketScreen extends React.Component {
     //console.log(this.props.tickets);
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
-      <SafeAreaView style={{flex : 1}}>
+      <SafeAreaView style={{flex : 1, backgroundColor : 'white'}}>
         {this._renderModalDrawner()}
  
         <View style={{height: getConstant('height'), WIDTH: getConstant('width'), backgroundColor: setColor('background'), opacity : this.state.showModalDrawner ? 0.3 : 1}}>
@@ -366,8 +375,8 @@ class TicketScreen extends React.Component {
                           return null;
                         case TEMPLATE_TYPE.PSPP :         
                           return (
-                            <View style={{ marginBottom : 15 , height : 250}} >
-                                <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Ticket'} screenWidth={0.95} />
+                            <View style={{ marginBottom : 15 }} >
+                                <FLTemplatePP ticket={item} templateType={this.templateType} source={'Ticket'} screenWidth={0.95} />
                             </View>
                           );
                         default : return null;
@@ -418,13 +427,13 @@ class TicketScreen extends React.Component {
                                                 this.setState ({ showModalDrawner : true });
                                               }}
                             >
-                                      <MaterialIcons name='filter-list' size={22} color={setColor('')}/>
+                                      <MaterialIcons name='filter-list' size={22} color={'black'}/>
                       </TouchableOpacity>
                       <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity onPress={() => {
                                     console.log("qsjhfjhdfjd");
                         }}>
-                          <Text style={[setFont('200', 18, setColor('')), {paddingLeft : 5}]}>
+                          <Text style={[setFont('200', 18, 'black', 'Regular'), {paddingLeft : 5}]}>
                           {filterDatas.map((f,i) => Object.keys(f)[0] === this.state.filterSelected ? Object.values(f)[0] : null)}  
                           </Text>    
                         </TouchableOpacity>
@@ -464,7 +473,7 @@ class TicketScreen extends React.Component {
                             
 
                           }}>  
-                            <MaterialIcons name='search' size={25} color={setColor('')} />
+                            <MaterialIcons name='search' size={25} color={'black'} />
                         </TouchableOpacity>
           
                       

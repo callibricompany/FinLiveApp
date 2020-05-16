@@ -34,7 +34,9 @@ export function setColor(color) {
     case 'subscribeBlue' : return '#00B6FF';
     case 'granny' : return '#749B14';
     case 'subscribeticket' : return '#87B916';
-    case 'background' : return '#edeef0';
+    case 'background' : return 'whitesmoke';//'#edeef0';
+    case 'shadow' : return rgb(75, 89, 101);
+    case 'red' : return "#e53935";
     default : return blueFL;
   }
 }

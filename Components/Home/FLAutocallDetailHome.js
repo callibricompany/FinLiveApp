@@ -15,7 +15,7 @@ class FLAutocallDetailHome extends React.Component {
 
 
       this.autocall =  this.props.navigation.getParam('autocall', '...');
-
+      this.isEditable =  this.props.navigation.getParam('isEditable', true);
       
 
       this.props.navigation.setParams({ hideBottomTabBar : true });
@@ -31,7 +31,7 @@ class FLAutocallDetailHome extends React.Component {
 
     render() {
       return (
-        <FLAutocallDetail autocall={this.autocall} />
+        <FLAutocallDetail autocall={this.autocall} isEditable={this.isEditable}/>
       );
     }
 };

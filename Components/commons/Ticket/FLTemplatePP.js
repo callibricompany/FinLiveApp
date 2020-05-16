@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Modal, Alert, Dimensions} from 'react-native';
 import { NavigationActions } from 'react-navigation';
-import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
@@ -28,7 +29,7 @@ import * as TEMPLATE_TYPE from '../../../constants/template'
 
 import * as Progress from 'react-native-progress';
 
-import { searchProducts } from '../../../API/APIAWS';
+import { searchProducts, getTicket } from '../../../API/APIAWS';
 
 import { FLPDIDetail } from '../../Pricer/description/FLPDIDetail';
 import { FLPhoenixBarrierDetail } from '../../Pricer/description/FLPhoenixBarrierDetail';
@@ -37,14 +38,16 @@ import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
+import { interpolateColor, interpolateColorFromGradient } from '../../../Utils/color';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
-
+import { CWorkflowTicket } from '../../../Classes/Tickets/CWorkflowTicket';
 
 import StepIndicator from 'react-native-step-indicator';
+
 
 
 const customStyles = {
@@ -73,11 +76,6 @@ const customStyles = {
 
 
 
-
-
-
-
-
 class FLTemplatePP extends React.Component {
 
 
@@ -85,15 +83,18 @@ class FLTemplatePP extends React.Component {
     super(props);
 
     this.state = {
+      timerFirsDueBy : 0,
 
-      toto : true,
+      //les notifications
+      isNotified : false,
+      notifications : [],
     }
 
     //console.log(this.props.object);
 
     //type de tycket
     this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.TICKET_FULL_TEMPLATE;
-
+    
     //largeur de la cartouche sur l'ecran
     switch (this.type) {
       case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE : 
@@ -105,95 +106,211 @@ class FLTemplatePP extends React.Component {
     }
     this.screenWidth = this.props.hasOwnProperty('screenWidth')  ? this.props.screenWidth * getConstant('width') : this.screenWidth;
 
-
-          
-    //gestion des classes autocall et ticket broadcast
-    //console.log(this.props.ticket);
+    //recuperation du ticket
     if (typeof this.props.ticket !== 'undefined' && this.props.ticket !== null) {
-       this.ticket = this.props.ticket;
-       this.autocall = this.ticket.getProduct();
+        this.ticket = this.props.ticket;
+        this.autocall = this.ticket.getProduct();
     } else {
       this.ticket = null;
     }
+    //console.log(this.props.ticket);
+    this._updateStepIndicator();
 
-    //labels de la progression et détermination des boutons a montrer sur le stepde progression
-    this.nbOfStepsToShow = Math.min(6, this.ticket.getStepDepth());
-    this.labels = Array(this.nbOfStepsToShow).fill().map((_, index) => (""+index));
-    /*let currentStep = this.ticket.getCurrentCodeStep();
-    console.log(currentStep);
-    if (currentStep === 'PPSDSE' || currentStep === 'PPSDRO') {//offre echue ou refusée
-      this.nbOfStepsToShow = 5;
-      console.log("getStepDepth : " + this.ticket.getStepDepth());
-      console.log("getCurrentStepsDepth : "+this.ticket.getCurrentStepsDepth());
-    }*/
-    this.currentPositionToShow = this.ticket.getCurrentLevel();
-    this.show2ndButton = false;
-    this.show1stButton = false;
-    if (this.ticket.getStepDepth() > this.nbOfStepsToShow) { //il va falloir trogner le début et/ou la fin des steps
-      if (this.ticket.getCurrentLevel() + this.nbOfStepsToShow)
-      if (this.currentPositionToShow > 2) {
-        this.show1stButton = true;
-      // caca prout//
-      } 
-      if (this.ticket.getStepsToGoCount() > 3) {
-        this.show2ndButton = true;
-        
-      } 
-      
-      if (this.show1stButton) {
-        if (this.show2ndButton) {
-          this.currentPositionToShow = 2;
-        }
-        else{
-          this.currentPositionToShow = this.nbOfStepsToShow - this.ticket.getStepsToGoCount();
-        }
-      } 
-    }
-    console.log("Ticket Id : "+ this.ticket.getId() + " - Level : "+ this.ticket.getCurrentCodeStep() + " ("+ this.ticket.getCurrentLevel()+"/"+this.ticket.getStepDepth() + ") Stpets to go : " + this.ticket.getStepsToGoCount() + " - Level to show : "+ this.currentPositionToShow + " ( Left : "+ this.show1stButton +" || Right : " +this.show2ndButton+")");
-    //console.log(this.ticket.getSteps());
-    //this.labels =  ["Cart","Delivery Address","Order Summary","Payment Method","Track","Track","Track","Track"];
+    //timer
+    this.intervalTimerFirstDueBy = null;
+    //console.log("Ticket Id : "+ this.ticket.getId() + " - Level : "+ this.ticket.getCurrentCodeStep() + " ("+ this.ticket.getCurrentLevel()+"/"+this.ticket.getStepDepth() + ") Stpets to go : " + this.ticket.getStepsToGoCount() + " - Level to show : "+ this.currentPositionToShow + " ( Left : "+ this.show1stButton +" || Right : " +this.show2ndButton+")");
+
+
   }
 
+    //component rcceved props
+    UNSAFE_componentWillReceiveProps(props) {
+      getTicket(this.props.firebase, this.ticket.getId())
+      .then((ticket) => {
+          //console.log(ticket);
+          // let t = new CWorkflowTicket(ticket);
+          // this.ticket.setObject(t.getObject());
+          this.ticket = new CWorkflowTicket(ticket);
+          this._updateStepIndicator();
+          //check if notified
+          this._updateNotifications();
 
-  _renderHeaderFullTemplate() {
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+      
+    }
+
+   // compopnentdidmount
+   componentDidMount() {
   
+
+
+      //check if notified
+      this._updateNotifications();
+  }
+
+  //on update  les timers et on agit en consequence
+  componentDidUpdate(){
+    this.firstDealineTicket = Moment(this.ticket.getFrDueBy()).fromNow();
+    this.dealineTicket = Moment(this.ticket.getDueBy()).fromNow();
+    
+  }
+  componentWillUnmount() {
+
+    this.intervalTimerFirstDueBy = null;
+
+  }
+
+  //gere les notifications
+  _updateNotifications() {
+    //remets a jour les compteurs due dates
+    this.intervalTimerFirstDueBy = null;
+    this.firstDealineTicket = Moment(this.ticket.getFrDueBy()).fromNow();
+    this.dealineTicket = Moment(this.ticket.getDueBy()).fromNow();
+    this.intervalTimerFirstDueBy = setInterval( 
+      () => {
+        this.setState({ timerFirsDueBy: this.state.timerFirsDueBy + 1 });
+      },
+      60000
+    );
+
+    //console.log("EST NOTIFIE : " + this.ticket.getId());
+    this.setState({ isNotified : this.props.isNotified('TICKET', this.props.ticket.getId()) }, () => {
+        //console.log(this.state.isNotified);
+        if (this.state.isNotified) {
+          this.setState({ notifications : this.props.getNotifications('TICKET', this.ticket.getId()) });
+        }
+    });
+  }
+
+  //remets a jour les steps
+  _updateStepIndicator() {
+
+
+        //labels de la progression et détermination des boutons a montrer sur le stepde progression
+        this.nbOfStepsToShow = Math.min(6, this.ticket.getStepDepth());
+        this.labels = Array(this.nbOfStepsToShow).fill().map((_, index) => (""+index));
+        //console.log("STEP DEPTH : " + this.ticket.getStepDepth()+ "   : " + this.ticket.getStepsToGoCount());
+        /*let currentStep = this.ticket.getCurrentCodeStep();
+        console.log(currentStep);
+        if (currentStep === 'PPSDSE' || currentStep === 'PPSDRO') {//offre echue ou refusée
+          this.nbOfStepsToShow = 5;
+          console.log("getStepDepth : " + this.ticket.getStepDepth());
+          console.log("getCurrentStepsDepth : "+this.ticket.getCurrentStepsDepth());
+        }*/
+        this.currentPositionToShow = this.ticket.getCurrentLevel();
+        this.show2ndButton = false;
+        this.show1stButton = false;
+        if (this.ticket.getStepDepth() > this.nbOfStepsToShow) { //il va falloir trogner le début et/ou la fin des steps
+        
+          if (this.currentPositionToShow > 2) {
+            this.show1stButton = true;
+          // caca prout//
+          } 
+          if (this.ticket.getStepsToGoCount() > 3) {
+            this.show2ndButton = true;
+            
+          } 
+          
+          if (this.show1stButton) {
+            if (this.show2ndButton) {
+              this.currentPositionToShow = 2;
+            }
+            else{
+              this.currentPositionToShow = this.nbOfStepsToShow - this.ticket.getStepsToGoCount();
+            }
+          } 
+        }
+  }
+
+  _renderStepIndicator() {
+
     return (
-      <View style={{flexDirection: 'row'}}>
-                 
-                  <View style={{flex: 0.8, 
-                                paddingLeft : 20,  
-                                paddingTop: 3,
-                                paddingBottom: 3,
-                                backgroundColor: setColor('granny'), 
-                                borderTopLeftRadius: 10, 
-                                borderBottomWidth :  0,
-  
-                                }}
-                  >                                                    
-                
-                                <Text style={setFont('400', 18, 'white')}>
-                                    {this.ticket.getSubject()} 
-                                </Text>
-                  </View>
-                  <TouchableOpacity style={{flex: 0.2, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}
-                                  onPress={() => {
-                                    this.autocall.setFinalNominal(this.ticket.getNominal());
-                                    this.autocall.setEditable(false);
-                                    this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailHome', {
-                                      autocall: this.autocall,
-                                      //ticketType: TICKET_TYPE.PSCREATION
-                                    })
-                                  }}
-                >
-                   <Text style={setFont('400', 12, 'white')}>PRODUIT ></Text>
-                </TouchableOpacity>
-        </View>
+          <StepIndicator
+                customStyles={customStyles}
+                currentPosition={this.currentPositionToShow}
+                labels={this.labels.slice(0,this.nbOfStepsToShow)}
+                stepCount={this.nbOfStepsToShow}
+                renderLabel={({position, label}) => {
+                  switch(position) {
+                    case this.currentPositionToShow :
+                      let duedate = this.ticket.getFrDueBy();
+                      //console.log(duedate);
+                      if (duedate > Date.now()) {
+                          return (
+                            <View style={{ padding : 2, alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
+                                <Text style={[setFont('200', 9),{textAlign: 'center'}]}>{this.firstDealineTicket}</Text>
+                            </View>
+                          );
+                      } else {
+                        return (
+                            <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderRadius: 2, borderWith : 1, borderColor : 'red'}}>
+                                <Text style={[setFont('300', 10, 'white', 'Bold'), {textAlign: 'center'}]}>En retard</Text>
+                            </View>
+                        );
+                      }
+                    case 0 :
+                      return (
+                        <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+                            <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
+                        </View>
+                      );
+                      case Math.min(this.labels.length, 6) - 1 :  //dernier
+                        return (
+                          <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+                              <Text style={setFont('200', 8, setColor('lightBlue'))}>Traité</Text>
+                              
+                          </View>
+                        );
+                    default : 
+                      return null;
+                  }
+                }}
+                renderStepIndicator={({position}) => {
+                  //console.log("POSITION : "+position +" / " +this.labels.length);
+
+                  switch (position) {
+                    case 1 :
+                      if (this.show1stButton){
+                        return (
+                          <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
+                              <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
+                          </View>  
+                        );  
+                      }
+                      break;    
+                    case 4 :
+                        if (this.show2ndButton){
+                          return (
+                            <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
+                                <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
+                            </View>  
+                          );  
+                        }
+                        break;
+                    case this.nbOfStepsToShow -1 :
+                          //if (this.show2ndButton){
+                            return (
+                              <View style={{backgroundColor: '#aaaaaa', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
+                            );  
+                          //}
+                          break;
+                    default :
+                      return null;
+                      break;
+                  }
+                  return null;
+                }}
+            />
     );
   }
-_renderHeaderMediumTemplate() {
-  let isNotified = this.props.isNotified('TICKET', this.props.ticket.getId());
-  return (
-            <TouchableOpacity style={{flexDirection: 'row', height : 70}}
+
+  _renderFullTemplate() {
+    return (
+            <TouchableOpacity style={{}}
                               onPress={() => {
                                 this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
                                   ticket: this.ticket,
@@ -201,281 +318,222 @@ _renderHeaderMediumTemplate() {
                                 })
                               }}
             >
-                <View style={{
-                              flex : 0.9,
-                              paddingLeft : 20,  
-                              paddingRight : 3,
-                              paddingTop:  3,
-                              paddingBottom: 5,
-                              backgroundColor: setColor('granny'), 
-                              borderTopLeftRadius: 10, 
-                              //borderTopRightRadius: 10, 
-                              borderBottomWidth :  0,
-                              }}
-                >         
-                {  isNotified
+
+                {  this.state.isNotified
                     ?
-                      <View style={{position: 'relative', top : 25, left : -15, backgroundColor: 'white', width: 8, height: 8, borderRadius : 4, borderWidth : 1, borderColor: 'white', zIndex : 1}} />                                            
+                      <View style={{position : 'absolute', top : -10, right : -3, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor('subscribeticket'), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('subscribeticket')}} >
+                              <Text style={setFont('300', 26, 'white', 'Bold')}>{this.state.notifications.length}</Text>
+                      </View>                                            
                     : null 
                 }
-                      <View style={{justifyContent: 'center' , marginTop : isNotified ? -8 : 0}}>
 
-              
-                              <Text style={setFont('400', isAndroid() ? 16 : 18, 'white')} numberOfLines={2}>
-                                  {this.ticket.getSubject()} 
-                              </Text>
-                        </View>
-                        <View style={{borderWidth: 0, justifyContent : 'flex-end', paddingTop : 3}}>
-                                <Text style={setFont('300', 14,  'white')}>
-                                  Placement privé : {this.ticket.getType()} 
-                                </Text>
-
-                        </View>
+  
+                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingRight : 10, paddingTop:  3, paddingBottom: 5 }} >   
+                    <View style={{flex :  1}}>
+                          <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} >
+                                      {this.ticket.getSubject()} 
+                          </Text>
+                          <Text style={setFont('300', 14, 'black', this.state.isNotified ? 'Regular' : 'Light')}>
+                                      {this.ticket.getWorkflowName()} : {this.ticket.getType()} 
+                          </Text>
+                    </View>
 
                 </View>
-                <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center', backgroundColor: setColor('subscribeticket'), borderTopRightRadius: 10}}>
-                   <Text style={setFont('400', 22, 'white')}>></Text>
-                </View>
-          </TouchableOpacity>
+  
+               <View style={{flexDirection : 'row', marginLeft : 10, marginRight : 10, marginTop : 10}}>
+                  <View style={{flex : 0.33}}>
+                      <Text style={setFont('200', 10, 'gray')}>Nominal :</Text>
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                                    <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
+                                        <Text style={setFont('200', 12, setColor('subscribeticket'), 'Bold')}>{currencyFormatDE(this.ticket.getNominal())}  </Text>
+                                    </View>
+                                    <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
+                                        <Text style={setFont('200', 12, setColor('subscribeticket'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                                    </View>
+                              </View>
+                  </View>  
 
-  );
-}
-_renderFullTemplate() {
-  return (
-            <View style={{flexDirection : 'column', backgroundColor: 'white', justifyContent: 'center',  paddingBottom: 10 }}>
-              <View style={{backgroundColor: 'snow', paddingLeft : 20, paddingTop: 5,paddingBottom : 5,justifyContent : 'center'}}>
-                    <Text style={setFont('400', 14, 'black', 'Regular')}>
-                      {this.ticket.getDescription()}
-                    </Text>
-              </View>
-              <View style={{ paddingLeft : 20, paddingTop: 5,justifyContent : 'center', alignItems: 'center'}}>
-                    <Text style={[setFont('600', 14, 'black', 'Bold'), {textAlign: 'center'}]}>
+                  <View style={{flex : 0.33}}>
+                      <Text style={setFont('200', 10, 'gray')}>Commission :</Text>
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                                    <View style={{justifyContent : 'center', alignItems : 'center'}}>  
+                                        <MaterialCommunityIcons name={'margin'} size={15} color={setColor('subscribeticket')}/>
+                                    </View>
+                                    <View style={{justifyContent : 'center', alignItems : 'flex-start',  paddingLeft : 3}}>  
+                                        <Text style={setFont('200', 12, setColor('granny'), 'Bold')}>{currencyFormatDE(this.ticket.getUFInCurrency())}  </Text>
+                                    </View>
+                                    <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
+                                        <Text style={setFont('200', 12, setColor('granny'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                                    </View>
+                              </View>
+                  </View>    
+                  
+                  <View style={{flex : 0.33}}>
+                      <Text style={setFont('200', 10, 'gray')}>Mon association :</Text>
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                                     <View style={{justifyContent : 'center', alignItems : 'center'}}>  
+                                        <FontAwesome5 name={'donate'} size={15} color={setColor('subscribeticket')}/>
+                                    </View>
+                                    <View style={{justifyContent : 'center', alignItems : 'flex-start', paddingLeft : 3}}>  
+                                        <Text style={setFont('200', 12, setColor('granny'), 'Bold')}>{currencyFormatDE(this.ticket.getUFAssocInCurrency())}  </Text>
+                                    </View>
+                                    <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
+                                        <Text style={setFont('200', 12, setColor('granny'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                                    </View>
+                              </View>
+                  </View>                    
+               </View>
+
+               <View style={{flex: 1, justifyContent: 'center',borderWidth: 0,  marginTop : 25, marginLeft : 10, marginRight : 10, marginBottom : 5 }}>
+                    <Text style={setFont('400', 16, 'black', 'Regular')}>
                       {this.ticket.getUnsolvedStep()}
                     </Text>
-              </View>
-              <View style={{ paddingLeft : 20, paddingTop: 5,justifyContent : 'center', alignItems: 'flex-start'}}>
-                   <Text style={setFont('400', 12, 'black', 'Regular')}>
-                      Nominal {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()} | Rétro : {currencyFormatDE(this.ticket.getNominal()*this.ticket.getUF()/100)} {this.ticket.getCurrency()} 
-                    </Text>
-              </View>
-            </View>
-  );
-}
-_renderMediumTemplate() {
-  return (
-    <View style={{flexDirection: 'column', backgroundColor: 'white', justifyContent: 'space-between',height : 140}}>
-        <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 0.6, flexDirection: 'column', justifyContent: 'center', paddingLeft : 20, paddingTop: 5, paddingBottom: 3 }}>
-                    <Text style={setFont('400', isAndroid() ? 16 : 18, 'black', 'Regular')}>
-                      {this.ticket.getUnsolvedStep()}
-                    </Text>
-            </View>
-            <View style={{flex : 0.4,  flexDirection : 'column', borderWidth: 0, justifyContent: 'center', alignItems: 'center', backgroundColor : 'white'}}>
-                <TouchableOpacity style={{backgroundColor : this.ticket.isUserTrigger() ? 'red' : 'white', borderColor: this.ticket.isUserTrigger()? 'red' : 'gray', borderWidth: 1, borderRadius: 4, justifyContent: 'center', alignItems: 'center', margin: 10}}
-                                  onPress={() => {
-                                    if (this.ticket.isUserTrigger()) {
-                                      
-                                      this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
-                                        ticket: this.ticket,
-                                        showModalResponse : true
-                                      })
-        
-                                    } else {
-                                        Alert.alert(
-                                          'Vous attendez actuellement une réponse',
-                                          'Souhaitez-vous envoyer un message concernant ce ticket ?',
-                                          [
-                                            
-                                            {
-                                              text: 'Attendre',
-                                              onPress: () => console.log('Cancel Pressed'),
-                                              style: 'cancel',
-                                            },
-                                            {text: 'OUI', onPress: () => console.log('OK Pressed')},
-                                          ],
-                                          {cancelable: false},
-                                        );
-                                    }
-                                
-                                  }}
-                >
-                    <Text style={[setFont('500',14, this.ticket.isUserTrigger() ? 'white' : 'gray', 'Bold'), {textAlign: 'center', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}]} numberOfLines={this.ticket.isUserTrigger() ? 1 : 2}>
-                      {this.ticket.isUserTrigger() ? 'Répondre' : 'Demande\nen cours'}
-                    </Text>
-                </TouchableOpacity>
-                <View style={{marginLeft: 0, marginTop : -5, alignItems: 'center', justifyContent: 'space-evenly', borderWidth: 0}}>
-                    <Text style={setFont('400', 10,  'black', 'Regular')}>
-                          {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()} 
-                    </Text>
-                </View>
-            </View>
-        </View>
+               </View>
 
-        <View style={{marginTop: 0,  borderWidth: 0, justifyContent: 'center', alignItems: 'stretch'}}>
-
-              <StepIndicator
-                  customStyles={customStyles}
-                  currentPosition={this.currentPositionToShow}
-                  labels={this.labels.slice(0,this.nbOfStepsToShow)}
-                  stepCount={this.nbOfStepsToShow}
-                  renderLabel={({position, label}) => {
-                    switch(position) {
-                      case this.currentPositionToShow :
-                        let duedate = this.ticket.getDueBy();
-                        //console.log(duedate);
-                        if (duedate > Date.now()) {
-                            return (
-                              <View style={{ padding : 2, alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
-                                  <Text style={[setFont('200', 9),{textAlign: 'center'}]}>{Moment(duedate).fromNow()}</Text>
-                              </View>
-                            );
-                        } else {
-                          return (
-                              <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderRadius: 2, borderWith : 1, borderColor : 'red'}}>
-                                  <Text style={[setFont('300', 10, 'white', 'Bold'), {textAlign: 'center'}]}>En retard</Text>
-                              </View>
-                          );
+               {this._renderStepIndicator()}
+               {this.state.isNotified
+                ?
+                    <View style={{lex: 1, justifyContent: 'center',borderWidth: 0,  marginTop : 20, marginLeft : 10, marginRight : 10}}>
+                        {this.state.notifications.map((notif, index) => {
+                                  let percent = Math.round(100*index/(this.state.notifications.length));
+                                  let color = interpolateColorFromGradient("Jonquil", percent);
+                                  return (
+                                      <View style={{flex : 1, borderWidth : 0, flexDirection : 'row'}} key={index}>
+                                          <View style={{flex : 0.6, marginTop : 2, marginRight : 5,  padding : 3, justifyContent: 'center', alignItems : 'flex-start', borderRadius : 5, borderWidth : 1, borderColor : color, backgroundColor : color}}>
+                             
+                                                  <Text style={setFont('300', 14, 'black', 'Regular')} numberOfLines={1}>
+                                                   {notif.eventText}
+                                                  </Text>
+                                   
+                                          </View>
+                                          <View style={{flex : 0.4, marginTop : 2, marginRight : 5 , padding : 3, borderWidth : 0, justifyContent: 'center', alignItems : 'flex-start'}}>
+                                              <Text style={setFont('200', 12, 'gray', 'Regular')} numberOfLines={1}>{Moment(new Date(notif.timestamp)).fromNow()}</Text>
+                                          </View>
+                                      </View>
+                                  );
+                                })
                         }
-                      case 0 :
-                        return (
-                          <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
-                              <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
-                          </View>
-                        );
-                        case Math.min(this.labels.length, 6) - 1 :  //dernier
-                          return (
-                            <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
-                                <Text style={setFont('200', 8, setColor('lightBlue'))}>Traité</Text>
-                            </View>
-                          );
-                      default : 
-                        return null;
-                    }
-                  }}
-                  renderStepIndicator={({position}) => {
-                    //console.log("POSITION : "+position +" / " +this.labels.length);
- 
-                    switch (position) {
-                      case 1 :
-                        if (this.show1stButton){
-                          return (
-                            <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
-                                <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
-                            </View>  
-                          );  
-                        }
-                        break;    
-                      case 4 :
-                          if (this.show2ndButton){
-                            return (
-                              <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
-                                  <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
-                              </View>  
-                            );  
-                          }
-                          break;
-                      case this.nbOfStepsToShow -1 :
-                            if (this.show2ndButton){
-                              return (
-                                <View style={{backgroundColor: 'white', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
-                              );  
-                            }
-                            break;
-                      default :
-                        return null;
-                        break;
-                    }
-                    return null;
-                  }}
-              />
+                    </View>
+                : null
+                }
 
-        </View>
+               <View style={{flexDirection : 'row', paddingRight : 15, justifyContent:'space-between',  alignItems: 'center',   marginTop : 15, marginLeft : 10, marginRight : 10,}}>
+                    <View style={{}}>
+                    
+                        <Text style={setFont('200', 9)}>
+                          Agt: 
+                        </Text>
+                        <Text style={setFont('200', 10)}>
+                          {this.ticket.getAgentName()}
+                        </Text>
+                    </View>   
 
-    </View>
-  );
-}
-
-
-_renderFooterFullTemplate() {
-
-  return (
-        <View style={{flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 2, paddingBottom : 2, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
-                <View style={{paddingLeft : 15}}>
-                    <Text style={setFont('200', 12)}>
-                      Agt : {this.ticket.getAgentName()}
-                    </Text>
-                    <Text style={setFont('200', 9)}>
-                      #{this.ticket.getId()}
-                    </Text>
-               </View>   
-               <View style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}>
-                          <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getStatus().color, margin : 5}} />
+                      <View style={[globalStyle.templateIcon, {paddingRight: 15}]}>
+                              <Text style={setFont('200', 12)}>{this.ticket.getStatus().name}{'\n'}
+                              <Text style={setFont('200', 9)}>#{this.ticket.getId()}</Text> </Text>
+                      </View>    
+                      <View style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}>
+                          <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5}} />
                           <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
-                              <Text style={setFont('200', 12)}>
-                                {this.ticket.getStatus().name}
-                              </Text>
+                            <Text style={setFont('200', 12)}>
+                              {this.ticket.getPriority().name}
+                            </Text>
                           </View>
-               </View>   
-               <TouchableOpacity style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}
-                                  onPress={() => {
-                                    //ajouter le changement de priorité
-                                  }}
-                >
-                    <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5}} />
-                    <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
-                      <Text style={setFont('200', 12)}>
-                        {this.ticket.getPriority().name}
-                      </Text>
-                    </View>
-                </TouchableOpacity>            
-        </View>
+                      </View>             
+              </View>
 
-  );
-}
-_renderFooterMediumTemplate(isFavorite) {
+            </TouchableOpacity>
+    );
+  }
+
+
+  _renderMediumTemplate() {
+    return (
+            <TouchableOpacity style={{}}
+                              onPress={() => {
+                                this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
+                                  ticket: this.ticket,
+                                  //ticketType: TICKET_TYPE.PSCREATION
+                                })
+                              }}
+            >
+
+                {  this.state.isNotified
+                    ?
+                      <View style={{position : 'absolute', top : 15, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
+                              <Ionicons name={'ios-notifications'} size={30} style={{color : setColor('subscribeticket')}} />
+                              <View style={{position : 'relative', top : -25, left : 0, width : 16, height : 16, backgroundColor : 'transparent',  alignItems : 'center', justifyContent : 'center'}}>
+                                  <Text style={setFont('300', 12, 'white', 'Bold')}>{this.state.notifications.length}</Text> 
+                              </View>
+                      </View>  
+                                                               
+                    : null 
+                }
+
+  
+                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingRight : 10, paddingTop:  3 }} >   
+                    <View style={{flex :  1}}>
+                          <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} numberOfLines={1}>
+                                      {this.ticket.getSubject()} 
+                          </Text>
+                          <Text style={setFont('300', 14, 'black', this.state.isNotified ? 'Regular' : 'Light')}>
+                                      {this.ticket.getWorkflowName()} : {this.ticket.getType()} 
+                          </Text>
+                    </View>
+
+                </View>
+  
+               <View style={{ marginLeft : 10, marginRight : 10}}>
+
+                     
+                      <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                            <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
+                                <Text style={setFont('200', 12, setColor('subscribeticket'), 'Bold')}>{currencyFormatDE(this.ticket.getNominal())}  </Text>
+                            </View>
+                            <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
+                                <Text style={setFont('200', 12, setColor('subscribeticket'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                            </View>
+                      </View>
+               
+               </View>
+
+               <View style={{flex: 1, justifyContent: 'flex-start', alignItems : 'flex-start', borderWidth: 0,  marginTop : 10, marginLeft : 10, marginRight : 10, marginBottom : 5 , height : 35}}>
+                    <Text style={setFont('400', 12, 'black', 'Regular')}>
+                      {this.ticket.getUnsolvedStep()}
+                    </Text>
+               </View>
+
+               {this._renderStepIndicator()}
  
-  return (
-        <View style={{flexDirection : 'row', justifyContent:'space-between',  alignItems: 'center', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 2, paddingBottom : 2, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
-                <View style={{paddingLeft : 15}}>
-                 
-                 <Text style={setFont('200', 12)}>
-                   Agt: {this.ticket.getAgentName()}
-                 </Text>
-                 <Text style={setFont('200', 9)}>
-                   #{this.ticket.getId()}
-                 </Text>
-               </View>   
-               <TouchableOpacity style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}
-                                  onPress={() => {
-                                  }}
-                >
-                    <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5}} />
-                    <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
-                      <Text style={setFont('200', 12)}>
-                        {this.ticket.getPriority().name}
-                      </Text>
-                    </View>
-                </TouchableOpacity> 
-                <TouchableOpacity style={[globalStyle.templateIcon, {paddingRight: 15}]} 
-                                  onPress={() => {
-             
-                                    
-                                    this.props.setFavorite(this.ticket.getObject())
-                                    .then((fav) => {    
-                                      console.log("=================================");
-                                      console.log(fav);                             
-                                      this.ticket.setFavorite(fav);
-                                      this.setState({ toto: !this.state.toto })
-                                    })
-                                    .catch((error) => console.log("Erreur de mise en favori : " + error));
-                                  }}
-                >
-                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={'gray'}/>
-                </TouchableOpacity>                
-        </View>
 
-  );
-}
+               <View style={{flexDirection : 'row', paddingRight : 15, justifyContent:'space-between',  alignItems: 'center',   marginTop : 15, marginLeft : 10, marginRight : 10,}}>
+                    <View style={{}}>
+                    
+                        <Text style={setFont('200', 9)}>
+                          Agt: 
+                        </Text>
+                        <Text style={setFont('200', 10)}>
+                          {this.ticket.getAgentName()}
+                        </Text>
+                    </View>   
+
+                      <View style={[globalStyle.templateIcon, {paddingRight: 15}]}>
+                              <Text style={setFont('200', 12)}>{this.ticket.getStatus().name}{'\n'}
+                              <Text style={setFont('200', 9)}>#{this.ticket.getId()}</Text> </Text>
+                      </View>    
+                      <View style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}>
+                          <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5}} />
+                          <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
+                            <Text style={setFont('200', 12)}>
+                              {this.ticket.getPriority().name}
+                            </Text>
+                          </View>
+                      </View>             
+              </View>
+
+            </TouchableOpacity>
+    );
+  }
 
 
 
@@ -493,23 +551,17 @@ render () {
 
       switch (this.type) {
         case TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE : 
-            render = <View style={{flexDirection : 'column'}}>
-                          {this._renderHeaderMediumTemplate()}
-                          {this._renderMediumTemplate()}
-                          {this._renderFooterMediumTemplate(isFavorite)}
-                      </View>;
+            render = this._renderMediumTemplate();
             break;
-        case TEMPLATE_TYPE.TICKET_FULL_TEMPLATE : 
-            render = <View>
-                          {this._renderHeaderFullTemplate()}
-                          {this._renderFullTemplate()}
-                          {this._renderFooterFullTemplate()}
-                      </View>;
+        case TEMPLATE_TYPE.TICKET_FULL_TEMPLATE :
+            render = this._renderFullTemplate();
             break;
         default :  
             render = <View></View>;
             break;
       }
+
+
 
 
       return (
@@ -521,12 +573,12 @@ render () {
                           shadowColor: 'rgb(75, 89, 101)',
                           shadowOffset: { width: 0, height: 2 },
                           shadowOpacity: 0.9,
-                          borderWidth :  isAndroid() ? 0 : 1,
-                          borderColor : 'white',
+                          borderWidth :   1,
+                          borderColor : isAndroid() ? 'black' : 'white',
                           //borderTopLeftRadius: 15,
                           borderRadius: 10,
                           //overflow: "hidden",
-                          backgroundColor: 'gray',
+                          backgroundColor: 'white',
                           //elevation: 3
                         }}
             >

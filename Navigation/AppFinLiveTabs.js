@@ -19,6 +19,8 @@ import FLAutocallDetailTicket from '../Components/Ticket/FLAutocallDetailTicket'
 import FLCouponMinDetailAndroid from '../Components/Pricer/description/FLCouponMinDetailAndroid';
 
 import ProfileScreen from '../Components/ProfileScreen';
+import ProfileScreenDetail from '../Components/ProfileScreenDetail';
+
 
 import TicketScreen from '../Components/Ticket/TicketScreen';
 import FLTicketDetail from '../Components/commons/Ticket/FLTicketDetail';
@@ -153,12 +155,16 @@ function labelStyle (focused, tintColor) {
 
   //Ecran profil
   const ProfilScreenStack = createStackNavigator({
-  Profil: {
-    screen: ProfileScreen,
-    navigationOptions: {
-      title: 'Profil',
-    }
-  }
+      Profil: {
+        screen: ProfileScreen,
+        navigationOptions: {
+          title: 'Profil',
+        },
+      },
+      ProfileScreenDetail: {
+        screen: ProfileScreenDetail,
+      },
+
   })
   //Ecran admin
   const AdminScreenStack = createStackNavigator({
@@ -226,38 +232,7 @@ function labelStyle (focused, tintColor) {
       },
       Profil: {
         screen: ProfilScreenStack,
-        navigationOptions: {
-          tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-            return (
-            //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
-            <View
-            style={{
-                borderWidth:0,
-                //borderColor:'rgba(0,0,0,0.2)',
-                alignItems:'center',
-                justifyContent:'center',
-                width:40,
-                height:40,
-                backgroundColor:tintColor,
-                borderRadius:50,
-              }}
-          >
-                  <FontAwesomeI
-                  name='user'
-                  size={30}
-                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-              />
-              </View>
-            );
-          },
-          tabBarLabel: ({ focused, tintColor }) => {
-            return (
-              <View style={{alignItems:'center', justifyContent:'center'}}>
-                 <Text style={labelStyle(focused,tintColor)}>Profil</Text>
-              </View>
-            );
-            }
-        }
+
   
       },
      Admin: { 
@@ -492,6 +467,57 @@ function labelStyle (focused, tintColor) {
       tabBarVisible
     }
   }
+
+
+  TABS['Profil'].navigationOptions = ({ navigation }) => {
+    const { state: { routes, index } } = navigation;
+    let tabBarVisible = true;
+    //console.log("TOOOLLLLBAR : " + routes[index].routeName);
+    //console.log(routes[index].params);
+    if(routes[index].routeName === 'ProfileScreenCamera'){
+      if (typeof routes[index].params !== 'undefined') {
+          tabBarVisible = !routes[index].params['hideBottomTabBar'];
+      }
+    }
+    return {
+ 
+        tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+          return (
+          //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+          <View  style={{
+                      borderWidth:0,
+                      //borderColor:'rgba(0,0,0,0.2)',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      width:40,
+                      height:40,
+                      backgroundColor:tintColor,
+                      borderRadius:50,
+                    }}
+                >
+             <FontAwesomeI
+                  //name='radio-tower'
+                  name='user'
+                  size={30}
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
+              />   
+            </View>
+          );
+        },
+        tabBarLabel: ({ focused, tintColor }) => {
+          return (
+            <View style={{alignItems:'center', justifyContent:'center'}}>
+            <Text style={labelStyle(focused,tintColor)}>Profil</Text>
+            </View>
+          );
+          },
+        //tabBarVisible: false,
+   
+      tabBarVisible
+    }
+  }
+
+
   export function  AppFinLiveTabs (role) {
         let tabs = {};
         if (role === ROLES.ADMIN) {

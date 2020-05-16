@@ -417,11 +417,11 @@ export  function interpolateBestProducts(data, request, optimizer='CPN') {
 
      //        LA FREQUENCE
      df = df.where((row) => criteria['freqAutocall'] === row.freqAutocall).bake();    
-     console.log("Taille apres freqAutocall: " + df.toRows().length);
+     //console.log("Taille apres freqAutocall: " + df.toRows().length);
 
     //         LE NOMBRE DE PERIODES SANS RAPPEL
     df = df.where((row) => criteria['noCallNbPeriod'] === row.noCallNbPeriod).bake(); 
-    console.log("Taille apres noCallNbPeriod: " + df.toRows().length);
+    //console.log("Taille apres noCallNbPeriod: " + df.toRows().length);
     //         INCREMENTAL
     //df = df.where((row) => criteria['isIncremental'] === row.isIncremental).bake(); 
 
@@ -431,7 +431,7 @@ export  function interpolateBestProducts(data, request, optimizer='CPN') {
     //         PHOENIX MEMOIRE
     df = df.where((row) => criteria['isMemory'] === row.isMemory).bake(); 
 
-    console.log("Taille apres 1 er filtres simples : " + df.toRows().length);
+    //console.log("Taille apres 1 er filtres simples : " + df.toRows().length);
 
     
     //AIRBAG

@@ -1,5 +1,7 @@
 // API/TMDBApi.js
-import axios from 'axios'
+import axios from 'axios';
+
+
 const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
 const URL_FAKE_JSON ="";
 export const URL_AWS = "http://99.80.211.255:8080"
@@ -115,6 +117,115 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
     });
   }
 
+///////////////////////////
+//    USER
+//    update
+///////////////////////////
+  export function updateUser (firebase, user) {
+    
+          return new Promise((resolve, reject) => {
+
+            if (user.hasOwnProperty('user')) {
+                    //console.log(user.user);
+
+                    delete user.user['email'];
+
+                    //console.log(user.user);
+
+
+                    firebase.doGetIdToken()
+                    .then(token => {
+
+                        var axiosConfig = {
+                          headers :{
+                            //'Content-Type': 'application/x-www-form-urlencoded',
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Accept': 'application/json',
+                            'bearer' : token
+                          }
+                        };
+
+                        axios.put(URL_AWS + '/user', user.user, axiosConfig)
+                        .then((response) => {
+                          console.log("Succes update user : ");
+                          console.log(response.data);
+                          resolve(response)
+                          //res.render('pages/register',{email: email, isConnected: isConnected});
+                        })
+                        .catch(function (error) {
+                          console.log("Erreur update user : " + error);
+                          reject(error)
+                        });
+                    })
+                    .catch((error) => reject(error));
+       
+            }
+            else {
+              reject("User mal défini");
+            }
+        });
+  }
+
+
+
+
+  // Object {
+  //   "cancelled": false,
+  //   "height": 550,
+  //   "type": "image",
+  //   "uri": "file:///Users/Vincent%20Sudre/Library/Developer/CoreSimulator/Devices/1AF6FEFB-984B-4308-82D8-993209A53C50/data/Containers/Data/Application/627CB734-6003-4D66-A86A-B77B5960EFED/Library/Caches/ExponentExperienceData/%2540geodulaur%252FFinLiveApp/ImagePicker/14340E63-EE92-452A-A977-4A37CBF38989.jpg",
+  //   "width": 826,
+  // }
+  
+
+
+  export function changeAvatar (firebase, file, idFreshdesk) {
+    
+    return new Promise((resolve, reject) => {
+
+
+
+              firebase.doGetIdToken()
+              .then(token => {
+
+                  const FormData = require('form-data');
+                  var form_data = new FormData();
+
+                  let filename = file.uri.split('\\').pop().split('/').pop();
+                  let extension = filename.split('.').pop();
+
+                  form_data.append('fileinput', {name : filename , uri : file.uri, type : 'image/'+extension});
+     
+
+
+
+                  const axiosConfig = {
+                    headers: {
+                      'bearer' : token,
+                      //'Content-Type': `multipart/form-data`
+                      'content-type': `multipart/form-data; boundary=${form_data._boundary}`,
+                      //...form_data.getHeaders()
+                    }
+                  };
+     
+                  
+                  axios.put(URL_AWS + '/avatar/' + idFreshdesk,form_data, axiosConfig)
+                  .then((response) => {
+                    console.log("Succes update user : ");
+                    resolve(response)
+                    //res.render('pages/register',{email: email, isConnected: isConnected});
+                  })
+                  .catch(function (error) {
+                    console.log("Erreur update user : " + error);
+                    reject(error)
+                  });
+              })
+              .catch((error) => reject(error));
+
+  });
+}
+
+
 
 
 ///////////////////////////
@@ -167,7 +278,6 @@ export function ssCreateStructuredProduct (firebase, product) {
         });
     })
     .catch((error) => reject(error));
-    
   });
 }
 
@@ -338,6 +448,44 @@ export function getTicket (firebase, idTicket) {
     });
 }
 
+///////////////////////////
+//    TICKET
+//    retourne un ticket unique
+///////////////////////////
+export function getRepricing (firebase, idTicket, issuer) {
+  return new Promise(
+    (resolve, reject) => {
+      console.log(issuer);
+      firebase.doGetIdToken()
+      .then(token => {
+
+          var axiosConfig = {
+            headers :{
+              //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+              'bearer'      : token,
+            },
+
+          };
+
+          let path = '/repricing/'+ idTicket +'/' +issuer;
+          if (issuer === 'ALL') {
+            path = '/repricingall/' + idTicket;
+          }
+
+          axios.get(URL_AWS + path,  axiosConfig)
+          .then((response) => {
+            //console.log(response);
+            resolve(response.data)
+          })
+          .catch(function (error) {
+            console.log("Erreur requete aws (getTicket): " + error);
+            reject(error)
+          });
+      })
+      .catch((error) => reject(error));
+
+    });
+}
 
 ///////////////////////////
 //    INFOS DE DEPART

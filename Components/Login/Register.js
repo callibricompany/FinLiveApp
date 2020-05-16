@@ -2,7 +2,6 @@
 import {
   TouchableOpacity,
   KeyboardAvoidingView,
-  AsyncStorage,
   TouchableWithoutFeedback,
   View,
   ScrollView,

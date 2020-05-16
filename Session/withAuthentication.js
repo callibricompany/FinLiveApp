@@ -18,6 +18,7 @@ import { CObject } from "../Classes/CObject";
 import { CBroadcastTicket } from "../Classes/Tickets/CBroadcastTicket";
 import { CTicket } from '../Classes/Tickets/CTicket';
 import { CWorkflowTicket } from  "../Classes/Tickets/CWorkflowTicket";
+import { CUser } from '../Classes/CUser';
 
 import { withNotification } from './NotificationProvider'; 
 
@@ -42,6 +43,9 @@ const withAuthentication = Component => {
         addNotification : (notifications) => this.props.addNotification(notifications),
         allNotificationsCount : props.hasOwnProperty('notificationList') ? props.notificationList.length : 0,
         setCurrentFocusedObject : (type , id) => this.props.setCurrentFocusedObject(type, id),
+        getNotifications : (type , id) => this.props.getNotifications(type, id),
+        idFocused : this.props.idFocused,
+
 
         //tickets
         tickets: [],
@@ -127,8 +131,8 @@ const withAuthentication = Component => {
 
 
     UNSAFE_componentWillReceiveProps(props) {
-      //console.log("RECEIVE PROPS HOME : ");
-      this.setState({ allNotificationsCount : props.hasOwnProperty('notificationList')  ? props.notificationList.length : 0 });
+      console.log("RECEIVE PROPS HOME : " + props.notificationList.length );
+      this.setState({ allNotificationsCount : props.hasOwnProperty('notificationList')  ? props.notificationList.length : 0, idFocused : props.idFocused });
 
     }
 
@@ -285,6 +289,7 @@ const withAuthentication = Component => {
                   //featured : [],
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
+                  user : new CUser(userDatas.userInfo),
                   favorites: userDatas.favorites,
                   //tickets: userDatas.userTickets,
                   tickets,
@@ -295,6 +300,8 @@ const withAuthentication = Component => {
                   //apeSRP : [],
                   broadcasts : userDatas.startPage.campaign,
                   //broadcasts : [],
+
+                  issuers : userDatas.issuers,
                 });
 
 
@@ -307,9 +314,12 @@ const withAuthentication = Component => {
 
              
                 
-                //console.log(toto);
+                console.log(userDatas.userInfo);
+                console.log(Object.keys(userDatas));
                 
-                this.props.addNotification(userDatas.notifications);
+                if (this.props.addNotification != null) {
+                  this.props.addNotification(userDatas.notifications);
+                }
                 //console.log(userDatas.categories);
                 //console.log(userDatas.workflow);
                 //console.log(userDatas.startPage.bestCoupon);

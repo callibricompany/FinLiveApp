@@ -48,7 +48,11 @@ class FLAutocallDetail extends React.Component {
     super(props);   
 
     //recuperation de l'autocall
-    this.autocall =  this.props.navigation.getParam('autocall', '...');
+   // this.autocall =  this.props.navigation.getParam('autocall', '...');
+   this.autocall = this.props.autocall;
+   this.isEditable = typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : true,
+   // this.isEditable = this.props.navigation.getParam('isEditable', true);
+   console.log("CONSTRUCTEUR AUTOCALL : " +props.isEditable + "  :  " + this.props.isEditable);
     
     this.state = { 
 
@@ -196,7 +200,7 @@ class FLAutocallDetail extends React.Component {
                       flexDirection: 'column',
                       backgroundColor: 'white',
                       borderWidth :1,
-                      borderColor : setColor(''),
+                      //borderColor : setColor(''),
                       borderRadius: 4,
                       width: getConstant('width')*0.8,
                       //height: getConstant('height')*0.4,
@@ -214,7 +218,7 @@ class FLAutocallDetail extends React.Component {
                   </View>
                   <View style={{ backgroundColor: setColor('background'), alignItems:'flex-start', justifyContent: 'flex-start'}}>
                       <Text style={[setFont('300', 14), {padding: 10}]}>Ajoutez vos instructions pour les émetteurs :</Text>
-                      <View style={{backgroundColor: setColor('background'), borderWidth :0}}>
+                      <View style={{}}>
                         <TextInput  style={{color: 'black', textAlignVertical:'top', backgroundColor: 'white' , margin : 10, padding: 5, borderWidth :1, borderRadius: 2,width: getConstant('width')*0.8-20, height: getConstant('height')*0.15}}
                                   multiline={true}
                                   numberOfLines={5}
@@ -240,7 +244,7 @@ class FLAutocallDetail extends React.Component {
                           <MaterialCommunityIcons name={this.state.isAutomatique ? "checkbox-blank-outline" : "check-box-outline"} size={25} />
                       </TouchableOpacity>
                   </View>
-                  <View style={{alignItems:'center', justifyContent: 'center', margin : 15}}>
+                  <View style={{alignItems:'center', backgroundColor : setColor('background'), justifyContent: 'center', padding : 15}}>
                     <TouchableOpacity style={{backgroundColor: setColor('subscribeBlue')}}
                                       onPress={() => {
                                         //on envoie le ticket 
@@ -920,7 +924,7 @@ class FLAutocallDetail extends React.Component {
                             </View>
             </View>
             <View style={{position : 'absolute', top : isAndroid() ? 40 : 40 + getConstant('statusBar'), left : 0, width : getConstant('width'), justifyContent : 'center', alignItems : 'center', zIndex: 6}}>
-                <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={true} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} />
+                <FLTemplateAutocall object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={this.isEditable} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} />
             </View>
             
             {this.autocall.getFinalNominal() === -1 ?

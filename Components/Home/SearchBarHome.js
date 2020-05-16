@@ -358,7 +358,7 @@ export default class SearchBarHome extends Component {
           <View style={styles.searchContainer}>
             <Animated.View style={[opacitySearchBar, {
                   display: 'flex',
-                  backgroundColor: 'white',
+                  backgroundColor: setColor(''),
                   //borderRadius: 3,
                   borderWidth:0,
                   //borderBottomWidth: 1,
@@ -376,10 +376,10 @@ export default class SearchBarHome extends Component {
                                         this.setState({showModalCategory : true});
                                       }}
                     >
-                        <IonIcons name={'ios-menu'}  size={25} style={{color: setColor('')}}/> 
+                        <IonIcons name={'ios-menu'}  size={25} style={{color: 'white'}}/> 
                     </TouchableOpacity>
                     <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{paddingLeft : 5,fontFamily: 'FLFont' , fontWeight:'200', fontSize : 24, color: setColor('')}}>F i n L i v e</Text>    
+                        <Text style={{paddingLeft : 5,fontFamily: 'FLFont' , fontWeight:'200', fontSize : 24, color: 'white'}}>F i n L i v e</Text>    
                     </View>   
 
                     <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
@@ -428,7 +428,7 @@ export default class SearchBarHome extends Component {
                           <IonIcons
                             name='ios-search' 
                             size={25} 
-                            color={setColor('')}
+                            color={'white'}
                           />
                       </TouchableOpacity>
                     
@@ -562,13 +562,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'pink',
     borderWidth: 0,
     //paddingBottom : -50
   },
   searchContainer: {
     //zIndex: 99,
-    backgroundColor: 'white',
+    backgroundColor: setColor(''),
     width: '100%',
     //overflow: 'hidden',
     paddingBottom: 0, //10,

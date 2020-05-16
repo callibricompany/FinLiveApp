@@ -7,6 +7,7 @@ import 'numeral/locales/fr'
 
 import Moment from 'moment';
 import { setColor } from '../../Styles/globalStyle.js';
+import { getContentTypeFromExtension } from '../../Utils';
 
 
 
@@ -29,30 +30,108 @@ export class CTicket extends CObject {
 
       //conversations
       this.conversations = [];
+
+      //fichiers
+      this.files = [];
       
     }
    
-    //reponse des emeteurs
-    getAllQuoteRequests() {
-      return this.object['data'].hasOwnProperty('quoteRequest') ? this.object['data'].quoteRequest : [];
+
+    //getAllIssuer
+    getAllIssuer() {
+      issuersList = [];
+
+      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('issuersSelected')){
+
+        issuersList =this.object['data'].quoteRequest.issuersSelected;
+      }
+
+      return issuersList;
     }
 
-    getQuoteRequestsCount() {
-      return this.object['data'].hasOwnProperty('quoteRequest') ? this.object['data'].quoteRequest.responseIssuersQuote.length : 0;
+
+
+    //renvoie le nombre d'issuer qui quote
+    getQuoteRequestsIssuersCount() {
+      let nb = 0;
+      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('issuersSelected')){
+          nb = this.object['data'].quoteRequest.issuersSelected.length;
+      }
+      return nb;
+    }
+
+    //verifie si le prix est en cours
+    isIssuerProcessing(index) {
+      let isProcessing = true;
+      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('processing') && this.object['data'].quoteRequest.processing.length >= index){
+        isProcessing = this.object['data'].quoteRequest.processing[index];
+      }
+      return isProcessing;
+    }
+
+    //renvoie le code de l'issuer
+    getIssuerCode(index) {
+      let code = "";
+      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('issuersSelected') && this.object['data'].quoteRequest.issuersSelected.length >= index){
+          code = this.object['data'].quoteRequest.issuersSelected[index];
+      }
+      return code;
+    }
+
+    //renvoie le nom de l'issuer
+    getIssuerName(allIssuers, index) {
+      let name = "[XXX]";
+      let code = this.getIssuerCode(index);
+      if (code !== "") {
+        let issuer = allIssuers.filter(({id}) => id === code);
+        if (issuer != null && issuer.length === 1) {
+          name = issuer[0].name;
+        }
+      } 
+      
+
+      return name;
+    }
+    //renvoie le url de l'icone de l'issuer
+    getIssuerIcon(allIssuers, index) {
+      let name = "https://firebasestorage.googleapis.com/v0/b/auth-8722c.appspot.com/o/issuers%2Ficon.jpg?alt=media&token=80d81efb-505d-4753-8bac-b2b607509e0f"; //icone finlive
+      let code = this.getIssuerCode(index);
+      if (code !== "") {
+        let issuer = allIssuers.filter(({id}) => id === code);
+        if (issuer != null && issuer.length === 1) {
+          name = issuer[0].icon;
+        }
+      } 
+      
+
+      return name;
     }
     
-    getResponseIssuerCode(position) {
-      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersCode.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersCode[position] : []: [];
-    }
-    getResponseIssuerTermSheet(position) {
-      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersTermSheet.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersTermSheet[position] : []: [];
-    }
-    getResponseIssuerQuote(position) {
-      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersQuote.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersQuote[position].quote : []: [];
-    }
+    // getResponseIssuerCode(position) {
+    //   return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersCode.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersCode[position] : []: [];
+    // }
+    // getResponseIssuerTermSheet(position) {
+    //   return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersTermSheet.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersTermSheet[position] : []: [];
+    // }
+    // getResponseIssuerQuote(position) {
+    //   return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersQuote.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersQuote[position].quote : []: [];
+    // }
 
-    getResponseIssuerExpiryDate(position) {
-      return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersExpiryDate.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersExpiryDate[position] : 0 : 0;
+    //reponse du premier issuer
+    getResponseIssuer(field, index) {
+      let resp = null;
+      let code = this.getIssuerCode(index);
+      
+      if (code !== '' && this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('responseIssuersCode')) {
+        let lastIndexOfIssuer = this.object['data']['quoteRequest'].responseIssuersCode.lastIndexOf(code);
+        if (lastIndexOfIssuer !== -1) {
+          if (this.object['data']['quoteRequest'].hasOwnProperty(field)) {
+              resp = this.object['data']['quoteRequest'][field][lastIndexOfIssuer];
+          }
+        }
+      }
+      return resp;
+      //return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersExpiryDate.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersExpiryDate[position] : 0 : 0;
     }
 
     setConversations(conversations) {
@@ -64,6 +143,7 @@ export class CTicket extends CObject {
       return this.conversations;
     }
 
+    //les notes serves a recreer l'activite du ticket
     getNotes() {
       let notes = [];
 
@@ -81,13 +161,43 @@ export class CTicket extends CObject {
       return notes;
     }
 
+    //retourne tous les fichiers liés au ticket
+    getFiles() {
+      if (this.files.length > 1) {
+        this.files.sort(CTicket.compareNoteDateUp);
+      }
+      return this.files;
+    }
+
+
+    //on analyse les conversations pour le whatsapp
     getChat() {
       let chat = [];
 
       this.conversations.forEach((c) => {
         if (c.source === 0) {
           //console.log(c);
-    
+          //on verie les ifchiers attachés
+          if (c.hasOwnProperty('attachments') && c['attachments'].length > 0) {
+            c['attachments'] = c['attachments'].map((conver, index) => {
+
+              if (conver.content_type === 'application/octet-stream') {
+                let cType = getContentTypeFromExtension(conver.name.split('.').pop());
+                if (cType !== 'none') {
+                  //console.log(cType);
+                  conver.content_type = cType;
+                  
+                }
+              }
+              conver.type = Math.random() > 0.5 ? 'DIVERS' : 'TERMSHEET';
+              
+              this.files.push(conver);
+              return conver;
+            });
+            //console.log(c['attachments']);
+            
+          }
+         
           chat.push(c);
         } 
       });

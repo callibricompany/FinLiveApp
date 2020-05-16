@@ -92,8 +92,8 @@ class Firebase {
       this.ticketListenner();
     }
 
-    //this.unsuscribreUserRights();
-    console.log("SIGNOUT 3");
+     this.unsuscribreUserRights();
+    
      return this.auth.signOut();
   }
 
@@ -109,7 +109,7 @@ class Firebase {
     //console.log("LE TOKE EST DEMANDE")
     return new Promise(
       (resolve, reject) => {
-        this.auth.currentUser.getIdToken(true).then((idToken) => {
+        this.auth.currentUser?.getIdToken(true).then((idToken) => {
           //console.log("IDTOKEN RESOLU :" +idToken);
           resolve(idToken);
         }).catch(function (error) {
@@ -124,7 +124,7 @@ class Firebase {
     this.auth.onAuthStateChanged(authUser => {
       //console.log("SUSCRIBE RIGHTS : " + this.unsuscribreUserRights);
       if (authUser) {
-          var idTokenUser = 'merde';
+          var idTokenUser = '';
           //recuperation idToken
           this.doGetIdToken()
           .then(token => {
@@ -140,7 +140,7 @@ class Firebase {
                       let company = '';
                       let organization = '';
                       let phone = '';
-
+                      //console.log(Object.keys(doc));
                       //table documents de user non vide
                       if (typeof doc.data() !== 'undefined') {
                         // ajoute les roles

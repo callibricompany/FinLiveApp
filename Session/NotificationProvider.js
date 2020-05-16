@@ -59,6 +59,7 @@ class NotificationProvider extends Component {
         notificationList : [],
         addNotification : (notifications) => this.addNotification(notifications),
         removeNotification: (type, id) => this.removeNotification(type, id),
+        getNotifications :  (type, id) => this.getNotifications(type, id),
 
         //chech if it is read
         isNotified : (type, id) => this.isNotified(type, id),
@@ -175,6 +176,7 @@ class NotificationProvider extends Component {
 
       });
 
+      //console.log(notifications);
       let ticketNotifs = notifications.filter(({ type }) => type === typeNotif);
       this._handleCounter(typeNotif, ticketNotifs.length + this.ticketBadgesCount);
 
@@ -190,7 +192,7 @@ class NotificationProvider extends Component {
           //verifie si il est dans la liste
           let arrayTemp = [];
           this.state.notificationList.map((n, i) => {
-            console.log(n.id + "   "+ n.type);
+            //console.log(n.id + "   "+ n.type);
             if (n.type !== typeObject || n.id !== idObject) {
               arrayTemp.push(n);
             } 
@@ -202,6 +204,25 @@ class NotificationProvider extends Component {
           
           //this.setState({ notificationList : arrayTemp }, () => console.log(this.state.notificationList));
           this.setState({ notificationList : arrayTemp });
+    
+    }
+
+    //removeNotification
+    getNotifications(typeObject, idObject) {
+    
+      //console.log("GET NOTIFICATION : " + idObject + "    : " +typeObject);
+  
+      //verifie si il est dans la liste
+      let arrayTemp = [];
+      this.state.notificationList.map((n, i) => {
+        //console.log(n.id + "   "+ n.type);
+        if (n.type === typeObject && n.id === idObject) {
+          arrayTemp.push(n);
+        } 
+      })
+
+      return arrayTemp;
+
     
     }
 
@@ -320,7 +341,7 @@ export const withNotification = Component => props => (
               </View>
               { (store.titleNotification != null && store.titleNotification !== '')
                 ?
-                  <Animated.View style={{position: 'absolute', top: store.positionTop, left : getConstant('width')/10, width :4*getConstant('width')/5, borderWidth : 4, borderColor: 'red', borderRadius : 20}}>
+                  <Animated.View style={{position: 'absolute', top: store.positionTop, left : getConstant('width')/10, width :4*getConstant('width')/5, borderWidth : 0, borderColor: 'red', borderRadius : 20}}>
                       <TouchableOpacity style={{ flexDirection : 'row'}}
                                           onPress={() => {
                                               if (store.typeNotification === 'TICKET') {

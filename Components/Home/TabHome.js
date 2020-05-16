@@ -19,6 +19,7 @@ import { withAuthorization } from '../../Session';
 
 import { withUser } from "../../Session/withAuthentication";
 import { withNavigation } from "react-navigation";
+import NavigationService from '../../Navigation/NavigationService';
 import { compose, hoistStatics } from "recompose";
 
 import { searchProducts } from '../../API/APIAWS';
@@ -298,8 +299,15 @@ class TabHome extends React.PureComponent {
                                       
                                       this.props.navigation.dispatch(NavigationActions.navigate({
                                        routeName: 'Tickets',
-                                       action: NavigationActions.navigate({ routeName: 'Tickets' , params : {}} ),
+                                       action: NavigationActions.navigate({ routeName: 'Tickets' , params : {
+                                         'templateType' : TEMPLATE_TYPE.TICKET_FULL_TEMPLATE
+                                       }} ),
                                       }));
+
+                                      // NavigationService.navigate('Tickets' , {
+                                      //   'templateType' : TEMPLATE_TYPE.TICKET_FULL_TEMPLATE
+                                      // });
+
                                       // notif = {
                                       //   "event": "{priority:{from:2,to:3}}",
                                       //   "id": 110,
