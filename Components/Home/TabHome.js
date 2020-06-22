@@ -121,9 +121,9 @@ class TabHome extends React.PureComponent {
   componentDidMount(){
     //chargement des meilleurs coupons
     let allUnderlyings = this.props.getAllUndelyings();
-    
+
    // allUnderlyings.forEach((u) => {
-     u = allUnderlyings[0];
+      u = allUnderlyings[0];
       let request = new CPSRequest();
       //request.setCriteria('type', autocall.getProductShortName(), autocall.getProductName());
       request.setCriteria('underlying', u.split(), u);
@@ -136,7 +136,7 @@ class TabHome extends React.PureComponent {
         
           let autocall = interpolateBestProducts(data, request);
           if (autocall.length === 1){
-            this.bestCoupons.push(autocall[0]);
+            this.bestCoupons.push(new CAutocall(autocall[0]));
             this.setState({ bestCouponsExtraData : !this.state.bestCouponsExtraData });
           } else if (autocall.length === 0) {
             console.log("Pas résultat possible.\nModifiez vos critères : " + u);
@@ -229,7 +229,7 @@ class TabHome extends React.PureComponent {
       case "PSLIST":
         return (
           <View style={{marginLeft: getConstant('width') * 0.025}}>
-             <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
+             <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
           </View>
         );
       default:
@@ -392,23 +392,31 @@ class TabHome extends React.PureComponent {
                   //style={{marginLeft : 100}}
                   //scrollTo={this.state.scrollTo}
                   contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-                  data={
-                    this.props.filtersHomePage["category"] === "PSFAVORITES"
-                      ? this.props.favorites
-                      : this.isFiltered
-                      ? this.state.filteredFeaturedProducts
-                      : this.props.featured
-                  }
+                  // data={
+                  //   this.props.filtersHomePage["category"] === "PSFAVORITES"
+                  //     ? this.props.favorites
+                  //     : this.isFiltered
+                  //     ? this.state.filteredFeaturedProducts
+                  //     : this.props.featured
+                  // }
+                  data={this.props.featured}
                   horizontal={true}
-                  renderItem={({ item, index }) => this._renderFeatured(item, index)}
-                  //tabRoute={this.props.route.key}
-                  keyExtractor={item => {
-                    let key =
-                      typeof item.data["id"] === "undefined"
-                        ? item.data["code"]
-                        : item.data["id"];
-                    return key.toString();
+                  renderItem={({ item, index }) => {
+                    return (
+                        <View style={{marginLeft: getConstant('width') * 0.025}}>
+                          <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
+                        </View>
+                    )
                   }}
+                  //tabRoute={this.props.route.key}
+                  // keyExtractor={item => {
+                  //   let key =
+                  //     typeof item.data["id"] === "undefined"
+                  //       ? item.data["code"]
+                  //       : item.data["id"];
+                  //   return key.toString();
+                  // }}
+                  keyExtractor={item => item.getInternalCode()}
                 />
             </View>
 
@@ -437,7 +445,7 @@ class TabHome extends React.PureComponent {
                           <View style={{marginLeft: getConstant('width') * 0.025}}>
                           {this.bestCoupons.length === 0 ?
                               <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
-                            : <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/>
+                            : <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/> 
                           }
                           </View>
                         );
@@ -445,17 +453,8 @@ class TabHome extends React.PureComponent {
                   }}
                   extraData={this.state.extraData}
                   //tabRoute={this.props.route.key}
-                  keyExtractor={item => {
-                    if (this.bestCoupons.length === 0) {
-                          let key =
-                            typeof item.data["id"] === "undefined"
-                              ? item.data["code"]
-                              : item.data["id"];
-                          return key.toString();
-                    } else {
-                      return item.code.toString();
-                    }
-                  }}
+                  //keyExtractor={item => item.getInternalCode()}
+                  keyExtractor={item =>  item.getInternalCode()}
                 />
             </View>
 

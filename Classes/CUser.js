@@ -18,10 +18,18 @@ Object {
 
 export class CUser { 
     constructor(user) {
-        console.log("OBJECT CONSTRCUTIR : " + typeof object);
+
         //object !== 'undefined' ? this._constructorProduct(object,  template) : null;
 
         this.user = user;
+    }
+
+    getId() {
+      let id = -1;
+      if (this.user.hasOwnProperty('id') && this.user['id'] !== '' ) {
+        id = this.user['id'];
+      }
+      return  id;
     }
 
    isAdmin () {
@@ -44,7 +52,11 @@ export class CUser {
     return this.user.hasOwnProperty('phone') ? this.user['phone'] : "";
   }
    getOrganization() {
-    return this.user.hasOwnProperty('organization') ? this.user['organization'] : "";
+     let org = 'FL';
+     if (this.user.hasOwnProperty('organization') && this.user['organization'] !== '' ) {
+       org = this.user['organization'];
+     }
+    return  org;
   }
   getFirstName() {
     return this.user.hasOwnProperty('firstName') ? this.user['firstName'] : "";
@@ -134,4 +146,48 @@ export class CUser {
 
   }
 
+  //////////////////
+  //
+  //  FRIENDS
+  //////////////////
+  isFriend(uid) {
+    let friend = false;
+     
+    if (this.user.hasOwnProperty('params')) {
+      if (this.user['params'].hasOwnProperty('friends')) {
+        friend = this.user['params']['friends'].indexOf(uid) !== -1;
+      }
+    }
+    return friend;
+  }
+
+  addFriend(friend) {
+    if (this.user.hasOwnProperty('params')) {
+      if (this.user['params'].hasOwnProperty('friends')) {
+        //on verifie s'il existe deja dans la liste ou pas
+        if (this.user['params']['friends'].indexOf(friend) === -1) {
+          this.user['params']['friends'].push(friend);
+        }
+      } else {
+
+        this.user['params']['friends'] = [friend];   
+      }
+    } else {
+      let obj = {};
+      obj['friends'] = [issuer];
+      this.user['params']= obj;
+    }
+  }
+
+  removeFriend(friend) {
+    if (this.user.hasOwnProperty('params')) {
+      if (this.user['params'].hasOwnProperty('friends')) {
+        let index = this.user['params']['friends'].indexOf(friend);
+        if (index !== -1) {
+          this.user['params']['friends'].splice(index, 1);
+        }
+      }
+    } 
+
+  }
 }

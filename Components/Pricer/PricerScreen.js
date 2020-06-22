@@ -2,7 +2,7 @@ import React from 'react'
 import { Modal, StyleSheet, SafeAreaView, TextInput, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Image, ScrollView, Picker, StatusBar, Dimensions, Easing } from 'react-native'
 
 import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
@@ -359,7 +359,7 @@ _renderProductTile() {
                 >
                     <View style={{flexDirection: 'row'}}>
                           <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                              <MaterialCommunityIconsIcon name={"beaker-outline"}  size={30} style={{color: this.request.isActivated('type') ? setColor('') : setColor('lightBlue')}}/> 
+                              <MaterialCommunityIcons name={"beaker-outline"}  size={30} style={{color: this.request.isActivated('type') ? setColor('') : setColor('lightBlue')}}/> 
                           </View>
                           <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
                                             onPress={() => {
@@ -367,7 +367,7 @@ _renderProductTile() {
                                               this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
                                             }}
                           >
-                            <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
+                            <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                           </TouchableOpacity>
                     </View>
                     <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -471,7 +471,7 @@ _renderGenericTile=(criteria) => {
                 >
                     <View style={{flexDirection: 'row'}}>
                           <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                              <MaterialCommunityIconsIcon name={this.request.getIcon(criteria)}  size={30} style={{color: this.request.isActivated(criteria) ? setColor('') : setColor('lightBlue')}}/> 
+                              <MaterialCommunityIcons name={this.request.getIcon(criteria)}  size={30} style={{color: this.request.isActivated(criteria) ? setColor('') : setColor('lightBlue')}}/> 
                           </View>
                           <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
                                             onPress={() => {
@@ -483,7 +483,7 @@ _renderGenericTile=(criteria) => {
                                             activeOpacity={(criteria === 'UF' || criteria === 'coupon') ? 1 : 0.2}
                           >
                           {criteria !== 'UF' && criteria !== 'coupon' 
-                              ? <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
+                              ? <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                               : null
                           }
 
@@ -558,7 +558,7 @@ _renderPhoenixTile=() => {
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                                  <MaterialCommunityIconsIcon name={this.request.getIcon('barrierPhoenix')}  size={30} style={{color: iconColorPhoenix}}/> 
+                                  <MaterialCommunityIcons name={this.request.getIcon('barrierPhoenix')}  size={30} style={{color: iconColorPhoenix}}/> 
                               </View>
 
                               <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
@@ -572,7 +572,7 @@ _renderPhoenixTile=() => {
                                                 activeOpacity={this.request.getValue('type') === 'phoenix' ? 0.2 : 1}
                               >
                               {this.request.getValue('type') === 'phoenix' ?
-                                  <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
+                                  <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                                 : null
                               }
                               </TouchableOpacity>
@@ -593,7 +593,7 @@ _renderPhoenixTile=() => {
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                                  <MaterialCommunityIconsIcon name={"memory"}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('lightBlue')}}/> 
+                                  <MaterialCommunityIcons name={"memory"}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('lightBlue')}}/> 
                               </View>
  
                               <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
@@ -602,7 +602,7 @@ _renderPhoenixTile=() => {
                                                     this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
                                             }}
                               >
-                                 <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
+                                 <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                               </TouchableOpacity>
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -677,7 +677,7 @@ _renderFreqTile() {
                       >
                           <View style={{flexDirection: 'row'}}>
                                 <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                                    <MaterialCommunityIconsIcon name={this.request.getIcon('freq')}  size={30} style={{color: this.request.isActivated('freq') ? setColor('') : setColor('lightBlue')}}/> 
+                                    <MaterialCommunityIcons name={this.request.getIcon('freq')}  size={30} style={{color: this.request.isActivated('freq') ? setColor('') : setColor('lightBlue')}}/> 
                                 </View>
                                 <View style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}>
                                   
@@ -706,7 +706,7 @@ _renderFreqTile() {
                       >
                           <View style={{flexDirection: 'row'}}>
                                 <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                                    <MaterialCommunityIconsIcon name={this.request.getIcon('nncp')}  size={30} style={{color: this.request.isActivated('freq') ? setColor('') : setColor('lightBlue')}}/> 
+                                    <MaterialCommunityIcons name={this.request.getIcon('nncp')}  size={30} style={{color: this.request.isActivated('freq') ? setColor('') : setColor('lightBlue')}}/> 
                                 </View>
                                 <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
                                                 onPress={() => {
@@ -714,7 +714,7 @@ _renderFreqTile() {
                                                     this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
                                             }}
                               >
-                                 <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
+                                 <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                               </TouchableOpacity>
                           </View>
                           <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start', marginLeft : 3}}>
@@ -787,7 +787,7 @@ _renderAirbagTile() {
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                                  <MaterialCommunityIconsIcon name={this.request.getIcon('airbagLevel')}  size={30} style={{color: this.request.isActivated('airbagLevel') ? setColor('') : setColor('lightBlue')}}/> 
+                                  <MaterialCommunityIcons name={this.request.getIcon('airbagLevel')}  size={30} style={{color: this.request.isActivated('airbagLevel') ? setColor('') : setColor('lightBlue')}}/> 
                               </View>
                               <View style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}>
                                 
@@ -814,7 +814,7 @@ _renderAirbagTile() {
                     >
                         <View style={{flexDirection: 'row'}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                                  <MaterialCommunityIconsIcon name={this.request.getIcon('degressiveStep')}  size={30} style={{color: this.request.isActivated('degressiveStep') ? setColor('') : setColor('lightBlue')}}/> 
+                                  <MaterialCommunityIcons name={this.request.getIcon('degressiveStep')}  size={30} style={{color: this.request.isActivated('degressiveStep') ? setColor('') : setColor('lightBlue')}}/> 
                               </View>
                               <View style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}>
                                
@@ -836,7 +836,7 @@ _renderAirbagTile() {
                     <View style={{flex: 0.333, flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, justifyContent: 'space-between', alignItems: 'center'}}>
                           <View style={{flexDirection: 'row'}}>
                                 <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                                    <MaterialCommunityIconsIcon name={this.request.getIcon('autocallLevel')}  size={30} style={{color: setColor('lightBlue')}}/> 
+                                    <MaterialCommunityIcons name={this.request.getIcon('autocallLevel')}  size={30} style={{color: setColor('lightBlue')}}/> 
                                 </View>
                                 <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
                                                   onPress={() => {
@@ -845,7 +845,7 @@ _renderAirbagTile() {
                                                   }}
                                 >
                                 { this.request.getValue('type') === 'athena' ?
-                                  <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
+                                  <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                                   : null 
                                 }
                                 </TouchableOpacity>
@@ -968,7 +968,7 @@ _renderMemoryTile=() => {
                 >
                     <View style={{flexDirection: 'row'}}>
                           <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
-                              <MaterialCommunityIconsIcon name={this.request.getIcon('isMemory')}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('lightBlue')}}/> 
+                              <MaterialCommunityIcons name={this.request.getIcon('isMemory')}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('lightBlue')}}/> 
                           </View>
                           <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
                                           onPress={() => {
@@ -980,7 +980,7 @@ _renderMemoryTile=() => {
                                           }}
                         
                           >
-                              <MaterialCommunityIconsIcon name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
+                              <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                           </TouchableOpacity>
                     </View>
                     <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -1074,7 +1074,7 @@ _renderTiles() {
                                 alert("la suite demain midi !");
                               }}                    
             >
-                <MaterialCommunityIconsIcon name={"play-circle"}  size={60} style={{color: setColor('subscribeBlue')}}/> 
+                <MaterialCommunityIcons name={"play-circle"}  size={60} style={{color: setColor('subscribeBlue')}}/> 
                             </TouchableOpacity>*/}
       </View>
    );
@@ -1103,7 +1103,7 @@ _renderUFOrCoupon(what) {
                         }}
       >
           <View style={{justifyContent: 'center', alignItems: 'center', paddinng : 5}}>
-               <MaterialCommunityIconsIcon name={this.request.getIcon(what)}  size={30} style={{color: this.request.isActivated(what) ? setColor(''): setColor('lightBlue')}}/> 
+               <MaterialCommunityIcons name={this.request.getIcon(what)}  size={30} style={{color: this.request.isActivated(what) ? setColor(''): setColor('lightBlue')}}/> 
           </View>
           <View style={{justifyContent: 'center', alignItems: 'center', borderWidth: 0, padding: 10}}>
                 <Text style={[setFont('300', 14, this.request.isActivated(what) ? setColor(''): setColor('lightBlue'), 'Regular' ), {textAlign: 'center'}]}>
@@ -1232,17 +1232,17 @@ render() {
                                         borderRadius : 10
                                       }
                                     }}
-                                    renderRow={(rowData,index,isSelected) => {
-                                      return (
-                                        <TouchableHighlight underlayColor={setColor('')}>
-                                          <View style={{height : 35, alignItems : 'flex-start', justifyContent : 'center', paddingLeft : 5}}>
-                                            <Text style={setFont('400', 20, setColor('darkBlue'), isSelected ? 'Bold' : 'Light')} numberOfLines={1} ellipsizeMode={'tail'}>
-                                              {rowData}
-                                            </Text>
-                                          </View>
-                                        </TouchableHighlight>
-                                      )
-                                    }}
+                                    // renderRow={(rowData,index,isSelected) => {
+                                    //   return (
+                                    //     <TouchableHighlight underlayColor={setColor('')}>
+                                    //       <View style={{height : 35, alignItems : 'flex-start', justifyContent : 'center', paddingLeft : 5}}>
+                                    //         <Text style={setFont('400', 20, setColor('darkBlue'), isSelected ? 'Bold' : 'Light')} numberOfLines={1} ellipsizeMode={'tail'}>
+                                    //           {rowData}
+                                    //         </Text>
+                                    //       </View>
+                                    //     </TouchableHighlight>
+                                    //   )
+                                    // }}
                                     renderRow={(option, index, isSelected) => {
                                       switch(option) {
                                         case 'Shadow' :
@@ -1291,7 +1291,8 @@ render() {
                                     disabled={false}
                   >
                       <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
-                          <FontAwesome name={'navicon'}  size={25} style={{color: setColor('')}}/> 
+                          <MaterialCommunityIcons name={'dots-vertical'} size={25} style={{color: setColor('')}}/>
+                          {/* <FontAwesome name={'navicon'}  size={25} style={{color: setColor('')}}/>  */}
                       </View>
                   </ModalDropdown>
 
@@ -1374,11 +1375,4 @@ const composedPricerScreen = compose(
 //export default HomeScreen;
 export default hoistStatics(composedPricerScreen)(PricerScreen);
 
-/*
-           <TabPricer   launchPricing={this._launchPricing} 
-                        product={this.request.getProduct()} 
-                        needToRefresh={this.needToRefresh} 
-                        isGoodToShow={!this.state.needToRefresh}  
-                        parameterProductUpdated={this.parameterProductUpdated} 
-            />
-            */
+

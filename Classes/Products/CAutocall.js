@@ -25,9 +25,21 @@ export class CAutocall extends CProduct {
     this.underLyingName = "[UDL]";
 
     this._checkDates();
+
+
+    this.probability = {};
+    this.calculateProbabilities();
   }
 
 
+  calculateProbabilities() {
+    this.probability['PROB_COUPON_TOUCHED'] = Math.round(Math.floor(Math.random() * (95 - 55 + 1)) + 55);
+    this.probability['PROB_PAIR_REFUND'] = Math.round(Math.random() *(100 - this.probability['PROB_COUPON_TOUCHED'] ));
+    this.probability['PROB_PDI_ACTIVATED'] = 100 - this.probability['PROB_COUPON_TOUCHED'] - this.probability['PROB_PAIR_REFUND'];
+  }
+  getProbability(probName) {
+    return this.probability[probName];
+  }
 
   updateProduct(product) {
     //console.log("CAutocall : ");
@@ -35,6 +47,8 @@ export class CAutocall extends CProduct {
     //console.log("CAutocall apres super : ");
     this.setProductName();
     this._checkDates();
+    this.calculateProbabilities();
+    
   }
 
   //determination du nom du produit
@@ -90,41 +104,7 @@ export class CAutocall extends CProduct {
     return this.product;
   }
 
-  getResultAuction() {
-    let result = [];
 
-    let obj = {};
-    let i = 1;
-
-    if (this.product.hasOwnProperty("broker1name")) {
-      obj["emetteur"] = this.product.broker1name;
-      obj["couponAutocall"] = this.product.couponautocall1;
-      obj["couponPhoenix"] = this.product.couponphoenix1;
-      obj["id"] = i;
-      result.push(obj);
-      i = i + 1;
-    }
-    obj = {};
-    if (this.product.hasOwnProperty("broker2name")) {
-      obj["emetteur"] = this.product.broker2name;
-      obj["couponAutocall"] = this.product.couponautocall2;
-      obj["couponPhoenix"] = this.product.couponphoenix2;
-      obj["id"] = i;
-      result.push(obj);
-      i = i + 1;
-    }
-    obj = {};
-    if (this.product.hasOwnProperty("broker3name")) {
-      obj["emetteur"] = this.product.broker3name;
-      obj["couponAutocall"] = this.product.couponautocall3;
-      obj["couponPhoenix"] = this.product.couponphoenix3;
-      obj["id"] = i;
-      result.push(obj);
-      i = i + 1;
-    }
-
-    return result;
-  }
 
 
   /////////////////////////
@@ -148,7 +128,7 @@ export class CAutocall extends CProduct {
     }
   }
 
-  getStartDate() {
+  getIssueDate() {
     return Moment(this.product.startdate, "YYYYMMDD").toDate();
   }
 
@@ -156,7 +136,7 @@ export class CAutocall extends CProduct {
     return Moment(this.product.date, "YYYYMMDD").toDate();
   }
 
-  getMaturityDate() {
+  getEndIssueDate() {
     return Moment(this.product.enddate, "YYYYMMDD").toDate();
   }
 

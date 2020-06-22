@@ -9,7 +9,7 @@ import * as Device from 'expo-device';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { getAPIIP } from '../API/APINetwork';
-import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket} from "../API/APIAWS";
+import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket, getAllUsers } from "../API/APIAWS";
 
 
 import { isAndroid , getConstant } from '../Utils'; 
@@ -19,8 +19,12 @@ import { CBroadcastTicket } from "../Classes/Tickets/CBroadcastTicket";
 import { CTicket } from '../Classes/Tickets/CTicket';
 import { CWorkflowTicket } from  "../Classes/Tickets/CWorkflowTicket";
 import { CUser } from '../Classes/CUser';
+import { CUsers } from '../Classes/CUsers';
+
+import * as TEMPLATE_TYPE from '../constants/template';
 
 import { withNotification } from './NotificationProvider'; 
+import { CAutocall } from "../Classes/Products/CAutocall";
 
 const withAuthentication = Component => {
   class WithAuthentication extends React.Component {
@@ -52,7 +56,9 @@ const withAuthentication = Component => {
         apeTickets : [],
         addTicket: ticket => this.addTicket(ticket),
 
-        
+        //users
+        users : [],
+
 
         //ape publique issu de srp
         apeSRP : [],
@@ -101,7 +107,7 @@ const withAuthentication = Component => {
                   authUser.organization +
                   ")"
               );
-            
+             
               this.setState({ authUser });
 
 
@@ -239,8 +245,10 @@ const withAuthentication = Component => {
       //this.setState({ device : d}, () => console.log(this.state.device));
       this.setState({ device : d });
 
-      //console.log("DEVICE : " );
-      //console.log(this.state.device);
+      //chargement de tous les users
+      this.setState({ users : new CUsers( await getAllUsers(this.props.firebase), this.state.authUser.uid) });
+
+      //load all infos at ignition
       return new Promise((resolve, reject) => {
         this.props.firebase
           .doGetIdToken()
@@ -284,9 +292,24 @@ const withAuthentication = Component => {
                 tickets.sort(CTicket.compareLastUpdateDown);
 
 
+                //on cree les objets autocalls
+                let featuredAutocalls = [];
+                userDatas.startPage.bestCoupon.forEach((t) => {            
+                  switch (t.template) {
+                    case TEMPLATE_TYPE.PSLIST :
+                      let featuredAutocall = new CAutocall(t);
+                      //console.log(t)
+                      featuredAutocalls.push(featuredAutocall);
+                      break;
+                    default : 
+                      break;
+                  }
+                });
+        
+
                 this.setState({
-                  featured : userDatas.startPage.bestCoupon,
-                  //featured : [],
+                  //featured : userDatas.startPage.bestCoupon,
+                  featured : featuredAutocalls,
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
                   user : new CUser(userDatas.userInfo),
@@ -314,9 +337,9 @@ const withAuthentication = Component => {
 
              
                 
-                console.log(userDatas.userInfo);
+                //console.log(userDatas.startPage);
+                console.log(Object.keys(userDatas.startPage));
                 console.log(Object.keys(userDatas));
-                
                 if (this.props.addNotification != null) {
                   this.props.addNotification(userDatas.notifications);
                 }
@@ -329,7 +352,8 @@ const withAuthentication = Component => {
                 //console.log(userDatas.startPage.campaign);
                 //console.log(userDatas.userTickets.slice(0,1))
                 //console.log(this.getAllUndelyings());
-               //console.log("Nbre APE : " + userDatas.startPage.srp.length);
+                //console.log("Nbre APE : " + userDatas.startPage.srp.length);
+         
                 
                 resolve("ok");
               })
@@ -346,6 +370,9 @@ const withAuthentication = Component => {
 
           });
       });
+
+
+
     }
 
     //chargement des favoris depuis le serveur
@@ -423,6 +450,7 @@ const withAuthentication = Component => {
 
     //retourne tous les sous-jacents d'une categories
     getAllUndelyings(type = "PS") {
+
       let allCat = this.state.categories.filter(({ codeCategory }) => codeCategory === type )[0].subCategory;
       let result = [];
       
@@ -435,6 +463,7 @@ const withAuthentication = Component => {
           }
         }
       });
+
       return result;
     }
 

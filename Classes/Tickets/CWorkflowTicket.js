@@ -171,9 +171,7 @@ export class  CWorkflowTicket extends CTicket {
     
   }
   
-  getResultAuction() {
-    return this.getUnderlying().getResultAuction();
-  }
+
   
 
 }

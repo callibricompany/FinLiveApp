@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Dimensions, 
-        StyleSheet, Easing, View, Text, FlatList, SafeAreaView, Modal} from 'react-native';
+        StyleSheet, Easing, View, Text, FlatList, SafeAreaView, Modal, Alert} from 'react-native';
 import { Icon } from 'native-base';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -140,7 +140,7 @@ class TicketScreen extends React.Component {
 
     if (!isAndroid()) {
       this._navListener = this.props.navigation.addListener('didFocus', () => {
-        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBarStyle('light-content');
       });
     }
   }
@@ -327,7 +327,7 @@ class TicketScreen extends React.Component {
     //console.log(this.props.tickets);
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
-      <SafeAreaView style={{flex : 1, backgroundColor : 'white'}}>
+      <SafeAreaView style={{flex : 1, backgroundColor : setColor('')}}>
         {this._renderModalDrawner()}
  
         <View style={{height: getConstant('height'), WIDTH: getConstant('width'), backgroundColor: setColor('background'), opacity : this.state.showModalDrawner ? 0.3 : 1}}>
@@ -410,7 +410,7 @@ class TicketScreen extends React.Component {
           
           <Animated.View style={{
                     display: 'flex',
-                    backgroundColor: 'white',
+                    backgroundColor: setColor(''),
                     //borderRadius: 3,
                     borderWidth:0,
                     opacity: this.filterOnAir ? 1 : navbarOpacity,
@@ -427,13 +427,13 @@ class TicketScreen extends React.Component {
                                                 this.setState ({ showModalDrawner : true });
                                               }}
                             >
-                                      <MaterialIcons name='filter-list' size={22} color={'black'}/>
+                                      <MaterialIcons name='filter-list' size={22} color={'white'}/>
                       </TouchableOpacity>
                       <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity onPress={() => {
                                     console.log("qsjhfjhdfjd");
                         }}>
-                          <Text style={[setFont('200', 18, 'black', 'Regular'), {paddingLeft : 5}]}>
+                          <Text style={[setFont('200', 18, 'white', 'Regular'), {paddingLeft : 5}]}>
                           {filterDatas.map((f,i) => Object.keys(f)[0] === this.state.filterSelected ? Object.values(f)[0] : null)}  
                           </Text>    
                         </TouchableOpacity>
@@ -473,7 +473,7 @@ class TicketScreen extends React.Component {
                             
 
                           }}>  
-                            <MaterialIcons name='search' size={25} color={'black'} />
+                            <MaterialIcons name='search' size={25} color={'white'} />
                         </TouchableOpacity>
           
                       

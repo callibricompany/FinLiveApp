@@ -33,11 +33,13 @@ export class CProduct extends CObject {
     updateProduct(product) {
       this._constructorProduct(product);
       this.product = this.object['data'];
-      //console.log("CProduct : ");
+      
       //console.log(this.product);
     }
 
-
+    getInternalCode() {
+      return this.product['code'];
+    }
 
 
     getAuctionType() {
@@ -134,7 +136,7 @@ export class CProduct extends CObject {
 
     /////////////////////////
 
-    getStartDate() {
+    getIssueDate() {
 
       return Moment(this.product.startdate, "YYYYMMDD").toDate();
     }

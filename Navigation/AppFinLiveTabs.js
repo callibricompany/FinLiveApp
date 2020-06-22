@@ -8,6 +8,7 @@ import NewsDetail from '../Components/Home/NewsDetail';
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb';
 import FLTicketDetailHome from '../Components/Home/FLTicketDetailHome';
 import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
+import FLAutocallDetailTrade from '../Components/commons/Autocall/FLAutocallDetailTrade';
 import FLSRPDetail from '../Components/Home/FLSRPDetail';
 
 import PricerScreen from '../Components/Pricer/PricerScreen'
@@ -18,8 +19,8 @@ import FLAutocallDetailTicket from '../Components/Ticket/FLAutocallDetailTicket'
 
 import FLCouponMinDetailAndroid from '../Components/Pricer/description/FLCouponMinDetailAndroid';
 
-import ProfileScreen from '../Components/ProfileScreen';
-import ProfileScreenDetail from '../Components/ProfileScreenDetail';
+import ProfileScreen from '../Components/Profile/ProfileScreen';
+import ProfileScreenDetail from '../Components/Profile/ProfileScreenDetail';
 
 
 import TicketScreen from '../Components/Ticket/TicketScreen';
@@ -95,6 +96,9 @@ function labelStyle (focused, tintColor) {
     FLTicketDetailHome: {
       screen : FLTicketDetailHome
     },
+    FLAutocallDetailTrade: {
+      screen : FLAutocallDetailTrade
+    },
 
   }, 
   {
@@ -121,6 +125,9 @@ function labelStyle (focused, tintColor) {
     FLCouponMinDetailAndroid: {
       screen : FLCouponMinDetailAndroid
     },
+    // FLAutocallDetailTrade: {
+    //   screen : FLAutocallDetailTrade
+    // },
 
   })
   

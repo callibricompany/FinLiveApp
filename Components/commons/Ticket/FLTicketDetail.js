@@ -113,7 +113,7 @@ class FLTicketDetail extends React.Component {
       ]
     }
 
-    console.log(Moment(new Date(1590938100000)).format('llll'));
+    // console.log(Moment(new Date(1590938100000)).format('llll'));
 
     ///timers
     this.intervalTimer = [null, null, null];
@@ -648,7 +648,7 @@ class FLTicketDetail extends React.Component {
                               })
                             }}
           >
-              <FLTemplateAutocall object={this.autocall.getObject()} screenWidth={1} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} source={this.props.source}  nominal={this.ticket.getNominal()} />
+              <FLTemplateAutocall autocall={this.autocall} screenWidth={1} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} source={this.props.source}  nominal={this.ticket.getNominal()} />
           </TouchableOpacity>
           <View style={{flexDirection : 'row', justifyContent: 'flex-start', alignItems: 'stretch', borderWidth : 0, paddingLeft : 0.025*getConstant('width'), marginTop : 30,}}>
               <View style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, justifyContent: 'center', alignItems: 'center'}}>

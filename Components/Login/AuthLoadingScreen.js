@@ -40,6 +40,7 @@ class AuthLoadingScreen extends React.Component {
       const userToken = await AsyncStorage.getItem('userToken');
       const userEmail = await AsyncStorage.getItem('userEmail');
   
+      console.log('VERIFIE ASYNC STORAGE');
       //en fonction de l'existence du token redirige vers le bon ecran
       //this.props.navigation.navigate(userToken ? 'App' : 'Auth');
       

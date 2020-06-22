@@ -129,7 +129,7 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
                     //console.log(user.user);
 
                     delete user.user['email'];
-
+                    delete user.user['id'];
                     //console.log(user.user);
 
 
@@ -168,7 +168,10 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
 
 
 
-
+///////////////////////////
+//    USER
+//    change l'avatar
+///////////////////////////
   // Object {
   //   "cancelled": false,
   //   "height": 550,
@@ -176,9 +179,6 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
   //   "uri": "file:///Users/Vincent%20Sudre/Library/Developer/CoreSimulator/Devices/1AF6FEFB-984B-4308-82D8-993209A53C50/data/Containers/Data/Application/627CB734-6003-4D66-A86A-B77B5960EFED/Library/Caches/ExponentExperienceData/%2540geodulaur%252FFinLiveApp/ImagePicker/14340E63-EE92-452A-A977-4A37CBF38989.jpg",
   //   "width": 826,
   // }
-  
-
-
   export function changeAvatar (firebase, file, idFreshdesk) {
     
     return new Promise((resolve, reject) => {
@@ -225,7 +225,39 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
   });
 }
 
+///////////////////////////
+//    USERS
+//    retourne tous les users
+///////////////////////////
+export function getAllUsers (firebase) {
+  console.log("==================================");
+  return new Promise(
+    (resolve, reject) => {
 
+      firebase.doGetIdToken()
+      .then(token => {
+
+          var axiosConfig = {
+            headers :{
+              //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+              'bearer'      : token,
+            }
+          };
+
+          axios.get(URL_AWS + '/users',  axiosConfig)
+          .then((response) => {
+            //console.log(response.data);
+            resolve(response.data)
+          })
+          .catch(function (error) {
+            console.log("Erreur requete aws (getAllUsers): " + error);
+            reject(error)
+          });
+      })
+      .catch((error) => reject(error));
+
+    });
+}
 
 
 ///////////////////////////
@@ -523,6 +555,9 @@ export function getUserAllInfoAPI (idToken, device) {
       });
     });
 }
+
+
+
 
 export function getUserFavorites (idToken) {
   var axiosConfig = {

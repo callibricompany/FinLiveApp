@@ -173,7 +173,7 @@ class FLSRPDetail extends React.Component {
       return <View></View>;
     }
     return (
-      <View style={{backgroundColor: 'white', marginTop: 15, borderTopLeftRadius: 10, borderTopRightRadius: 10, borderWidth :0, backgroundColor : setColor(''),                                          shadowColor: 'rgb(75, 89, 101)',
+      <View style={{backgroundColor: 'white', marginTop: 15, borderTopLeftRadius: 10, borderTopRightRadius: 10, borderWidth :0, backgroundColor : setColor(''), shadowColor: 'rgb(75, 89, 101)',
                     shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.9, justifyContent: 'center', alignItems: 'center'}}>
         <Text style={setFont('400', 18, 'white', 'Regular')}>
            {String(content.title).toUpperCase()}
@@ -219,7 +219,7 @@ class FLSRPDetail extends React.Component {
               </View>
               <View style={{flex: 0.5}}>
                 <Text style={setFont('400', 12)}>
-                    {Moment(this.autocall.getStartDate()).locale('fr',localization).format('ll')}
+                    {Moment(this.autocall.getIssueDate()).locale('fr',localization).format('ll')}
                 </Text>
               </View>
         </View>
@@ -268,7 +268,7 @@ class FLSRPDetail extends React.Component {
               </View>
               <View style={{flex: 0.5}}>
                 <Text style={setFont('400', 12)}>
-                    {Moment(this.autocall.getStartDate()).locale('fr',localization).format('ll')}
+                    {Moment(this.autocall.getIssueDate()).locale('fr',localization).format('ll')}
                 </Text>
               </View>
         </View>
@@ -484,7 +484,7 @@ class FLSRPDetail extends React.Component {
                           }}
               >
                      <FLTemplatePSPublicAPE object={this.autocall.getObject()} templateType={TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE} isEditable={false} source={'Home'} nominal={this.state.nominal}/>
-                     {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') === 0 ?
+                     {Moment(this.autocall.getIssueDate()).diff(Moment(Date.now()), 'days') === 0 ?
                                     <View style={{padding : 5, marginTop : 10, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', borderRadius: 3}}>
                                         <Text style={setFont('500', 12, 'white', 'Bold')}>
                                           Dernier jour
@@ -493,7 +493,7 @@ class FLSRPDetail extends React.Component {
                                   :
                                   <View style={{paddingTop : 10, justifyContent: 'center', alignItems: 'center'}}>
                                       <Text style={setFont('500', 12, 'black', 'Bold')}>
-                                        Plus que {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days')} jour{Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') !== 1 ? 's' : ''}
+                                        Plus que {Moment(this.autocall.getIssueDate()).diff(Moment(Date.now()), 'days')} jour{Moment(this.autocall.getIssueDate()).diff(Moment(Date.now()), 'days') !== 1 ? 's' : ''}
                                       </Text>
                                   </View>   
                       } 

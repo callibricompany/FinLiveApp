@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Keyboard, Image } from 'react-native';
+import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Image } from 'react-native';
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -12,22 +13,22 @@ import SwitchSelector from "react-native-switch-selector";
 
 import AlertAsync from 'react-native-alert-async';
 
-import { withFirebase } from '../Database';
-import { withUser } from '../Session/withAuthentication';
-import { withAuthorization } from '../Session';
+import { withFirebase } from '../../Database';
+import { withUser } from '../../Session/withAuthentication';
+import { withAuthorization } from '../../Session';
 import { compose, hoistStatics } from 'recompose';
-import { globalStyle, setColor, setFont } from '../Styles/globalStyle'
+import { globalStyle, setColor, setFont } from '../../Styles/globalStyle'
 
-import { isIphoneX, getConstant, isAndroid } from '../Utils';
-import { interpolateColorFromGradient } from '../Utils/color';
+import { isIphoneX, getConstant, isAndroid } from '../../Utils';
+import { interpolateColorFromGradient } from '../../Utils/color';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
-import { updateUser } from '../API/APIAWS';
+import { updateUser } from '../../API/APIAWS';
 
-import { CUser } from '../Classes/CUser';
+import { CUser } from '../../Classes/CUser';
 import { Row } from 'native-base';
 
 class ProfileScreen extends React.Component {
@@ -63,31 +64,17 @@ class ProfileScreen extends React.Component {
       StatusBar.setBarStyle('light-content' );
     });
   }
-  Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
-  Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
+
 
 }
   componentWillUnmount() {
     if (!isAndroid()) {
       this._navListener.remove();
     }
-    Keyboard.removeListener('keyboardDidShow');
-    Keyboard.removeListener('keyboardDidHide');
+
   }
 
-  keyboardDidHide() {
-    this.setState({
-      keyboardHeight: 0,
-      isKeyboardVisible: false
-    });
-  }
 
-  keyboardDidShow(e) {
-    this.setState({
-      keyboardHeight: e.endCoordinates.height,
-      isKeyboardVisible: true
-    });
-  }
 
 
 
@@ -244,7 +231,6 @@ class ProfileScreen extends React.Component {
                                 900 000 €
                               </Text>
                           </View>
-
                       </View>
                       <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}>
                           <View style={{padding : 5}}>
@@ -284,6 +270,44 @@ class ProfileScreen extends React.Component {
 
                       </TouchableOpacity>
 
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}
+                                                              onPress={() => {
+                                                                this.props.navigation.navigate('ProfileScreenDetail',{option :  'FRIEND'});
+                                                              }}
+                      >
+                        <View style={{padding : 5}}>
+                              {/* <Text style={setFont('200', 18, 'gray')}>
+                                Mes contacts
+                              </Text> */}
+                              <FontAwesome5 name={'users'} size={35} color={'gray'} />
+                          </View>
+                          <View style={{padding : 5, borderWidth :0}}>
+                              <View style={{flexDirection : 'row', justifyContent : 'space-between'}}>
+                                  <View style={{}}>
+                                      <Text style={setFont('200', 14, setColor(''), 'Regular')}>
+                                        {this.props.userOrg.name}
+                                      </Text>
+                                  </View>
+                                  <View style={{}}>
+                                      <Text style={setFont('200', 14, setColor(''), 'Regular')}>
+                                        {this.props.users.getUsersFromMyOrg().length}
+                                      </Text>
+                                  </View>                                
+                              </View>
+                              <View style={{flexDirection : 'row', justifyContent : 'space-between'}}>
+                                  <View style={{}}>
+                                      <Text style={setFont('200', 12, 'gray', 'Regular')}>
+                                        Amis
+                                      </Text>
+                                  </View>
+                                  <View style={{}}>
+                                      <Text style={setFont('200', 12, 'gray', 'Regular')}>
+                                          {this.props.users.getUsersFriends(this.user).length}
+                                      </Text>
+                                  </View>                                
+                              </View>
+                          </View>
+                      </TouchableOpacity>
                 </View>      
 
 

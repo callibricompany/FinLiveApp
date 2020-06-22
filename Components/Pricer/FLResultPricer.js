@@ -30,6 +30,7 @@ import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
 
 
 import * as TEMPLATE_TYPE from '../../constants/template'
+import { CAutocall } from '../../Classes/Products/CAutocall';
 
 
 
@@ -45,7 +46,12 @@ class FLResultPricer extends React.PureComponent {
 
       //recupération des résultats
       
-      this.bestProducts =  this.props.navigation.getParam('bestProducts', '...');
+      this.bestProducts = [];
+      let bestProducts =  this.props.navigation.getParam('bestProducts', '...');
+      
+      bestProducts.forEach((p) => {
+        this.bestProducts.push(new CAutocall(p));
+      })
       this.optimizer = this.props.navigation.getParam('optimizer', 'CPN');
       // console.log(this.bestProducts);
       // console.log(this.optimizer);
@@ -77,7 +83,7 @@ class FLResultPricer extends React.PureComponent {
       //console.log('id : ' +id);
       return (
             <View style={{marginTop: 20, alignItems: 'center', justifyContent:'center', borderWidth: 0, marginLeft : 0, paddingLeft : 0, paddingRight: 2}}>
-              <FLTemplateAutocall object={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Pricer'} optimizer={this.optimizer}/>
+              <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Pricer'} optimizer={this.optimizer}/>
             </View>
       );
     }
@@ -113,7 +119,7 @@ class FLResultPricer extends React.PureComponent {
                     data={this.bestProducts}
                     //extraData={this.state.isGoodToShow}
                     //renderItem={this._renderRow}
-                    keyExtractor={(item) => item.code.toString()}
+                    keyExtractor={(item) => item.getInternalCode()}
                     //tabRoute={this.props.route.key}
                     //numColumns={3}
                     renderItem={({item, id}) => (

@@ -251,7 +251,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIconsIcon name={"calendar"}  size={18} style={{color: setColor('lightBlue')}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                    <Text style={setFont('300', 12, setColor(''), 'Light')}>{Moment(this.autocall.getMaturityDate()).format("DD-MMM-YY")} </Text>
+                    <Text style={setFont('300', 12, setColor(''), 'Light')}>{Moment(this.autocall.getEndIssueDate()).format("DD-MMM-YY")} </Text>
                 </View>
             </View>
         </View>
@@ -336,7 +336,7 @@ _renderAutocallMediumTemplate() {
                 </View>
                 <View style={{flex: 1, justifyContent: 'center',  alignItems: 'stretch', padding: 2 }}>
                   <Text style={[setFont('500', 16, setColor('lightBlue'), 'Bold'), {textAlign: 'center'}]}>
-                    {Moment(this.autocall.getMaturityDate()).fromNow().substring(5)}
+                    {Moment(this.autocall.getEndIssueDate()).fromNow().substring(5)}
                   </Text>
                 </View>
           </View>
@@ -346,7 +346,7 @@ _renderAutocallMediumTemplate() {
                 
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2 }}>
                         <Text style={[setFont('200', 11, setColor(''),'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
-                          {Moment(this.autocall.getMaturityDate()).format('ll')}
+                          {Moment(this.autocall.getEndIssueDate()).format('ll')}
                         </Text>
 
                 </View>
@@ -488,7 +488,7 @@ render () {
                                       {this.autocall.getDistributor()}
                                     </Text>
                                 </View>
-                                {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') === 0 ?
+                                {Moment(this.autocall.getIssueDate()).diff(Moment(Date.now()), 'days') === 0 ?
                                     <View style={{marginTop : 10, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', borderRadius: 3}}>
                                         <Text style={setFont('300', 12, 'white', 'Regular')}>
                                           Dernier jour
@@ -497,7 +497,7 @@ render () {
                                   :
                                   <View style={{paddingTop : 10, justifyContent: 'center', alignItems: 'center'}}>
                                       <Text style={setFont('500', 12, 'black', 'Bold')}>
-                                        Plus que {Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days')} jour{Moment(this.autocall.getStartDate()).diff(Moment(Date.now()), 'days') !== 1 ? 's' : ''}
+                                        Plus que {Moment(this.autocall.getIssueDate()).diff(Moment(Date.now()), 'days')} jour{Moment(this.autocall.getIssueDate()).diff(Moment(Date.now()), 'days') !== 1 ? 's' : ''}
                                       </Text>
                                   </View>   
                                 }                            
