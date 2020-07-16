@@ -31,7 +31,7 @@
     "fs": "0.0.1-security",
     "hoist-non-react-statics": "^3.3.0",
     "libphonenumber-js": "^1.7.51",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "native-base": "^2.13.8",
     "newsapi": "^2.4.0",
