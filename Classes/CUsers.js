@@ -1,5 +1,6 @@
 import { CUser } from './CUser';
 
+
 export class CUsers {
     constructor(users, myId) {
 
@@ -43,7 +44,6 @@ export class CUsers {
     getUsersFromName(searchingText) {
         let usersFriend = [];
         
-
         this.users.forEach((u) => {
             if (u.getName().toLowerCase().includes(searchingText.toLowerCase())) {
                 usersFriend.push(u);
@@ -51,7 +51,23 @@ export class CUsers {
         });
 
         return usersFriend;
-
     }
+
+    
+    
+    getUserListFromUid(uidArray) {
+     
+        let usersFriend = [];
+        
+        this.users.forEach((u) => {
+            if (uidArray.indexOf(u.getId()) !== -1) {
+                usersFriend.push(u);
+            }
+        });
+
+        return usersFriend;
+      }
+
+    
     
 }

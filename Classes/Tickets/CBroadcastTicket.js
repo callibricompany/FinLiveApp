@@ -45,25 +45,6 @@ export class  CBroadcastTicket extends CTicket {
 
 
 
-    getMessage() {
-      return this.ticket['custom_fields'].cf_message;
-    }
-
-    getBeginDate() {
-      return Moment(this.ticket['custom_fields'].cf_broad_begindate, "YYYY-MM-DD").toDate();
-    }
-    
-    getEndDate() {
-      return Moment(this.ticket['custom_fields'].cf_broad_enddate, "YYYY-MM-DD").toDate();
-    }
-
-    isBroadcastAlive() {
-
-      return (Date.now() < this.getEndDate());
-    }
-    getBroadcastAmount() {
-      return this.ticket['custom_fields'].cf_broad_amount;
-    }
     
     
 

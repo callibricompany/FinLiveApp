@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { StatusBar } from 'react-native';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import SearchBarAnimation from './SearchBarAnimation';
 import { SearchBarContext } from './SearchBarContext';
 

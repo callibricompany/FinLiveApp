@@ -18,6 +18,7 @@ import { CObject } from "../Classes/CObject";
 import { CBroadcastTicket } from "../Classes/Tickets/CBroadcastTicket";
 import { CTicket } from '../Classes/Tickets/CTicket';
 import { CWorkflowTicket } from  "../Classes/Tickets/CWorkflowTicket";
+import { CSouscriptionTicket } from '../Classes/Tickets/CSouscriptionTicket';
 import { CUser } from '../Classes/CUser';
 import { CUsers } from '../Classes/CUsers';
 
@@ -25,6 +26,7 @@ import * as TEMPLATE_TYPE from '../constants/template';
 
 import { withNotification } from './NotificationProvider'; 
 import { CAutocall } from "../Classes/Products/CAutocall";
+
 
 const withAuthentication = Component => {
   class WithAuthentication extends React.Component {
@@ -53,6 +55,7 @@ const withAuthentication = Component => {
 
         //tickets
         tickets: [],
+        souscriptionTickets : [],
         apeTickets : [],
         addTicket: ticket => this.addTicket(ticket),
 
@@ -73,11 +76,6 @@ const withAuthentication = Component => {
         //gestion des categories
         categories: [],
         getAllUndelyings: filter => this.getAllUndelyings(filter),
-
-        //tickets
-        broadcasts: [],
-        worklow : [],
-
 
         //toFavorites
         favorites: [],
@@ -137,7 +135,7 @@ const withAuthentication = Component => {
 
 
     UNSAFE_componentWillReceiveProps(props) {
-      console.log("RECEIVE PROPS HOME : " + props.notificationList.length );
+      //console.log("RECEIVE PROPS HOME : " + props.notificationList.length );
       this.setState({ allNotificationsCount : props.hasOwnProperty('notificationList')  ? props.notificationList.length : 0, idFocused : props.idFocused });
 
     }
@@ -247,6 +245,7 @@ const withAuthentication = Component => {
 
       //chargement de tous les users
       this.setState({ users : new CUsers( await getAllUsers(this.props.firebase), this.state.authUser.uid) });
+      
 
       //load all infos at ignition
       return new Promise((resolve, reject) => {
@@ -259,13 +258,16 @@ const withAuthentication = Component => {
                 //console.log(userDatas.userTickets.slice(0,1));
                 //console.log(userDatas.userTickets.slice(0,1));
                 //console.log("Passage de withAuth");
-
+                //enregistrement de son user dans la Classes
+                this.setState({user : new CUser(userDatas.userInfo)});
 
                 //passage du workflow au ticket
                 CWorkflowTicket.WORKFLOW = userDatas.workflow;
+                //console.log(userDatas.workflow.filter(({codeOperation}) => codeOperation === 'pp'));
 
                 //on va crer les objets tickets 
                 let tickets = [];
+                let souscriptionTickets = [];
                 userDatas.userTickets.forEach((t) => {
                   //let tempTicket = new CTicket(t);
                   //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
@@ -274,7 +276,7 @@ const withAuthentication = Component => {
                   switch(t.type) {
                     case "Broadcasting" :
                       console.log("Broadcast : "+t.id);
-                      //console.log(t);
+                      console.log(t);
                       //let ticketB = new CBroadcastTicket(t);
                       //this.tickets.push(ticketB);
                       break;
@@ -284,7 +286,24 @@ const withAuthentication = Component => {
                       let ticketC = new CWorkflowTicket(t);
                       tickets.push(ticketC);
                       break;
+                    case "Souscription" :
+                      console.log("Souscription : "+t.id);
+                      let souscriptionTicket = new CSouscriptionTicket(t);
+                      //console.log(souscriptionTicket.getRequester().codeTS + "   " + this.state.user.getCodeTS());
+                      
+                      //check si c'est mon ticket 
+                      if (souscriptionTicket.getRequester().codeTS === this.state.user.getCodeTS()) {
+                          //let ticketC = new CWorkflowTicket(t.product); //on crée juste le produit
+                          tickets.push(souscriptionTicket);
+                      } else {
+                        //console.log(souscriptionTicket);
+                          souscriptionTickets.push(souscriptionTicket);
+                      }
+                      
+                      break;
+                      
                     default : 
+                      console.log("On sait pas  : "+t.type + " : " +t.id);
                       //this.tickets.push(t);
                       break;
                   }
@@ -312,17 +331,16 @@ const withAuthentication = Component => {
                   featured : featuredAutocalls,
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
-                  user : new CUser(userDatas.userInfo),
+                  // user : new CUser(userDatas.userInfo),
                   favorites: userDatas.favorites,
                   //tickets: userDatas.userTickets,
                   tickets,
+                  souscriptionTickets,
                   //tickets: userDatas.userTickets.slice(0,1),
 
                   apeTickets: userDatas.startPage.ape,
                   apeSRP : userDatas.startPage.srp,
-                  //apeSRP : [],
-                  broadcasts : userDatas.startPage.campaign,
-                  //broadcasts : [],
+
 
                   issuers : userDatas.issuers,
                 });
@@ -331,11 +349,11 @@ const withAuthentication = Component => {
                 //console.log("Enregistrement user id : ");
                 CObject.UID = this.state.authUser.uid;
 
-                let toto = [
-                  ...new Set(userDatas.userTickets.map(x => x.id))
-                ];
-
-             
+                // let toto = [
+                //   ...new Set(userDatas.userTickets.map(x => x.id))
+                // ];
+                // console.log(toto);
+               
                 
                 //console.log(userDatas.startPage);
                 console.log(Object.keys(userDatas.startPage));
@@ -344,7 +362,7 @@ const withAuthentication = Component => {
                   this.props.addNotification(userDatas.notifications);
                 }
                 //console.log(userDatas.categories);
-                //console.log(userDatas.workflow);
+                // console.log(userDatas.workflow);
                 //console.log(userDatas.startPage.bestCoupon);
                 //userDatas.userTickets.forEach((t) => console.log(t.currentStep));
                 //console.log(userDatas.workflow.slice(0,1));
@@ -352,7 +370,8 @@ const withAuthentication = Component => {
                 //console.log(userDatas.startPage.campaign);
                 //console.log(userDatas.userTickets.slice(0,1))
                 //console.log(this.getAllUndelyings());
-                //console.log("Nbre APE : " + userDatas.startPage.srp.length);
+                console.log("Nbre APE du marché: " + this.state.apeSRP.length);
+                //console.log(this.state.apeSRP);
          
                 
                 resolve("ok");

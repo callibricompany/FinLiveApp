@@ -9,6 +9,8 @@ import NewsDetailWeb from '../Components/Home/NewsDetailWeb';
 import FLTicketDetailHome from '../Components/Home/FLTicketDetailHome';
 import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
 import FLAutocallDetailTrade from '../Components/commons/Autocall/FLAutocallDetailTrade';
+import FLAutocallDetailBroadcastPP from '../Components/commons/Autocall/FLAutocallDetailBroadcastPP';
+import FLAutocallDetailBroadcastFriends from '../Components/commons/Autocall/FLAutocallDetailBroadcastFriends';
 import FLSRPDetail from '../Components/Home/FLSRPDetail';
 
 import PricerScreen from '../Components/Pricer/PricerScreen'
@@ -99,6 +101,12 @@ function labelStyle (focused, tintColor) {
     FLAutocallDetailTrade: {
       screen : FLAutocallDetailTrade
     },
+    FLAutocallDetailBroadcastPP: {
+      screen : FLAutocallDetailBroadcastPP
+    },
+    FLAutocallDetailBroadcastFriends: {
+      screen : FLAutocallDetailBroadcastFriends
+    },
 
   }, 
   {
@@ -125,10 +133,12 @@ function labelStyle (focused, tintColor) {
     FLCouponMinDetailAndroid: {
       screen : FLCouponMinDetailAndroid
     },
-    // FLAutocallDetailTrade: {
-    //   screen : FLAutocallDetailTrade
-    // },
-
+    FLAutocallDetailTrade: {
+      screen : FLAutocallDetailTrade
+    },
+    FLAutocallDetailBroadcastPP: {
+      screen : FLAutocallDetailBroadcastPP
+    },
   })
   
   //Ecran ticket
@@ -293,7 +303,8 @@ function labelStyle (focused, tintColor) {
     //console.log(navigation);
     //console.log(routes[index].routeName);
     if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'
-    || routes[index].routeName === 'FLAutocallDetail'){
+    || routes[index].routeName === 'FLAutocallDetail'  || routes[index].routeName === 'FLAutocallDetailTrade'   || routes[index].routeName === 'FLAutocallDetailBroadcastPP'
+    || routes[index].routeName === 'FLAutocallDetailBroadcastFriends') {
       if (typeof routes[index].params !== 'undefined') {
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params);
         //console.log("TATATATATATAATTATATATATATATATATATTATAATTATA : " +routes[index].params['hideBottomTabBar']);

@@ -4,59 +4,40 @@ import { convertFresh } from '../../Utils/convertFresh';
 import * as TEMPLATE_TYPE from '../../constants/template';
 
 
+
+
 export class  CWorkflowTicket extends CTicket {
   constructor(ticket) {
     super(ticket); // appelle le constructeur parent avec le paramètre
     //console.log("constructeur workflow");
-    if (ticket.id === 152) {
-      console.log(ticket.currentStep);
-    }
+
     switch(ticket.type) {
       case "Produit structuré": 
         //on remet le bon template
         this.setTemplate(TEMPLATE_TYPE.TICKET);
-
-        if (ticket['currentStep'][0].codeOperation === 'pp') {
+        //console.log(this.ticket);
+        if (this.getCampaign()=== "Placement Privé") {
           this.setTemplate(TEMPLATE_TYPE.PSPP);
           this.steps = JSON.parse(JSON.stringify(CWorkflowTicket.WORKFLOW.filter(({codeOperation}) => codeOperation === 'pp')));
-
-          this.firstCode = 'PPDVB';
-          this.lastStep = 'PPEND';
-
-          //si c'est en mode automatique il enleve les deux premier steps
-          if (this.isAutomatic()) {
-            
-              this.firsCode = 'PPDCC';
-              this.steps.shift();
-              this.steps.shift();
-              this.steps = this.steps.map((step, index) => {
-                step.level = step.level- 2;
-                return step; 
-              });
-              //console.log(this.steps);
-          }
-
-          
-          
+          let isShared = this.isShared();
+          this.steps = this.steps.filter(({Shared}) => Shared === (isShared ? '1' : '0'));
+          let isAutomatic = this.isAutomatic();
+          this.steps = this.steps.filter(({specific}) => specific === (isAutomatic ? '0' : '1'));        
         }
+
         //convertFresh(this.ticket['custom_fields']);
         this.product = new CAutocall(convertFresh(ticket['custom_fields']));
         
         break;
       default : 
-        
         break;
     }
 
-    //determination de l'étape  suivante
-    this.firstCode = '';
-    this.lastStep = '';
-    this._previousStepsTab = [];
 
     //this.currentStep = ticket.currentStep[0];
-    this.currentStep = this.steps.filter(({ codeStep }) => codeStep === ticket.currentStep[0].codeStep)[0];
+    this.currentStep = ticket.currentStep[0];
     //console.log(this.currentStep);
-    this.previousSteps=[];
+    //console.log(this.steps);
 
  
   }
@@ -98,13 +79,13 @@ export class  CWorkflowTicket extends CTicket {
   //calcule l'a position ou l'on se trouve dans les steps
   getCurrentLevel() {
 
-    return this.currentStep.level;
+    return Number(this.currentStep.level);
   }
 
   //calcule le nombre maximums de steps restants
   getStepsToGoCount() {
 
-    return (this.getStepDepth() - this.currentStep.level - 1);
+    return (this.getStepDepth() - Number(this.currentStep.level) - 1);
   }
 
   //calcule le nombre maximums de steps 
@@ -148,12 +129,13 @@ export class  CWorkflowTicket extends CTicket {
   }*/
  
   getUF() {
-    return this.ticket['custom_fields']['cf_rtro'] === null ? 0 : this.ticket['custom_fields']['cf_rtro'];
+    // console.log("PASSSA par retro CTICKET : "+this.ticket['custom_fields']['cf_rtro']);
+    return this.ticket['custom_fields']['cf_rtro'] === null ? 0 : this.ticket['custom_fields']['cf_rtro']/100;
 
   }
 
   getUFAssoc(){
-    return this.ticket['custom_fields']['cf_rtro_asso'] === null ? 0 : this.ticket['custom_fields']['cf_rtro_asso'];
+    return this.ticket['custom_fields']['cf_rtro_asso'] === null ? 0 : this.ticket['custom_fields']['cf_rtro_asso']/100;
   }
 
  getUFInCurrency() {
@@ -171,16 +153,5 @@ export class  CWorkflowTicket extends CTicket {
     
   }
   
-
-  
-
-}
-
-
-class CWFTree {
-
-    constructor(tree) {
-      this.tree = tree;
-    }
 
 }

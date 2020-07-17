@@ -106,6 +106,10 @@ export class CTicket extends CObject {
 
       return name;
     }
+
+    isMine() {
+      return true;
+    }
     
     // getResponseIssuerCode(position) {
     //   return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersCode.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersCode[position] : []: [];
@@ -173,7 +177,7 @@ export class CTicket extends CObject {
     //on analyse les conversations pour le whatsapp
     getChat() {
       let chat = [];
-
+      this.files = [];
       this.conversations.forEach((c) => {
         if (c.source === 0) {
           //console.log(c);
@@ -242,8 +246,16 @@ export class CTicket extends CObject {
     }
 
 
+    isShared() {
+      
+      return this.ticket['custom_fields']['cf_ps_shared'] === null ? false : this.ticket['custom_fields']['cf_ps_shared'];
+    }
 
 
+    getCampaign(){
+      //console.log(this.ticket['custom_fields']['cf_cpg_choice']);
+      return this.ticket['custom_fields']['cf_cpg_choice'];
+    }
 
     getSubject() {
       return this.ticket.subject;

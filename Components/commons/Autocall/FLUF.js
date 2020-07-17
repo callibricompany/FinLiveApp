@@ -1,4 +1,4 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useEffect} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -31,6 +31,13 @@ export function FLUF (props) {
         const [splitValue, setSplitValue] = useState(() => {
            return Math.round(100*UF/(UF+UFAssoc))
         });
+        const [isLocked, setIsLocked] = useState(() => props.hasOwnProperty('locked') ? props.locked : false);
+        const [ showSlider, setShowSlider ] = useState(() => props.hasOwnProperty('showSlider') ? props.showSlider : true);
+
+        useEffect(() => {
+            setIsLocked(props.hasOwnProperty('locked') ? props.locked : false);
+            setShowSlider(props.hasOwnProperty('showSlider') ? props.showSlider : true);
+          }, [props]);
 
         return (
             <>
@@ -42,34 +49,34 @@ export function FLUF (props) {
                     <View style={{marginBottom : 5}}>
                         <Text style={setFont('200', 12, 'gray')}>{props.company}</Text>
                     </View>
-                    <Text style={setFont('400', 14, 'black', 'Regular')}>{currencyFormatDE(props.nominal*UF)} {props.currency}</Text>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>{currencyFormatDE(props.nominal*UF)} {props.currency} <Text style={setFont('400', 12, 'gray', 'Regular')}> ({Numeral(UF).format('0.00%')})</Text></Text>
                 </View>
                
                 <View style={{flex : 0.5}}>
                     <View style={{marginBottom : 5}}>
                         <Text style={setFont('200', 12, 'gray')}>Nom Association</Text>
                     </View>
-                    <Text style={setFont('400', 14, 'black', 'Regular')}>{currencyFormatDE(props.nominal*UFAssoc)} {props.currency}</Text>
+                    <Text style={setFont('400', 14, 'black', 'Regular')}>{currencyFormatDE(props.nominal*UFAssoc)} {props.currency}<Text style={setFont('400', 12, 'gray', 'Regular')}>  ({Numeral(UFAssoc).format('0.00%')})</Text></Text>
                 </View>
             </View>
-            {props.isEditable
+            {showSlider
             ?
-                <View style={{flex : 1, marginTop : 25, marginRight : 20}}>
+                <View style={{flex : 1, marginTop : 10, marginRight : 20}}>
 
                         <Slider
                             trackStyle={{
-                                height: 18,
+                                height: 12,
                                 borderRadius: 1,
-                                backgroundColor: '#d5d8e8',
+                                backgroundColor: isLocked ? 'gainsboro' : '#d5d8e8',
                             }}
                             thumbStyle={{
-                                width: 15,
+                                width: 10,
                                 height: 35,
                                 borderRadius: 1,
-                                backgroundColor: '#838486',
+                                backgroundColor: isLocked ? 'lightgray' : '#838486',
                             }}
                             
-                            minimumTrackTintColor={setColor('')}
+                            minimumTrackTintColor={isLocked ? 'gray' : setColor('')}
                             maximumValue={100}
                             minimumValue={0}
                             value={splitValue}
@@ -86,6 +93,7 @@ export function FLUF (props) {
                                 props.updateProduct('UF', UF, currencyFormatDE(UF), false);
                                 props.updateProduct('UFAssoc', UFAssoc, currencyFormatDE(UFAssoc), false);
                             }}
+                            disabled={isLocked}
                         />
 
                 </View>

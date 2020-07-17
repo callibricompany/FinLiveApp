@@ -143,7 +143,7 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                                         onLayout={({nativeEvent}) => {
                                         if (refNominal.current) {
                                             refNominal.current.measure((x, y, width, height, pageX, pageY) => {
-                                                    console.log(x, y, width, height, pageX, pageY);
+                                                    //console.log(x, y, width, height, pageX, pageY);
                                             })
                                         }
                                         }}

@@ -58,6 +58,11 @@ export class CUser {
      }
     return  org;
   }
+
+  getCodeTS() {
+    return this.user.hasOwnProperty('codeTS') ? this.user['codeTS'] : "";
+  }
+
   getFirstName() {
     return this.user.hasOwnProperty('firstName') ? this.user['firstName'] : "";
   }

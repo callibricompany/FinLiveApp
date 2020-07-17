@@ -259,6 +259,108 @@ export function getAllUsers (firebase) {
     });
 }
 
+///////////////////////////
+//    TICKET
+//    get broadcast amount
+///////////////////////////
+export function getBroadcastAmount (firebase, idBroadcast) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      firebase.doGetIdToken()
+      .then(token => {
+
+          var axiosConfig = {
+            headers :{
+              //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+              'bearer'      : token,
+            }
+          };
+          
+          axios.get(URL_AWS + '/subscription/' + idBroadcast, axiosConfig)
+          .then((response) => {
+            
+            resolve(response.data)
+            //res.render('pages/register',{email: email, isConnected: isConnected});
+          })
+          .catch(function (error) {
+            console.log("Erreur requete aws (subscription): " + error);
+            reject(error)
+          });
+      })
+      .catch((error) => reject(error));
+
+    });
+}
+
+///////////////////////////
+//    TICKET SOUSCRIPTION
+//    update
+///////////////////////////
+export function updateSouscriptionTicket (firebase, idSouscriptionTicket, idProductTicket, ticket) {
+  
+  return new Promise((resolve, reject) => {
+    firebase.doGetIdToken()
+    .then(token => {
+        var axiosConfig = {
+          headers :{
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept'      : 'application/json',
+            'bearer'        : token,
+          }
+        };  
+        axios.post(URL_AWS + '/updatesubscription/'+idSouscriptionTicket+'/'+idProductTicket, ticket, axiosConfig)
+        .then((response) => {
+          resolve(response.data)
+        })
+        .catch(function (error) {
+          console.log("Erreur requete aws : " + error);
+          reject(error)
+        });
+    })
+    .catch((error) => reject(error));
+  });
+}
+
+///////////////////////////
+//    TICKET
+//    broadcast PP
+///////////////////////////
+export function broadcastPP (firebase, product) {
+
+  var FormData = require('form-data');
+  var form = new FormData();
+
+  // Object.keys(product).forEach(key => {
+  //   //console.log(key + "   -   " + product[key] + "   :  " + typeof product[key]);
+  //   form.append(key, typeof product[key] != 'boolean' ? product[key] : product[key].toString());
+  // });
+  
+  return new Promise((resolve, reject) => {
+    firebase.doGetIdToken()
+    .then(token => {
+        var axiosConfig = {
+          headers :{
+            //'Content-Type'  : `multipart/form-data; boundary=${form._boundary}`,
+            'Content-Type': 'application/json; charset=utf-8',
+            //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+            'Accept'      : 'application/json',
+            'bearer'        : token,
+          }
+        };  
+        axios.post(URL_AWS + '/broadcastPP', product, axiosConfig)
+        .then((response) => {
+          resolve(response)
+        })
+        .catch(function (error) {
+          console.log("Erreur requete aws : " + error);
+          reject(error)
+        });
+    })
+    .catch((error) => reject(error));
+  });
+}
 
 ///////////////////////////
 //    TICKET
@@ -293,6 +395,7 @@ export function ssCreateStructuredProduct (firebase, product) {
             //'Content-Type': 'application/x-www-form-urlencoded',
             //'Content-Type': 'application/json; charset=utf-8',
             'Content-Type'  : `multipart/form-data; boundary=${form._boundary}`,
+            
             //'Accept'      : 'application/json',
             'bearer'        : token,
             //'type'        : 'Produit structuré'
@@ -369,15 +472,6 @@ export function ssModifyTicket (firebase, product) {
 ///////////////////////////
 export function getConversation (firebase, idTicket) {
 
-    var FormData = require('form-data');
-    var form = new FormData();
-
-    // var ticket={};
-    // ticket['idTicket'] = String(idTicket);
-    
- 
-  
-  
     return new Promise(
       (resolve, reject) => {
 

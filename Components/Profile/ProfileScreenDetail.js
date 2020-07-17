@@ -486,10 +486,10 @@ componentWillUnmount() {
           break;
       case 'USERS_FRIENDS_OF_MINE' :
         return (
-          <View style={{flexDirection : 'row', justifyContent: "space-between", alignItems: 'center', borderWidth : 0}}>
+          <View style={{flexDirection : 'row', justifyContent: "space-between", alignItems: 'center', borderWidth : 0,}}>
             <View opacity={1} style={{marginTop : 5, marginBottom : 5, marginLeft : 0, padding : 5, paddingLeft : 20, paddingRight : 20,  borderWidth : 1, borderColor : 'white', borderRadius : 20}}>
                 <Text style={setFont('400', 12, 'black', 'Regular')}>
-                  {content.title.toUpperCase()}
+                {content.title.toUpperCase()}
                 </Text>
             </View>
 

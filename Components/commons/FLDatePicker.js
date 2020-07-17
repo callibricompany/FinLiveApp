@@ -20,7 +20,8 @@ export function FLDatePicker (props) {
         const [date, setDate] = useState(props.date);
         const [isEditable, setIsEditable] = useState(() => props.hasOwnProperty('isEditable') ? props.isEditable : true);
 
-        let maxDate = props.hasOwnProperty('maximumDate') ? props.maximumDate :  Moment(Date.now()).add(15, 'years').toDate();
+        const maxDate = props.hasOwnProperty('maximumDate') ? props.maximumDate :  Moment(Date.now()).add(15, 'years').toDate();
+        const minDate = props.hasOwnProperty('minimumDate') ? props.minimumDate :  Moment(Date.now()).add(-15, 'years').toDate();
 
         const modalComponentDate = useRef(null);
 
@@ -45,8 +46,8 @@ export function FLDatePicker (props) {
                                         is24Hour={true}
                                         display={"calendar"}
                                         locale={'fr'}
-                                        //maximumDate={Date.now()}
-                                        //minimumDate={maxDate}
+                                        maximumDate={maxDate}
+                                        minimumDate={minDate}
                                         onChange={(event, selectedDate) => {
                                             const currentDate = selectedDate || date;
                                             setDate(currentDate);

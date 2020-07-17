@@ -15,7 +15,7 @@ import Lightbox from 'react-native-lightbox';
 
 import Timeline from 'react-native-timeline-flatlist';
 
-import { ssCreateStructuredProduct, ssModifyTicket, getConversation, getTicket, createreply, getRepricing} from '../../../API/APIAWS';
+import { getBroadcastAmount, ssModifyTicket, getConversation, getTicket, createreply, getRepricing} from '../../../API/APIAWS';
 
 import { setFont, setColor  } from '../../../Styles/globalStyle';
 
@@ -32,6 +32,8 @@ import 'numeral/locales/fr'
 
 import FLTemplatePP from "../Ticket/FLTemplatePP";
 import FLTemplateAutocall from '../Autocall/FLTemplateAutocall';
+import { FLDetailBroadcastPSSubscripter } from './FLDetailBroadcastPSSubscripter';
+import { FLChat } from './FLChat';
 
 import logo_white from '../../../assets/LogoWithoutTex_white.png';
 import logo from '../../../assets/LogoWithoutText.png';
@@ -55,7 +57,8 @@ import { CTicket } from '../../../Classes/Tickets/CTicket';
 
 import Robot from "../../../assets/svg/robotBlink.svg";
 import { CWorkflowTicket } from '../../../Classes/Tickets/CWorkflowTicket';
-
+import { CSouscriptionTicket } from '../../../Classes/Tickets/CSouscriptionTicket';
+import { CUser } from '../../../Classes/CUser';
 
 
 
@@ -102,6 +105,8 @@ class FLTicketDetail extends React.Component {
 
       isLoading : true,
     
+      //pour les tickets paratagés
+      subscripters : [],
 
       //gestion des tabs
       index: 0,
@@ -110,6 +115,7 @@ class FLTicketDetail extends React.Component {
         { key: 'CONVERSATION', title: 'Conversation' },
         { key: 'ACTIVITY', title: 'Activité' },
         { key: 'DOCUMENTS', title: 'Docs' },
+        { key: 'TEST', title: 'Test' },
       ]
     }
 
@@ -124,7 +130,8 @@ class FLTicketDetail extends React.Component {
     this.keyboardDidHide = this.keyboardDidHide.bind(this);
     this.keyboardDidShow = this.keyboardDidShow.bind(this);
 
-   
+   //shared amount 
+   this.sharedAmount = 0;
   }
 
   // compopnentdidmount
@@ -142,7 +149,7 @@ class FLTicketDetail extends React.Component {
     Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
 
     //chargement des conversations
-    await this._loadTicket(this.ticket.getId());
+    await this._loadTicket();
 
     
 
@@ -157,17 +164,20 @@ class FLTicketDetail extends React.Component {
     //console.log("RECEPTION DES PROPS TICKETS : " + props.allNotificationsCount );
     //quelque chose a bougé sur le ticket on verifie s'il a été notifié
     //console.log("EST NOTIFIE : " + this.props.isNotified('TICKET', this.ticket.getId()));
+    //console.log("CSouscriptionTicket :" +(this.ticket instanceof CSouscriptionTicket));
     if (this.props.isNotified('TICKET', this.ticket.getId())) {
       //on recharhge les tickets et les coversations
-      this._loadTicket(this.ticket.getId());
+      this._loadTicket();
     }
   }
 
   //le ticket est rechargé ainsi que les conversations
-  _loadTicket(idTicket) {
+  _loadTicket() {
+    console.log("RECHARGE LE TICKET ");
       return new Promise((resolve, reject) => {
           this.setState({ isLoading : true });
-          getTicket(this.props.firebase, this.ticket.getId())
+          
+          getTicket(this.props.firebase, this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId())
           .then((ticket) => {
               this._processUptadedTicket(ticket);
               resolve("ok");
@@ -178,6 +188,19 @@ class FLTicketDetail extends React.Component {
             this.setState({ isLoading : false });
             reject(error);
           });
+          console.log("load ticket : isShared : "+ this.ticket.isShared());
+          if (this.ticket.isShared()) {
+              getBroadcastAmount(this.props.firebase, this.ticket.getBroadcastId())
+              .then((subscripters) => {
+                // console.log("RECUPERE LES SUBSCRIPTERS");
+                // console.log(subscripters);
+                this.sharedAmount = (subscripters === null || subscripters === 'undefined' || !subscripters.hasOwnProperty('subscription')) ? 0 : subscripters.subscription.reduce((a, b) => a + b, 0);
+                this.setState({ subscripters});
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
      });
 
   }
@@ -186,7 +209,9 @@ class FLTicketDetail extends React.Component {
               //console.log(ticket);
               // let t = new CWorkflowTicket(ticket);
               // this.ticket.setObject(t.getObject());
-              this.ticket = new CWorkflowTicket(ticket);
+              let isShared = this.ticket.isShared();
+              // console.log("process ticket : isShared : "+ isShared);
+              this.ticket = isShared ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket);
               this.dealineTicket = Moment(this.ticket.getFrDueBy()).fromNow();
               
               //on supprime la notification
@@ -208,7 +233,6 @@ class FLTicketDetail extends React.Component {
       case 'PPACO' :
             //console.log(Object.keys(this.ticket.getObject().data.quoteRequest));
 
-            
             for (let i = 0; i < this.nbOfIssuerResponses; i++) {
               let timers = this.state.timers;
               let newTimers = this.state.timers;
@@ -220,8 +244,9 @@ class FLTicketDetail extends React.Component {
               if (expiry !== 0) {
                 let maintenant = new Date(Date.now());
                 let s = (new Date(expiry)).getTime() - maintenant.getTime();
+                //console.log("SECONDES : " + s);
                 secondsToExpity = Math.round(Math.max(s/1000,0));
-                console.log("Seconde entre les 2 : "+secondsToExpity);
+                //console.log("Seconde entre les 2 : "+secondsToExpity);
               }
 
               
@@ -271,7 +296,7 @@ class FLTicketDetail extends React.Component {
     if(this.intervalTimer[1] != null && this.state.timers[1] === 1){ 
       clearInterval(this.intervalTimer[1]);
     }
-    if(this.intervalTimer[2] != null && this.state.timers[1] === 1){ 
+    if(this.intervalTimer[2] != null && this.state.timers[2] === 1){ 
       clearInterval(this.intervalTimer[1]);
     }
   }
@@ -411,7 +436,17 @@ class FLTicketDetail extends React.Component {
     );
   }
   _renderSpecificStep() {
-    let issuers = Array(3).fill().map((_, index) => ({id: index}));
+      let issuers = Array(3).fill().map((_, index) => ({id: index}));
+
+      //on verifie si tout les prix sont time out
+      let timers = this.state.timers;
+      let allTimeout = true;
+      timers.map((t, index) => {
+        //console.log("Timer "+ index + " : " +t);
+        if (t > 0) {
+          allTimeout = false;
+        }
+      })
       switch(this.ticket.getCurrentCodeStep()){
         case 'PPDCC' :
           return (
@@ -426,88 +461,8 @@ class FLTicketDetail extends React.Component {
           break;
         case 'PPACO' :           
               //console.log(this.ticket);
-              return (
-                <View style={{flexDirection : 'row', borderWidth : 0, width : 0.95*getConstant('width'), height : 200}}>
-                  {
-                      issuers.map((issuer, index) => {
-                          if (this.nbOfIssuerResponses > index  ) { //reponse recue
-                            //this.ticket.getResponseIssuerCode(index)
-                            // console.log(Moment(this.ticket.getResponseIssuerExpiryDate(index)).format('llll'));
-                            // console.log(Moment(this.ticket.getResponseIssuerExpiryDate(index)).fromNow());
-                            // console.log(Moment(this.ticket.getResponseIssuerExpiryDate(index)).toDate());
-                            let quote = this.ticket.getResponseIssuer('responseIssuersQuote', index);
-                            quote == null ? quote = 0 : quote = quote.quote;
-
-                            let isPriceProcessing = this.ticket.isIssuerProcessing(index);
-                            return (
-                                <View style={{flex : 0.33, flexDirection : 'column', borderWidth : 1, borderRadius : 5, margin : 3, backgroundColor: this.state.timers[index] > 1 ? 'white' : setColor('background')}} key={index}>
-                                    <View style={{flex : 0.5, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'flex-start', margin : 2}}>
-                                       <Image style={{width: 0.95*getConstant('width')/3 - 20, height : 50}} source={{uri : this.ticket.getIssuerIcon(this.props.issuers, index)}} resizeMode={'contain'}/>
-                                    </View>
-                                    <View style={{flex : 0.35, borderWidth : 0, alignItems: 'center', justifyContent: 'center', marginTop : 3}}>
-                                        <Text style={[setFont('400', 26, 'green', this.state.timers[index] > 1 ? 'Bold' : 'Light'), {textAlign : 'center', textAlignVertical : 'center'}]}>
-                                          {Numeral(quote/100).format('0.00%')}{'\n'}
-                                          <Text style={[setFont('400', 10, 'gray'), {textAlign : 'center', textAlignVertical : 'center'}]}>Term-sheet</Text>
-                                        </Text>
-                                    </View>
-                                    <TouchableOpacity style={{flex : 0.15,  margin : 10, backgroundColor: this.state.timers[index] > 1  ? setColor('subscribeBlue') : isPriceProcessing ? 'gray' : setColor('granny'), borderWidth : isPriceProcessing ? 0 : 1, borderColor: this.state.timers[index] > 1  ? setColor('subscribeBlue') : setColor('granny'), alignItems: 'center', justifyContent : 'center'}}
-                                                      onPress={() => {
-                                                     
-                                                        if (this.state.timers[index] > 1 ){
-                                                          alert('On traîte');
-                                                        } else {
-                                                           //console.log( this.ticket.getResponseIssuerCode(index));
-                                                            if (!isPriceProcessing)  {
-                                                              this.setState({ isLoading : true });
-                                                               getRepricing(this.props.firebase, this.ticket.getId(), this.ticket.getIssuerCode(index))
-                                                               .then((ticket) => {
-                                                                 console.log("TICKET RECU : ");
-                                                                 console.log(ticket);
-                                                                  this._processUptadedTicket(ticket);
-                                                                  this.setState({ isLoading : false });
-                                                               })
-                                                              .catch((error) => {
-                                                                  alert('Impossible de rafraichir le prix');
-                                                                  this.setState({ isLoading : false });
-                                                              });
-                                                            }
-                                                        }
-                                                      }}
-                                                      activeOpacity={isPriceProcessing ? 1 : 0.2}
-                                    >
-                                        <Text style={setFont('400', this.state.timers[index] > 1 ? 16 : 12 , 'white', 'Regular')}> 
-                                          {this.state.timers[index] > 1 
-                                           ? 'TRAITER'
-                                           : isPriceProcessing ? 'EN COURS' : 'RAFRAÎCHIR'
-                                          }
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <View style={{padding: 5, borderWidth : 0, justifyContent: 'center', alignItems : 'center'}}>
-                                      <Text style={{fontSize : 13, textAlign : 'center'}}>
-                                        { this.state.timers[index] > 1
-                                          ?
-                                         ('0'+Math.floor(this.state.timers[index]/3600) % 24).slice(-2)+':'+('0'+Math.floor(this.state.timers[index]/60)%60).slice(-2)+':'+('0' + this.state.timers[index] % 60).slice(-2)
-                                          : isPriceProcessing ? 'prix re-demandé' : 'prix échu'
-                                        }
-                                       
-                                      </Text>
-                                    </View>
-                                </View>
-                            );
-                          } else { //réponse non reçue
-                              return this._renderEmptyIssuerTemplate(index);
-                          }
-
-                      })
-                  }
-                     
-                </View>
-              );
-              break;
-          case 'PPSDSE' :          //tous les prix sont echues 
-              //console.log(this.ticket);
-              return (
-                <View>
+              if (!allTimeout) {
+                  return (
                     <View style={{flexDirection : 'row', borderWidth : 0, width : 0.95*getConstant('width'), height : 200}}>
                       {
                           issuers.map((issuer, index) => {
@@ -519,7 +474,7 @@ class FLTicketDetail extends React.Component {
                                 let quote = this.ticket.getResponseIssuer('responseIssuersQuote', index);
                                 quote == null ? quote = 0 : quote = quote.quote;
 
-                                
+                                let isPriceProcessing = this.ticket.isIssuerProcessing(index);
                                 return (
                                     <View style={{flex : 0.33, flexDirection : 'column', borderWidth : 1, borderRadius : 5, margin : 3, backgroundColor: this.state.timers[index] > 1 ? 'white' : setColor('background')}} key={index}>
                                         <View style={{flex : 0.5, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'flex-start', margin : 2}}>
@@ -531,14 +486,46 @@ class FLTicketDetail extends React.Component {
                                               <Text style={[setFont('400', 10, 'gray'), {textAlign : 'center', textAlignVertical : 'center'}]}>Term-sheet</Text>
                                             </Text>
                                         </View>
-                                        <View style={{flex : 0.15,  margin : 10, backgroundColor: 'gray' , alignItems: 'center', justifyContent : 'center'}}>
+                                        <TouchableOpacity style={{flex : 0.15,  margin : 10, backgroundColor: this.state.timers[index] > 1  ? setColor('subscribeBlue') : isPriceProcessing ? 'gray' : setColor('granny'), borderWidth : isPriceProcessing ? 0 : 1, borderColor: this.state.timers[index] > 1  ? setColor('subscribeBlue') : setColor('granny'), alignItems: 'center', justifyContent : 'center'}}
+                                                          onPress={() => {
+                                                        
+                                                            if (this.state.timers[index] > 1 ){
+                                                              alert('On traîte');
+                                                            } else {
+                                                              //console.log( this.ticket.getResponseIssuerCode(index));
+                                                                if (!isPriceProcessing)  {
+                                                                  this.setState({ isLoading : true });
+                                                                  getRepricing(this.props.firebase, this.ticket.getId(), this.ticket.getIssuerCode(index))
+                                                                  .then((ticket) => {
+                                                                    console.log("TICKET RECU : ");
+                                                                    console.log(ticket);
+                                                                      this._processUptadedTicket(ticket);
+                                                                      this.setState({ isLoading : false });
+                                                                  })
+                                                                  .catch((error) => {
+                                                                      alert('Impossible de rafraichir le prix');
+                                                                      this.setState({ isLoading : false });
+                                                                  });
+                                                                }
+                                                            }
+                                                          }}
+                                                          activeOpacity={isPriceProcessing ? 1 : 0.2}
+                                        >
                                             <Text style={setFont('400', this.state.timers[index] > 1 ? 16 : 12 , 'white', 'Regular')}> 
-                                                ECHU
+                                              {this.state.timers[index] > 1 
+                                              ? 'TRAITER'
+                                              : isPriceProcessing ? 'EN COURS' : 'RAFRAÎCHIR'
+                                              }
                                             </Text>
-                                        </View>
+                                        </TouchableOpacity>
                                         <View style={{padding: 5, borderWidth : 0, justifyContent: 'center', alignItems : 'center'}}>
-                                          <Text style={[setFont('300', 12, 'gray') , {textAlign : 'center'}]}>
-                                              {Moment(new Date(this.ticket.getResponseIssuer('responseIssuersExpiryDate', index))).fromNow()}
+                                          <Text style={{fontSize : 13, textAlign : 'center'}}>
+                                            { this.state.timers[index] > 1
+                                              ?
+                                            ('0'+Math.floor(this.state.timers[index]/3600) % 24).slice(-2)+':'+('0'+Math.floor(this.state.timers[index]/60)%60).slice(-2)+':'+('0' + this.state.timers[index] % 60).slice(-2)
+                                              : isPriceProcessing ? 'prix re-demandé' : 'prix échu'
+                                            }
+                                          
                                           </Text>
                                         </View>
                                     </View>
@@ -549,30 +536,77 @@ class FLTicketDetail extends React.Component {
 
                           })
                       }
+                        
                     </View>
-                    <TouchableOpacity style={{margin : 10,padding : 10,  backgroundColor: setColor('subscribeBlue'), borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius : 10, alignItems: 'center', justifyContent : 'center'}}
-                                      onPress={() => {
-                                              this.setState({ isLoading : true });
-                                              this.setState({ isLoading : true });
-                                              getRepricing(this.props.firebase, this.ticket.getId(), 'ALL')
-                                              .then((ticket) => {
-                                                console.log("TICKET RECU : ");
-                                                console.log(ticket);
-                                                 this._processUptadedTicket(ticket);
-                                                 this.setState({ isLoading : false });
-                                              })
-                                             .catch((error) => {
-                                                 alert('Impossible de rafraichir le prix');
-                                                 this.setState({ isLoading : false });
-                                             });
-                                      }}
-                    >
-                        <Text style={setFont('400', 18 , 'white', 'Regular')}> 
-                            {String('rafraichir les prix').toUpperCase()}
-                        </Text>
-                    </TouchableOpacity>                 
-                  </View>
-              );
+                  );
+              } else { //tous les prix sont echues 
+                  return (
+                    <View>
+                        <View style={{flexDirection : 'row', borderWidth : 0, width : 0.95*getConstant('width'), height : 200}}>
+                          {
+                              issuers.map((issuer, index) => {
+                                  if (this.nbOfIssuerResponses > index  ) { //reponse recue
+                                    //this.ticket.getResponseIssuerCode(index)
+                                    // console.log(Moment(this.ticket.getResponseIssuerExpiryDate(index)).format('llll'));
+                                    // console.log(Moment(this.ticket.getResponseIssuerExpiryDate(index)).fromNow());
+                                    // console.log(Moment(this.ticket.getResponseIssuerExpiryDate(index)).toDate());
+                                    let quote = this.ticket.getResponseIssuer('responseIssuersQuote', index);
+                                    quote == null ? quote = 0 : quote = quote.quote;
+
+                                    
+                                    return (
+                                        <View style={{flex : 0.33, flexDirection : 'column', borderWidth : 1, borderRadius : 5, margin : 3, backgroundColor: this.state.timers[index] > 1 ? 'white' : setColor('background')}} key={index}>
+                                            <View style={{flex : 0.5, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'flex-start', margin : 2}}>
+                                              <Image style={{width: 0.95*getConstant('width')/3 - 20, height : 50}} source={{uri : this.ticket.getIssuerIcon(this.props.issuers, index)}} resizeMode={'contain'}/>
+                                            </View>
+                                            <View style={{flex : 0.35, borderWidth : 0, alignItems: 'center', justifyContent: 'center', marginTop : 3}}>
+                                                <Text style={[setFont('400', 26, 'green', this.state.timers[index] > 1 ? 'Bold' : 'Light'), {textAlign : 'center', textAlignVertical : 'center'}]}>
+                                                  {Numeral(quote/100).format('0.00%')}{'\n'}
+                                                  <Text style={[setFont('400', 10, 'gray'), {textAlign : 'center', textAlignVertical : 'center'}]}>Term-sheet</Text>
+                                                </Text>
+                                            </View>
+                                            <View style={{flex : 0.15,  margin : 10, backgroundColor: 'gray' , alignItems: 'center', justifyContent : 'center'}}>
+                                                <Text style={setFont('400', this.state.timers[index] > 1 ? 16 : 12 , 'white', 'Regular')}> 
+                                                    ECHU
+                                                </Text>
+                                            </View>
+                                            <View style={{padding: 5, borderWidth : 0, justifyContent: 'center', alignItems : 'center'}}>
+                                              <Text style={[setFont('300', 12, 'gray') , {textAlign : 'center'}]}>
+                                                  {Moment(new Date(this.ticket.getResponseIssuer('responseIssuersExpiryDate', index))).fromNow()}
+                                              </Text>
+                                            </View>
+                                        </View>
+                                    );
+                                  } else { //réponse non reçue
+                                      return this._renderEmptyIssuerTemplate(index);
+                                  }
+
+                              })
+                          }
+                        </View>
+                        <TouchableOpacity style={{margin : 10,padding : 10,  backgroundColor: setColor('subscribeBlue'), borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius : 10, alignItems: 'center', justifyContent : 'center'}}
+                                          onPress={() => {
+                                                  this.setState({ isLoading : true });
+                                                  getRepricing(this.props.firebase, this.ticket.getId(), 'ALL')
+                                                  .then((ticket) => {
+                                                    console.log("TICKET RECU : ");
+                                                    console.log(ticket);
+                                                    this._processUptadedTicket(ticket);
+                                                    this.setState({ isLoading : false });
+                                                  })
+                                                .catch((error) => {
+                                                    alert('Impossible de rafraichir le prix');
+                                                    this.setState({ isLoading : false });
+                                                });
+                                          }}
+                        >
+                            <Text style={setFont('400', 18 , 'white', 'Regular')}> 
+                                {String('rafraichir les prix').toUpperCase()}
+                            </Text>
+                        </TouchableOpacity>                 
+                      </View>
+                  );
+              }
               break;
         default : 
               return (
@@ -711,7 +745,7 @@ class FLTicketDetail extends React.Component {
     //createReply({ ticketId: 232, body: '<B>|Pierre via App|:</B> Je pense que j en veux.' }, 'undefined').then(val => {console.log(val)}).catch(err => {console.log(err)});
   
     var mess = {};
-    //toto = this.ticket.getId();
+
     
     mess['ticketId'] = this.ticket.getId();
     mess['body'] = messages.length > 0 ? messages[0].text : '';
@@ -1116,7 +1150,23 @@ class FLTicketDetail extends React.Component {
       case 'CONVERSATION' :
         return this._renderConversation();
       case 'DETAIL':
-         return this._renderDetail();
+        //on verifie de quel type de tickets il s'agit et l'état du ticket
+        if (this.ticket.isShared()) {//&& !this.ticket.isMine(this.props.user)) {
+            return <FLDetailBroadcastPSSubscripter 
+                          ticket={this.ticket} 
+                          subscripters={this.state.subscripters}
+                          user={this.props.user} 
+                          requester={new CUser(this.ticket.getRequester())}
+                          requesterOrg={this.ticket.getRequesterOrg()}
+                          handleIndexChange={this._handleIndexChange}
+                          firebase={this.props.firebase}
+                          reloadTicket={this._loadTicket}
+                  />;
+        } else {
+          return this._renderDetail();
+        }
+        break;
+      case 'TEST' : return <FLChat ticket={this.ticket} />
       default:
         return this._renderDocuments();;
     }
@@ -1223,9 +1273,9 @@ class FLTicketDetail extends React.Component {
                       >
                            <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
                       </TouchableOpacity>
-                      <View style={{flex: 0.6, justifyContent: 'center', alignItems: 'center'}}>
-                           <Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()}</Text>
-                           <Text style={setFont('300', 12, 'white' )}>{this.ticket.getType()} - {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()}</Text>
+                      <View style={{flex: 0.7, justifyContent: 'center', alignItems: 'center'}}>
+                           <Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()} {this.ticket.isShared() ? 'partagé' : null}</Text>
+                           <Text style={setFont('300', 12, 'white' )} numberOfLines={1}>{this.ticket.getType()} - {this.ticket.isShared() ? (currencyFormatDE(this.sharedAmount) + " / " + currencyFormatDE(this.ticket.getBroadcastAmount())) : currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()}</Text>
                            
                       </View>
                       <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.025*getConstant('width')}}>
@@ -1315,6 +1365,7 @@ class FLTicketDetail extends React.Component {
                   onIndexChange={this._handleIndexChange}
                   renderScene={this._renderScene}
                   renderTabBar={this._renderHeader}
+                  swipeEnabled={false}
                   //renderTabBar={() => <View><Text>Merde</Text></View>}
                 />
               </View>

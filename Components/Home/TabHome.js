@@ -43,6 +43,7 @@ import { isAndroid, isEqual, getConstant } from "../../Utils";
 import { CWorkflowTicket } from "../../Classes/Tickets/CWorkflowTicket";
 import { CBroadcastTicket } from '../../Classes/Tickets/CBroadcastTicket';
 import { CTicket } from '../../Classes/Tickets/CTicket';
+import { CSouscriptionTicket } from "../../Classes/Tickets/CSouscriptionTicket";
 
 
 
@@ -239,54 +240,50 @@ class TabHome extends React.PureComponent {
 
   render() {
     //console.log(this.props.userOrg);
- 
+
     return (
       <FLScrollView
         style={{ marginTop: Platform.OS === "android" ? -65 : -45 }}
       >
 
-          {this.props.broadcasts.length !== 0  ?
+          {this.props.souscriptionTickets.length !== 0  ?
                 <View style={{marginRight: 0.025*getConstant('width')}}>
                   <View
                     style={{
-
                       marginLeft: getConstant('width') * 0.025,
                       alignItems: "flex-start",
                       borderWidth: 0
                     }}
                   >
                     <Text style={setFont("400", 18)}>
-                      APE sur mesure
+                      Invitations
                     </Text>
                   </View>
                   <FlatList
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
                     contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-                    data={this.props.broadcasts}
+                    data={this.props.souscriptionTickets}
                     horizontal={true}
                     renderItem={({ item, index }) => {
-                      let ticket = new CBroadcastTicket(item);
-                      //console.log(ticket.getTemplate());
-                      switch (ticket.getTemplate()) {
-                        case TEMPLATE_TYPE.PSBROADCAST :
-                          return (
-                            <View style={{marginLeft: getConstant('width') * 0.025}}>
-                              <FLTemplatePSBroadcast ticket={ticket} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
-                            </View>
-                          );
-                        default:
-                          return null;
+                      // console.log(item.getType());
+                      // console.log(item.getWorkflowName());
+                      // console.log(item.getTemplate());
+                      if (item.getType() ===  "Produit structuré" ) {
+                        return (
+                          <View style={{marginLeft: getConstant('width') * 0.025,}}>
+                            <FLTemplatePP ticket={item} templateType={TEMPLATE_TYPE.TICKET_MEDIUM_TEMPLATE} source={'Home'} isBroadcast={true}/>
+                          </View>
+                          // <View style={{marginLeft: getConstant('width') * 0.025}}>
+                          //   <FLTemplatePSBroadcast ticket={ticket} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
+                          // </View>
+                        );
                       }
+                      return null;
+                 
                     }}
                     //tabRoute={this.props.route.key}
-                    keyExtractor={item => {
-                      let key =
-                        typeof item.data["id"] === "undefined"
-                          ? item.data["code"]
-                          : item.data["id"];
-                      return key.toString();
-                    }}
+                    keyExtractor={item => item.getId().toString()}
                   />
               </View>
             : null
@@ -338,21 +335,8 @@ class TabHome extends React.PureComponent {
                     renderItem={({ item, index }) => {
                       
                       //let isNotified = this.props.isNotified('TICKET', item.getId());
-                      //console.log("Notifié : " + isNotified + " - " + item.getId());
+                      
                       switch(item.getType()) {
-                        case "Broadcasting" :
-                        
-                            switch (item.getTemplate()) {
-                              case TEMPLATE_TYPE.PSBROADCAST :
-                                return (
-                                  <View style={{marginLeft: getConstant('width') * 0.025}}>
-                                    <FLTemplatePSBroadcast ticket={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'} screenWidth={0.7} />
-                                  </View>
-                                );
-                              default:
-                                return null;
-                            };
-                            break;
                          case "Produit structuré" :
                             switch (item.getTemplate()) {
                               case TEMPLATE_TYPE.PSAPE : 

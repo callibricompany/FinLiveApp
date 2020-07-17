@@ -77,9 +77,11 @@ class FLTemplatePSPublicAPE extends React.Component {
     //largeur de la cartouche sur l'ecran
     this.screenWidth = 0.9 * getConstant('width');
 
+
     this.autocall = new CAutocallSRP(this.props.object);    
 
-    //console.log(this.autocall.getProductName());
+    // console.log("Title : " + this.autocall.getFrequencyAutocallTitle());
+    // console.log("getUnderlying : " + this.autocall.getUnderlying());
   
   }
 
@@ -133,7 +135,7 @@ _renderHeaderFullTemplate() {
                 <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
                   <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
                     <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
-                        { Numeral(this.autocall.getCoupon()).format('0.00%')}
+                        { Numeral(this.autocall.getCoupon() == null ? 0 : this.autocall.getCoupon()).format('0.00%')}
                         <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                     </Text>  
                   </View> 
@@ -173,7 +175,7 @@ _renderHeaderMediumTemplate() {
                         <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10, borderTopRightRadius: 10}}>
                                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
                                       <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
-                                          { Numeral(this.autocall.getCoupon()).format('0.00%')}
+                                          { Numeral(this.autocall.getCoupon() == null ? 0 : this.autocall.getCoupon()).format('0.00%')}
                                           <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                                       </Text>  
                                  </View> 
@@ -435,7 +437,7 @@ _renderMediumTemplate() {
 }
 
 render () {
- 
+
       //check if it is in favorites
       let isFavorite = false;
       isFavorite = this.autocall.isFavorite(this.props.favorite);

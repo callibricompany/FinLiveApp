@@ -161,7 +161,7 @@ class FLAutocallDetailTrade extends React.Component {
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("création d'une demande de cotation").toUpperCase()}/>
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingUpdatePrice} text={String(this.state.messageUpdatePrice).toUpperCase()}/>
         
-            <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 40 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center'}}  >
+            <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 45 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center'}}  >
                             <TouchableOpacity style={{ flex: 0.2, flexDirection : 'row', borderWidth: 0, padding : 5}}
                                                 onPress={() => this.props.navigation.goBack()}
                             >
@@ -171,8 +171,11 @@ class FLAutocallDetailTrade extends React.Component {
                   
                             </TouchableOpacity>
                             <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}} >
-                              <Text style={setFont('400', 18, 'white', 'Regular')}>
-                                Nouveau produit
+                              <Text style={setFont('200', 16, 'white', 'Regular')}>
+                                Traiter :
+                              </Text>
+                              <Text style={setFont('300', 18, 'white', 'Regular')}>
+                                {String('placement privé').toUpperCase()} 
                               </Text>
                             </View>
                             <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
@@ -252,10 +255,47 @@ class FLAutocallDetailTrade extends React.Component {
                       </View>
                   </ModalDropdown>
                    
-                            </View>
+                </View>
             </View>
             <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center'}}>
-                <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false} source={'Home'} nominal={this.state.finalNominal} screenWidth={1} />
+                
+            <View style={{flexDirection: 'row', width : getConstant('width'), justifyContent: 'flex-start', marginLeft : 35 }}>                                                    
+                  <View style={{flex: 0.7, flexDirection: 'column', justifyContent: 'center' , paddingTop: 3, paddingBottom: 3}}>
+
+                    <View style={{}}>
+                        <View style={{ borderWidth: 0}}>
+                            <Text style={setFont('400', 20,setColor('darkBlue'), 'Bold')}>
+                                    {this.autocall.getProductName()} 
+                            </Text>
+                        </View>
+                        <View style={{ borderWidth: 0}}>
+                            <Text style={setFont('400', 13, setColor('darkBlue'), 'Regular')}>
+                                {this.autocall.getFullUnderlyingName(this.props.categories)}
+                            </Text>
+                        </View>
+                    </View>
+                  </View>
+                  <View style={{ alignItems: 'flex-end', justifyContent: 'flex-end', marginRight: 20, borderWidth: 0}}>
+                      <Text style={setFont('400', 24, 'green', 'Bold')} numberOfLines={1}>        
+                          { Numeral(this.autocall.getCoupon()).format('0.00%')} <Text style={setFont('200', 12)}>p.a.
+                      </Text></Text>   
+                      {/* <Text style={setFont('200', 10, setColor(''))}>R : {this.state.nominal === 0 ? Numeral(this.autocallResult.getUF()).format('0.00%') : currencyFormatDE(this.autocallResult.getUF() * this.state.nominal, 0)} {this.autocallResult.getCurrency()}</Text> */}
+                  </View>  
+                </View>
+  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
             </View>
             <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', borderWidth: 0}}>
                 <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={false} source={'Home'}  nominal={this.state.finalNominal} screenWidth={0.9} />
@@ -264,10 +304,10 @@ class FLAutocallDetailTrade extends React.Component {
             <View style={{backgroundColor: setColor(''), alignItems:'center', justifyContent: 'center', padding: 10}}>
                       <Text style={setFont('500',14,'white', 'Regular')}>INSTRUCTIONS DE COTATION</Text>
                   </View>
-                  <View style={{ backgroundColor: setColor('background'), alignItems:'flex-start', justifyContent: 'flex-start'}}>
+                  <View style={{  alignItems:'flex-start', justifyContent: 'flex-start'}}>
                       <Text style={[setFont('300', 14), {padding: 10}]}>Ajoutez vos instructions pour les émetteurs :</Text>
                       <View style={{}}>
-                        <TextInput  style={{color: 'black', textAlignVertical:'top', backgroundColor: 'white' , margin : 10, padding: 5, borderWidth :1, borderRadius: 2,width: getConstant('width')*0.8-20, height: getConstant('height')*0.15}}
+                        <TextInput  style={{color: 'black', textAlignVertical:'top', backgroundColor: 'white' , margin : 10, padding: 5, borderWidth :1, borderRadius: 2,width: getConstant('width')-20, height: getConstant('height')*0.15}}
                                   multiline={true}
                                   numberOfLines={5}
                                   placeholder={'Vos instructions...'}
@@ -278,7 +318,7 @@ class FLAutocallDetailTrade extends React.Component {
                         />
                       </View>
                   </View>
-                  <View style={{flexDirection: 'row', backgroundColor: setColor('background'), borderWidth : 0, paddingLeft : 10, paddingRight : 10, paddingTop : 10}}>
+                  <View style={{flexDirection: 'row', borderWidth : 0, paddingLeft : 10, paddingRight : 10, paddingTop : 10}}>
                       <View style={{flex: 0.8, borderWidth : 0}}>
                           <Text style={setFont('300', 14, 'black')}>
                               Avez-vous décrit une spécifité au produit non standard ?
@@ -292,11 +332,11 @@ class FLAutocallDetailTrade extends React.Component {
                           <MaterialCommunityIcons name={this.state.isAutomatique ? "checkbox-blank-outline" : "check-box-outline"} size={25} />
                       </TouchableOpacity>
                   </View>
-                  <View style={{alignItems:'center', backgroundColor : setColor('background'), justifyContent: 'center', padding : 15}}>
-                    <TouchableOpacity style={{backgroundColor: setColor('subscribeBlue')}}
+                  <View style={{alignItems:'center',  justifyContent: 'center', padding : 15}}>
+                    <TouchableOpacity style={{borderWidth: 1, borderColor : setColor('subscribeBlue'), borderRadius : 10, backgroundColor: setColor('subscribeBlue'), padding : 10}}
                                       onPress={() => {
                                         //on envoie le ticket 
-                                        this.setState({ isLoading : true , showModalDescription : false });
+                                        this.setState({ isLoadingCreationTicket : true , showModalDescription : false });
                                  
                                         
                                         let productToSend = this.autocall.getProduct();;
@@ -305,6 +345,8 @@ class FLAutocallDetailTrade extends React.Component {
                                         productToSend['type'] = 'Produit structuré';
                                         productToSend['department'] = 'FIN';
                                         productToSend['nominal'] = Number(this.state.nominal);
+                                        productToSend['cf_ps_shared'] = false;
+                                        
                                         if (productToSend['cf_cpg_choice'] === "Placement Privé") {
                                           productToSend['cf_step_pp'] = "PPDVB";
                                         } else {
@@ -315,6 +357,7 @@ class FLAutocallDetailTrade extends React.Component {
                                         //si PP dans 3 jours fin de journée
                                         let due_byDate = Moment(Date.now()).add(3, 'days').set({"hour": 17, "minute": 30, "second" : 0}).toDate();
                                         productToSend['due_by'] = Moment.utc(due_byDate).format();
+                                        // console.log(Moment.utc(due_byDate).format());
                                         let fr_due_byDate = Moment(Date.now()).add(1, 'days').set({"hour": 17, "minute": 15, "second" : 0}).toDate();
                                         productToSend['fr_due_by'] = Moment.utc(fr_due_byDate).format();
 
@@ -333,22 +376,23 @@ class FLAutocallDetailTrade extends React.Component {
                                           //console.log("USER CREE AVEC SUCCES DANS ZOHO");
                                           
                                           console.log("SUCCES CREATION TICKET");
+                                          
                                           let t = new CWorkflowTicket(data.data);
                                           this.props.addTicket(t);
                                           console.log("TICKET AJOUTE");
-                                          this.setState({ isLoading : false }, () => {
+                                          this.setState({ isLoadingCreationTicket : false }, () => {
                                             this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
                                           })
                                         })
                                         .catch(error => {
                                            console.log("ERREUR CREATION TICKET: " + error);
-                                           this.setState({ isLoading : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
+                                           this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
                                           
                                         });
                                         
                                       }}
                     >
-                      <Text style={[setFont('400',14,'white', 'Bold'), {margin : 5}]}>ENVOYER LA DEMANDE</Text>
+                      <Text style={[setFont('400',14,'white', 'Bold'), {margin : 5}]}>DEMANDER LE PRIX</Text>
                     </TouchableOpacity>
                   </View>
 

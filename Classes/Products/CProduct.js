@@ -2,14 +2,22 @@ import Moment from 'moment';
 import * as TEMPLATE_TYPE from '../../constants/template';
 import { CObject } from '../CObject';
 
+
 //classe mere de tous les objets financiers, immos, arts, etc...
 export class CProduct extends CObject { 
     constructor(product) {
       super(product);
+
       this.product = this.object['data'];
 
       this.finalNominal = -1;
       this.isEditable = true;
+
+      //datas for broadcast
+      this.friends = [];
+      this.beginBroadCastDate = null;
+      this.endBroadCastDate = null;
+      this.targetNorminal = 0;
     }
     
  
@@ -69,9 +77,7 @@ export class CProduct extends CObject {
       return this.product.underlying;
     }
 
-    getNominal() {
-      return this.product.nominal;
-    }
+
 
     getCurrency() {
       return this.product.currency;
@@ -130,6 +136,12 @@ export class CProduct extends CObject {
   
       return name;
     }
+
+    setNominal(nominal) {
+
+      this.product["nominal"] = nominal;
+
+    }
     /////////////////////////
 
     //      DATES
@@ -149,4 +161,57 @@ export class CProduct extends CObject {
         if (d === '') {}
     }
 
+   /////////////////////////
+
+    //      SHARING DATA
+
+    /////////////////////////
+
+    setFriends(friends) {
+      this.friends = friends;
+    }
+
+    getFriends() {
+      return this.friends;
+    }
+
+    setBeginBroadcastDate(beginBroadCastDate) {
+      this.beginBroadCastDate = beginBroadCastDate;
+    }
+
+    getBeginBroadcastDate() {
+      return this.beginBroadCastDate === null ? new Date(Date.now()) : this.beginBroadCastDate;
+    }
+
+    setEndBroadcastDate(endBroadCastDate) {
+      this.endBroadCastDate = endBroadCastDate;
+    }
+
+    getEndBroadcastDate() {
+      return this.endBroadCastDate === null ? new Date(Date.now()) : this.endBroadCastDate;
+    }
+
+    setTargetNominal(nominal) {
+      this.targetNorminal = nominal;
+    }
+    getTargetNominal() {
+      return this.targetNorminal === 0 ? Math.max(this.getNominal(), 200000) : this.targetNorminal;
+    }
+
+    setStepPP(step) {
+      this.product['cf_step_pp'] = step;
+    }
+
+
+    setSubject(subject) {
+      this.product['subject'] = subject;
+    }
+
+    setDescription(description) {
+      this.product['description'] = description;
+    }
+
+    setDepartment(department) {
+      this.product['department'] = department;
+    }
 }

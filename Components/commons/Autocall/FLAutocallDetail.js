@@ -7,6 +7,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import FLTemplateAutocall from "./FLTemplateAutocall";
@@ -80,6 +81,8 @@ class FLAutocallDetail extends React.Component {
         //gestion du fondu de l'en tete
         scrollOffset: new Animated.Value(0),
 
+        //gestion des boutons
+        showButtonsToTrade : false,
   
         //gestion du clavier
         keyboardHeight: 0,
@@ -292,7 +295,7 @@ class FLAutocallDetail extends React.Component {
     switch(item.key) {
       case 'ISSUER' : 
           body = <FLIssuer  codeAuction={'PP'} 
-                            isEditable={this.isEditable} 
+                            isEditable={this.state.showButtonsToTrade ? false :  this.isEditable} 
                             issueDate={this.autocall.getIssueDate()}
                             endIssueDate={this.autocall.getEndIssueDate()}
                             notionnal={this.autocall.getNominal()}
@@ -300,7 +303,7 @@ class FLAutocallDetail extends React.Component {
                   />;
           break;
       case 'CC' : 
-          body = <FLUF      isEditable={this.isEditable} 
+          body = <FLUF      showSlider={this.isEditable} 
                             UF={this.autocall.getUF()}
                             UFAssoc={this.autocall.getUFAssoc()}
                             nominal={this.autocall.getNominal()}
@@ -556,10 +559,96 @@ class FLAutocallDetail extends React.Component {
   }
 
 
+
+  _renderButtonsTotrade() {
+
+    return (
+      <Animated.View  style={{position : 'absolute',top: getConstant('height')-220-this.state.keyboardHeight - (isAndroid() ? 30 : 0), right : 20,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent', transform: [{ translateY: this.state.scrollOffset }]}}>
+
+            <TouchableOpacity style ={{ flexDirection: 'row',  borderWidth : 1, height: 40,  borderColor: setColor('darkblue'), borderRadius: 20, marginLeft : 10, marginRight : 0,  backgroundColor: setColor('darkblue'), marginBottom : 15, justifyContent : 'space-between'}}
+                            onPress={() => {
+                              this.setState({ showButtonsToTrade : !this.state.showButtonsToTrade });
+                              this.props.navigation.navigate('FLAutocallDetailBroadcastPP', {
+                                autocall: this.autocall,
+                              });
+                            }}  
+            >
+                <View style={{alignItems: 'center', justifyContent: 'center', padding : 5, paddingLeft : 10, paddingRight : 10}}>
+                    <Text style={setFont('400', 14, 'white', 'Regular')}>{String('partager').toUpperCase()}</Text>
+                </View>
+                <View style={{paddingRight : 10, alignItems: 'flex-end', justifyContent: 'center', borderWidth : 0}}>
+                    <Ionicons name={"md-share"} size={25} color={'white'} />
+                </View>
+
+            </TouchableOpacity>
+
+            <TouchableOpacity style ={{  flexDirection: 'row',  borderWidth : 1, height: 40,  borderColor: setColor('darkblue'), borderRadius: 20, marginLeft : 10, marginRight : 0,  backgroundColor: setColor('darkblue'), justifyContent : 'space-between'}}
+                            onPress={() => {
+                                if(this.state.nominal === 0) {
+                                  alert("Renseigner un nominal avant de demander une cotation");
+                                  return;
+                                } else if(this.state.nominal < 50000) {
+                                    alert("Renseigner un nominal supérieur à 50 000 EUR pour demander une cotation");
+                                    return;
+                                }
+                                this.setState({ showButtonsToTrade : !this.state.showButtonsToTrade });
+                                this.props.navigation.navigate('FLAutocallDetailTrade', {
+                                  autocall: this.autocall,
+                                });
+                            }}  
+            >
+                <View style={{alignItems: 'center', justifyContent: 'center', padding : 5, paddingLeft : 10, paddingRight : 10}}>
+                    <Text style={setFont('400', 14, 'white', 'Regular')}>{String('traiter').toUpperCase()}</Text>
+                </View>
+                <View style={{paddingRight : 10, alignItems: 'flex-end', justifyContent: 'center', borderWidth : 0}}>
+                    <MaterialIcons name={"euro-symbol"} size={25} color={'white'} />
+                </View>
+
+            </TouchableOpacity>
+
+      </Animated.View>
+    );
+  }
+
+  _renderButtonTotrade() {
+
+
+    return (
+      <Animated.View style={{position : 'absolute',top: getConstant('height')-110-this.state.keyboardHeight - (isAndroid() ? 30 : 0) , right : 20,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent', transform: [{ translateY: this.state.scrollOffset }]}}>
+            <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 70, width: 70, borderColor: setColor('subscribeBlue'), borderRadius: 35, marginLeft : 10, padding : 10, backgroundColor: setColor('subscribeBlue')}}
+                            onPress={() => {
+                                this.setState({ showButtonsToTrade : !this.state.showButtonsToTrade });
+                            }}  
+            >
+                <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
+                    <Image style={{width: 40, height: 40}} source={logo_white} />
+                </View>
+                <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={setFont('400', 16, 'white', 'Bold')}>{String('...').toUpperCase()}</Text>
+                </View>
+            </TouchableOpacity>
+
+      </Animated.View>
+    );
+  }
+
   render() {
     let dataOptions = ['Clone', 'Shadow'];
     return (
-      <View  style={{ flex: 1, backgroundColor: "white" , opacity: this.state.showModalDescription ? 0.3 : (this.state.isLoadingCreationTicket || this.state.isLoadingUpdatePrice) ? 0.2 : 1}} >
+      <View  style={{ flex: 1, backgroundColor: "white" , opacity: (this.state.showModalDescription) ? 0.3 : (this.state.isLoadingCreationTicket || this.state.isLoadingUpdatePrice) ? 0.2 : 1}} 
+                        onStartShouldSetResponder={evt => {
+                        //console.log('Tapped outside');
+                        
+                        this.setState({ showButtonsToTrade : false });
+                        // evt.persist();
+                        // if (this.childrenIds && this.childrenIds.length) {
+                        //   if (this.childrenIds.includes(evt.target)) {
+                        //     return;
+                        //   }
+                        //   console.log('Tapped outside 2');
+                        // }
+                      }}
+      >
          
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("création d'une demande de cotation").toUpperCase()}/>
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingUpdatePrice} text={String(this.state.messageUpdatePrice).toUpperCase()}/>
@@ -575,7 +664,10 @@ class FLAutocallDetail extends React.Component {
                             </TouchableOpacity>
                             <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}} >
                               <Text style={setFont('400', 18, 'white', 'Regular')}>
-                                Nouveau produit
+                                {this.isEditable
+                                ? "Nouveau produit"
+                                : this.autocall.getProductName() 
+                                }
                               </Text>
                             </View>
                             <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
@@ -666,7 +758,7 @@ class FLAutocallDetail extends React.Component {
      
         
 
-            <View style={{flex : 1, flexDirection : 'row'}}>
+            <View style={{opacity : this.state.showButtonsToTrade ? 0.3 : 1, flex : 1, flexDirection : 'row'}}>
                 <View style={{width : 50,  marginLeft : 0,  zIndex : 10, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'center', backgroundColor : setColor('background')}}>
                       <Accordion
                          
@@ -690,7 +782,7 @@ class FLAutocallDetail extends React.Component {
 
 
                 </View>
-                <View style={{flex : 1, backgroundColor : setColor('background'), marginBottom : 100}}>
+                <View style={{flex : 1, backgroundColor : setColor('background')}}>
                     <View style={{height : 20, backgroundColor : 'white', borderWidth : 1, borderColor: 'white', borderTopLeftRadius : 20}} />
                     <FlatList
                       style={{ flexGrow: 1, backgroundColor : 'white', paddingLeft : 15}}
@@ -703,37 +795,9 @@ class FLAutocallDetail extends React.Component {
                     />
                 </View>
             </View>
-  
-            {this.autocall.getFinalNominal() === -1 ?
-                 
-                      <Animated.View style={{position : 'absolute',top: getConstant('height')-110-this.state.keyboardHeight - (isAndroid() ? 30 : 0), left : getConstant('width') -120,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent', transform: [{ translateY: this.state.scrollOffset }]}}>
-                  
-
-                                <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 80, width: 80, borderColor: setColor('subscribeBlue'), borderRadius: 40, marginLeft : 10, padding : 10, backgroundColor: setColor('subscribeBlue')}}
-                                                onPress={() => {
-                                                    if(this.state.nominal === 0) {
-                                                    alert("Renseigner un nominal avant de demander une cotation");
-                                                    return;
-                                                    } else if(this.state.nominal < 50000) {
-                                                        alert("Renseigner un nominal supérieur à 50 000 EUR pour demander une cotation");
-                                                        return;
-                                                    }
-                                                    this.props.navigation.navigate('FLAutocallDetailTrade', {
-                                                      autocall: this.autocall,
-                                                    });
-                                                }}  
-                                >
-                                    <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
-                                        <Image style={{width: 50, height: 50}} source={logo_white} />
-                                    </View>
-                                    <View style={{marginTop: -2, alignItems: 'center', justifyContent: 'center'}}>
-                                        <Text style={setFont('400', 12, 'white', 'Regular')}>{String('traiter').toUpperCase()}</Text>
-                                    </View>
-                                </TouchableOpacity>
-      
-                    </Animated.View>
-                    : null
-              }    
+            
+            {this.state.showButtonsToTrade ? this._renderButtonsTotrade() : null}     
+            {this.autocall.getFinalNominal() === -1 ? this._renderButtonTotrade() : null}
       </View>
     );
   }

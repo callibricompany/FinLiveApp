@@ -3,39 +3,46 @@
 import { CAutocall } from "./CAutocall";
 import Moment from 'moment';
 import Numeral from 'numeral';
-import FREQUENCYLIST from "../../Data/frequencyList.json";
+
+
 
 
 export class CAutocallSRP extends CAutocall {
   constructor(autocall) {
     super(autocall); // appelle le constructeur parent avec le paramètre
 
-    
+
     //tranposition des champs SRP en finlive
     this.product['UF'] = 0;
     this.product['UFAssoc'] = 0;
     this.product['cf_cpg_choice'] = "Appel public à l'épargne";
-
-    //console.log(this.product);
+    
+    
     if (this.product.data.hasOwnProperty("Capital Protection") && this.product['data']["Capital Protection"] !== "0.0%"){
       this.product["barrierPDI"] = Numeral(this.product['data']["Capital Protection"]).format('0.00'); 
     } else {
-      this.product["barrierPDI"] = Numeral(this.product['data']["Barrier Level"]).add(1).format('0.00'); 
+      let b = this.product['data']["Barrier Level"];
+      this.product["barrierPDI"] = Numeral(b === "" ? 0 : b).add(1).format('0.00'); 
     }
+    
     this.product["date"] = this.product['data']["Strike Date"];
     this.product['finaldate'] = this.product['data']["Final Valuation Date"];
     this.product['enddate']  = this.product['data']["Maturity Date"];
     this.product['startdate'] = this.product['data']["Offer Close Date"];
 
     this.product['underlying'] = this.object['data']['Underlying'];
-
-    let cpn = this.product['data']["Digital Coupon"];
-    //cpn = cpn.replace('.',',');
-    //numeral.locale('fr');
-    cpn = Numeral(cpn.substring(0, cpn.length - 4)).format('0.0000');
-    cpn = cpn > 1 ? cpn/100 : cpn; 
-    //console.log("COUPON : "+ cpn + "   -  "+this.product['data']["Digital Coupon"]);
-    this.product['coupon'] = cpn; 
+    
+    if (this.product['data'].hasOwnProperty("Digital Coupon")) {
+      let cpn = this.product['data']["Digital Coupon"];
+      //cpn = cpn.replace('.',',');
+      //numeral.locale('fr');
+      cpn = Numeral(cpn.substring(0, cpn.length - 4)).format('0.0000');
+      cpn = cpn > 1 ? cpn/100 : cpn; 
+      //console.log("COUPON : "+ cpn + "   -  "+this.product['data']["Digital Coupon"]);
+      this.product['coupon'] = cpn; 
+    } else {
+      this.product['coupon'] = 0; 
+    }
     
 
     this.product['startdate'] = this.product['data']["Offer Close Date"];

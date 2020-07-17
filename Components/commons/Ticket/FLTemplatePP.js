@@ -29,7 +29,7 @@ import * as TEMPLATE_TYPE from '../../../constants/template'
 
 import * as Progress from 'react-native-progress';
 
-import { searchProducts, getTicket } from '../../../API/APIAWS';
+import { searchProducts, getTicket, getBroadcastAmount} from '../../../API/APIAWS';
 
 import { FLPDIDetail } from '../../Pricer/description/FLPDIDetail';
 import { FLPhoenixBarrierDetail } from '../../Pricer/description/FLPhoenixBarrierDetail';
@@ -43,10 +43,16 @@ import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
+import { CUser } from '../../../Classes/CUser';
 import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
 import { CWorkflowTicket } from '../../../Classes/Tickets/CWorkflowTicket';
 
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+
 import StepIndicator from 'react-native-step-indicator';
+import { CSouscriptionTicket } from '../../../Classes/Tickets/CSouscriptionTicket';
+import { CTicket } from '../../../Classes/Tickets/CTicket';
 
 
 
@@ -88,12 +94,18 @@ class FLTemplatePP extends React.Component {
       //les notifications
       isNotified : false,
       notifications : [],
+
+      //progressbar underterminate
+      isProgressbarDeterminated : false,
+      subscripters : [],
     }
 
     //console.log(this.props.object);
 
     //type de tycket
     this.type = this.props.hasOwnProperty('templateType')  ? this.props.templateType : TEMPLATE_TYPE.TICKET_FULL_TEMPLATE;
+  
+
     
     //largeur de la cartouche sur l'ecran
     switch (this.type) {
@@ -107,50 +119,91 @@ class FLTemplatePP extends React.Component {
     this.screenWidth = this.props.hasOwnProperty('screenWidth')  ? this.props.screenWidth * getConstant('width') : this.screenWidth;
 
     //recuperation du ticket
+    this.requester = null;
+    this.requesterOrg  = null;
     if (typeof this.props.ticket !== 'undefined' && this.props.ticket !== null) {
         this.ticket = this.props.ticket;
         this.autocall = this.ticket.getProduct();
+        if (this.ticket.isShared()) {
+          this.requester = new CUser(this.ticket.getRequester());
+          this.requesterOrg = this.ticket.getRequesterOrg();
+        } 
+        this._updateStepIndicator();
+   
     } else {
       this.ticket = null;
     }
     //console.log(this.props.ticket);
-    this._updateStepIndicator();
+    
 
     //timer
     this.intervalTimerFirstDueBy = null;
     //console.log("Ticket Id : "+ this.ticket.getId() + " - Level : "+ this.ticket.getCurrentCodeStep() + " ("+ this.ticket.getCurrentLevel()+"/"+this.ticket.getStepDepth() + ") Stpets to go : " + this.ticket.getStepsToGoCount() + " - Level to show : "+ this.currentPositionToShow + " ( Left : "+ this.show1stButton +" || Right : " +this.show2ndButton+")");
 
-
+    this.amount = 0;
   }
 
     //component rcceved props
     UNSAFE_componentWillReceiveProps(props) {
-      getTicket(this.props.firebase, this.ticket.getId())
-      .then((ticket) => {
-          //console.log(ticket);
-          // let t = new CWorkflowTicket(ticket);
-          // this.ticket.setObject(t.getObject());
-          this.ticket = new CWorkflowTicket(ticket);
-          this._updateStepIndicator();
-          //check if notified
-          this._updateNotifications();
+      //console.log("RCOIT UNE PROPS : " + this.ticket.getId());
+      if (this.ticket.isShared()) {
+          let id = this.ticket.getSouscriptionId();
+          getTicket(this.props.firebase, id)
+          .then((ticket) => {
+              //console.log(ticket);
+              this.ticket = new CSouscriptionTicket(ticket);
+              this._updateAmountSubscription();
+              //check if notified
+              this._updateNotifications();
 
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        getTicket(this.props.firebase, this.ticket.getId())
+        .then((ticket) => {
+            this.ticket = new CWorkflowTicket(ticket);
+            this._updateStepIndicator();
+     
+            //check if notified
+            this._updateNotifications();
+
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
 
       
     }
 
    // compopnentdidmount
-   componentDidMount() {
-  
+   _updateAmountSubscription() {
 
+      //retreive broadcast amount
+      if (this.ticket.isShared()) {
+        getBroadcastAmount(this.props.firebase, this.ticket.getBroadcastId())
+        .then((subscripters) => {
+
+          if (subscripters.hasOwnProperty('subscription')) {
+      
+            this.amount = subscripters.subscription.reduce((a, b) => a + b, 0);
+          }
+          this.setState({ isProgressbarDeterminated : true , subscripters});
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
+  }
+
+  componentDidMount() {
 
       //check if notified
       this._updateNotifications();
   }
+
 
   //on update  les timers et on agit en consequence
   componentDidUpdate(){
@@ -190,124 +243,230 @@ class FLTemplatePP extends React.Component {
   _updateStepIndicator() {
 
 
-        //labels de la progression et détermination des boutons a montrer sur le stepde progression
-        this.nbOfStepsToShow = Math.min(6, this.ticket.getStepDepth());
-        this.labels = Array(this.nbOfStepsToShow).fill().map((_, index) => (""+index));
-        //console.log("STEP DEPTH : " + this.ticket.getStepDepth()+ "   : " + this.ticket.getStepsToGoCount());
-        /*let currentStep = this.ticket.getCurrentCodeStep();
-        console.log(currentStep);
-        if (currentStep === 'PPSDSE' || currentStep === 'PPSDRO') {//offre echue ou refusée
-          this.nbOfStepsToShow = 5;
-          console.log("getStepDepth : " + this.ticket.getStepDepth());
-          console.log("getCurrentStepsDepth : "+this.ticket.getCurrentStepsDepth());
-        }*/
-        this.currentPositionToShow = this.ticket.getCurrentLevel();
-        this.show2ndButton = false;
-        this.show1stButton = false;
-        if (this.ticket.getStepDepth() > this.nbOfStepsToShow) { //il va falloir trogner le début et/ou la fin des steps
+        // //labels de la progression et détermination des boutons a montrer sur le stepde progression
+        // this.nbOfStepsToShow = Math.min(6, this.ticket.getStepDepth());
+        this.labels = Array(this.ticket.getStepDepth()+1).fill().map((_, index) => (""+index));
+        // console.log("STEP DEPTH : " + this.ticket.getStepDepth()+ "   : " + this.ticket.getStepsToGoCount());
+        // /*let currentStep = this.ticket.getCurrentCodeStep();
+        // console.log(currentStep);
+        // if (currentStep === 'PPSDSE' || currentStep === 'PPSDRO') {//offre echue ou refusée
+        //   this.nbOfStepsToShow = 5;
+        //   console.log("getStepDepth : " + this.ticket.getStepDepth());
+        //   console.log("getCurrentStepsDepth : "+this.ticket.getCurrentStepsDepth());
+        // }*/
+        // this.currentPositionToShow = this.ticket.getCurrentLevel();
+        // this.show2ndButton = false;
+        // this.show1stButton = false;
+        // if (this.ticket.getStepDepth() > this.nbOfStepsToShow) { //il va falloir trogner le début et/ou la fin des steps
         
-          if (this.currentPositionToShow > 2) {
-            this.show1stButton = true;
-          // caca prout//
-          } 
-          if (this.ticket.getStepsToGoCount() > 3) {
-            this.show2ndButton = true;
+        //   if (this.currentPositionToShow > 2) {
+        //     this.show1stButton = true;
+        //   // caca prout//
+        //   } 
+        //   if (this.ticket.getStepsToGoCount() > 3) {
+        //     this.show2ndButton = true;
             
-          } 
+        //   } 
           
-          if (this.show1stButton) {
-            if (this.show2ndButton) {
-              this.currentPositionToShow = 2;
-            }
-            else{
-              this.currentPositionToShow = this.nbOfStepsToShow - this.ticket.getStepsToGoCount();
-            }
-          } 
-        }
+        //   if (this.show1stButton) {
+        //     if (this.show2ndButton) {
+        //       this.currentPositionToShow = 2;
+        //     }
+        //     else{
+        //       this.currentPositionToShow = this.nbOfStepsToShow - this.ticket.getStepsToGoCount();
+        //     }
+        //   } 
+        // }
   }
 
   _renderStepIndicator() {
-
+    
     return (
-          <StepIndicator
-                customStyles={customStyles}
-                currentPosition={this.currentPositionToShow}
-                labels={this.labels.slice(0,this.nbOfStepsToShow)}
-                stepCount={this.nbOfStepsToShow}
-                renderLabel={({position, label}) => {
-                  switch(position) {
-                    case this.currentPositionToShow :
-                      let duedate = this.ticket.getFrDueBy();
-                      //console.log(duedate);
-                      if (duedate > Date.now()) {
-                          return (
-                            <View style={{ padding : 2, alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
-                                <Text style={[setFont('200', 9),{textAlign: 'center'}]}>{this.firstDealineTicket}</Text>
-                            </View>
-                          );
-                      } else {
-                        return (
-                            <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderRadius: 2, borderWith : 1, borderColor : 'red'}}>
-                                <Text style={[setFont('300', 10, 'white', 'Bold'), {textAlign: 'center'}]}>En retard</Text>
-                            </View>
-                        );
-                      }
-                    case 0 :
+          // <StepIndicator
+          //       customStyles={customStyles}
+          //       currentPosition={this.currentPositionToShow}
+          //       labels={this.labels.slice(0,this.nbOfStepsToShow)}
+          //       stepCount={this.nbOfStepsToShow}
+          //       renderLabel={({position, label}) => {
+          //         switch(position) {
+          //           case this.currentPositionToShow :
+          //             let duedate = this.ticket.getFrDueBy();
+          //             //console.log(duedate);
+          //             if (duedate > Date.now()) {
+          //                 return (
+          //                   <View style={{ padding : 2, alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
+          //                       <Text style={[setFont('200', 9),{textAlign: 'center'}]}>{this.firstDealineTicket}</Text>
+          //                   </View>
+          //                 );
+          //             } else {
+          //               return (
+          //                   <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderRadius: 2, borderWith : 1, borderColor : 'red'}}>
+          //                       <Text style={[setFont('300', 10, 'white', 'Bold'), {textAlign: 'center'}]}>En retard</Text>
+          //                   </View>
+          //               );
+          //             }
+          //           case 0 :
+          //             return (
+          //               <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+          //                   <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
+          //               </View>
+          //             );
+          //             case Math.min(this.labels.length, 6) - 1 :  //dernier
+          //               return (
+          //                 <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+          //                     <Text style={setFont('200', 8, setColor('lightBlue'))}>Traité</Text>
+                              
+          //                 </View>
+          //               );
+          //           default : 
+          //             return null;
+          //         }
+          //       }}
+          //       renderStepIndicator={({position}) => {
+          //         //console.log("POSITION : "+position +" / " +this.labels.length);
+
+          //         switch (position) {
+          //           case 1 :
+          //             if (this.show1stButton){
+          //               return (
+          //                 <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
+          //                     <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
+          //                 </View>  
+          //               );  
+          //             }
+          //             break;    
+          //           case 4 :
+          //               if (this.show2ndButton){
+          //                 return (
+          //                   <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
+          //                       <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
+          //                   </View>  
+          //                 );  
+          //               }
+          //               break;
+          //           case this.nbOfStepsToShow -1 :
+          //                 //if (this.show2ndButton){
+          //                   return (
+          //                     <View style={{backgroundColor: '#aaaaaa', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
+          //                   );  
+          //                 //}
+          //                 break;
+          //           default :
+          //             return null;
+          //             break;
+          //         }
+          //         return null;
+          //       }}
+          //   />
+
+
+            <StepIndicator
+            customStyles={customStyles}
+            currentPosition={this.ticket.getCurrentLevel()+1}
+            labels={this.labels}
+            stepCount={this.ticket.getStepDepth()+1}
+            renderLabel={({position, label}) => {
+              // console.log(position +" : " + Moment(this.ticket.getCreationDate()).format('lll'));
+              switch(position) {
+                case this.ticket.getCurrentLevel()+1 :
+                  let duedate = this.ticket.getFrDueBy();
+                  
+                  if (duedate > Date.now()) {
                       return (
-                        <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
-                            <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
+                        <View style={{ padding : 2, alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
+                            <Text style={[setFont('200', 9),{textAlign: 'center'}]}>{this.firstDealineTicket}</Text>
                         </View>
                       );
-                      case Math.min(this.labels.length, 6) - 1 :  //dernier
-                        return (
-                          <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
-                              <Text style={setFont('200', 8, setColor('lightBlue'))}>Traité</Text>
-                              
-                          </View>
-                        );
-                    default : 
-                      return null;
+                  } else {
+                    return (
+                        <View style={{backgroundColor: 'red', width : 50, padding : 2,alignItems: 'center', justifyContent: 'center', borderWidth: 0, borderRadius: 2, borderWith : 1, borderColor : 'red'}}>
+                            <Text style={[setFont('300', 10, 'white', 'Bold'), {textAlign: 'center'}]}>En retard</Text>
+                        </View>
+                    );
                   }
-                }}
-                renderStepIndicator={({position}) => {
-                  //console.log("POSITION : "+position +" / " +this.labels.length);
-
-                  switch (position) {
-                    case 1 :
-                      if (this.show1stButton){
-                        return (
-                          <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
-                              <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
-                          </View>  
-                        );  
-                      }
-                      break;    
-                    case 4 :
-                        if (this.show2ndButton){
-                          return (
-                            <View style={{backgroundColor: 'white', width: 15, height: 15, alignItems: 'center', justifyContent: 'center'}} >
-                                <View style={{backgroundColor: '#aaaaaa', width: 5, height: 5, borderRadius: 5}} />
-                            </View>  
-                          );  
-                        }
-                        break;
-                    case this.nbOfStepsToShow -1 :
-                          //if (this.show2ndButton){
-                            return (
-                              <View style={{backgroundColor: '#aaaaaa', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
-                            );  
-                          //}
-                          break;
-                    default :
-                      return null;
-                      break;
-                  }
+                case 0 :
+                  return (
+                    <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+                        <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
+                    </View>
+                  );
+                case this.labels.length - 1 :  //dernier
+                  return (
+                    <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
+                        <Text style={setFont('200', 8, setColor('lightBlue'))}>Traité</Text>
+                        
+                    </View>
+                  );
+                default : 
                   return null;
-                }}
-            />
+              }
+            }}
+            renderStepIndicator={({position}) => {
+              //console.log("POSITION : "+position +" / " +this.labels.length);
+
+              switch (position) {
+
+                case this.ticket.getStepDepth() :
+                      //if (this.show2ndButton){
+                        return (
+                          <View style={{backgroundColor: '#aaaaaa', width: 15, height: 15, borderWidth: 2, borderColor : '#aaaaaa'}} />
+                        );  
+                      //}
+                      break;
+                default :
+                  return null;
+                  break;
+              }
+              return null;
+            }}
+        />
     );
   }
 
+
+
+  _renderProgressBroadcast() {
+
+    return (
+       
+          <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.025*getConstant('width'), paddingRight : 0.025*getConstant('width'), marginTop : 15}}>
+              <View style={{flex : 0.6}}>
+                  <Text style={setFont('300', 14, 'black', 'Regular')}>
+                    Objectif : {currencyFormatDE(this.ticket.getBroadcastAmount())} {this.ticket.getCurrency()}
+                  </Text>
+                  <Text style={setFont('300', 10, 'gray')}>
+                    encore {currencyFormatDE(Math.max(0, this.ticket.getBroadcastAmount()- this.amount))} {this.ticket.getCurrency()}
+                  </Text>
+                  <View style={{flex : 0.6,  justifyContent: 'center', alignItems: 'flex-start'}}>
+                      <Progress.Bar progress={this.amount/this.ticket.getBroadcastAmount()} 
+                                    color={this.state.isProgressbarDeterminated ? setColor('') : setColor('lightBlue')} 
+                                    indeterminate={!this.state.isProgressbarDeterminated} 
+                                    indeterminateAnimationDuration={2000}
+                                    width={this.screenWidth/2}
+                      />
+                  </View>
+              </View>
+
+              <View style={{flex : 0.4, justifyContent: 'center', alignItems: 'flex-end', borderWidth : 0}}>
+                  <View>
+                      <Text style={setFont('300', 10)}>
+                          Fin {Moment(this.ticket.getEndDate()).fromNow()}
+                      </Text>
+                  </View>
+                  <View style={{borderWidth: 1, borderColor : setColor('subscribeBlue'), borderRadius : 10, backgroundColor: setColor('subscribeBlue'), padding : 3, marginTop : 5}}>
+                      <Text style={[setFont('400',14,'white', 'Bold'), {margin : 5}]}>SOUSCRIRE</Text>
+                  </View>
+
+              </View>
+              {/* <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
+                    <Text style={setFont('400', 12, 'black',)}>{this.ticket.getMessage()}</Text>
+              </View> */}
+            
+              
+          </View>
+ 
+    );
+  }
   _renderFullTemplate() {
     return (
             <TouchableOpacity style={{}}
@@ -319,24 +478,41 @@ class FLTemplatePP extends React.Component {
                               }}
             >
 
-                {  this.state.isNotified
+              {  this.state.isNotified
                     ?
-                      <View style={{position : 'absolute', top : -10, right : -3, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor('subscribeticket'), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('subscribeticket')}} >
-                              <Text style={setFont('300', 26, 'white', 'Bold')}>{this.state.notifications.length}</Text>
+                      <View style={{position : 'absolute', top : 5, right : -5, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
+                              <Ionicons name={'ios-notifications'} size={30} style={{color : 'red'}} />
+                              <View style={{position : 'relative', top : -25, left : 0, width : 16, height : 16, backgroundColor : 'transparent',  alignItems : 'center', justifyContent : 'center'}}>
+                                  <Text style={setFont('300', 12, 'white', 'Bold')}>{this.state.notifications.length}</Text> 
+                              </View>
+                      </View>  
+                                                               
+                    : null 
+              }
+              {  this.ticket.isShared() && this.ticket.isMine(this.props.user)
+                    ?
+                      <View style={{position : 'absolute', top : 85, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor('subscribeticket'), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('subscribeticket')}} >
+                            
+                            <MaterialCommunityIcons name={'radio-tower'} size={40} color={'white'}/>
                       </View>                                            
                     : null 
                 }
 
   
-                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingRight : 10, paddingTop:  3, paddingBottom: 5 }} >   
-                    <View style={{flex :  1}}>
-                          <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} >
+                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingTop: 3, width : this.screenWidth, borderWidth : 0}} >   
+                    <View style={{flex :  0.8, borderWidth : 0}}>
+                          <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} numberOfLines={1}>
                                       {this.ticket.getSubject()} 
                           </Text>
                           <Text style={setFont('300', 14, 'black', this.state.isNotified ? 'Regular' : 'Light')}>
                                       {this.ticket.getWorkflowName()} : {this.ticket.getType()} 
                           </Text>
                     </View>
+                    <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
+                          <Text style={setFont('200', 18, setColor('subscribeticket'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
+                          <Text style={setFont('200', 12, setColor('subscribeticket'))}> p.a.
+                          </Text>
+                    </View>   
 
                 </View>
   
@@ -417,7 +593,7 @@ class FLTemplatePP extends React.Component {
                 : null
                 }
 
-               <View style={{flexDirection : 'row', paddingRight : 15, justifyContent:'space-between',  alignItems: 'center',   marginTop : 15, marginLeft : 10, marginRight : 10,}}>
+               {/* <View style={{flexDirection : 'row', paddingRight : 15, justifyContent:'space-between',  alignItems: 'center',   marginTop : 15, marginLeft : 10, marginRight : 10,}}>
                     <View style={{}}>
                     
                         <Text style={setFont('200', 9)}>
@@ -440,7 +616,7 @@ class FLTemplatePP extends React.Component {
                             </Text>
                           </View>
                       </View>             
-              </View>
+              </View> */}
 
             </TouchableOpacity>
     );
@@ -451,6 +627,7 @@ class FLTemplatePP extends React.Component {
     return (
             <TouchableOpacity style={{}}
                               onPress={() => {
+                                
                                 this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
                                   ticket: this.ticket,
                                   //ticketType: TICKET_TYPE.PSCREATION
@@ -460,8 +637,8 @@ class FLTemplatePP extends React.Component {
 
                 {  this.state.isNotified
                     ?
-                      <View style={{position : 'absolute', top : 15, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
-                              <Ionicons name={'ios-notifications'} size={30} style={{color : setColor('subscribeticket')}} />
+                      <View style={{position : 'absolute', top : 5, right : -5, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
+                              <Ionicons name={'ios-notifications'} size={30} style={{color : 'red'}} />
                               <View style={{position : 'relative', top : -25, left : 0, width : 16, height : 16, backgroundColor : 'transparent',  alignItems : 'center', justifyContent : 'center'}}>
                                   <Text style={setFont('300', 12, 'white', 'Bold')}>{this.state.notifications.length}</Text> 
                               </View>
@@ -469,10 +646,17 @@ class FLTemplatePP extends React.Component {
                                                                
                     : null 
                 }
+                { this.ticket.isShared() && this.ticket.isMine(this.props.user)
+                    ?
+                      <View style={{position : 'absolute', top : 50, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor('subscribeticket'), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('subscribeticket')}} >
+                            <MaterialCommunityIcons name={'radio-tower'} size={40} color={'white'}/>
+                      </View>                                            
+                    : null 
+                }
 
-  
-                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingRight : 10, paddingTop:  3 }} >   
-                    <View style={{flex :  1}}>
+
+                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingTop: 3, width : this.screenWidth, borderWidth : 0}} >   
+                    <View style={{flex :  0.8, borderWidth : 0}}>
                           <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} numberOfLines={1}>
                                       {this.ticket.getSubject()} 
                           </Text>
@@ -480,12 +664,65 @@ class FLTemplatePP extends React.Component {
                                       {this.ticket.getWorkflowName()} : {this.ticket.getType()} 
                           </Text>
                     </View>
+                    <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
+                          <Text style={setFont('200', 18, setColor('subscribeticket'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
+                          <Text style={setFont('200', 12, setColor('subscribeticket'))}> p.a.
+                          </Text>
+                    </View>   
 
                 </View>
-  
-               <View style={{ marginLeft : 10, marginRight : 10}}>
+                {this.ticket.isShared() && !this.ticket.isMine(this.props.user)
+                ? <View>
+                  <View style={{ flexDirection : 'row', paddingLeft : 0, paddingRight : 10, paddingVertical:  3, borderRadius : 10, }} >   
+                                    <View style={{flexDirection : 'row', width : '70%', marginTop : 5, marginBottom : 2, padding : 1, justifyContent : 'space-between'}}>
+                                            <View style={{height : 40, width : 40, borderWith : 0, borderColor : 'white', borderRadius : 20, backgroundColor : setColor(''), marginLeft : 10,  marginTop :5, marginBottom : 5, alignItems : 'center', justifyContent : 'center'}}  >
+                                            {this.requester.getAvatar() == null 
+                                              ?
+                                                <Text style={setFont('400', 16, 'white', 'Regular')}>{this.requester.getFirstName().charAt(0)}.{this.requester.getLastName().charAt(0)}.</Text>
+                                                : 
+                                                <Image style={{width: 40, height: 40, borderWidth : 0, borderRadius : 20, borderColor : 'white'}} source={{uri : this.requester.getAvatar() }} />
+                                            }
+                                            </View>
+                                            <View style={{flex : 1, borderWidth : 0, marginLeft : 10, marginTop : 3, marginRight : 5}}>
+                                                <Text style={setFont('300', 14, 'black', 'Regular')}>
+                                                  {this.requester.getName()} 
+                                                </Text>
+                                                <Text style={setFont('300', 12, 'gray', 'Regular')}>
+                                                  {this.requester.getCompany()}
+                                                </Text>
+                                            </View>
+                                    </View>
 
-                     
+                                    <View style={{width : '30%', justifyContent : 'center', alignItems : 'flex-end'}}>
+                                            <Image style={{ borderWidth : 0, height : 50, width : 50}} source={{uri : this.requesterOrg.logoUrl}} resizeMode={'cover'} />
+                                    </View>
+                  </View>
+                  {/* <View style={{marginLeft : 10, paddingBottom : 10 , backgroundColor : setColor('background') }}>
+                          <Text style={setFont('400', 14, 'black')}>
+                                    vous propose : 
+                          </Text>     
+                  </View> */}
+                  </View>
+
+                : null
+                }
+
+                <View style={{ marginLeft : 10, marginRight : 10}}>
+                {
+                    this.ticket.isShared()
+                    ?
+                        this.ticket.isMine(this.props.user)
+                        ?
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'flex-start', height : 19}}>
+                                    <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
+                                          <Text style={setFont('200', 12, setColor('subscribeticket'), 'Bold')}>
+                                              {currencyFormatDE(this.amount)}  {this.ticket.getCurrency()} collecté sur {currencyFormatDE(this.ticket.getBroadcastAmount())} {this.ticket.getCurrency()}
+                                          </Text>
+                                      </View>
+                              </View>  
+                        : null
+ 
+                    :
                       <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
                             <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
                                 <Text style={setFont('200', 12, setColor('subscribeticket'), 'Bold')}>{currencyFormatDE(this.ticket.getNominal())}  </Text>
@@ -494,20 +731,25 @@ class FLTemplatePP extends React.Component {
                                 <Text style={setFont('200', 12, setColor('subscribeticket'), 'Regular')}>{this.ticket.getCurrency()}</Text>
                             </View>
                       </View>
-               
-               </View>
-
+         
+                  }
+                  </View>
+          
+              { !this.ticket.isShared() || this.ticket.isMine(this.props.user)
+                ?
                <View style={{flex: 1, justifyContent: 'flex-start', alignItems : 'flex-start', borderWidth: 0,  marginTop : 10, marginLeft : 10, marginRight : 10, marginBottom : 5 , height : 35}}>
                     <Text style={setFont('400', 12, 'black', 'Regular')}>
                       {this.ticket.getUnsolvedStep()}
                     </Text>
                </View>
+               : null
+              }
 
-               {this._renderStepIndicator()}
+               {this.ticket.isShared() && !this.ticket.isMine(this.props.user) ? this._renderProgressBroadcast() : this._renderStepIndicator()}
  
-
-               <View style={{flexDirection : 'row', paddingRight : 15, justifyContent:'space-between',  alignItems: 'center',   marginTop : 15, marginLeft : 10, marginRight : 10,}}>
-                    <View style={{}}>
+              <View style={{height : 10, justifyContent:'center',  alignItems: 'center',   marginTop : 2}} />
+               {/* <View style={{flexDirection : 'row', justifyContent:'center',  alignItems: 'center',   marginTop : 15}}>
+                    <View style={{flex : 0.33, alignItems: 'flex-start', justifyContent: 'center', paddingLeft : 5}}>
                     
                         <Text style={setFont('200', 9)}>
                           Agt: 
@@ -517,19 +759,35 @@ class FLTemplatePP extends React.Component {
                         </Text>
                     </View>   
 
-                      <View style={[globalStyle.templateIcon, {paddingRight: 15}]}>
-                              <Text style={setFont('200', 12)}>{this.ticket.getStatus().name}{'\n'}
-                              <Text style={setFont('200', 9)}>#{this.ticket.getId()}</Text> </Text>
-                      </View>    
-                      <View style={{flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}>
+                      {!this.ticket.isShared() || this.ticket.isMine(this.props.user)
+                      ?
+                        <View style={{flex : 0.33, alignItems: 'center', justifyContent: 'center', paddingRight: 15}}>
+                                <Text style={setFont('200', 12)}>{this.ticket.getStatus().name}{'\n'}
+                                <Text style={setFont('200', 9)}>#{this.ticket.getId()}</Text> </Text>
+                        </View>  
+                      : null
+                      }  
+                      <View style={{flex : 0.33, flexDirection : 'row', alignItems: 'center', justifyContent: 'center'}}>
                           <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5}} />
-                          <View style={{alignItems: 'center', justifyContent: 'center', padding : 5}}>
+                          <View style={{alignItems: 'flex-start', justifyContent: 'center', padding : 5}}>
+                            <Text style={setFont('200', 10,'gray')}>
+                              Priorité
+                            </Text>
                             <Text style={setFont('200', 12)}>
                               {this.ticket.getPriority().name}
                             </Text>
                           </View>
-                      </View>             
-              </View>
+                      </View>  
+
+                      {
+                        this.ticket.isShared() && !this.ticket.isMine(this.props.user)
+                        ?
+                            <View style={{flex : 0.33, backgroundColor : setColor(''), borderBottomRightRadius: 10,justifyContent : 'center', alignItems: 'center'}}>
+                              <MaterialCommunityIcons name="fast-forward" size={25} color={'white'}/>
+                            </View>
+                        : null
+                      }           
+              </View> */}
 
             </TouchableOpacity>
     );
@@ -541,6 +799,11 @@ render () {
 
       if (this.ticket == null) {
         
+        return null;
+      }
+
+      //check de l'instance
+      if (this.ticket.isShared() && !(this.ticket instanceof CSouscriptionTicket)) {
         return null;
       }
       //check if it is in favorites
