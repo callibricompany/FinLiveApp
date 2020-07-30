@@ -212,8 +212,8 @@ class FLTemplatePP extends React.Component {
     
   }
   componentWillUnmount() {
-
-    this.intervalTimerFirstDueBy = null;
+    clearInterval(this.intervalTimerFirstDueBy);
+    //this.intervalTimerFirstDueBy = null;
 
   }
 

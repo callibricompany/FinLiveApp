@@ -160,8 +160,9 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                                                 t['cf_ps_nominal'] = nominal;
                                                                 t['cf_rtro'] = UF*100;
                                                                 t['cf_rtro_asso'] = UFAssoc*100;
+                                                                t['cf_ps_currency'] = ticket.getCurrency();
                                                                 setIsLoading(true);
-                                                                updateSouscriptionTicket(firebase, ticket.getSouscriptionId(), ticket.getId(), t)
+                                                                updateSouscriptionTicket(firebase, ticket.getSouscriptionId(), ticket.getBroadcastId(), ticket.getId(), t)
                                                                 .then((data) => {
                                                                     console.log(data);
                                                                     reloadTicket();
@@ -276,6 +277,9 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                             </View>
                             <View style={{flex: 0.2, borderWidth : 0, alignItems: 'center', justifyContent: 'center'}}>
                                 <MaterialCommunityIcons name={'fast-forward'} size={50} color={'gainsboro'} style={{transform: [{ rotate: '90deg'}]}} />
+                            </View>
+                            <View style={{flex: 0.4}}>
+                                <Text style={[setFont('500', 20, 'lightgray', 'Regular'), {textAlign: 'center'}]}>{ticket.getSolvedStep()}</Text>
                             </View>
                         </View>
                     :   ticket.getFrDueBy() < Date.now()

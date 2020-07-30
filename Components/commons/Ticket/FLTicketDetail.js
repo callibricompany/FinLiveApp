@@ -15,7 +15,7 @@ import Lightbox from 'react-native-lightbox';
 
 import Timeline from 'react-native-timeline-flatlist';
 
-import { getBroadcastAmount, ssModifyTicket, getConversation, getTicket, createreply, getRepricing} from '../../../API/APIAWS';
+import { getBroadcastAmount, ssModifyTicket, getConversation, getConversations, getTicket, createreply, getRepricing} from '../../../API/APIAWS';
 
 import { setFont, setColor  } from '../../../Styles/globalStyle';
 
@@ -83,6 +83,7 @@ class FLTicketDetail extends React.Component {
       //messages des conversations
       linesInputCount : 1,
       messages : [],
+      isConversationLoading : false, 
 
       //gestion du clavier
       keyboardHeight: 0,
@@ -115,7 +116,7 @@ class FLTicketDetail extends React.Component {
         { key: 'CONVERSATION', title: 'Conversation' },
         { key: 'ACTIVITY', title: 'Activité' },
         { key: 'DOCUMENTS', title: 'Docs' },
-        { key: 'TEST', title: 'Test' },
+        //{ key: 'TEST', title: 'Test' },
       ]
     }
 
@@ -172,15 +173,35 @@ class FLTicketDetail extends React.Component {
   }
 
   //le ticket est rechargé ainsi que les conversations
-  _loadTicket() {
+  _loadTicket=() => {
     console.log("RECHARGE LE TICKET ");
       return new Promise((resolve, reject) => {
-          this.setState({ isLoading : true });
+          //this.setState({ isLoading : true });
           
           getTicket(this.props.firebase, this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId())
           .then((ticket) => {
-              this._processUptadedTicket(ticket);
-              resolve("ok");
+
+              console.log("load ticket : isShared : "+ this.ticket.isShared());
+              if (this.ticket.isShared()) {
+                  getBroadcastAmount(this.props.firebase, this.ticket.getBroadcastId())
+                  .then((subscripters) => {
+                    // console.log("RECUPERE LES SUBSCRIPTERS");
+                    //console.log(subscripters);
+                    this.sharedAmount = (subscripters === null || subscripters === 'undefined' || !subscripters.hasOwnProperty('subscription')) ? 0 : subscripters.subscription.reduce((a, b) => a + b, 0);
+                    this.setState({ subscripters}, () => {
+                      this._processUptadedTicket(ticket);
+                      this.ticket.setSubscripters(subscripters);
+                      //console.log(subscripters);
+                      resolve("ok");
+                    });
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+              } else {
+                this._processUptadedTicket(ticket);
+                resolve("ok");
+              }
           })
           .catch((error) => {
             console.log(error);
@@ -188,19 +209,7 @@ class FLTicketDetail extends React.Component {
             this.setState({ isLoading : false });
             reject(error);
           });
-          console.log("load ticket : isShared : "+ this.ticket.isShared());
-          if (this.ticket.isShared()) {
-              getBroadcastAmount(this.props.firebase, this.ticket.getBroadcastId())
-              .then((subscripters) => {
-                // console.log("RECUPERE LES SUBSCRIPTERS");
-                // console.log(subscripters);
-                this.sharedAmount = (subscripters === null || subscripters === 'undefined' || !subscripters.hasOwnProperty('subscription')) ? 0 : subscripters.subscription.reduce((a, b) => a + b, 0);
-                this.setState({ subscripters});
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
+
      });
 
   }
@@ -217,9 +226,12 @@ class FLTicketDetail extends React.Component {
               //on supprime la notification
               this.props.removeNotification('TICKET', this.ticket.getId());
 
-              this._updateConversation();
-              this.initializeTimers();
+              //isShared ? this._updateConversations() : this._updateConversation();
               this.setState({ isLoading : false });
+              this._updateConversations();
+
+              this.initializeTimers();
+              
   }
 
   //////////////////////////////////
@@ -307,10 +319,15 @@ class FLTicketDetail extends React.Component {
     // this.intervalTimer[0] != null ? clearInterval(this.intervalTimer[0]) : null;
     // this.intervalTimer[1] != null ? clearInterval(this.intervalTimer[1]) : null;
     // this.intervalTimer[2] != null ? clearInterval(this.intervalTimer[2]) : null;
-    this.intervalTimer[0] = null;
-    this.intervalTimer[1] = null;
-    this.intervalTimer[2]= null;
-    this.intervalTimerFirstDueBy = null;
+    // this.intervalTimer[0] = null;
+    // this.intervalTimer[1] = null;
+    // this.intervalTimer[2]= null;
+    // this.intervalTimerFirstDueBy = null;
+
+    clearInterval(this.intervalTimer[0]);
+    clearInterval(this.intervalTimer[1]);
+    clearInterval(this.intervalTimer[2]);
+    clearInterval(this.intervalTimerFirstDueBy);
 
     //on enleve le focus sur ticket
     this.props.setCurrentFocusedObject('', '');
@@ -346,17 +363,92 @@ class FLTicketDetail extends React.Component {
   //
   //    CONVERSATION
   //////////////////////////////////
+  _updateConversations() {
+    //determination de tous les tickets 
+    let ticketsConvToRetreive = [];
+    ticketsConvToRetreive.push(this.ticket.getId());
+    if (this.ticket.isShared()) {
+        ticketsConvToRetreive.push(this.ticket.getBroadcastId());
+        console.log("C'EST MON TICKET : "+ this.ticket.isMine(this.props.user));
+        if (this.ticket.isMine(this.props.user)) {
+          if (this.state.subscripters.hasOwnProperty('idTicket')) {
+            ticketsConvToRetreive = ticketsConvToRetreive.concat(this.state.subscripters['idTicket']);
+            let i =  ticketsConvToRetreive.indexOf(this.ticket.getSouscriptionId());
+            if (i > -1) { //on supprime les conversations de son propre ticket de souscription si on en est à l'origine
+              ticketsConvToRetreive.splice(i, 1);
+            }
+          }
+        } else { //ce n'est pas mon ticket il faut juste ajouter la conversation du ticket de souscription
+          ticketsConvToRetreive = ticketsConvToRetreive.concat(this.ticket.getSouscriptionId());
+        }
+    }
+    console.log(ticketsConvToRetreive);
+    //on demande toutes conversations
+    this.setState({ isConversationLoading : true });
+    getConversations(this.props.firebase, ticketsConvToRetreive)
+    .then((data) => {
+      //on enregistres toutes les conversations
+      let allConversations = [];
+      ticketsConvToRetreive.map((t, index) => {
+        let conv = {};
+        conv['id'] = t;
+        if (index === 0) {
+          conv['type'] = 'TICKET_PRODUCT';
+          conv['activity'] = true;
+        } else if (index === 1) {
+          conv['type'] = 'TICKET_BROADCAST';
+          conv['activity'] = this.ticket.isMine(this.props.user);
+        } else {
+          //if (this.state.subscripters.hasOwnProperty(''))
+          conv['type'] = 'TICKET_SOUSCRIPTION';
+          conv['activity'] = !this.ticket.isMine(this.props.user);
+
+          //recherche dans les susbcripters le numero de ticket
+          let i = -1;
+          if (this.state.subscripters.hasOwnProperty('idTicket')) {
+            i =  this.state.subscripters['idTicket'].indexOf(t);
+            if (i > -1) {
+              if (this.ticket.isMine(this.props.user)) {
+                conv['userInfo'] = this.state.subscripters.user[i].userInfo;
+                conv['userOrg'] = this.state.subscripters.user[i].userOrg;
+              } else { // ce ticket n'est pas à moi on met le profil du requester
+                conv['userInfo'] = this.ticket.getRequester();
+                conv['userOrg'] = this.ticket.getRequesterOrg();
+              }
+            }
+          }
+         
+        }    
+
+        conv['conversation'] = data[index];
+        //console.log(conv);
+        allConversations.push(conv);
+
+      })
+      console.log("AVANT TICKET setConversations");
+      this.ticket.setConversations(allConversations);
+      this.setState({ files : this.ticket.getFiles(), notes : this.ticket.getNotes(),  messages : allConversations, isLoading : false , isConversationLoading : false });//, () => console.log("NBRE DE NOTES : " + this.state.notes.length));
+      
+    })
+    .catch(error => {
+      console.log("ERREUR recupération conversations : " + error);
+      alert('Erreur : ' + error);
+      this.setState({ isLoading : false, isConversationLoading : false });
+    }) 
+  }
+
+
   async _updateConversation() {
     //chargement de la conversation
     this.setState({ isLoading : true });
-    await getConversation(this.props.firebase, this.ticket.getId())
+    getConversation(this.props.firebase, this.ticket.getId())
     .then((data) => {
 
-      this.ticket.setConversations(data.data);
+      this.ticket.setConversations(data);
 
       //met au bon format les conversations whatsapp
       let wa = this.ticket.getChat();
-      let messages = [ ];
+      let messages = [];
       let minDate = new Date();
       
       wa.map((t, index) => {
@@ -401,10 +493,9 @@ class FLTicketDetail extends React.Component {
       
     })
     .catch(error => {
-      console.log("ERREUR recupération conversations : " + error);
+      console.log("ERREUR recupération conversation : " + error);
       alert('Erreur : ' + error);
       this.setState({ isLoading : false });
-      
     }) 
 
   }
@@ -909,7 +1000,8 @@ class FLTicketDetail extends React.Component {
       <SafeAreaView style={{flex : 1, borderWidth : 0, backgroundColor: 'lightgray'}}>
           <View style={{borderWidth: 0, flex: 1, backgroundColor: 'whitesmoke'}}>
               <GiftedChat
-                  messages={this.state.messages}
+                  //messages={this.state.messages}
+                  messages={[]}
                   onSend={messages => this.onSend(messages)}
                   placeholder={"Tapez votre message ..."}
                   keyboardShouldPersistTaps={'never'}
@@ -953,33 +1045,42 @@ class FLTicketDetail extends React.Component {
     //creation de l'en tete et du body pouraactivté
     //l'en tete sera la premire ligne
     let textToSplit = (rowData.hasOwnProperty('body') && rowData.body !== '') ? rowData.body : ((rowData.hasOwnProperty('body_text') && rowData.body_text !== '') ? rowData.body_text : '');
-    if (textToSplit !== '') { //il y a bien un text  que l'on vare traiter
-        var breakIndex = rowData.body.indexOf("\n");
-        let titleText = '';
-        let bodyText = '';
-        if (breakIndex !== -1){
-          //console.log(textToSplit.substr(0, breakIndex));
-          titleText = textToSplit.substr(0, breakIndex);
-          titleText = titleText.replace(/<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g, "");
-          bodyText = textToSplit.substr(breakIndex, textToSplit.length);
-        } else {
-          titleText = textToSplit;
-        }
+    // if (textToSplit !== '') { //il y a bien un text  que l'on vare traiter
+    //     var breakIndex = rowData.body.indexOf("\n");
+    //     if (breakIndex === -1) { breakIndex = textToSplit.indexOf('<br>')}
+    //     console.log("break index : " + breakIndex);
+    //     let titleText = '';
+    //     let bodyText = '';
+    //     if (breakIndex !== -1){
+    //       //console.log(textToSplit.substr(0, breakIndex));
+    //       titleText = textToSplit.substr(0, breakIndex);
+    //       titleText = titleText.replace(/<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g, "");
+    //       bodyText = textToSplit.substr(breakIndex, textToSplit.length);
+    //     } else {
+    //       titleText = textToSplit;
+    //     }
         
-        return (
+    //     return (
+    //       <View style={{flex:1, marginRight : 10, marginTop : -10, paddingBottom: 40}}>
+    //         <Text style={setFont('400', 16, 'black', 'Bold')}>
+    //           {titleText}{'\n'}
+    //         </Text>
+    //         {(bodyText !== '') 
+    //             ? <HTML html={bodyText.replace('\\','')}  />
+    //             : <Text style={setFont('400', 12, 'gray')}>{bodyText}</Text>
+    //         }
+    //       </View>
+    //     );
+    // } else {
+    //   return null;
+    // }
+         return (
           <View style={{flex:1, marginRight : 10, marginTop : -10, paddingBottom: 40}}>
-            <Text style={setFont('400', 16, 'black', 'Bold')}>
-              {titleText}{'\n'}
-            </Text>
-            {(bodyText !== '') 
-                ? <HTML html={bodyText.replace('\\','')}  />
-                : <Text style={setFont('400', 12, 'gray')}>{bodyText}</Text>
-            }
+ 
+                 <HTML html={textToSplit.replace('\\','')}  />
+
           </View>
         );
-    } else {
-      return null;
-    }
   }
 
   _renderTimeActivity(rowData, sectionID, rowID) {
@@ -1148,7 +1249,8 @@ class FLTicketDetail extends React.Component {
       case 'ACTIVITY':
         return this._renderActivity();
       case 'CONVERSATION' :
-        return this._renderConversation();
+        //return this._renderConversation();
+        return <FLChat ticket={this.ticket} isFocused={this.state.currentTab === 'CONVERSATION'} isLoading={this.state.isConversationLoading} firebase={this.props.firebase} />
       case 'DETAIL':
         //on verifie de quel type de tickets il s'agit et l'état du ticket
         if (this.ticket.isShared()) {//&& !this.ticket.isMine(this.props.user)) {
@@ -1166,9 +1268,9 @@ class FLTicketDetail extends React.Component {
           return this._renderDetail();
         }
         break;
-      case 'TEST' : return <FLChat ticket={this.ticket} />
+      //case 'TEST' : return <FLChat ticket={this.ticket} isFocused={this.state.currentTab === 'TEST'} isLoading={this.state.isConversationLoading} firebase={this.props.firebase} />
       default:
-        return this._renderDocuments();;
+        return this._renderDocuments();
     }
   };
 

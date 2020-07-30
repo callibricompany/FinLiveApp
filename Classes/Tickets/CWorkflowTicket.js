@@ -9,7 +9,7 @@ import * as TEMPLATE_TYPE from '../../constants/template';
 export class  CWorkflowTicket extends CTicket {
   constructor(ticket) {
     super(ticket); // appelle le constructeur parent avec le paramètre
-    //console.log("constructeur workflow");
+    //console.log(ticket);
 
     switch(ticket.type) {
       case "Produit structuré": 

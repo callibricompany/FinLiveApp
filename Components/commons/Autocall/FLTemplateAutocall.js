@@ -122,7 +122,7 @@ class FLTemplateAutocall extends React.Component {
     this.autocallResult = props.autocall;
     //this.setState({ toto : !this.state.toto });
 
-    if (typeof props.nominal !== 'undefined' ) {
+    if (typeof props.nominal !== 'undefined' && this.state.isEditable) {
       this.state.nominal !== props.nominal ? this.setState({ nominal : props.nominal }, this._updateNominal()) : null;
     }
     

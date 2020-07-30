@@ -298,7 +298,7 @@ export function getBroadcastAmount (firebase, idBroadcast) {
 //    TICKET SOUSCRIPTION
 //    update
 ///////////////////////////
-export function updateSouscriptionTicket (firebase, idSouscriptionTicket, idProductTicket, ticket) {
+export function updateSouscriptionTicket (firebase, idSouscriptionTicket, idBroadcastTicket, idProductTicket, ticket) {
   
   return new Promise((resolve, reject) => {
     firebase.doGetIdToken()
@@ -310,7 +310,7 @@ export function updateSouscriptionTicket (firebase, idSouscriptionTicket, idProd
             'bearer'        : token,
           }
         };  
-        axios.post(URL_AWS + '/updatesubscription/'+idSouscriptionTicket+'/'+idProductTicket, ticket, axiosConfig)
+        axios.post(URL_AWS + '/updatesubscription/'+idSouscriptionTicket+'/'+idBroadcastTicket+'/'+idProductTicket, ticket, axiosConfig)
         .then((response) => {
           resolve(response.data)
         })
@@ -488,7 +488,7 @@ export function getConversation (firebase, idTicket) {
             axios.get(URL_AWS + '/getConversation/' + idTicket, axiosConfig)
             .then((response) => {
               //console.log(response);
-              resolve(response)
+              resolve(response.data)
               //res.render('pages/register',{email: email, isConnected: isConnected});
             })
             .catch(function (error) {
@@ -501,6 +501,38 @@ export function getConversation (firebase, idTicket) {
       });
 }
 
+///////////////////////////
+//    TICKET
+//    get multiples Conversation
+///////////////////////////
+export function getConversations (firebase, idTickets) {
+
+  return new Promise((resolve, reject) => {
+    firebase.doGetIdToken()
+    .then(token => {
+        var axiosConfig = {
+          headers :{
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept'      : 'application/json',
+            'bearer'      : token,
+          }
+        };
+
+        axios.post(URL_AWS + '/getconversations', idTickets, axiosConfig)
+        .then((response) => {
+          //console.log(response.data[0]);
+          resolve(response.data)
+          //res.render('pages/register',{email: email, isConnected: isConnected});
+        })
+        .catch(function (error) {
+          console.log("Erreur requete aws : " + error);
+          reject(error)
+        });
+    })
+    .catch((error) => reject(error));
+    
+  });
+}
 
 export function createreply (firebase, message) {
 

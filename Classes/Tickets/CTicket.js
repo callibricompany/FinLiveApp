@@ -17,7 +17,7 @@ export class CTicket extends CObject {
     
     constructor(ticket) {
       super(ticket);
-
+      //console.log(ticket);
       this.ticket = this.object['data'];
   
  
@@ -36,6 +36,19 @@ export class CTicket extends CObject {
       
     }
    
+    /**
+     * CODE FRESHDESK DU PROPRIETAIRE DU TICKET
+     */
+    getRequesterId() {
+      return this.ticket['requester_id'];
+    }
+
+    /**
+     * CODE FRESHDESK DE l'AGENT EN CHARGE DU TICKET
+     */
+    getResponderId() {
+      return this.ticket['responder_id'];
+    }
 
     //getAllIssuer
     getAllIssuer() {
@@ -138,7 +151,17 @@ export class CTicket extends CObject {
       //return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersExpiryDate.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersExpiryDate[position] : 0 : 0;
     }
 
+    /**
+     *  CONVERSATIONS
+     */
+
+
+   getNumberOfConversations() {      
+      return this.conversations.length;
+   }
+
     setConversations(conversations) {
+      //on enregistre les conversations et on les trie
       //console.log(conversations);
       this.conversations = conversations;
     }
@@ -150,14 +173,17 @@ export class CTicket extends CObject {
     //les notes serves a recreer l'activite du ticket
     getNotes() {
       let notes = [];
-
-      this.conversations.forEach((c) => {
-        if (c.source === 2 || c.source === 15) {
-          //console.log(c);
-          if (c.private){
-            notes.push(c);
+      this.conversations.forEach((conv) => {
+          if (conv['activity']) {
+            conv['conversation'].forEach((c) => {
+                if (c.source === 2 || c.source === 15) {
+                  //console.log(c);
+                  if (c.private){
+                    notes.push(c);
+                  }
+                } 
+            });
           }
-        } 
       });
       if (notes.length > 1) {
         notes.sort(CTicket.compareNoteDateUp);
@@ -167,6 +193,64 @@ export class CTicket extends CObject {
 
     //retourne tous les fichiers liés au ticket
     getFiles() {
+
+      //on charge tous les fichiers de toutes les conversations
+      this.files = [];
+
+      this.conversations.forEach((conv) => {
+        let conversation = conv['conversation'];
+        conversation.forEach((c) => {
+          if (c.source === 0) {
+            //console.log(c);
+            //on verie les ifchiers attachés
+            if (c.hasOwnProperty('attachments') && c['attachments'].length > 0) {
+              c['attachments'].map((conver, index) => {
+  
+                if (conver.content_type === 'application/octet-stream') {
+                  let cType = getContentTypeFromExtension(conver.name.split('.').pop());
+                  if (cType !== 'none') {
+                    //console.log(cType);
+                    conver.content_type = cType;
+                    
+                  } else {
+                    conver.type = 'DIVERS';
+                  }
+                } else {
+                  switch(conver.content_type) {
+                    case 'application/pdf' : 
+                      conver.type = 'PDF';
+                      break;
+                    case 'application/msword' :
+                      conver.type = 'WORD';
+                      break;
+                    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
+                      conver.type = 'WORD';
+                      break;
+                    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
+                      conver.type = 'EXCEL';
+                      break;
+                    case 'application/vnd.ms-excel' :
+                      conver.type = 'EXCEL';
+                      break;                      
+                    default :
+                      conver.type = conver.content_type;
+                      break;
+                  }
+                 
+                }
+                
+                
+                this.files.push(conver);
+                //return conver;
+              });
+              //console.log(c['attachments']);
+              
+            }
+          } 
+        });
+      });
+
+
       if (this.files.length > 1) {
         this.files.sort(CTicket.compareNoteDateUp);
       }
@@ -175,40 +259,75 @@ export class CTicket extends CObject {
 
 
     //on analyse les conversations pour le whatsapp
-    getChat() {
+    getChat(idTicket = this.getId()) {
       let chat = [];
-      this.files = [];
-      this.conversations.forEach((c) => {
-        if (c.source === 0) {
-          //console.log(c);
-          //on verie les ifchiers attachés
-          if (c.hasOwnProperty('attachments') && c['attachments'].length > 0) {
-            c['attachments'] = c['attachments'].map((conver, index) => {
+     
+      this.conversations.map((conv, indexConversation) => {
 
-              if (conver.content_type === 'application/octet-stream') {
-                let cType = getContentTypeFromExtension(conver.name.split('.').pop());
-                if (cType !== 'none') {
-                  //console.log(cType);
-                  conver.content_type = cType;
-                  
-                }
-              }
-              conver.type = Math.random() > 0.5 ? 'DIVERS' : 'TERMSHEET';
-              
-              this.files.push(conver);
-              return conver;
-            });
-            //console.log(c['attachments']);
+
+        if (conv['id'] === idTicket) {
             
+            let c = conv['conversation'];
+            let minDate = new Date();
+            c.map((reply, index) => {
+              if (reply.hasOwnProperty('source') && reply.source === 0) {
+                let mess = {};
+                mess['_id'] = index + 2;
+                let text = reply.body_text;
+                //supression des retours de lignes a la fin
+                mess['text'] = text.replace(/(^\s*(?!.+)\n+)|(\n+\s+(?!.+)$)/g, "").trim();
+                let user = {};
+                user['_id'] = this.getRequesterId() === reply.user_id ? 1 : 2
+                if ((conv['type'] === 'TICKET_SOUSCRIPTION') && (this.subscripters != null) && this.subscripters.hasOwnProperty('user') && (this.subscripters.user.length > indexConversation - 2)) {
+                  user['userInfo'] = this.subscripters.user[indexConversation-2].userInfo;
+                  user['userOrg'] = this.subscripters.user[indexConversation-2].userOrg;
+                }
+                
+                mess['user'] = user;
+                mess['createdAt'] = Moment(reply.updated_at).toDate();
+                mess['updated_at'] = mess['createdAt'];
+
+
+                //on rajoute les attachments
+                if (reply.hasOwnProperty('attachments')) {
+                  mess['attachments'] = reply.attachments;
+                }
+                //mess['image'] = "https://picsum.photos/200";
+                
+                // {
+                //   _id: 3,
+                //   text: 'Alouette',
+                //   createdAt: new Date(),
+                //   user: {
+                //     _id: 2,
+                //     name: 'FinLive',
+                //   },
+                // },
+
+                //on utilise mindate pour plcer le premier message systeme
+                minDate = minDate < mess['updated_at'] ? minDate : mess['updated_at'] ;
+                chat.push(mess);
+              }
+            });
+
+            chat.unshift({
+              _id: 1,
+              text: 'Bienvenue dans les conversations FinLive',
+              createdAt: minDate,
+              updated_at: minDate,
+              system: true,
+
+            });
+
+
           }
-         
-          chat.push(c);
-        } 
-      });
-      if (chat.length > 1) {
-        chat.sort(CTicket.compareNoteDateUp);
-      }
-      return chat;
+         });
+
+          if (chat.length > 1) {
+            chat.sort(CTicket.compareNoteDateUp);
+          }
+          //console.log(chat);
+          return chat;
     }
 
 

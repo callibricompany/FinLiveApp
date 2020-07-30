@@ -1,7 +1,8 @@
-export class CNote { 
+export class CMessage { 
 
     constructor() {
 
+        
     }
 
     

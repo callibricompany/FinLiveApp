@@ -8,13 +8,14 @@ import Moment from 'moment';
 
 export class  CSouscriptionTicket extends CWorkflowTicket {
   constructor(ticket) {
+   
     super(ticket.product); // appelle le constructeur parent avec le paramètre
     //console.log(ticket.product);
     //console.log(Object.keys(ticket));
     
     this.broadcast = ticket.broadcast;
     this.souscription = ticket;
-
+    this.subscripters = [];
     // "source": 2,
     // "due_by": "2032-12-10T00:00:00Z",
     // "responder_id": null,
@@ -128,5 +129,14 @@ export class  CSouscriptionTicket extends CWorkflowTicket {
     this.souscription['custom_fields'].cf_rtro_asso = UFAssoc;
   }
   
+  /**
+   *  GESTION DES SUBSCRIPTERS : MONTANT, QUI SONT-ILS, ETC...
+   */
 
+  setSubscripters(subscripters) {
+    this.subscripters = subscripters;
+  }
+  getSubscripters() {
+    return this.subscripters;
+  }
 }
