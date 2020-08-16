@@ -145,7 +145,7 @@ class FLTemplatePP extends React.Component {
 
     //component rcceved props
     UNSAFE_componentWillReceiveProps(props) {
-      //console.log("RCOIT UNE PROPS : " + this.ticket.getId());
+      //console.log("RCOIT UNE PROPS : " + this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId());
       if (this.ticket.isShared()) {
           let id = this.ticket.getSouscriptionId();
           getTicket(this.props.firebase, id)
@@ -202,6 +202,7 @@ class FLTemplatePP extends React.Component {
 
       //check if notified
       this._updateNotifications();
+      this.ticket.isShared() ? this._updateAmountSubscription() : null;
   }
 
 
@@ -212,7 +213,7 @@ class FLTemplatePP extends React.Component {
     
   }
   componentWillUnmount() {
-    clearInterval(this.intervalTimerFirstDueBy);
+    this.intervalTimerFirstDueBy != null ? clearInterval(this.intervalTimerFirstDueBy) : null;
     //this.intervalTimerFirstDueBy = null;
 
   }
@@ -231,10 +232,10 @@ class FLTemplatePP extends React.Component {
     );
 
     //console.log("EST NOTIFIE : " + this.ticket.getId());
-    this.setState({ isNotified : this.props.isNotified('TICKET', this.props.ticket.getId()) }, () => {
+    this.setState({ isNotified : this.props.isNotified('TICKET', this.ticket.isShared() ? this.props.ticket.getSouscriptionId() : this.props.ticket.getId()) }, () => {
         //console.log(this.state.isNotified);
         if (this.state.isNotified) {
-          this.setState({ notifications : this.props.getNotifications('TICKET', this.ticket.getId()) });
+          this.setState({ notifications : this.props.getNotifications('TICKET', this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId()) });
         }
     });
   }
@@ -453,8 +454,10 @@ class FLTemplatePP extends React.Component {
                           Fin {Moment(this.ticket.getEndDate()).fromNow()}
                       </Text>
                   </View>
-                  <View style={{borderWidth: 1, borderColor : setColor('subscribeBlue'), borderRadius : 10, backgroundColor: setColor('subscribeBlue'), padding : 3, marginTop : 5}}>
-                      <Text style={[setFont('400',14,'white', 'Bold'), {margin : 5}]}>SOUSCRIRE</Text>
+                  <View style={{borderWidth: 1, borderColor : this.ticket.getFrDueBy() < Date.now() ? 'lightgray' : setColor('subscribeBlue'), borderRadius : 10, backgroundColor: this.ticket.getFrDueBy() < Date.now() ? 'lightgray' : setColor('subscribeBlue'), padding : 3, marginTop : 5}}>
+                      <Text style={[setFont('400',14,'white', 'Bold'), {margin : 5}]}>
+                        {this.ticket.getFrDueBy() < Date.now() ? 'ECHUE' : 'SOUSCRIRE'}
+                      </Text>
                   </View>
 
               </View>
@@ -569,7 +572,7 @@ class FLTemplatePP extends React.Component {
                {this._renderStepIndicator()}
                {this.state.isNotified
                 ?
-                    <View style={{lex: 1, justifyContent: 'center',borderWidth: 0,  marginTop : 20, marginLeft : 10, marginRight : 10}}>
+                    <View style={{lex: 1, justifyContent: 'center',borderWidth: 0,  marginTop : 20, marginLeft : 10, marginRight : 10, marginBottom : 10 }}>
                         {this.state.notifications.map((notif, index) => {
                                   let percent = Math.round(100*index/(this.state.notifications.length));
                                   let color = interpolateColorFromGradient("Jonquil", percent);

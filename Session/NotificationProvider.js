@@ -8,6 +8,7 @@ import { Notifications } from 'expo';
 import { getTicket , deleteNotification } from "../API/APIAWS";
 import { withFirebase } from '../Database/';
 import { isAndroid, getConstant } from "../Utils";
+import { CSouscriptionTicket } from "../Classes/Tickets/CSouscriptionTicket";
 
 
 
@@ -60,6 +61,9 @@ class NotificationProvider extends Component {
         addNotification : (notifications) => this.addNotification(notifications),
         removeNotification: (type, id) => this.removeNotification(type, id),
         getNotifications :  (type, id) => this.getNotifications(type, id),
+
+        //nouveaux broadcasts donc ticket souscription
+        newSouscription : 0,
 
         //chech if it is read
         isNotified : (type, id) => this.isNotified(type, id),
@@ -157,28 +161,30 @@ class NotificationProvider extends Component {
         this.ticketBadgesCount = newNumber;
         console.log("Nouveau comptage de badge : "+ this.ticketBadgesCount);
         NavigationService.handleBadges('Tickets', this.ticketBadgesCount);
-      }
+      } 
     }
 
     //ajoute des notifications 
     addNotification (notifications, typeNotif = 'TICKET') {
-
+      //console.log(notifications);
 
       //ancienne notifications 
       let oldNotifs = this.state.notificationList;
       notifications.forEach((notif) => {
         //est rajouté si on n'est pas en train de le regardeer
         //if (this.state.typeFocused !== notif.type || this.state.idFocused !== notif.id) {
-          if(notif.type === typeNotif) {
+          //if(notif.type === typeNotif) {
             oldNotifs.push(notif)
-          }
+          //}
         //}
 
       });
 
       //console.log(notifications);
       let ticketNotifs = notifications.filter(({ type }) => type === typeNotif);
-      this._handleCounter(typeNotif, ticketNotifs.length + this.ticketBadgesCount);
+      if (typeNotif === 'TICKET') {
+        this._handleCounter(typeNotif, ticketNotifs.length + this.ticketBadgesCount);
+      }
 
       this.setState( { notificationList : oldNotifs });
       
@@ -244,7 +250,7 @@ class NotificationProvider extends Component {
   //gestion de la reception des notifications
   _handleNotification = notification => {
     console.log(notification);
-    console.log("FOCUSED : " + this.state.typeFocused + "   : " + this.state.idFocused);
+    //console.log("FOCUSED : " + this.state.typeFocused + "   : " + this.state.idFocused);
     //console.log("Notification recu : "+notification.origin);
     //console.log(notification.data.event);
     switch(notification.data.type) {
@@ -283,14 +289,14 @@ class NotificationProvider extends Component {
                                   console.log("ticket retrouvé en mode selected : " + notification.data.id);
                                   console.log("desactivation de la notification : "+ localnotificationId);
                                   isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
-                                  NavigationService.navigate('FLTicketDetailTicket', { ticket: new CWorkflowTicket(ticket) });
+                                  NavigationService.navigate('FLTicketDetailTicket', { ticket: ticket.type === "Souscription" ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket) });
                                   //this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
                                   // ticket: new CWorkflowTicket(ticket),
                                   //})
                                 })
                                 .catch((error) => {
                                   console.log(error);
-                                  alert("Impossible de récupérer les changements du ticket " + notification.data.idTicket);
+                                  alert("Impossible de récupérer les changements du ticket " + notification.data.id);
                                 });
                           }
                         } else { //on est déja au bon endroit il faut juste consumer la notification
@@ -302,8 +308,37 @@ class NotificationProvider extends Component {
                           deleteNotification(this.props.firebase, 'TICKET', notification.data.id);
                         }
               break;
-
+        case 'NEW_SOUSCRIPTION' : 
+                    //console.log(notification.data);
+                    this.addNotification([].concat(notification.data));                   
+                    //NavigationService.handleBadges(this.ticketBadgesCount);
+                
+                    //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
+                    if (notification.origin == 'received') {
+                        
+                        //retourne un ticket donné
+                        this.setState({newSouscription : 397}, () => {
+                            this._showToast(notification.data, ticket);
+                            let localnotificationId = notification.notificationId;
+                            setTimeout(function () {
+                              console.log("desactivation de la notification : "+ localnotificationId);
+                              isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
+                            }, 10000);
+                        });
+                    } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
+                        let localnotificationId = notification.notificationId;
+                        isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
+                        NavigationService.navigate('Accueil');
+                  }                      
+            break;
         default :
+              // this._showToast(notification.data, ticket);
+              // let localnotificationId = notification.notificationId;
+              
+              // setTimeout(function () {
+              //   () => this.setState({newBroadcast : 0});
+              // }, 10000);
+              
               break;
     }
   };
@@ -345,16 +380,19 @@ export const withNotification = Component => props => (
                       <TouchableOpacity style={{ flexDirection : 'row'}}
                                           onPress={() => {
                                               if (store.typeNotification === 'TICKET') {
-                                                  let t = new CWorkflowTicket(store.object);
+     
+                                                  let t = store.object.type === "Souscription" ? new CSouscriptionTicket(store.object) :  new CWorkflowTicket(store.object);
                                                   //let t = store.object;
-                                                  console.log("NAVIGATION VERS TICKET");
+                                                  console.log("NAVIGATION VERS LE TICKET");
                                                   //store._removeToast();
                                                   NavigationService.navigate('FLTicketDetailTicket' , {
                                                     ticket: t,
                                                   });
                                                   //console.log(t.getDescription());
-                                              }
-                                          
+                                              } else if (store.typeNotification === 'NEW_BROADCAST') {
+                                                console.log("NAVIGATION VERS ACCUEIL");
+                                                NavigationService.navigate('Accueil');
+                                            }  
                                       }}          
                             >
                             <View style={{flex: 0.9, flexDirection : 'column',justifyContent: 'center', backgroundColor: setColor('darkBlue'), borderWidth : 1, borderColor : setColor('darkBlue'), borderBottomLeftRadius : 15, borderTopLeftRadius : 15}}>

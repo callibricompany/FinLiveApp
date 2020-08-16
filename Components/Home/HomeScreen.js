@@ -286,15 +286,16 @@ const initialLayout = {
                                     onPress={() => {
                                           //this.props.navigation.setParams({ hideBottomTabBar : true });
                                           this.setState({ isLoading : true}, 
-                                          //   async() => {      try {
-                                          //   await this.props.getUserAllInfo();
-                                          //   //this.props.resetCurrentNotification();
-                                          //   this.setState({ isServerOk : true, isLoading: false});
-                                          // } catch(error) {
-                                          //   console.log("ERREUR RESEAU : "+error);
-                                          //   this.setState({ isServerOk : false, isLoading: false});
-                                          // }}
-                                          );
+                                              async() => {      
+                                                try {
+                                                  await this.props.getUserAllInfo();
+                                              // //   //this.props.resetCurrentNotification();
+                                                  this.setState({ isServerOk : true, isLoading: false});
+                                                } catch(error) {
+                                                  console.log("ERREUR RESEAU : "+error);
+                                                  this.setState({ isServerOk : false, isLoading: false});
+                                                }
+                                              });
                                     }}
                   >
                         <Text style={setFont('400', 13, 'white', 'Regular')}>Essayer à nouveau</Text>

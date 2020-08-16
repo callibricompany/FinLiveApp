@@ -47,7 +47,7 @@ export class  CSouscriptionTicket extends CWorkflowTicket {
 
   isMine(user){
     //console.log(this.getRequester());
-    return this.getRequester().codeTS === user.getCodeTS();
+    return (this.getRequester().codeTS === user.getCodeTS());
   }
 
   getBroadcastId() {

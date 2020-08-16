@@ -230,13 +230,13 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
 //    retourne tous les users
 ///////////////////////////
 export function getAllUsers (firebase) {
-  console.log("==================================");
+  console.log("==================================" + (firebase == null));
   return new Promise(
     (resolve, reject) => {
 
       firebase.doGetIdToken()
       .then(token => {
-
+          console.log("token recupere");
           var axiosConfig = {
             headers :{
               //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
@@ -254,7 +254,10 @@ export function getAllUsers (firebase) {
             reject(error)
           });
       })
-      .catch((error) => reject(error));
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      });
 
     });
 }

@@ -3,8 +3,6 @@ import { ScrollView, Text, View, Image, FlatList, TouchableHighlight, TouchableO
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import  Ionicons  from 'react-native-vector-icons/Ionicons';
 
-
-
 import Moment from 'moment';
 
 import { GiftedChat, Send, InputToolbar, Composer, Message, Bubble, MessageImage} from 'react-native-gifted-chat';
@@ -25,6 +23,7 @@ import * as TEMPLATE_TYPE from '../../../constants/template';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
+import { CUsers } from '../../../Classes/CUsers';
 
 
 
@@ -37,22 +36,25 @@ import 'numeral/locales/fr'
   function renderInputToolbar (props, lineCount) {
     
     return (
-      <InputToolbar {...props} containerStyle={{
-                                  //marginLeft: 15,
-                                  //marginRight: 15,
-                                  //marginBottom: 5 + 35 * (lineCount-1),
-                                  //marginTop: 5,
-                                  borderWidth: 1,
-                                  borderBottomWidth : 0, 
-                                  borderColor: 'grey',
-                                  
-                                  //height: 35 * lineCount,
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  backgroundColor : 'lightgray',
-                                  //textAlignVertical: 'center'
-                                }} 
-      />
+   
+        <InputToolbar {...props} containerStyle={{
+
+                                    //marginLeft: 15,
+                                    //marginRight: 15,
+                                    //marginBottom: 5 + 35 * (lineCount-1),
+                                    //marginTop: 5,
+                                    borderWidth: 1,
+                                    borderBottomWidth : 0, 
+                                    borderColor: 'grey',
+                                    
+                                    //height: 35 * lineCount,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor : 'lightgray',
+                                    //textAlignVertical: 'center'
+                                  }} 
+        />
+
     );
   }
 
@@ -60,12 +62,30 @@ import 'numeral/locales/fr'
 
  
  function renderBubble(props) {
+      //console.log(props.currentMessage);
+
       return ( 
+        <View>
          <Bubble {...props}  wrapperStyle={{left: {backgroundColor: 'white'}, right : {backgroundColor: setColor('granny')} }} />
+         </View>
       );
   }
 
 
+function renderComposer(props, currentConversation) {
+
+  if (currentConversation != null && currentConversation.hasOwnProperty('rw') && !currentConversation['rw']) {
+    return (
+      <View style={{height : 30, textAlign: 'left', textAlignVertical :'center', paddingLeft : 15, marginRight : 15, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={setFont('300', 18)}>
+          Suivez la conversation
+        </Text>
+      </View>
+    )
+  } else {
+    return <Composer {...props} textInputStyle={{textAlign: 'left', textAlignVertical :'center', backgroundColor : 'white', borderWidth : 1, marginTop : sizeByDevice(6,5,3) , borderRadius: 5, paddingTop :  sizeByDevice(9,8,0), paddingLeft : 15, marginRight : 15}}/>
+  }
+}
 
 
   function renderCustomView(props) {
@@ -140,24 +160,45 @@ import 'numeral/locales/fr'
 
 
 
-export function FLChat ({isFocused, ticket, firebase, isLoading}) {
+export function FLChat ({isFocused, ticket, firebase, isLoading }) {
    
-        const [currentConversation, setCurrentConversation] = useState(0);
+        const [currentConversationIndex, setCurrentConversationIndex] = useState(0);
+        const [currentConversation, setCurrentConversation] = useState(ticket.getConversations()[0]);
+        const [currentTicketId, setCurrentTicketId] = useState(ticket.getId());
         const [linesInputCount, setLinesInputCount] = useState(1);
         const [messages, setMessages] = useState([]);
 
         useEffect(() => {
-            console.log("PASSE PAR USE EFFECT DE Chat.js");
-          }, [currentConversation]);
+            
+              //changement du message indiquant qui voit les conversations
+              let conversations = ticket.getConversations();
+
+              if (conversations !== null && conversations.length > currentConversationIndex) {
+                let conv  = conversations[currentConversationIndex];
+                //console.log(Object.keys(conv));
+                setCurrentConversation(conv);
+                setMessages(ticket.getChat(conv['id']));
+                setCurrentTicketId(conv['id']);
+              } else {
+                setMessages([]);
+              }
+             //messages[messages.length-1].text = "Jaimy est un con";
+          }, [currentConversationIndex]);
 
         useEffect(() => {
-            console.log("LE TICKET IL A BOUGE MON POTE : " + isFocused);
+            //console.log("LE TICKET IL A BOUGE MON POTE : " + isFocused +  "  :  " + currentTicketId);
             if (isFocused && !isLoading) { //on recharge les conversations
-                setMessages(ticket.getChat());
+
+                let conversations = ticket.getConversations();
+                let conv  = conversations[currentConversationIndex];
+                setCurrentConversation(conv);
+
+                setMessages(ticket.getChat(currentTicketId));
             }
         }, [isFocused, isLoading]);
 
-        const onSend = useCallback((newMessages, idTicket, userCodeTS) => {
+
+        const onSend = useCallback((newMessages, idTicket) => {
 
 
             //createReply({ ticketId: 232, body: '<B>|Pierre via App|:</B> Je pense que j en veux.' }, 'undefined').then(val => {console.log(val)}).catch(err => {console.log(err)});
@@ -168,7 +209,7 @@ export function FLChat ({isFocused, ticket, firebase, isLoading}) {
             mess['ticketId'] = idTicket;
             mess['body'] = newMessages.length > 0 ? newMessages[0].text : '';
             //mess['from_email'] = this.props.authUser.email;
-            mess['user_id'] = userCodeTS;
+            mess['user_id'] = CUsers.ME.getCodeTS();
             //mess['replied_to'] = ['zlutsyuk@gmail.com'];
             mess['replied_to'] = 'zlutsyuk@gmail.com';
             
@@ -187,7 +228,7 @@ export function FLChat ({isFocused, ticket, firebase, isLoading}) {
 
         // console.log("REQUESTER ID : " + ticket.getRequesterId());
         // console.log("BROADCAST REQUESTER ID : ");
-        // console.log(ticket.getRequester());
+        
         return (
             <View style={{flex : 1, borderWidth : 0}}>
                 {ticket.isShared() 
@@ -196,23 +237,24 @@ export function FLChat ({isFocused, ticket, firebase, isLoading}) {
                             <FlatList
                                 //style={styles.wrapper}
                                 //scrollTo={this.state.scrollTo}
-                                contentContainerStyle={{ marginHorizontal: 0 , height : 50, width : 70, borderWidth : 0}}
+                                contentContainerStyle={{ marginHorizontal: 0 , borderWidth : 0}}
                                 data={ticket.getConversations()}
                                 horizontal={true}
+                                //extraData={isLoading}
                                 renderItem={({ item, index }) => {
                                     let rn =  null;
               
                                     switch(index) {
                                         case 0 : //c'est le ticket general
                                             rn =  <View style={{justifyContent: 'center', alignItems : 'center'}}>
-                                                    <MaterialCommunityIcons name='chat' size={30} color={index === currentConversation ? 'black' : 'gray'}/>
-                                                    <Text style={setFont('200',12, index === currentConversation ? 'black' : 'gray')}>Emetteur</Text>
+                                                    <MaterialCommunityIcons name='chat' size={30} color={index === currentConversationIndex ? 'black' : 'gray'}/>
+                                                    <Text style={setFont('200',12, index === currentConversationIndex ? 'black' : 'gray')}>Emetteur</Text>
                                                   </View>;
                                             break;   
                                         case 1 : //c'est le ticket broadcast
                                             rn =  <View style={{justifyContent: 'center', alignItems : 'center'}}>
-                                                        <Ionicons name='ios-chatbubbles' size={30} color={index === currentConversation ? 'black' : 'gray'}/>
-                                                        <Text style={setFont('200',12, index === currentConversation ? 'black' : 'gray')}>Groupe</Text>
+                                                        <Ionicons name='ios-chatbubbles' size={30} color={index === currentConversationIndex ? 'black' : 'gray'}/>
+                                                        <Text style={setFont('200',12, index === currentConversationIndex ? 'black' : 'gray')}>Groupe</Text>
                                                     </View>;
                                             break; 
                                         
@@ -233,15 +275,16 @@ export function FLChat ({isFocused, ticket, firebase, isLoading}) {
                                     return (
                                             <TouchableOpacity   style={{height : 50, 
                                                                         width : 70,  
-                                                                        backgroundColor : index === currentConversation ? 'whitesmoke' : 'lightgray', 
+                                                                        backgroundColor : index === currentConversationIndex ? 'whitesmoke' : 'lightgray', 
                                                                         justifyContent: 'center', 
                                                                         alignItems: 'center',
-                                                                        //borderBottomWidth : index === currentConversation ? 4 : 0,
-                                                                        //borderBottomColor : index === currentConversation ? 'red' : null,
+                                                                        //borderBottomWidth : index === currentConversationIndex ? 4 : 0,
+                                                                        //borderBottomColor : index === currentConversationIndex ? 'red' : null,
                                                                     }}
                                                                 onPress={() => {
-                                                                  console.log(ticket.getConversations()[index]);
-                                                                    setCurrentConversation(index);
+                                                                    setCurrentConversationIndex(index);
+                                                 
+                                                                    
                                                                 }}
                                             >
                                                 {rn}
@@ -256,7 +299,7 @@ export function FLChat ({isFocused, ticket, firebase, isLoading}) {
                 <View style={{flex: 1, borderWidth : 0, backgroundColor: 'whitesmoke', opacity : isLoading ? 0.3 : 1 }}>
                     <GiftedChat
                         messages={messages}
-                        onSend={messages => onSend(messages, ticket.getId(), ticket.getRequesterId())}
+                        onSend={messages => onSend(messages, currentTicketId)}
                         placeholder={"Tapez votre message ..."}
                         keyboardShouldPersistTaps={'never'}
                         //locale={'fr-fr'}
@@ -286,9 +329,10 @@ export function FLChat ({isFocused, ticket, firebase, isLoading}) {
                             let lines = input.split(/\r\n|\r|\n/);
                             setLinesInputCount(lines.length);
                         }}
-                        renderComposer={(props) =>  <Composer {...props} textInputStyle={{textAlign: 'left', textAlignVertical :'center', backgroundColor : 'white', borderWidth : 1, marginTop : sizeByDevice(6,5,3) , borderRadius: 5, paddingTop :  sizeByDevice(9,8,0), paddingLeft : 15, marginRight : 15}}/>}
-                        renderUsernameOnMessage={true}
-                        renderBubble={renderBubble}
+                        //renderComposer={(props) =>  <Composer {...props} textInputStyle={{textAlign: 'left', textAlignVertical :'center', backgroundColor : 'white', borderWidth : 1, marginTop : sizeByDevice(6,5,3) , borderRadius: 5, paddingTop :  sizeByDevice(9,8,0), paddingLeft : 15, marginRight : 15}}/>}
+                        renderComposer={(props) =>  renderComposer(props, currentConversation)}
+                        renderUsernameOnMessage={(currentConversation != null && currentConversation.hasOwnProperty('type') && currentConversation['type'] !== 'TICKET_PRODUCT')}
+                        renderBubble={(props) => renderBubble(props)}
                         renderCustomView={(props) => renderCustomView(props)}
                         //isCustomViewBottom={true}
 

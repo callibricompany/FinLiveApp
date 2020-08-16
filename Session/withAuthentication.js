@@ -8,11 +8,12 @@ import * as Application from 'expo-application';
 import * as Device from 'expo-device';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
+import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
 import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket, getAllUsers } from "../API/APIAWS";
 
 
-import { isAndroid , getConstant } from '../Utils'; 
+import { isAndroid , isEqual } from '../Utils'; 
 
 import { CObject } from "../Classes/CObject";
 import { CBroadcastTicket } from "../Classes/Tickets/CBroadcastTicket";
@@ -135,9 +136,50 @@ const withAuthentication = Component => {
 
 
     UNSAFE_componentWillReceiveProps(props) {
+ 
+      if (!isEqual(props.newSouscription, this.props.newSouscription) && props.newSouscription !== 0) {
+        //on verifie que le ticket n'existe pas déjà
+        let found = false;
+
+        this.state.souscriptionTickets.forEach((ticket) => {
+          if (ticket.getSouscriptionId() === props.newSouscription) {
+            found = true;
+          }
+        })
+        this.state.tickets.forEach((ticket) => {
+          if (ticket.isShared() && ticket.getSouscriptionId() === props.newSouscription) {
+            found = true;
+          }
+        })
+
+        if (!found) {
+          console.log("TICKET #"+props.newSouscription+" non trouvé - il est rechargé");
+          //retourne un ticket donné
+          getTicket(this.props.firebase, props.newSouscription)
+          .then((ticket) => {
+              console.log("ticket souscrition retrouvé : " + props.newSouscription);
+              //console.log(Object.keys(ticket));
+              //updateTicket
+              let souscriptionsTickets = this.state.souscriptionTickets;
+              let t = new CSouscriptionTicket(ticket);
+              souscriptionsTickets.push(t);
+              this.setState({ souscriptionsTickets }, () => {
+                if (t.isMine(CUsers.ME)) {
+                  NavigationService.navigate('FLTicketDetailTicket' , {
+                    ticket: t,
+                  });
+                }
+              });
+              
+          })
+          .catch((error) => {
+            console.log(error);
+            alert("Impossible de récupérer les changements du ticket soucription" + props.newSouscription);
+          });
+        }
+      } 
       //console.log("RECEIVE PROPS HOME : " + props.notificationList.length );
       this.setState({ allNotificationsCount : props.hasOwnProperty('notificationList')  ? props.notificationList.length : 0, idFocused : props.idFocused });
-
     }
 
 
@@ -259,8 +301,8 @@ const withAuthentication = Component => {
                 //console.log(userDatas.userTickets.slice(0,1));
                 //console.log("Passage de withAuth");
                 //enregistrement de son user dans la Classes
-                this.setState({user : new CUser(userDatas.userInfo)});
-
+                this.setState({user : new CUser(userDatas.userInfo)}, () => CUsers.ME = this.state.user);
+               
                 //passage du workflow au ticket
                 CWorkflowTicket.WORKFLOW = userDatas.workflow;
                 //console.log(userDatas.workflow.filter(({codeOperation}) => codeOperation === 'pp'));

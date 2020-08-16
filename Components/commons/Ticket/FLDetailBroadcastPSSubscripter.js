@@ -60,7 +60,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                 <Text style={setFont('300', 18, 'black', 'Regular')}>
                                     Objectif : {currencyFormatDE(ticket.getBroadcastAmount())} {ticket.getCurrency()}
                                 </Text>
-                                {     ticket.getFrDueBy() > Date.now()
+                                {     ticket.getFrDueBy() < Date.now()
                                 ?
                                     <Text style={setFont('200', 12)}>Fin {Moment(ticket.getEndDate()).fromNow()}</Text>
                                 :
@@ -81,7 +81,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                             </View>
                         </View>
                     </View>
-                    <View style={{ marginTop : 25, marginLeft : '2,5%', marginRight : '2.5%', flexDirection : 'row', borderWidth : 0}}>
+                    <View style={{ marginTop : 25, marginLeft : 0.025*getConstant('width'), marginRight : '2.5%', flexDirection : 'row', borderWidth : 0}}>
                         <View style={{flex: 0.5}}>
                             <Text style={setFont('200', 16, 'black')}>
                                 Je souhaite souscrire : 
@@ -91,7 +91,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                
                         </View>
                     </View>
-                    <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', marginTop : 5, marginLeft : '2,5%', marginRight : '2.5%', borderWidth : 0}}>
+                    <KeyboardAvoidingView behavior={'padding'} style={{flexDirection : 'row', marginTop : 5, marginLeft : 0.025*getConstant('width'), marginRight : '2.5%', borderWidth : 0}}>
                                 <View style={{flex: 0.8 ,  justifyContent: 'center'}}
                                             ref={refNominal}
                                             onLayout={({nativeEvent}) => {
@@ -146,7 +146,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                         {ticket.getCurrency()}
                                     </Text>
                                 </View>
-                                {   ticket.getFrDueBy() > Date.now()
+                                {   ticket.getFrDueBy() < Date.now()
                                     ?
                                     <View style={{flex : 0.3, borderWidth: 0}}>
                                         {/* <Text style={[setFont('200', 14),{textAlign: 'center'}]}>Fin {Moment(ticket.getEndDate()).fromNow()}</Text> */}
@@ -282,7 +282,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                 <Text style={[setFont('500', 20, 'lightgray', 'Regular'), {textAlign: 'center'}]}>{ticket.getSolvedStep()}</Text>
                             </View>
                         </View>
-                    :   ticket.getFrDueBy() < Date.now()
+                    :   ticket.getFrDueBy() <  Date.now()
                         ?
                             <TouchableOpacity style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderWidth : 0, padding :10,  marginTop : 20, backgroundColor: 'orange'}}
                                                 onPress={() => handleIndexChange(1)}

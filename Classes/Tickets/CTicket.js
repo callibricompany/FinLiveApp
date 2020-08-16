@@ -9,6 +9,8 @@ import Moment from 'moment';
 import { setColor } from '../../Styles/globalStyle.js';
 import { getContentTypeFromExtension } from '../../Utils';
 
+import { CUsers } from '../CUsers';
+
 
 
 //classe mere de tous les objets tickets
@@ -19,8 +21,6 @@ export class CTicket extends CObject {
       super(ticket);
       //console.log(ticket);
       this.ticket = this.object['data'];
-  
- 
       
       //statut FD
       this.status = CTicket.STATUS().filter(({id}) => id === this.ticket.status)[0];
@@ -43,6 +43,16 @@ export class CTicket extends CObject {
       return this.ticket['requester_id'];
     }
 
+    getRequesterName() {
+      let name = '';
+      if (this.ticket.hasOwnProperty('requester') && this.ticket['requester'].hasOwnProperty('userInfo') 
+          &&  this.ticket['requester']['userInfo'].hasOwnProperty('firstName') &&  this.ticket['requester']['userInfo'].hasOwnProperty('lastName')) {
+            name = this.ticket['requester']['userInfo']['firstName'] + ' ' + this.ticket['requester']['userInfo']['lastName'];
+      } else {
+        name = this.getRequesterId();
+      }
+      return name;
+    }
     /**
      * CODE FRESHDESK DE l'AGENT EN CHARGE DU TICKET
      */
@@ -156,9 +166,9 @@ export class CTicket extends CObject {
      */
 
 
-   getNumberOfConversations() {      
-      return this.conversations.length;
-   }
+    getNumberOfConversations() {      
+        return this.conversations.length;
+    }
 
     setConversations(conversations) {
       //on enregistre les conversations et on les trie
@@ -174,7 +184,7 @@ export class CTicket extends CObject {
     getNotes() {
       let notes = [];
       this.conversations.forEach((conv) => {
-          if (conv['activity']) {
+          if (conv['mandatoryForNotes']) {
             conv['conversation'].forEach((c) => {
                 if (c.source === 2 || c.source === 15) {
                   //console.log(c);
@@ -277,10 +287,24 @@ export class CTicket extends CObject {
                 //supression des retours de lignes a la fin
                 mess['text'] = text.replace(/(^\s*(?!.+)\n+)|(\n+\s+(?!.+)$)/g, "").trim();
                 let user = {};
-                user['_id'] = this.getRequesterId() === reply.user_id ? 1 : 2
-                if ((conv['type'] === 'TICKET_SOUSCRIPTION') && (this.subscripters != null) && this.subscripters.hasOwnProperty('user') && (this.subscripters.user.length > indexConversation - 2)) {
-                  user['userInfo'] = this.subscripters.user[indexConversation-2].userInfo;
-                  user['userOrg'] = this.subscripters.user[indexConversation-2].userOrg;
+                console.log(reply.user_id);
+                user['_id'] = CUsers.ME.getCodeTS() === reply.user_id ? 1 : 2
+                if (((conv['type'] === 'TICKET_SOUSCRIPTION') || (conv['type'] === 'TICKET_BROADCAST')) && (this.subscripters != null) && this.subscripters.hasOwnProperty('user') && (this.subscripters.user.length > indexConversation - 2)) {                  
+                  
+                    user['userInfo'] = null;
+                    user['userOrg'] = null;
+                    let found = false;
+                    this.subscripters.user.forEach((s) => {
+                      if (s.userInfo.codeTS === reply.user_id) {
+                        user['userInfo'] = s.userInfo;
+                        user['name'] = s.userInfo.firstName + " " + s.userInfo.lastName;
+                        user['userOrg'] = s.userOrg;
+                        found = true;
+                      }
+                    })
+                    if (!found) {
+                      user['name'] = "Agent Finlive";
+                    }
                 }
                 
                 mess['user'] = user;
@@ -310,13 +334,30 @@ export class CTicket extends CObject {
               }
             });
 
+            //on remplit le type de la conversation
+            let textToIntroduceChat = 'Bienvenue dans les conversations FinLive';
+            if (this.isShared()) {
+              if (conv['type'] === 'TICKET_PRODUCT') {
+                
+                textToIntroduceChat = this.isMine(CUsers.ME) ? 'Coversation avec mon contact FinLive' : 'Conversation ' + this.getRequesterName() + ' / FinLive';
+              } else if (conv['type'] === 'TICKET_BROADCAST') {
+                textToIntroduceChat = 'Conversation de groupe sur le produit';
+              }  else if (conv['type'] === 'TICKET_SOUSCRIPTION') {
+                if (this.isMine(CUsers.ME)) {
+                  if (conv.hasOwnProperty('userInfo')) {
+                    textToIntroduceChat = 'Conversation avec ' + conv['userInfo']['firstName'] + ' ' + conv['userInfo']['lastName'];
+                  }
+                } else {
+                  textToIntroduceChat = 'Conversation avec ' + this.getRequesterName();
+                }
+              }
+            }
             chat.unshift({
               _id: 1,
-              text: 'Bienvenue dans les conversations FinLive',
-              createdAt: minDate,
-              updated_at: minDate,
+              text: textToIntroduceChat ,
+              //createdAt: minDate,
+              //updated_at: minDate,
               system: true,
-
             });
 
 

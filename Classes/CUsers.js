@@ -1,6 +1,8 @@
 import { CUser } from './CUser';
 
 
+
+
 export class CUsers {
     constructor(users, myId) {
 
@@ -69,5 +71,17 @@ export class CUsers {
       }
 
     
+
+      getUserFromCodeTS(codeTS) {
+      
+        
+        this.users.forEach((u) => {
+            if (codeTS === u.getCodeTS()) {
+                return u;
+            }
+        });
+
+        return null;
+      }
     
 }
