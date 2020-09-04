@@ -13,6 +13,7 @@ import { CUsers } from '../CUsers';
 
 
 
+
 //classe mere de tous les objets tickets
 export class CTicket extends CObject { 
 
@@ -33,9 +34,11 @@ export class CTicket extends CObject {
 
       //fichiers
       this.files = [];
-      
     }
    
+
+
+
     /**
      * CODE FRESHDESK DU PROPRIETAIRE DU TICKET
      */
@@ -201,6 +204,7 @@ export class CTicket extends CObject {
       return notes;
     }
 
+
     //retourne tous les fichiers liés au ticket
     getFiles() {
 
@@ -287,7 +291,7 @@ export class CTicket extends CObject {
                 //supression des retours de lignes a la fin
                 mess['text'] = text.replace(/(^\s*(?!.+)\n+)|(\n+\s+(?!.+)$)/g, "").trim();
                 let user = {};
-                console.log(reply.user_id);
+                //console.log(reply.user_id);
                 user['_id'] = CUsers.ME.getCodeTS() === reply.user_id ? 1 : 2
                 if (((conv['type'] === 'TICKET_SOUSCRIPTION') || (conv['type'] === 'TICKET_BROADCAST')) && (this.subscripters != null) && this.subscripters.hasOwnProperty('user') && (this.subscripters.user.length > indexConversation - 2)) {                  
                   
@@ -440,9 +444,31 @@ export class CTicket extends CObject {
       return Moment(this.ticket['due_by']).toDate();
     }
 
-
+    /**
+     * verifie si le ticket peut être annulé
+     */
+    isCancellable() {
+      if (this.isClosed()) {
+        return false;
+      }
+      //console.log("Ticket #"+ this.getId() + " est à moi : " + this.isMine(CUsers.ME));
+      if (this.isMine(CUsers.ME)) {
+        return true;
+      }
+      return false;
+    }
+    /**
+     * verifie si le ticket est fermé
+     */
+    isClosed() {
+      return this.status.id === 5;
+    }
     getStatus() {
       return this.status;
+    }
+    setStatus(status) {
+      this.ticket['status'] = 5;
+      this.status = CTicket.STATUS().filter(({id}) => id === status)[0];
     }
 
     getPriority() {

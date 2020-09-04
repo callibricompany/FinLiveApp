@@ -30,7 +30,7 @@ import { PropTypes } from 'victory-native';
 
 
 
-export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, requesterOrg, subscripters, handleIndexChange, firebase, reloadTicket}) {
+export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, requesterOrg, subscripters, handleIndexChange, firebase, reloadTicket, footer}) {
 
         const { navigate } = useNavigation();
 
@@ -55,6 +55,16 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
 
         return (
             <ScrollView style={{marginTop : 20, borderWidth : 0, opacity : isLoading ? 0.3 : 1}}>
+                    {!ticket.isMine(user) && ticket.getFrDueBy() <  Date.now()
+                    ?
+                        <TouchableOpacity style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderWidth : 0, padding :10,  marginTop : 0, marginBottom: 15, backgroundColor: 'orange'}}
+                                            onPress={() => handleIndexChange(1)}
+                        >
+                            <Text style={[setFont('500', 20, 'white', 'Regular'), {textAlign: 'center'}]}>Attente d'une décision de {requester.getName()}</Text>
+                            <MaterialIcons name={'chat'} size={35} color={'white'}/>
+                        </TouchableOpacity>
+                    : null
+                    }
                     <View style={{flexDirection : 'row',marginRight : '2.5%', marginLeft : '2.5%'}}>
                         <View style={{flex : 0.5}}>
                                 <Text style={setFont('300', 18, 'black', 'Regular')}>
@@ -191,7 +201,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                     (id === 'UF') ? setUF(value) : setUFAssoc(value);
                                 }} 
                                 locked={isLocked}
-                                showSlider={ticket.getFrDueBy() < Date.now()}
+                                showSlider={ticket.getFrDueBy() > Date.now()}
                         />
                     </View>
 
@@ -282,15 +292,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                 <Text style={[setFont('500', 20, 'lightgray', 'Regular'), {textAlign: 'center'}]}>{ticket.getSolvedStep()}</Text>
                             </View>
                         </View>
-                    :   ticket.getFrDueBy() <  Date.now()
-                        ?
-                            <TouchableOpacity style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderWidth : 0, padding :10,  marginTop : 20, backgroundColor: 'orange'}}
-                                                onPress={() => handleIndexChange(1)}
-                            >
-                                <Text style={[setFont('500', 20, 'white', 'Regular'), {textAlign: 'center'}]}>Attente d'une décision de {requester.getName()}</Text>
-                                <MaterialIcons name={'chat'} size={35} color={'white'}/>
-                            </TouchableOpacity>
-                        : null
+                    : null
                             
                     }
         
@@ -298,7 +300,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                         <Text style={setFont('500', 16, 'black')}>{ticket.getMessage()}</Text>
                     </View>
         
-                    <TouchableOpacity style={{alignItems: 'center', marginTop : 20, borderWidth : 0}}
+                    <TouchableOpacity style={{alignItems: 'center', marginTop : 20, borderWidth : 0, width : getConstant('width')*0.95, marginLeft : 0.025*getConstant('width')}}
                                     onPress={() => {
                                         navigate('FLAutocallDetailHome', {
                                             autocall: ticket.getProduct(),
@@ -306,9 +308,9 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                         });
                                     }}
                     >
-                        <FLTemplateAutocall autocall={ticket.getProduct()} screenWidth={1} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} nominal={ticket.getNominal()} />
+                        <FLTemplateAutocall autocall={ticket.getProduct()} screenWidth={0.95} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} nominal={ticket.getNominal()} />
                     </TouchableOpacity>
-                    
+                    {footer}
                     <View style={{height : 100}} />           
         </ScrollView> 
         )

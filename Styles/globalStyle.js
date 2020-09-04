@@ -37,6 +37,7 @@ export function setColor(color) {
     case 'background' : return 'whitesmoke';//'#edeef0';
     case 'shadow' : return rgb(75, 89, 101);
     case 'red' : return "#e53935";
+    case 'FLGreen' : return 'forestgreen';
     default : return blueFL;
   }
 }

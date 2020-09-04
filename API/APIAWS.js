@@ -298,6 +298,41 @@ export function getBroadcastAmount (firebase, idBroadcast) {
 }
 
 ///////////////////////////
+//    TICKET
+//    get broadcast amount
+///////////////////////////
+export function getAllTicketClosed (firebase) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      firebase.doGetIdToken()
+      .then(token => {
+
+          var axiosConfig = {
+            headers :{
+              //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+              'bearer'      : token,
+            }
+          };
+          
+          axios.get(URL_AWS + '/getUserAllTicketClosed', axiosConfig)
+          .then((response) => {
+            
+            resolve(response.data)
+            //res.render('pages/register',{email: email, isConnected: isConnected});
+          })
+          .catch(function (error) {
+            console.log("Erreur requete aws (getUserAllTicketClosed): " + error);
+            reject(error)
+          });
+      })
+      .catch((error) => reject(error));
+
+    });
+}
+
+///////////////////////////
 //    TICKET SOUSCRIPTION
 //    update
 ///////////////////////////

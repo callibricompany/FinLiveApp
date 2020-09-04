@@ -12,7 +12,9 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { ifIphoneX, ifAndroid, sizeByDevice , getConstant, isAndroid } from '../../Utils';
+import { ifIphoneX, ifAndroid, isEqual , getConstant, isAndroid } from '../../Utils';
+
+import { getAllTicketClosed } from '../../API/APIAWS';
 
 import { CBroadcastTicket } from "../../Classes/Tickets/CBroadcastTicket";
 import { CTicket } from '../../Classes/Tickets/CTicket';
@@ -70,6 +72,8 @@ class TicketScreen extends React.Component {
     //this.props.broadcasts.forEach((t) => this.allTickets.push(new CBroadcastTicket(t)));
     this.allTickets = this.props.tickets;
     this.allTickets.sort(CTicket.compareLastUpdateDown);
+
+    
     //this.allTickets.forEach((t) => console.log(t.getId() +" : " +Moment(t.getLastUpdateDate()).format('lll')));
     //console.log(this.props.tickets[0]);
 
@@ -103,7 +107,9 @@ class TicketScreen extends React.Component {
       idFocused : this.props.idFocused,
 
       //filttre
-      filterSelected : 'LIVETICKETS'
+      filterSelected : 'LIVETICKETS',
+
+      toto : true,
     };
     //this.dataSource = Array(19).fill().map((_, index) => ({id: index}));
     this.filterOnAir = false;
@@ -146,6 +152,9 @@ class TicketScreen extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps(props) {
+    if (!isEqual(props.tickets, this.props.tickets)) {
+      console.log("CHANGEMENT DANS LES TICKETS PABLITOTOTOTOTOTOTOTOTOTOTOT");
+    }
     this.setState({ allNotificationsCount :props.allNotificationsCount , idFocused : props.idFocuse});
   }
 
@@ -274,7 +283,35 @@ class TicketScreen extends React.Component {
                       return (
                         <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}} key={i}
                                           onPress={() => {
+                                                //selection des tickets a afficher
 
+                                                switch(filterCode) {
+                                                  case 'LIVETICKETS' : 
+                                                    this.allTickets = this.props.tickets;
+                                                    break;
+                                                  case 'UNREADTICKETS' :
+                                                    this.allTickets = [];
+                                                    break;
+                                                  case 'CLOSEDTICKETS' : 
+                                                    //on rappatrie les tickets 
+                                                    console.log("début chargement tickets archivés");
+                                                    this.allTickets = [];
+                                                    getAllTicketClosed(this.props.firebase)
+                                                    .then((tickets) => {
+                                                      console.log(tickets.userTickets);
+                                                      this.allTickets = this.props.classifyTickets(tickets.userTickets, 'PRODUCT');
+                                                      this.setState({ toto : !this.state.toto });
+                                                      //console.log(tickets);
+                                                    })
+                                                    .catch((err) => alert(err));
+                                                    console.log("fin chargement tickets archivés :  "+this.allTickets.length);
+                                                    break;
+                                                  case 'ALLTICKETS' :
+                                                    break;
+                                                  default : 
+                                                    this.allTickets = [];
+                                                    break;
+                                                }
                                                 //apppel au rechargement des tickets
                                                 this.setState({ filterSelected : filterCode , showModalDrawner : false});
 
@@ -323,8 +360,8 @@ class TicketScreen extends React.Component {
       extrapolate: 'clamp',
     });
 
-    
-    //console.log(this.props.tickets);
+
+  
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
       <SafeAreaView style={{flex : 1, backgroundColor : setColor('')}}>

@@ -233,7 +233,8 @@ export function FLChat ({isFocused, ticket, firebase, isLoading }) {
             <View style={{flex : 1, borderWidth : 0}}>
                 {ticket.isShared() 
                 ?
-                        <View>
+                        <View >
+                            <View style={{height : 15, width : getConstant('width'), backgroundColor: 'white'}} />
                             <FlatList
                                 //style={styles.wrapper}
                                 //scrollTo={this.state.scrollTo}
@@ -247,13 +248,13 @@ export function FLChat ({isFocused, ticket, firebase, isLoading }) {
                                     switch(index) {
                                         case 0 : //c'est le ticket general
                                             rn =  <View style={{justifyContent: 'center', alignItems : 'center'}}>
-                                                    <MaterialCommunityIcons name='chat' size={30} color={index === currentConversationIndex ? 'black' : 'gray'}/>
+                                                    <MaterialCommunityIcons name='chat' size={40} color={index === currentConversationIndex ? 'black' : 'gray'}/>
                                                     <Text style={setFont('200',12, index === currentConversationIndex ? 'black' : 'gray')}>Emetteur</Text>
                                                   </View>;
                                             break;   
                                         case 1 : //c'est le ticket broadcast
                                             rn =  <View style={{justifyContent: 'center', alignItems : 'center'}}>
-                                                        <Ionicons name='ios-chatbubbles' size={30} color={index === currentConversationIndex ? 'black' : 'gray'}/>
+                                                        <Ionicons name='ios-chatbubbles' size={40} color={index === currentConversationIndex ? 'black' : 'gray'}/>
                                                         <Text style={setFont('200',12, index === currentConversationIndex ? 'black' : 'gray')}>Groupe</Text>
                                                     </View>;
                                             break; 
@@ -264,6 +265,7 @@ export function FLChat ({isFocused, ticket, firebase, isLoading }) {
                                                         ?   !item.userInfo.hasOwnProperty('avatarLink')
                                                             ? <Text style={setFont('400', 16, 'white', 'Regular')}>{item.userInfo.firstName.charAt(0)}.{item.userInfo.lastName.charAt(0)}.</Text>
                                                             : <Image style={{width: 40, height: 40, borderWidth : 0, borderRadius : 20, borderColor : 'white'}} source={{uri : item.userInfo.avatarLink}} />
+                                                            // <Text style={setFont('200',12, index === currentConversationIndex ? 'black' : 'gray')}>{item.userInfo.firstName}</Text>
                                                         : null
                                                         }
                                                     </View>
@@ -273,7 +275,7 @@ export function FLChat ({isFocused, ticket, firebase, isLoading }) {
                              
                          
                                     return (
-                                            <TouchableOpacity   style={{height : 50, 
+                                            <TouchableOpacity   style={{height : 60, 
                                                                         width : 70,  
                                                                         backgroundColor : index === currentConversationIndex ? 'whitesmoke' : 'lightgray', 
                                                                         justifyContent: 'center', 

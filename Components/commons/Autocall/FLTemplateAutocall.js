@@ -305,10 +305,10 @@ _renderHeaderShortTemplate() {
                   </View>
                   <View style={{flex : 0.3,  borderWidth: 0, paddingRight : 5,  borderTopRightRadius: 10, backgroundColor : 'white', alignItems: 'center', justifyContent : 'center', borderColor: 'white'}}>
                
-                        <Text style={setFont('400', 18, this.state.messageLoading !== '' ? this.stdColor : setColor('darkBlue'), 'Bold')} numberOfLines={1}>
+                        <Text style={setFont('400', 18, this.state.messageLoading !== '' ? this.stdColor : setColor('FLGreen'), 'Bold')} numberOfLines={1}>
                             { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCoupon()).format('0.00%')}
                         </Text>
-                        <Text style={setFont('300', 10, )}> {' p.a.'}</Text>   
+                        <Text style={setFont('300', 10, setColor('FLGreen') )}> {' p.a.'}</Text>   
 
  
            
@@ -320,14 +320,14 @@ _renderHeaderShortTemplate() {
   );
 }
 
-_renderHeaderMediumTemplate() {
+_renderHeaderMediumTemplate(showArrow = true) {
   let dataUnderlyingAutocall = this.props.getAllUndelyings();
   let dataProductName = ['Athéna', 'Phoenix', 'Reverse convertible'];
   let dataAuction = ["Appel public à l'épargne",'Placement Privé'];
-  
+  //console.log("showArrow : " + showArrow);
   return (
 
-                <View style={{flexDirection: 'row', width : getConstant('width'), backgroundColor: setColor('background'), justifyContent: 'space-evenly' }}>                                                    
+                <View style={{flexDirection: 'row', backgroundColor: setColor('background'), justifyContent: 'space-evenly' }}>                                                    
                   <View style={{flex : 0.45, flexDirection: 'column', justifyContent: 'center' , alignItems : 'center', paddingTop: 3, paddingBottom: 3}}>
                   <TouchableOpacity style={{flexDirection: 'row', borderWidth: 0}}
                             onPress={() => {
@@ -495,13 +495,17 @@ _renderHeaderMediumTemplate() {
                     </TouchableOpacity> */}
                   </View>
                   <View style={{ flex : 0.45, padding: 5, alignItems: 'center', justifyContent: 'center', paddingRight: 5, borderWidth: 0}}>
-                      <Text style={setFont('400', 24, 'green', 'Bold')} numberOfLines={1}>        
-                          { Numeral(this.autocallResult.getCoupon()).format('0.00%')} <Text style={setFont('200', 12)}>p.a.
+                      <Text style={setFont('400', 24, setColor('FLGreen'), 'Bold')} numberOfLines={1}>        
+                          { Numeral(this.autocallResult.getCoupon()).format('0.00%')} <Text style={setFont('200', 12, setColor('FLGreen'))}>p.a.
                       </Text></Text>   
                       {/* <Text style={setFont('200', 10, setColor(''))}>R : {this.state.nominal === 0 ? Numeral(this.autocallResult.getUF()).format('0.00%') : currencyFormatDE(this.autocallResult.getUF() * this.state.nominal, 0)} {this.autocallResult.getCurrency()}</Text> */}
                   </View>  
-                  <View style={{flex : 0.1, justifyContent: 'center', alignItems: 'center', marginRight : 5}}>
-                    <MaterialCommunityIcons name={'fast-forward'} size={30} color={'gray'}/>
+                  <View style={{flex : 0.1, justifyContent: 'center', alignItems: 'center', marginRight : 5, borderWidth : 0}}>
+                    {showArrow
+                      ?
+                        <MaterialCommunityIcons name={'fast-forward'} size={30} color={'gray'}/>
+                      : null
+                    }
                   </View>
                 </View>
   
@@ -657,7 +661,7 @@ _renderHeaderFullTemplate() {
                                       }}
                     >
                       <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
-                        <Text style={setFont('400', 24, this.state.messageLoading !== '' ? this.stdColor : 'green')} numberOfLines={1}>
+                        <Text style={setFont('400', 24, this.state.messageLoading !== '' ? this.stdColor : setColor('FLGreen'))} numberOfLines={1}>
                             { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCoupon()).format('0.00%')}
                             <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
                         </Text>  
@@ -867,9 +871,9 @@ _renderHeaderFullTemplate2() {
                                       }}
                     >
                
-                        <Text style={setFont('400', 26, this.state.messageLoading !== '' ? this.stdColor : setColor('darkBlue'), 'Bold')} numberOfLines={1}>
+                        <Text style={setFont('400', 26, this.state.messageLoading !== '' ? this.stdColor : setColor('FLGreen'), 'Bold')} numberOfLines={1}>
                             { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCoupon()).format('0.00%')}
-                            <Text style={setFont('300', 12, )}> {' p.a.'}</Text>   
+                            <Text style={setFont('300', 12, setColor('FLGreen') )}> {' p.a.'}</Text>   
                         </Text>  
  
            
@@ -884,9 +888,9 @@ _renderHeaderFullTemplate2() {
                     >
                         <View style={{flex : 1, flexDirection : 'column', borderWidth : 0}}>
                             <View style={{backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, paddingTop : 2,  borderColor: 'white'}}>
-                              <Text style={setFont('400', 26, this.state.messageLoading !== '' ? this.stdColor : setColor('darkBlue'), 'Bold')} numberOfLines={1}>
+                              <Text style={setFont('400', 26, this.state.messageLoading !== '' ? this.stdColor : setColor('FLGreen'), 'Bold')} numberOfLines={1}>
                                   { this.state.messageLoading !== '' ? 'X.XX%' : Numeral(this.autocallResult.getCoupon()).format('0.00%')}
-                                  <Text style={setFont('300', 12)}> {' p.a.'}</Text>   
+                                  <Text style={setFont('300', 12, setColor('FLGreen'))}> {' p.a.'}</Text>   
                               </Text>  
                             </View> 
                             <View style={{flex : 0.5, paddingTop: 1, backgroundColor:  'white', justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}>
@@ -2449,7 +2453,7 @@ _renderAutocallFullTemplate2() {
                                   //origin={{ x: 20, y: 20 }}
                                   width={150} 
                                   height={150} 
-                                  colorScale={[setColor('subscribeticket'), setColor(''), '#C04848']} 
+                                  colorScale={[setColor('darkBlue'), setColor(''), setColor('lightBlue')]} 
                                   labelComponent={<VictoryLabel  style={{fontSize : 10, fill : 'gray'}} />}
                                   innerRadius={10}  
                                   animate={{ easing: 'exp' }}
@@ -2470,9 +2474,9 @@ _renderAutocallFullTemplate2() {
                                       symbolSpacer={2}
                                       labelComponent={<VictoryLabel  dx={3} style={{fontSize : isAndroid() ? 10 : 12, fill : 'gray'}} />}
                                       data={[
-                                        { name: "Coupons", symbol: { fill: setColor('subscribeticket'), type: "square" } },
+                                        { name: "Coupons", symbol: { fill: setColor('darkBlue'), type: "square" } },
                                         { name: "Pair", symbol: { fill: setColor(''), type: "square"} },
-                                        { name: "Capital", symbol: { fill: "#C04848", type: "square" } }
+                                        { name: "Capital", symbol: { fill: setColor('lightBlue'), type: "square" } }
                                       ]}
                                       
                       />
@@ -2725,7 +2729,7 @@ _renderAutocallFullTemplateForDetail() {
                                                   }}
                                                   activeOpacity={this.state.isEditable? 0.2 : 1}
                               >
-                                    <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                    <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                             <MaterialCommunityIcons name={"calendar"}  size={16} style={{color: this.request.isUpdated('maturity') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                     </View>
                                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
@@ -2792,7 +2796,7 @@ _renderAutocallFullTemplateForDetail() {
                                                           }}
                                                           activeOpacity={this.state.isEditable? 0.2 : 1}
                                         >
-                                              <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                              <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                                 <MaterialCommunityIcons name={"shield"}  size={16} style={{color: this.request.isUpdated('barrierPDI') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                               </View>
                                               <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
@@ -2860,7 +2864,7 @@ _renderAutocallFullTemplateForDetail() {
                                   >
                 
 
-                                        <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                           <MaterialCommunityIcons name={"shield-half-full"}  size={16} style={{color: this.request.isUpdated('barrierPhoenix') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
 
@@ -2918,7 +2922,7 @@ _renderAutocallFullTemplateForDetail() {
 
 
                                   <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
-                                        <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                           <MaterialCommunityIcons name={"ticket-percent"}  size={16} style={{color: this.request.isUpdated() ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
                                         <View style={{flex: 1, justifyContent: 'center',  alignItems: 'flex-start', paddingLeft : 5}}>
@@ -2938,7 +2942,7 @@ _renderAutocallFullTemplateForDetail() {
                                                           }}
                                                       activeOpacity={this.state.isEditable ? 0.2 : 1}
                                   >
-                                        <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                           <MaterialCommunityIcons name={"memory"}  size={18} style={{color: this.request.isUpdated('isMemory') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
                                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
@@ -3005,7 +3009,7 @@ _renderAutocallFullTemplateForDetail() {
                                                                   activeOpacity={(this.state.isEditable && (this.autocallResult.getBarrierPhoenix() === 1)) ? 0.2 : 1}
                                     > 
 
-                                          <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                          <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                             <MaterialCommunityIcons name={"airbag"}  size={18} style={{color: this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                           </View>
                                           <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
@@ -3078,7 +3082,7 @@ _renderAutocallFullTemplateForDetail() {
                                   <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }} >
                 
 
-                                        <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                           <MaterialCommunityIcons name={"gavel"}  size={16} style={{color: this.request.isUpdated('barrierPhoenix') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
 
@@ -3102,7 +3106,7 @@ _renderAutocallFullTemplateForDetail() {
                                                       }}
                                                       activeOpacity={this.state.isEditable ? 0.2 : 1}
                                   >
-                                        <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                           <MaterialCommunityIcons name={"alarm-multiple"}  size={16} style={{color: this.request.isUpdated('freq') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
                                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
@@ -3184,7 +3188,7 @@ _renderAutocallFullTemplateForDetail() {
                                                     }}
                                                     activeOpacity={this.state.isEditable ? 0.2 : 1}
                                   >
-                                        <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
                                           <MaterialCommunityIcons name={"clock-start"}  size={16} style={{color: this.request.isUpdated('nncp') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
                                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
@@ -4084,7 +4088,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIcons name={"gavel"}  size={15} style={{color: this.stdLightColor}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{ Numeral(this.autocallResult.getAutocallLevel()).format('0%')} </Text>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{ Numeral(this.autocallResult.getAutocallLevel()).format('0%')} </Text>
                 </View>
             </View>
             <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
@@ -4092,7 +4096,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIcons name={"alarm-multiple"}  size={18} style={{color: this.stdLightColor}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
                 </View>
             </View>
         </View>
@@ -4102,7 +4106,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIcons name={"calendar"}  size={18} style={{color: this.stdLightColor}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                    <Text style={setFont('300', 12, setColor(''), 'Light')}>{this.autocallResult.getMaturityName()} </Text>
+                    <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocallResult.getMaturityName()} </Text>
                 </View>
             </View>
 
@@ -4112,7 +4116,7 @@ _renderAutocallShortTemplate() {
                         <MaterialCommunityIcons name={"memory"}  size={15} style={{color: this.stdLightColor}}/>
                       </View>
                       <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                          <Text style={setFont('300', 12, setColor(''), 'Light')}>{(this.request.getValue('isMemory') ? 'mémoire': 'non mémoire')} </Text>
+                          <Text style={setFont('300', 12, 'black', 'Light')}>{(this.request.getValue('isMemory') ? 'mémoire': 'non mémoire')} </Text>
                       </View>
                   </View>
               : null
@@ -4124,7 +4128,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIcons name={"shield"}  size={15} style={{color: this.stdLightColor}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')}>{Numeral(this.request.getValue('barrierPDI') - 1).format('0%')}</Text>
+                  <Text style={setFont('300', 12, 'black', 'Light')}>{Numeral(this.request.getValue('barrierPDI') - 1).format('0%')}</Text>
                 </View>
             </View>
             <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0, paddingLeft: 5}}>
@@ -4132,7 +4136,7 @@ _renderAutocallShortTemplate() {
                   <MaterialCommunityIcons name={this.request.getValue('barrierPhoenix') === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: this.stdLightColor}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
-                  <Text style={setFont('300', 12, setColor(''), 'Light')} numberOfLines={1}>{this.request.getValue('barrierPhoenix') === 1  ? this.autocallResult.getAirbagTitle() : Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}</Text>
+                  <Text style={setFont('300', 12, 'black', 'Light')} numberOfLines={1}>{this.request.getValue('barrierPhoenix') === 1  ? this.autocallResult.getAirbagTitle() : Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}</Text>
                 </View>
             </View>
 
@@ -4319,7 +4323,7 @@ render () {
       this.object.isFavorite = isFavorite;
       this.object.toFavorites.active = isFavorite;*/
       if (this.type === TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE) {
-        return this._renderHeaderMediumTemplate();
+        return this._renderHeaderMediumTemplate(false);
       }
       if (this.type === TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE) {
         return this.state.messageLoading === '' ?  this._renderAutocallFullTemplateForDetail() : this._renderRecalculateProduct();
@@ -4333,7 +4337,7 @@ render () {
                                                                       shadowColor: setColor('shadow'),
                                                                       shadowOffset: { width: 0, height: 2 },
                                                                       shadowOpacity: this.stdShadowOpacity,
-                                                                      borderWidth :   1,
+                                                                      borderWidth :   (this.props.hasOwnProperty('templateType') && this.props.templateType === TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE) ? 0 : 1,
                                                                       borderColor : isAndroid() ? 'black' :  'white',
                                                                       //borderTopLeftRadius: 15,
                                                                       borderRadius: this.stdBorderRadius,
@@ -4351,7 +4355,7 @@ render () {
                 }
 
                 {this.state.messageLoading === '' ? this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE ? this._renderAutocallFullTemplate2() 
-                                                                                                       : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderAutocallMediumTemplate()
+                                                                                                       : this.type === TEMPLATE_TYPE.AUTOCALL_MEDIUM_TEMPLATE ? this._renderAutocallFullTemplateForDetail()
                                                                                                                                                               : this._renderAutocallShortTemplate()
                                                   : this._renderRecalculateProduct()
                 }

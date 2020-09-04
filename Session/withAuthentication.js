@@ -10,7 +10,7 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
-import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket, getAllUsers } from "../API/APIAWS";
+import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket, getAllUsers, getAllTicketClosed } from "../API/APIAWS";
 
 
 import { isAndroid , isEqual } from '../Utils'; 
@@ -56,9 +56,11 @@ const withAuthentication = Component => {
 
         //tickets
         tickets: [],
+        closedTickets : [],
         souscriptionTickets : [],
         apeTickets : [],
         addTicket: ticket => this.addTicket(ticket),
+        classifyTickets : (tickets, typeTicket) => this.classifyTickets(tickets, typeTicket),
 
         //users
         users : [],
@@ -178,13 +180,92 @@ const withAuthentication = Component => {
           });
         }
       } 
+
+      //ticket passe dans la liste des annulés et on le retire donc des tickets actifs
+      if (!isEqual(props.newCancelledTickets, this.props.newCancelledTickets) && props.newCancelledTickets !== 0) {
+
+        let souscriptionTickets = this.state.souscriptionTickets;
+        souscriptionTickets = souscriptionTickets.map((ticket, index) => {
+          if (ticket.getSouscriptionId() === props.newSouscription) {
+            //on le supprime de la liste
+            souscriptionTickets.splice(index, 1);
+            return souscriptionTickets;
+          }
+        });
+        this.setState({ souscriptionTickets });
+
+        let productTickets = this.state.tickets;
+        productTickets = productTickets.map((ticket,  index) => {
+          if (ticket.isShared() && ticket.getSouscriptionId() === props.newSouscription) {
+            productTickets.splice(index, 1);
+            return productTickets;
+          }
+        });
+        this.setState({ tickets : productTickets });
+
+      } 
+
       //console.log("RECEIVE PROPS HOME : " + props.notificationList.length );
       this.setState({ allNotificationsCount : props.hasOwnProperty('notificationList')  ? props.notificationList.length : 0, idFocused : props.idFocused });
     }
 
 
 
+    /**
+     * filtres et classements des tickets 
+     * @param {*} tickets 
+     * @param {*} typeTicket 
+     */
+    classifyTickets(tickets, typeTicket = 'PRODUCT') {
+      //on va crer les objets tickets 
+      let productTickets = [];
+      let souscriptionTickets = [];
 
+      tickets.forEach((t) => {
+        //let tempTicket = new CTicket(t);
+        //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
+        
+        //switch (tempTicket.getType()) {
+        switch(t.type) {
+          case "Broadcasting" :
+            console.log("Broadcast : "+t.id);
+            console.log(t);
+            //let ticketB = new CBroadcastTicket(t);
+            //this.tickets.push(ticketB);
+            break;
+          case "Produit structuré" :
+            console.log("Workflow : "+t.id);
+            //console.log(t);
+            let ticketC = new CWorkflowTicket(t);
+            productTickets.push(ticketC);
+            break;
+          case "Souscription" :
+            console.log("Souscription : "+t.id);
+            let souscriptionTicket = new CSouscriptionTicket(t);
+            //console.log(souscriptionTicket.getRequester().codeTS + "   " + this.state.user.getCodeTS());
+            
+            //check si c'est mon ticket 
+            if (souscriptionTicket.getRequester().codeTS === this.state.user.getCodeTS()) {
+                //let ticketC = new CWorkflowTicket(t.product); //on crée juste le produit
+                productTickets.push(souscriptionTicket);
+            } else {
+              //console.log(souscriptionTicket);
+                souscriptionTickets.push(souscriptionTicket);
+            }
+            
+            break;
+            
+          default : 
+            console.log("On sait pas  : "+t.type + " : " +t.id);
+            //this.tickets.push(t);
+            break;
+        }
+      });
+      productTickets.sort(CTicket.compareLastUpdateDown);
+      souscriptionTickets.sort(CTicket.compareLastUpdateDown);
+
+      return typeTicket === 'PRODUCT' ? productTickets : souscriptionTickets;
+    }
 
 
     //enregistrement du device pour notifications
@@ -308,49 +389,51 @@ const withAuthentication = Component => {
                 //console.log(userDatas.workflow.filter(({codeOperation}) => codeOperation === 'pp'));
 
                 //on va crer les objets tickets 
-                let tickets = [];
-                let souscriptionTickets = [];
-                userDatas.userTickets.forEach((t) => {
-                  //let tempTicket = new CTicket(t);
-                  //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
+                let tickets = this.classifyTickets(userDatas.userTickets);
+                let souscriptionTickets = this.classifyTickets(userDatas.userTickets, 'SOUSCRIPTION');
+
+
+                // userDatas.userTickets.forEach((t) => {
+                //   //let tempTicket = new CTicket(t);
+                //   //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
                   
-                  //switch (tempTicket.getType()) {
-                  switch(t.type) {
-                    case "Broadcasting" :
-                      console.log("Broadcast : "+t.id);
-                      console.log(t);
-                      //let ticketB = new CBroadcastTicket(t);
-                      //this.tickets.push(ticketB);
-                      break;
-                    case "Produit structuré" :
-                      console.log("Workflow : "+t.id);
-                      //console.log(t);
-                      let ticketC = new CWorkflowTicket(t);
-                      tickets.push(ticketC);
-                      break;
-                    case "Souscription" :
-                      console.log("Souscription : "+t.id);
-                      let souscriptionTicket = new CSouscriptionTicket(t);
-                      //console.log(souscriptionTicket.getRequester().codeTS + "   " + this.state.user.getCodeTS());
+                //   //switch (tempTicket.getType()) {
+                //   switch(t.type) {
+                //     case "Broadcasting" :
+                //       console.log("Broadcast : "+t.id);
+                //       console.log(t);
+                //       //let ticketB = new CBroadcastTicket(t);
+                //       //this.tickets.push(ticketB);
+                //       break;
+                //     case "Produit structuré" :
+                //       console.log("Workflow : "+t.id);
+                //       //console.log(t);
+                //       let ticketC = new CWorkflowTicket(t);
+                //       tickets.push(ticketC);
+                //       break;
+                //     case "Souscription" :
+                //       console.log("Souscription : "+t.id);
+                //       let souscriptionTicket = new CSouscriptionTicket(t);
+                //       //console.log(souscriptionTicket.getRequester().codeTS + "   " + this.state.user.getCodeTS());
                       
-                      //check si c'est mon ticket 
-                      if (souscriptionTicket.getRequester().codeTS === this.state.user.getCodeTS()) {
-                          //let ticketC = new CWorkflowTicket(t.product); //on crée juste le produit
-                          tickets.push(souscriptionTicket);
-                      } else {
-                        //console.log(souscriptionTicket);
-                          souscriptionTickets.push(souscriptionTicket);
-                      }
+                //       //check si c'est mon ticket 
+                //       if (souscriptionTicket.getRequester().codeTS === this.state.user.getCodeTS()) {
+                //           //let ticketC = new CWorkflowTicket(t.product); //on crée juste le produit
+                //           tickets.push(souscriptionTicket);
+                //       } else {
+                //         //console.log(souscriptionTicket);
+                //           souscriptionTickets.push(souscriptionTicket);
+                //       }
                       
-                      break;
+                //       break;
                       
-                    default : 
-                      console.log("On sait pas  : "+t.type + " : " +t.id);
-                      //this.tickets.push(t);
-                      break;
-                  }
-                });
-                tickets.sort(CTicket.compareLastUpdateDown);
+                //     default : 
+                //       console.log("On sait pas  : "+t.type + " : " +t.id);
+                //       //this.tickets.push(t);
+                //       break;
+                //   }
+                // });
+                // tickets.sort(CTicket.compareLastUpdateDown);
 
 
                 //on cree les objets autocalls

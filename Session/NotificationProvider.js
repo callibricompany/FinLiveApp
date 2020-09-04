@@ -65,6 +65,9 @@ class NotificationProvider extends Component {
         //nouveaux broadcasts donc ticket souscription
         newSouscription : 0,
 
+        //nouveaux tickets annulés
+        newCancelledTickets : 0,
+
         //chech if it is read
         isNotified : (type, id) => this.isNotified(type, id),
 
@@ -317,8 +320,8 @@ class NotificationProvider extends Component {
                     if (notification.origin == 'received') {
                         
                         //retourne un ticket donné
-                        this.setState({newSouscription : 397}, () => {
-                            this._showToast(notification.data, ticket);
+                        this.setState({newSouscription : notification.data.id}, () => {
+                            this._showToast(notification.data, null);
                             let localnotificationId = notification.notificationId;
                             setTimeout(function () {
                               console.log("desactivation de la notification : "+ localnotificationId);
@@ -331,6 +334,29 @@ class NotificationProvider extends Component {
                         NavigationService.navigate('Accueil');
                   }                      
             break;
+        case 'CANCEL' : 
+            //console.log(notification.data);
+            this.addNotification([].concat(notification.data));                   
+            //NavigationService.handleBadges(this.ticketBadgesCount);
+        
+            //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
+            if (notification.origin == 'received') {
+                
+                //retourne un ticket donné
+                this.setState({newCancelledTickets : notification.data.id}, () => {
+                    this._showToast(notification.data, null);
+                    let localnotificationId = notification.notificationId;
+                    setTimeout(function () {
+                      console.log("desactivation de la notification : "+ localnotificationId);
+                      isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
+                    }, 10000);
+                });
+            } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
+                let localnotificationId = notification.notificationId;
+                isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
+                //NavigationService.navigate('Accueil');
+          }                      
+    break;
         default :
               // this._showToast(notification.data, ticket);
               // let localnotificationId = notification.notificationId;
@@ -389,10 +415,13 @@ export const withNotification = Component => props => (
                                                     ticket: t,
                                                   });
                                                   //console.log(t.getDescription());
-                                              } else if (store.typeNotification === 'NEW_BROADCAST') {
+                                              } else if (store.typeNotification === 'NEW_SOUSCRIPTION') {
                                                 console.log("NAVIGATION VERS ACCUEIL");
                                                 NavigationService.navigate('Accueil');
-                                            }  
+                                              } else if (store.typeNotification === 'CANCEL') {
+                                                console.log("NAVIGATION VERS Tickets");
+                                                NavigationService.navigate('Tickets');
+                                              }  
                                       }}          
                             >
                             <View style={{flex: 0.9, flexDirection : 'column',justifyContent: 'center', backgroundColor: setColor('darkBlue'), borderWidth : 1, borderColor : setColor('darkBlue'), borderBottomLeftRadius : 15, borderTopLeftRadius : 15}}>

@@ -350,19 +350,19 @@ class FLAutocallDetail extends React.Component {
     let icon = '';
     switch(item.iconFamily) {
       case 'FontAwesome5' :
-        icon = <FontAwesome5 name={item.iconName}  size={item.level === 1 ? 30 : 25} color={setColor('')}/>;
+        icon = <FontAwesome5 name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
         break;
       case 'FontAwesome' :
-        icon = <FontAwesome name={item.iconName}  size={item.level === 1 ? 30 : 25} color={setColor('')}/>;
+        icon = <FontAwesome name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
         break;
       case 'Ionicons' :
-        icon = <Ionicons name={item.iconName}  size={item.level === 1 ? 30 : 25} ccolor={setColor('')}/>;
+        icon = <Ionicons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
         break;
       case 'SimpleLineIcons' :
-          icon = <SimpleLineIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} ccolor={setColor('')}/>;
+          icon = <SimpleLineIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
           break;      
       default : 
-       icon = <MaterialCommunityIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={setColor('')}/>;
+       icon = <MaterialCommunityIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
        break;
     }
     return (
@@ -696,8 +696,8 @@ class FLAutocallDetail extends React.Component {
                                         right : f.right,
                                         top: f.top,
                                         borderWidth : 1,
-                                        borderColor : 'black',
-                                        borderRadius : 10
+                                        borderColor : 'gray',
+                                        borderRadius : 3
                                       }
                                     }}
                                     renderRow={(option, index, isSelected) => {
@@ -706,7 +706,7 @@ class FLAutocallDetail extends React.Component {
                                               return (
                                                   <View style={{flexDirection : 'row', height: 40}}>
                                                       <View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                          <Text style={setFont('500', 16, setColor(''), 'Regular')}>Mode shadow</Text>
+                                                          <Text style={setFont('500', 14, 'black', 'Regular')}>Mode shadow</Text>
                                                       </View>
                                                       <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
                                                                         onPress={() => {
@@ -717,14 +717,14 @@ class FLAutocallDetail extends React.Component {
                                                                           });
                                                                         }}
                                                       >
-                                                          <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={25} style={{color: setColor('')}}/> 
+                                                          <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={25} style={{color: 'black'}}/> 
                                                       </TouchableOpacity>
                                                   </View>
                                               );
                                         case 'Clone' :
                                               return (
                                                     <View style={{height: 40, flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                        <Text style={setFont('500', 16, setColor(''), 'Regular')}>Cloner</Text>
+                                                        <Text style={setFont('500', 14, 'black', 'Regular')}>Cloner</Text>
                                                     </View>
 
                                               );
@@ -797,7 +797,7 @@ class FLAutocallDetail extends React.Component {
             </View>
             
             {this.state.showButtonsToTrade ? this._renderButtonsTotrade() : null}     
-            {this.autocall.getFinalNominal() === -1 ? this._renderButtonTotrade() : null}
+            {(this.autocall.getFinalNominal() === -1 && this.isEditable) ? this._renderButtonTotrade() : null}
       </View>
     );
   }

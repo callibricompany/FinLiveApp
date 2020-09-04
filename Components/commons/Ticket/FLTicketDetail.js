@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, StyleSheet, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput, TouchableWithoutFeedback, PanResponder, Animated, FlatList } from 'react-native';
+import { View, SafeAreaView, StatusBar, Text, TouchableOpacity, Alert, Platform, Image, Modal, KeyboardAvoidingView, Keyboard, TextInput, TouchableWithoutFeedback, PanResponder, Animated, FlatList } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -59,7 +59,7 @@ import Robot from "../../../assets/svg/robotBlink.svg";
 import { CWorkflowTicket } from '../../../Classes/Tickets/CWorkflowTicket';
 import { CSouscriptionTicket } from '../../../Classes/Tickets/CSouscriptionTicket';
 import { CUser } from '../../../Classes/CUser';
-
+import { FLUF } from "../Autocall/FLUF";
 
 
 
@@ -582,26 +582,29 @@ class FLTicketDetail extends React.Component {
                                         </View>
                                         <TouchableOpacity style={{flex : 0.15,  margin : 10, backgroundColor: this.state.timers[index] > 1  ? setColor('subscribeBlue') : isPriceProcessing ? 'gray' : setColor('granny'), borderWidth : isPriceProcessing ? 0 : 1, borderColor: this.state.timers[index] > 1  ? setColor('subscribeBlue') : setColor('granny'), alignItems: 'center', justifyContent : 'center'}}
                                                           onPress={() => {
-                                                        
-                                                            if (this.state.timers[index] > 1 ){
-                                                              alert('On traîte');
-                                                            } else {
-                                                              //console.log( this.ticket.getResponseIssuerCode(index));
-                                                                if (!isPriceProcessing)  {
-                                                                  this.setState({ isLoading : true });
-                                                                  getRepricing(this.props.firebase, this.ticket.getId(), this.ticket.getIssuerCode(index))
-                                                                  .then((ticket) => {
-                                                                    console.log("TICKET RECU : ");
-                                                                    console.log(ticket);
-                                                                      this._processUptadedTicket(ticket);
-                                                                      this.setState({ isLoading : false });
-                                                                  })
-                                                                  .catch((error) => {
-                                                                      alert('Impossible de rafraichir le prix');
-                                                                      this.setState({ isLoading : false });
-                                                                  });
+                                                                if(!this.ticket.isClosed()) {
+                                                                      if (this.state.timers[index] > 1 ){
+                                                                        alert('On traîte');
+                                                                      } else {
+                                                                        //console.log( this.ticket.getResponseIssuerCode(index));
+                                                                          if (!isPriceProcessing)  {
+                                                                            this.setState({ isLoading : true });
+                                                                            getRepricing(this.props.firebase, this.ticket.getId(), this.ticket.getIssuerCode(index))
+                                                                            .then((ticket) => {
+                                                                              console.log("TICKET RECU : ");
+                                                                              console.log(ticket);
+                                                                                this._processUptadedTicket(ticket);
+                                                                                this.setState({ isLoading : false });
+                                                                            })
+                                                                            .catch((error) => {
+                                                                                alert('Impossible de rafraichir le prix');
+                                                                                this.setState({ isLoading : false });
+                                                                            });
+                                                                          }
+                                                                      }
+                                                                } else {
+                                                                  alert("Demande clôturée")
                                                                 }
-                                                            }
                                                           }}
                                                           activeOpacity={isPriceProcessing ? 1 : 0.2}
                                         >
@@ -680,6 +683,7 @@ class FLTicketDetail extends React.Component {
                         </View>
                         <TouchableOpacity style={{margin : 10,padding : 10,  backgroundColor: setColor('subscribeBlue'), borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius : 10, alignItems: 'center', justifyContent : 'center'}}
                                           onPress={() => {
+                                            if(!this.ticket.isClosed()) {
                                                   this.setState({ isLoading : true });
                                                   getRepricing(this.props.firebase, this.ticket.getId(), 'ALL')
                                                   .then((ticket) => {
@@ -692,6 +696,9 @@ class FLTicketDetail extends React.Component {
                                                     alert('Impossible de rafraichir le prix');
                                                     this.setState({ isLoading : false });
                                                 });
+                                            } else {
+                                              alert("Demande clôturée");
+                                            }
                                           }}
                         >
                             <Text style={setFont('400', 18 , 'white', 'Regular')}> 
@@ -764,8 +771,21 @@ class FLTicketDetail extends React.Component {
                       NOMINAL : {currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()} 
                     </Text>
           </View>
-
-          <TouchableOpacity style={{alignItems: 'center', marginTop : 10, borderWidth : 1}}
+          <View style={{width : 0.95*getConstant('width'), borderWidth : 0, justifyContent : 'center', marginLeft : 0.025*getConstant('width'), marginTop : 10}}>
+            <FLUF   isEditable={false} 
+                    UF={this.ticket.getUF()}
+                    UFAssoc={this.ticket.getUFAssoc()}
+                    nominal={this.ticket.getNominal()}
+                    currency={this.ticket.getCurrency()}
+                    company={this.props.user.getCompany()}
+                    updateProduct={(id, value, valueLabel) => {
+                        //(id === 'UF') ? setUF(value) : setUFAssoc(value);
+                    }} 
+                    locked={true}
+                    showSlider={false}
+            />
+          </View>
+          <TouchableOpacity style={{alignItems: 'center', marginTop : 20, borderWidth : 0, borderColor : 'black', borderRadius : 5, width : getConstant('width')*0.95, marginLeft : 0.025*getConstant('width')}}
                             onPress={() => {
                               
                               this.autocall.setFinalNominal(this.ticket.getNominal());
@@ -776,59 +796,68 @@ class FLTicketDetail extends React.Component {
                               })
                             }}
           >
-              <FLTemplateAutocall autocall={this.autocall} screenWidth={1} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} source={this.props.source}  nominal={this.ticket.getNominal()} />
+              <FLTemplateAutocall autocall={this.autocall} screenWidth={0.95} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} showUF={false} source={this.props.source}  nominal={this.ticket.getNominal()} />
           </TouchableOpacity>
-          <View style={{flexDirection : 'row', justifyContent: 'flex-start', alignItems: 'stretch', borderWidth : 0, paddingLeft : 0.025*getConstant('width'), marginTop : 30,}}>
-              <View style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={setFont('200', 10, 'gray')}>Création{'\n'}
-                        <Text style={setFont('200', 12)}>{Moment(this.ticket.getCreationDate()).format('DD/MM/YY hh:mm')}</Text></Text>
-               </View> 
-               <TouchableOpacity style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'center'}}
-                                onPress={() => {
-                                  console.log(Moment(Date.now()).add(5, 'minutes').toDate());
-                                  var productcharacmodif = {
-                                    fr_due_by: Moment(Date.now()).add(5, 'minutes').toDate(),
-                                    idTicket: this.ticket.getId()
-                                  };
-                                  
-                                  ssModifyTicket(this.props.firebase, productcharacmodif);
-                                  this.setState( {showModalDrawnerPriority : false });
-                                }}
-               >
-                    <View style={{paddingLeft: 5, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={setFont('200', 12)}>{this.ticket.getStatus().name}{'\n'}
-                        <Text style={setFont('200', 9)}>#{this.ticket.getId()}</Text> </Text>
-                    </View>
-               </TouchableOpacity>  
-               <View style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'center'}}>
-                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                        <MaterialCommunityIcons name={"face-agent"} size={15} />
-                    </View>
-                    <View style={{paddingLeft: 10, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={setFont('200', 12)} numberOfLines={2}>{this.ticket.getAgentName()}</Text>
-                    </View>
-               </View>  
-               <TouchableOpacity style={{flexDirection : 'column', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'flex-start'}}
-                                  onPress={() => this.setState( {showModalDrawnerPriority : true })} 
-               >
-                    <View style={{marginLeft : 5}}>
-                      <Text style={setFont('200', 10, 'gray')}>Priorité</Text>
-                    </View>
-                    <View style={{flexDirection: 'row'}}>
-                      <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5, justifyContent: 'center', alignItems: 'center'}} />
-                      <View style={{paddingLeft: 2, justifyContent: 'center', alignItems: 'center'}}>
-                           <Text style={setFont('200', 12)}>{this.ticket.getPriority().name}</Text>
-                      </View>
-                    </View>
-               </TouchableOpacity>  
-
-          </View>
-          <View style={{height : 100}} />           
+        {this._renderFooter()}
+        <View style={{height : 100}} />           
       </ScrollView> 
     )
   }
 
 
+  /**
+   * render footeer of detail ticket
+   */
+  _renderFooter() {
+    return (
+      <View style={{flexDirection : 'row', justifyContent: 'flex-start', alignItems: 'stretch', borderWidth : 0, paddingLeft : 0.025*getConstant('width'), marginTop : 30,}}>
+          <View style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={setFont('200', 10, 'gray')}>Création{'\n'}
+                    <Text style={setFont('200', 12)}>{Moment(this.ticket.getCreationDate()).format('DD/MM/YY hh:mm')}</Text></Text>
+          </View> 
+          <TouchableOpacity style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'center'}}
+                            onPress={() => {
+                              console.log(Moment(Date.now()).add(5, 'minutes').toDate());
+                              var productcharacmodif = {
+                                fr_due_by: Moment(Date.now()).add(5, 'minutes').toDate(),
+                                idTicket: this.ticket.getId()
+                              };
+                              
+                              ssModifyTicket(this.props.firebase, productcharacmodif);
+                              this.setState( {showModalDrawnerPriority : false });
+                            }}
+          >
+                <View style={{paddingLeft: 5, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={setFont('200', 12)}>{this.ticket.getStatus().name}{'\n'}
+                    <Text style={setFont('200', 9)}>#{this.ticket.getId()}</Text> </Text>
+                </View>
+          </TouchableOpacity>  
+          {/* <View style={{flexDirection : 'row', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <MaterialCommunityIcons name={"face-agent"} size={15} />
+                </View>
+                <View style={{paddingLeft: 10, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={setFont('200', 12)} numberOfLines={2}>{this.ticket.getAgentName()}</Text>
+                </View>
+          </View>   */}
+          <TouchableOpacity style={{flexDirection : 'column', padding : 5, backgroundColor: 'gainsboro',  borderRadius: 3, marginLeft : 7, justifyContent: 'center', alignItems: 'flex-start'}}
+                              onPress={() => this.setState( {showModalDrawnerPriority : true })} 
+          >
+                <View style={{marginLeft : 5}}>
+                  <Text style={setFont('200', 10, 'gray')}>Priorité</Text>
+                </View>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{height : 10, width: 10, borderRadius: 5, backgroundColor: this.ticket.getPriority().color, margin : 5, justifyContent: 'center', alignItems: 'center'}} />
+                  <View style={{paddingLeft: 2, justifyContent: 'center', alignItems: 'center'}}>
+                      <Text style={setFont('200', 12)}>{this.ticket.getPriority().name}</Text>
+                  </View>
+                </View>
+          </TouchableOpacity>  
+
+      </View>
+
+    );
+  }
 
   //////////////////////////////////
   //
@@ -1263,18 +1292,25 @@ class FLTicketDetail extends React.Component {
       case 'DETAIL':
         //on verifie de quel type de tickets il s'agit et l'état du ticket
         if (this.ticket.isShared()) {//&& !this.ticket.isMine(this.props.user)) {
-            return <FLDetailBroadcastPSSubscripter 
-                          ticket={this.ticket} 
-                          subscripters={this.state.subscripters}
-                          user={this.props.user} 
-                          requester={new CUser(this.ticket.getRequester())}
-                          requesterOrg={this.ticket.getRequesterOrg()}
-                          handleIndexChange={this._handleIndexChange}
-                          firebase={this.props.firebase}
-                          reloadTicket={this._loadTicket}
-                  />;
+            return (
+                  <View>
+                      <FLDetailBroadcastPSSubscripter 
+                              ticket={this.ticket} 
+                              subscripters={this.state.subscripters}
+                              user={this.props.user} 
+                              requester={new CUser(this.ticket.getRequester())}
+                              requesterOrg={this.ticket.getRequesterOrg()}
+                              handleIndexChange={this._handleIndexChange}
+                              firebase={this.props.firebase}
+                              reloadTicket={this._loadTicket}
+                              footer={this._renderFooter()}
+                      />
+                      
+                  </View>
+            );
         } else {
           return this._renderDetail();
+
         }
         break;
       //case 'TEST' : return <FLChat ticket={this.ticket} isFocused={this.state.currentTab === 'TEST'} isLoading={this.state.isConversationLoading} firebase={this.props.firebase} />
@@ -1327,16 +1363,18 @@ class FLTicketDetail extends React.Component {
                       return (
                         <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}} key={i} 
                                           onPress={() => {
-                                              if(!isSelected) {
-                                                this.ticket.setPriority(s.id);
-                                                var productcharacmodif = {
-                                                  priority: s.id,
-                                                  idTicket: this.ticket.getId()
-                                                };
-                                                
-                                                ssModifyTicket(this.props.firebase, productcharacmodif);
-                                                this.setState( {showModalDrawnerPriority : false });
-                                              }
+                                            if (this.ticket.isMine(this.props.user)) {
+                                                if(!isSelected) {
+                                                  this.ticket.setPriority(s.id);
+                                                  var productcharacmodif = {
+                                                    priority: s.id,
+                                                    idTicket: this.ticket.getId()
+                                                  };
+                                                  
+                                                  ssModifyTicket(this.props.firebase, productcharacmodif);
+                                                  this.setState( {showModalDrawnerPriority : false });
+                                                }
+                                            }
                                           }}
                         >
                               <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
@@ -1376,7 +1414,7 @@ class FLTicketDetail extends React.Component {
 
       return(
             <View style={{flex:1, flexDirection : 'column', height: getConstant('height'), opacity: (this.state.showModalDrawnerPriority || this.state.isLoading) ? 0.3 : 1}}> 
-              
+             
               <View style={{flexDirection : 'row', paddingLeft : 10, backgroundColor: setColor('granny'), paddingTop: isAndroid() ?  0 : getConstant('statusBar'), padding : 5, alignItems: 'flex-start',justifyContent: 'space-between'}}>
                       {this._renderModalDrawnerPriority()}
                       <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', padding : 5}}
@@ -1399,10 +1437,45 @@ class FLTicketDetail extends React.Component {
                                                 onSelect={(index, value) => {
                                                   switch(value) {
                                                     case 'PRIORITY' : 
-                                                      this.setState({ showModalDrawnerPriority : true });
+                                                      if(!this.ticket.isClosed()) {
+                                                        if (this.ticket.isMine(this.props.user)) {
+                                                          this.setState({ showModalDrawnerPriority : true });
+                                                        }
+                                                      } else {
+                                                        alert("Demande clôturée");
+                                                      }
                                                       break;
                                                     case 'CANCEL' : 
-                                                      console.log('CANCEL');
+                                                      if (this.ticket.isCancellable()) {
+                                                            this._dropdownOptionMenu.hide();
+                                                            setTimeout(() => {
+                                                              Alert.alert(
+                                                                'Annnulation',
+                                                                'Voulez-vous vraiment annuler cette demande de prix ?',
+                                                                [
+                                                                  {
+                                                                    text: 'Non',
+                                                                    onPress: () => console.log('Cancel Pressed'),
+                                                                    style: 'cancel'
+                                                                  },
+                                                                  { text: 'Oui', onPress: () => {
+                                                                        this.ticket.setStatus(5);
+                                                                        var productcharacmodif = {
+                                                                          status: 5,
+                                                                          idTicket: this.ticket.getId()
+                                                                        };
+
+                                                                        console.log(this.ticket.getStatus());
+                                                                        ssModifyTicket(this.props.firebase, productcharacmodif);
+                                                                  } }
+                                                                ],
+                                                                { cancelable: false }
+                                                              );
+                                                            }, 500);
+                                                        }
+                                                      
+       
+   
                                                       break;
                                                     deafult : break;
                                                   }
@@ -1414,6 +1487,9 @@ class FLTicketDetail extends React.Component {
                                                     left : f.left,
                                                     right : f.right,
                                                     top: f.top,
+                                                    borderWidth : 1,
+                                                    borderColor : 'gray',
+                                                    borderRadius : 3
                                                   }
                                                 }}
                                                 renderRow={(option, index, isSelected) => {
@@ -1421,7 +1497,7 @@ class FLTicketDetail extends React.Component {
                                                     case 'PRIORITY' :
                                                           return (
                                                                   <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start', height: 40}}>
-                                                                      <Text style={setFont('500', 14, 'black', 'Regular')}>Changer la priorité</Text>
+                                                                      <Text style={setFont('500', 14, this.ticket.isMine(this.props.user) ? 'black' : 'lightgray', 'Regular')}>Changer la priorité</Text>
                                                                   </View>
                                                           );
                                                     case 'PRODUCT' :
@@ -1440,10 +1516,11 @@ class FLTicketDetail extends React.Component {
                                                               </View>
                                                           );
                                                       case 'CANCEL' :
+                                                        
                                                         return (
                                                             <View style={{flexDirection : 'row', height: 40}}>
                                                                 <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                                   <Text style={setFont('500', 14, 'black', 'Regular')}>Annuler ma demande</Text>
+                                                                   <Text style={setFont('500', 14, this.ticket.isCancellable() ? 'black' : 'lightgray', 'Regular')}>Annuler ma demande</Text>
                                                                 </View>
                                                             </View>
                                                         );
@@ -1458,7 +1535,7 @@ class FLTicketDetail extends React.Component {
                                                 }}
                                                 //defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
                                                 options={dataOptions}
-                                                //ref={component => this._dropdown['options'] = component}
+                                                ref={component => this._dropdownOptionMenu = component}
                                                 disabled={false}
                               >
                                   <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
@@ -1470,6 +1547,14 @@ class FLTicketDetail extends React.Component {
               <View style={{ paddingRight : 10, paddingLeft : 10, paddingBottom : 10,backgroundColor: setColor('granny'), alignItems: 'center',justifyContent: 'center'}}>
                   <Text style={[setFont('300', 18, 'white' ), {textAlign:'center'}]}>{this.ticket.getSubject()}</Text>
               </View>
+              {this.ticket.isClosed() 
+              ?
+                <View style={{ paddingRight : 10, paddingLeft : 10, paddingVertical : 10,backgroundColor: 'black', alignItems: 'center',justifyContent: 'center'}}>
+                   <Text style={[setFont('300', 20, 'white', 'Bold' ), {textAlign:'center'}]}>{String("demande clôturée").toUpperCase()} {Moment(this.ticket.getLastUpdateDate()).fromNow()}</Text>
+                </View>
+              : null
+     
+              }
               <View style={{flex : 1, flexDirection : 'column', marginTop : 0, backgroundColor: 'white',borderWidth : 0}}>
                 <TabView
                   navigationState={this.state}

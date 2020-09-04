@@ -226,9 +226,9 @@ _setFriends(friends) {
                             </View>
                           </View>
                           <View style={{ flex : 0.4, alignItems: 'center', justifyContent: 'center', marginRight: 20, borderWidth: 0}}>
-                              <Text style={setFont('400', 24, 'green', 'Bold')} numberOfLines={1}>        
+                              <Text style={setFont('400', 24, setColor('FLGreen'), 'Bold')} numberOfLines={1}>        
                                   { Numeral(this.autocall.getCoupon()).format('0.00%')} 
-                                  <Text style={[setFont('200', 12), {textAlign : 'left'}]}> p.a.
+                                  <Text style={[setFont('200', 12, setColor('FLGreen')), {textAlign : 'left'}]}> p.a.
                               </Text>   
                               
                               </Text>

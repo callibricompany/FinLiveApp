@@ -61,23 +61,23 @@ const customStyles = {
   currentStepIndicatorSize:20,
   separatorStrokeWidth: 2,
   currentStepStrokeWidth: 3,
-  stepStrokeCurrentColor: setColor('subscribeticket'),
+  stepStrokeCurrentColor: setColor(''),
   stepStrokeWidth: 3,
-  stepStrokeFinishedColor: setColor('subscribeticket'),
+  stepStrokeFinishedColor: setColor(''),
   stepStrokeUnFinishedColor: '#aaaaaa',
-  separatorFinishedColor: setColor('subscribeticket'),
+  separatorFinishedColor: setColor(''),
   separatorUnFinishedColor: '#aaaaaa',
-  stepIndicatorFinishedColor: setColor('subscribeticket'),
+  stepIndicatorFinishedColor: setColor(''),
   stepIndicatorUnFinishedColor: '#ffffff',
   stepIndicatorCurrentColor: '#ffffff',
   stepIndicatorLabelFontSize: 13,
   currentStepIndicatorLabelFontSize: 6,
-  stepIndicatorLabelCurrentColor: setColor('subscribeticket'),
+  stepIndicatorLabelCurrentColor: setColor(''),
   stepIndicatorLabelFinishedColor: '#ffffff',
   stepIndicatorLabelUnFinishedColor: '#aaaaaa',
   labelColor: '#999999',
   labelSize: 5,
-  currentStepLabelColor: setColor('subscribeticket'),
+  currentStepLabelColor: setColor(''),
 }
 
 
@@ -494,7 +494,7 @@ class FLTemplatePP extends React.Component {
               }
               {  this.ticket.isShared() && this.ticket.isMine(this.props.user)
                     ?
-                      <View style={{position : 'absolute', top : 85, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor('subscribeticket'), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('subscribeticket')}} >
+                      <View style={{position : 'absolute', top : 85, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor(''), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('')}} >
                             
                             <MaterialCommunityIcons name={'radio-tower'} size={40} color={'white'}/>
                       </View>                                            
@@ -512,22 +512,30 @@ class FLTemplatePP extends React.Component {
                           </Text>
                     </View>
                     <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
-                          <Text style={setFont('200', 18, setColor('subscribeticket'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
-                          <Text style={setFont('200', 12, setColor('subscribeticket'))}> p.a.
+                          <Text style={setFont('200', 18, setColor('FLGreen'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
+                          <Text style={setFont('200', 12, setColor('FLGreen'))}> p.a.
                           </Text>
                     </View>   
 
                 </View>
+                {
+                  this.ticket.isClosed() 
+                  ?
+                    <View style={{ paddingRight : 10, paddingLeft : 5, marginTop : 5, paddingVertical : 3, backgroundColor: 'black', alignItems: 'center',justifyContent: 'flex-start'}}>
+                      <Text style={[setFont('300', 14, 'white', 'Bold' ), {textAlign:'center'}]}>{String("demande clôturée").toUpperCase()} {Moment(this.ticket.getLastUpdateDate()).fromNow()}</Text>
+                    </View>
+                  : null
+                }
   
                <View style={{flexDirection : 'row', marginLeft : 10, marginRight : 10, marginTop : 10}}>
                   <View style={{flex : 0.33}}>
                       <Text style={setFont('200', 10, 'gray')}>Nominal :</Text>
                               <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
                                     <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
-                                        <Text style={setFont('200', 12, setColor('subscribeticket'), 'Bold')}>{currencyFormatDE(this.ticket.getNominal())}  </Text>
+                                        <Text style={setFont('200', 12, setColor(''), 'Bold')}>{currencyFormatDE(this.ticket.getNominal())}  </Text>
                                     </View>
                                     <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
-                                        <Text style={setFont('200', 12, setColor('subscribeticket'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                                        <Text style={setFont('200', 12, setColor(''), 'Regular')}>{this.ticket.getCurrency()}</Text>
                                     </View>
                               </View>
                   </View>  
@@ -536,13 +544,13 @@ class FLTemplatePP extends React.Component {
                       <Text style={setFont('200', 10, 'gray')}>Commission :</Text>
                               <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
                                     <View style={{justifyContent : 'center', alignItems : 'center'}}>  
-                                        <MaterialCommunityIcons name={'margin'} size={15} color={setColor('subscribeticket')}/>
+                                        <MaterialCommunityIcons name={'margin'} size={15} color={setColor('')}/>
                                     </View>
                                     <View style={{justifyContent : 'center', alignItems : 'flex-start',  paddingLeft : 3}}>  
-                                        <Text style={setFont('200', 12, setColor('granny'), 'Bold')}>{currencyFormatDE(this.ticket.getUFInCurrency())}  </Text>
+                                        <Text style={setFont('200', 12, setColor(''), 'Bold')}>{currencyFormatDE(this.ticket.getUFInCurrency())}  </Text>
                                     </View>
                                     <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
-                                        <Text style={setFont('200', 12, setColor('granny'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                                        <Text style={setFont('200', 12, setColor(''), 'Regular')}>{this.ticket.getCurrency()}</Text>
                                     </View>
                               </View>
                   </View>    
@@ -551,13 +559,13 @@ class FLTemplatePP extends React.Component {
                       <Text style={setFont('200', 10, 'gray')}>Mon association :</Text>
                               <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
                                      <View style={{justifyContent : 'center', alignItems : 'center'}}>  
-                                        <FontAwesome5 name={'donate'} size={15} color={setColor('subscribeticket')}/>
+                                        <FontAwesome5 name={'donate'} size={15} color={setColor('')}/>
                                     </View>
                                     <View style={{justifyContent : 'center', alignItems : 'flex-start', paddingLeft : 3}}>  
-                                        <Text style={setFont('200', 12, setColor('granny'), 'Bold')}>{currencyFormatDE(this.ticket.getUFAssocInCurrency())}  </Text>
+                                        <Text style={setFont('200', 12, setColor(''), 'Bold')}>{currencyFormatDE(this.ticket.getUFAssocInCurrency())}  </Text>
                                     </View>
                                     <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
-                                        <Text style={setFont('200', 12, setColor('granny'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                                        <Text style={setFont('200', 12, setColor(''), 'Regular')}>{this.ticket.getCurrency()}</Text>
                                     </View>
                               </View>
                   </View>                    
@@ -651,7 +659,7 @@ class FLTemplatePP extends React.Component {
                 }
                 { this.ticket.isShared() && this.ticket.isMine(this.props.user)
                     ?
-                      <View style={{position : 'absolute', top : 50, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor('subscribeticket'), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('subscribeticket')}} >
+                      <View style={{position : 'absolute', top : 50, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor(''), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('')}} >
                             <MaterialCommunityIcons name={'radio-tower'} size={40} color={'white'}/>
                       </View>                                            
                     : null 
@@ -668,8 +676,8 @@ class FLTemplatePP extends React.Component {
                           </Text>
                     </View>
                     <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
-                          <Text style={setFont('200', 18, setColor('subscribeticket'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
-                          <Text style={setFont('200', 12, setColor('subscribeticket'))}> p.a.
+                          <Text style={setFont('200', 18, setColor('FLGreen'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
+                          <Text style={setFont('200', 12, setColor('FLGreen'))}> p.a.
                           </Text>
                     </View>   
 
@@ -718,7 +726,7 @@ class FLTemplatePP extends React.Component {
                         ?
                               <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'flex-start', height : 19}}>
                                     <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
-                                          <Text style={setFont('200', 12, setColor('subscribeticket'), 'Bold')}>
+                                          <Text style={setFont('200', 12, setColor(''), 'Bold')}>
                                               {currencyFormatDE(this.amount)}  {this.ticket.getCurrency()} collecté sur {currencyFormatDE(this.ticket.getBroadcastAmount())} {this.ticket.getCurrency()}
                                           </Text>
                                       </View>
@@ -728,10 +736,10 @@ class FLTemplatePP extends React.Component {
                     :
                       <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
                             <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
-                                <Text style={setFont('200', 12, setColor('subscribeticket'), 'Bold')}>{currencyFormatDE(this.ticket.getNominal())}  </Text>
+                                <Text style={setFont('200', 12, setColor(''), 'Bold')}>{currencyFormatDE(this.ticket.getNominal())}  </Text>
                             </View>
                             <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
-                                <Text style={setFont('200', 12, setColor('subscribeticket'), 'Regular')}>{this.ticket.getCurrency()}</Text>
+                                <Text style={setFont('200', 12, setColor(''), 'Regular')}>{this.ticket.getCurrency()}</Text>
                             </View>
                       </View>
          
