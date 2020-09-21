@@ -346,7 +346,7 @@ _renderProductTile() {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.3,
                         borderWidth : 1,
-                        borderColor : isAndroid() ? 'black' :  'white',
+                        borderColor : isAndroid() ? 'lightgray' :  'white',
                                                         
 
                         }}
@@ -434,7 +434,7 @@ _renderProductTile() {
                                 </ModalDropdown>
                     </View>
                 </TouchableOpacity>
-                <View style={{height: 35, borderTopWidth : 1, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{height: 35, borderTopWidth : 1, borderTopColor : 'lightgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[setFont('300', 14,setColor(''), 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle('type')}
                   </Text>
@@ -459,7 +459,7 @@ _renderGenericTile=(criteria) => {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.3,
                         borderWidth : 1,
-                        borderColor : isAndroid() ? 'black' :  'white',
+                        borderColor : isAndroid() ? 'lightgray' :  'white',
                         }}
             >
                 <TouchableOpacity style={{flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
@@ -491,7 +491,7 @@ _renderGenericTile=(criteria) => {
                     </View>
                     <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                         {this.request.isActivated(criteria) ? 
-                            <Text style={[setFont('300', 14, this.request.isActivated(criteria) ? setColor('') : setColor('lightBlue')), {textAlign: 'left'}]}>
+                            <Text style={[setFont('300', 14, this.request.isActivated(criteria) ? setColor('') : setColor('lightBlue')), {textAlign: 'center', paddingHorizontal : 10}]}>
                                     { this.request.getValueLabel(criteria) } 
                             </Text>
                             :
@@ -501,7 +501,7 @@ _renderGenericTile=(criteria) => {
                         }
                     </View>
                 </TouchableOpacity>
-                <View style={{height: 35, borderTopWidth : this.request.isActivated(criteria) ? 1 : 0, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{height: 35, borderTopWidth : this.request.isActivated(criteria) ? 1 : 0, borderTopColor : 'lightgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[setFont('300', 14, this.request.isActivated(criteria) ? setColor('') : setColor('lightBlue'), 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle(criteria)}
                   </Text>
@@ -541,7 +541,7 @@ _renderPhoenixTile=() => {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.3,
                         borderWidth : 1,
-                        borderColor : isAndroid() ? 'black':  'white',
+                        borderColor : isAndroid() ? 'lightgray':  'white',
                         }}
             >
                 <View style={{flexDirection: 'row', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth : 0, padding: 2, flexGrow: 1}}>
@@ -556,7 +556,7 @@ _renderPhoenixTile=() => {
                                       }}
                                       activeOpacity={this.request.getValue('type') === 'phoenix' ? 0.2 : 1}
                     >
-                        <View style={{flexDirection: 'row'}}>
+                        <View style={{flexDirection: 'row', borderWidth : 0}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
                                   <MaterialCommunityIcons name={this.request.getIcon('barrierPhoenix')}  size={30} style={{color: iconColorPhoenix}}/> 
                               </View>
@@ -577,7 +577,7 @@ _renderPhoenixTile=() => {
                               }
                               </TouchableOpacity>
                         </View>
-                        <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
+                        <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start', marginLeft : -30}}>
                             
                           <Text style={[setFont('300', 14, this.request.isActivated('barrierPhoenix') ? setColor('') : setColor('lightBlue')), {textAlign: 'left'}]}>
                                   {this.request.getValue('type') !== 'phoenix' ? Numeral(this.request.getValue('autocallLevel')).format('0%') : this.request.getValueLabel('barrierPhoenix') }
@@ -596,7 +596,7 @@ _renderPhoenixTile=() => {
                                   <MaterialCommunityIcons name={"memory"}  size={30} style={{color: this.request.isActivated('isMemory') ? setColor('') : setColor('lightBlue')}}/> 
                               </View>
  
-                              <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
+                              <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 15, borderWidth: 0}}
                                                 onPress={() => {
                                                     this.currentParameter = 'isMemory';
                                                     this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
@@ -637,7 +637,7 @@ _renderPhoenixTile=() => {
                         </View>
                     </TouchableOpacity>
                 </View>
-                <View style={{height: 35, borderTopWidth : 1, borderTopColor : this.request.isActivated('freq') ? setColor('') : setColor('lightBlue'), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{height: 35, borderTopWidth : 1, borderTopColor : this.request.isActivated('freq') ? 'lightgray' : setColor('lightBlue'), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[setFont('300', 14, setColor('') , 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle('barrierPhoenix')}
                   </Text>
@@ -663,7 +663,7 @@ _renderFreqTile() {
                           shadowOffset: { width: 0, height: 2 },
                           shadowOpacity: 0.3,
                           borderWidth : 1,
-                          borderColor : isAndroid() ? 'black' :  'white',
+                          borderColor : isAndroid() ? 'lightgray' :  'white',
                           }}
               >
                   <View style={{flexDirection: 'row', height: 2*(getConstant('width')*0.925-20)/3/3, flexGrow: 1}}>
@@ -732,7 +732,7 @@ _renderFreqTile() {
                       </TouchableOpacity>
  
                   </View>
-                  <View style={{height: 35, borderTopWidth : this.request.isActivated('freq') ? 1 : 0, borderTopColor : this.request.isActivated('freq') ? setColor('') : setColor('lightBlue'), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                  <View style={{height: 35, borderTopWidth : this.request.isActivated('freq') ? 1 : 0, borderTopColor : this.request.isActivated('freq') ? 'lightgray' : setColor('lightBlue'), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={[setFont('300', 14, this.request.isActivated('freq') ? setColor('') : setColor('lightBlue'), 'Regular' ), {textAlign: 'center'}]}>
                         {this.request.getTitle('freq')}
                     </Text>
@@ -770,7 +770,7 @@ _renderAirbagTile() {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.3,
                         borderWidth : 1,
-                        borderColor : isAndroid() ? 'black' :  'white',
+                        borderColor : isAndroid() ? 'lightgray' :  'white',
                         }}
             >
                 <View style={{flexDirection: 'row', paddingTop: 2, flexGrow: 1}}>
@@ -857,7 +857,7 @@ _renderAirbagTile() {
                           </View>
                       </View>
                 </View>
-                <View style={{height: 35, borderTopWidth : 1, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{height: 35, borderTopWidth : 1, borderTopColor : 'lightgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[setFont('300', 14, this.request.isActivated('airbagLevel') ? setColor('') : setColor('lightBlue'), 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle('airbagLevel')}
                   </Text>
@@ -883,7 +883,7 @@ _renderAuctionTile() {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.3,
                         borderWidth : 1,
-                        borderColor : isAndroid() ? 'black' :  'white',
+                        borderColor : isAndroid() ? 'lightgray' :  'white',
                         }}
             >
                 <TouchableOpacity style={{flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
@@ -930,7 +930,7 @@ _renderAuctionTile() {
                                 </ModalDropdown>
                     </View>
                 </TouchableOpacity>
-                <View style={{height: 35, borderTopWidth : 1, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{height: 35, borderTopWidth : 1, borderTopColor : 'lightgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[setFont('300', 14,setColor(''), 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle('typeAuction')}
                   </Text>
@@ -958,7 +958,7 @@ _renderMemoryTile=() => {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.3,
                         borderWidth : 1,
-                        borderColor : isAndroid() ? 'black' :  'white',
+                        borderColor : isAndroid() ? 'lightgray' :  'white',
                         }}
             >
                 <TouchableOpacity style={{flexDirection: 'column', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth: 0, paddingTop: 2, justifyContent: 'space-between', alignItems: 'center',flexGrow: 1}}
@@ -1014,7 +1014,7 @@ _renderMemoryTile=() => {
                                     </ModalDropdown>
                         </View>
                 </TouchableOpacity>
-                <View style={{height: 35, borderTopWidth : this.request.isActivated('isMemory') ? 1 : 0, borderTopColor : setColor(''), padding: 2, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{height: 35, borderTopWidth : this.request.isActivated('isMemory') ? 1 : 0, borderTopColor : 'lioghtgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[setFont('300', 14, this.request.isActivated('isMemory') ? setColor('') : setColor('lightBlue'), 'Regular' ), {textAlign: 'center'}]}>
                       {this.request.getTitle('isMemory')}
                   </Text>
@@ -1086,7 +1086,7 @@ _renderUFOrCoupon(what) {
       <TouchableOpacity style={{width : 0.85*getConstant('width') - 80 , flexDirection : 'row', justifyContent: 'center', 
                                 padding: 10, backgroundColor : 'white', 
                                 borderWidth : 1, 
-                                borderColor : isAndroid() ? 'black' :  'white',
+                                borderColor : isAndroid() ? 'lightgray' :  'white',
                                 shadowColor: setColor('shadow'),
                                 shadowOffset: { width: 0, height: 2 },
                                 shadowOpacity: 0.3,
@@ -1323,7 +1323,7 @@ render() {
                           textColor={setColor('lightBlue')} 
                           selectedColor={'white'}
                           buttonColor={setColor('')} 
-                          borderColor={setColor('')} 
+                          borderColor={'lightgray'} 
                           returnObject={true}
                           hasPadding
                           options={[

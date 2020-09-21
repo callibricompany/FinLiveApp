@@ -98,6 +98,12 @@ export function niceBytes(x){
 }
 
 export function isEqual( x, y ) {
+  if ((x == null) && (y == null)) return true;
+
+  if ((x != null) && (y == null)) return false;
+
+  if ((x == null) && (y != null)) return false;
+
   if ( x === y ) return true;
     // if both x and y are null or undefined and exactly the same
 

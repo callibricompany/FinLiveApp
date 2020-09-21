@@ -181,7 +181,7 @@ _setFriends(friends) {
                                                 onPress={() => this.props.navigation.goBack()}
                             >
                                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                                        <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
+                                        <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                                     </View>
                   
                             </TouchableOpacity>
@@ -414,6 +414,7 @@ _setFriends(friends) {
                                   <View style={{borderWidth : 0, width : getConstant('width')*0.95, marginTop : 25}}>
                                       <TouchableOpacity style={{flexDirection : 'row'}}
                                                         onPress={() => {
+                                                       
                                                             this.props.navigation.navigate('FLAutocallDetailBroadcastFriends', {setFriends : this._setFriends.bind(this), friends : this.state.friends });
                                                         }}        
                                       >

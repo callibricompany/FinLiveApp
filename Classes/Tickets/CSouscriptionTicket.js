@@ -6,6 +6,7 @@ import * as TEMPLATE_TYPE from '../../constants/template';
 import Moment from 'moment';
 
 
+
 export class  CSouscriptionTicket extends CWorkflowTicket {
   constructor(ticket) {
    
@@ -139,4 +140,27 @@ export class  CSouscriptionTicket extends CWorkflowTicket {
   getSubscripters() {
     return this.subscripters;
   }
+  getSubscriptersCodeTS() {
+    let codeTS =[];
+    let subscripters = this.subscripters;
+    if (subscripters != null && subscripters.hasOwnProperty('user')) {
+      subscripters.user.forEach((s) => {
+        if (s.hasOwnProperty('userInfo') && s.userInfo.hasOwnProperty('codeTS')) {
+          codeTS.push(s.userInfo.codeTS);
+        }
+      });
+    }
+    return codeTS;
+  }
+  getSubscriptersUid(users) {
+    let UID = [];
+    let codeTS = this.getSubscriptersCodeTS();
+    codeTS.forEach((code) => {
+      let userUID = users.getUserUIDFromCodeTS(code);
+      userUID !== '' ? UID.push(userUID) : null;
+    });
+    return UID;
+  }
+
+
 }

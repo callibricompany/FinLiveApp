@@ -12,6 +12,7 @@ import FLAutocallDetailTrade from '../Components/commons/Autocall/FLAutocallDeta
 import FLAutocallDetailBroadcastPP from '../Components/commons/Autocall/FLAutocallDetailBroadcastPP';
 import FLAutocallDetailBroadcastFriends from '../Components/commons/Autocall/FLAutocallDetailBroadcastFriends';
 import FLSRPDetail from '../Components/Home/FLSRPDetail';
+import FLNotifications from '../Components/commons/FLNotifications';
 
 import PricerScreen from '../Components/Pricer/PricerScreen'
 import FLResultPricer from '../Components/Pricer/FLResultPricer'
@@ -27,6 +28,7 @@ import ProfileScreenDetail from '../Components/Profile/ProfileScreenDetail';
 
 import TicketScreen from '../Components/Ticket/TicketScreen';
 import FLTicketDetail from '../Components/commons/Ticket/FLTicketDetail';
+import {FLAddFriendOnBroadcast} from '../Components/commons/Ticket/FLAddFriendOnBroadcast';
 
 import BroadcastingScreen from '../Components/Broadcast/BroadcastingScreen';
 
@@ -107,6 +109,12 @@ function labelStyle (focused, tintColor) {
     FLAutocallDetailBroadcastFriends: {
       screen : FLAutocallDetailBroadcastFriends
     },
+    FLAddFriendOnBroadcast: {
+      screen : FLAddFriendOnBroadcast
+    },
+    FLNotifications: {
+      screen : FLNotifications
+    },
 
   }, 
   {
@@ -154,6 +162,9 @@ function labelStyle (focused, tintColor) {
       },
       FLAutocallDetailTicket: {
         screen : FLAutocallDetailTicket
+      },
+      FLAddFriendOnBroadcast: {
+        screen : FLAddFriendOnBroadcast
       },
 
     })
@@ -427,7 +438,7 @@ function labelStyle (focused, tintColor) {
         tabBarLabel: ({ focused, tintColor }) => {
           return (
             <View style={{alignItems:'center', justifyContent:'center'}}>
-            <Text style={labelStyle(focused,tintColor)}>Tickets</Text>
+            <Text style={labelStyle(focused,tintColor)}>Trades</Text>
             </View>
           );
           },

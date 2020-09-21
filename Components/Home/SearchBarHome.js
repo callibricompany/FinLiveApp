@@ -371,67 +371,70 @@ export default class SearchBarHome extends Component {
                   alignItems: 'center'
                 }]}> 
                   <View style={{flex: 1, height: 45, borderWidth: 0, width: getConstant('width')*0.975,flexDirection: 'row'}}>   
-                    <TouchableOpacity style={{flex:0.1, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 3}}
+                    <TouchableOpacity style={{flex:0.2, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 3}}
                                       onPress={() => {
                                         this.setState({showModalCategory : true});
                                       }}
                     >
                         <IonIcons name={'ios-menu'}  size={25} style={{color: 'white'}}/> 
                     </TouchableOpacity>
-                    <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={{flex:0.6, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{paddingLeft : 5,fontFamily: 'FLFont' , fontWeight:'200', fontSize : 24, color: 'white'}}>F i n L i v e</Text>    
                     </View>   
-
-                    <TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
-                         onPress={() => {
-                          this.props.manageVisibilityTabBar(true);
-                           this.setState ({ showModalTitle : !this.state.showModalTitle });
-                           if (parseInt(JSON.stringify(animation.scrollY)) === 0) {
-                              //console.log("ON EST EN HAUT");
-                              this.props.changeMarginSearch(40);
-                            } else {
-                              this.props.changeMarginSearch(9999);
-                            }
-                            Animated.parallel([
-                              Animated.timing(
-                                  this.state.positionLeft,
+                    <View style={{ flex : 0.2, borderWidth : 4,borderColor : 'red',  flexDirection: 'row', height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}>
+                      <TouchableOpacity style={{  height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
+                          onPress={() => {
+                            this.props.manageVisibilityTabBar(true);
+                            this.setState ({ showModalTitle : !this.state.showModalTitle });
+                            if (parseInt(JSON.stringify(animation.scrollY)) === 0) {
+                                //console.log("ON EST EN HAUT");
+                                this.props.changeMarginSearch(40);
+                              } else {
+                                this.props.changeMarginSearch(9999);
+                              }
+                              Animated.parallel([
+                                Animated.timing(
+                                    this.state.positionLeft,
+                                      {
+                                        toValue: 0,
+                                        duration : 1000,
+                                        easing: Easing.elastic(),
+                                        speed : 1
+                                      }
+                                ),
+                                  /*Animated.timing(
+                                    this.state.categoryHeight,
                                     {
                                       toValue: 0,
                                       duration : 1000,
                                       easing: Easing.elastic(),
                                       speed : 1
                                     }
-                              ),
-                                /*Animated.timing(
-                                  this.state.categoryHeight,
-                                  {
-                                    toValue: 0,
-                                    duration : 1000,
-                                    easing: Easing.elastic(),
-                                    speed : 1
-                                  }
-                                )  */
-                            ]).start(() => {
-                              //force le render avec un changement de state dont on se fiche 
-                              //this.setState ({ showModalTitle : !this.state.showModalTitle });
+                                  )  */
+                              ]).start(() => {
+                                //force le render avec un changement de state dont on se fiche 
+                                //this.setState ({ showModalTitle : !this.state.showModalTitle });
+                                
+    
+                                
+                            });
                               
-  
-                              
-                          });
+                              if (this.inputSearch !== null && this.inputSearch !== undefined) {
+                                this.inputSearch.focus();
+                              }
                             
-                            if (this.inputSearch !== null && this.inputSearch !== undefined) {
-                              this.inputSearch.focus();
-                            }
-                           
 
-                        }}>  
-                          <IonIcons
-                            name='ios-search' 
-                            size={25} 
-                            color={'white'}
-                          />
-                      </TouchableOpacity>
-                    
+                          }}>  
+                            <IonIcons name='ios-search' size={25} color={'white'} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{marginLeft : 20}}
+                                          onPress={() => {
+                                            console.log("kgahgdzhd");
+                                          }}
+                        >
+                            <IonIcons name='ios-notifications-outline' size={25} color={'white'} />
+                        </TouchableOpacity>
+                    </View>
                   </View>
                   <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
                       <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>

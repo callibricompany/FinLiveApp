@@ -1410,7 +1410,7 @@ class FLTicketDetail extends React.Component {
 
 
   render() { 
-      let dataOptions = ['PRIORITY', 'PRODUCT', 'CANCEL'];
+      let dataOptions = (this.ticket.isShared() && this.ticket.isMine(this.props.user) && this.ticket.isCancellable()) ? ['PRIORITY', 'PRODUCT', 'CANCEL', 'ADDFRIEND'] : ['PRIORITY', 'PRODUCT', 'CANCEL'];
 
       return(
             <View style={{flex:1, flexDirection : 'column', height: getConstant('height'), opacity: (this.state.showModalDrawnerPriority || this.state.isLoading) ? 0.3 : 1}}> 
@@ -1420,7 +1420,7 @@ class FLTicketDetail extends React.Component {
                       <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', padding : 5}}
                                         onPress={() => this.props.navigation.goBack()}
                       >
-                           <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
+                           <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                       </TouchableOpacity>
                       <View style={{flex: 0.7, justifyContent: 'center', alignItems: 'center'}}>
                            <Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()} {this.ticket.isShared() ? 'partagé' : null}</Text>
@@ -1445,6 +1445,21 @@ class FLTicketDetail extends React.Component {
                                                         alert("Demande clôturée");
                                                       }
                                                       break;
+                                                    case 'ADDFRIEND' : 
+                                                      if(!this.ticket.isClosed() && this.ticket.isShared()) {
+                                                        if (this.ticket.isMine(this.props.user)) {
+                                                          console.log(this.ticket.getSubscriptersCodeTS());
+                                                          console.log(this.ticket.getSubscriptersUid(this.props.users));
+                                                          //this.props.navigation.navigate('FLAutocallDetailBroadcastFriends', {setFriends : this._setFriends.bind(this), friends : this.state.friends });
+                                                          this.props.navigation.navigate('FLAddFriendOnBroadcast');
+                                                        } else {
+                                                          alert("Ce n'est pas ma demande");
+                                                        }
+                                                      } else {
+                                                        alert("Demande clôturée");
+                                                      }
+                                                      break;
+                                                      
                                                     case 'CANCEL' : 
                                                       if (this.ticket.isCancellable()) {
                                                             this._dropdownOptionMenu.hide();
@@ -1516,7 +1531,6 @@ class FLTicketDetail extends React.Component {
                                                               </View>
                                                           );
                                                       case 'CANCEL' :
-                                                        
                                                         return (
                                                             <View style={{flexDirection : 'row', height: 40}}>
                                                                 <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -1524,9 +1538,17 @@ class FLTicketDetail extends React.Component {
                                                                 </View>
                                                             </View>
                                                         );
+                                                      case 'ADDFRIEND' :
+                                                        return (
+                                                            <View style={{flexDirection : 'row', height: 40}}>
+                                                                <View style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                                   <Text style={setFont('500', 14, 'black' , 'Regular')}>Ajouter un ami</Text>
+                                                                </View>
+                                                            </View>
+                                                        );
                                                     default : 
                                                             return (
-                                                              <View style={{paddingLeft : 4, paddingRight : 4, height: 40, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                              <View style={{paddingLeft : 4, paddingRight : 4, height: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
                                                                 <Text style={setFont('500', 16, 'gray', 'Regular')}>{option}</Text>
                                                               </View>
                                                           );

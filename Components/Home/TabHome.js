@@ -66,36 +66,15 @@ class TabHome extends React.PureComponent {
 
       //rentre le nombre de ticket non lus pour mettre à jour les template
       allNotificationsCount : this.props.allNotificationsCount,
+
+      //tickets
+      tickets : this.props.tickets,
+      souscriptionTickets : this.props.souscriptionTickets,
     };
 
     this.bestCoupons = [];
 
-    // this.tickets = [];
-    // this.props.tickets.forEach((t) => {
-    //   //let tempTicket = new CTicket(t);
-    //   //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
-      
-    //   //switch (tempTicket.getType()) {
-    //   switch(t.type) {
-    //     case "Broadcasting" :
-    //       console.log("Broadcast : "+t.id);
-    //       //console.log(t);
-    //       //let ticketB = new CBroadcastTicket(t);
-    //       //this.tickets.push(ticketB);
-    //       break;
-    //     case "Produit structuré" :
-    //       console.log("Workflow : "+t.id);
-    //       //console.log(t);
-    //       let ticketC = new CWorkflowTicket(t);
-    //       this.tickets.push(ticketC);
-    //       break;
-    //     default : 
-    //       //this.tickets.push(t);
-    //       break;
-    //   }
-    // });
-    // this.tickets.sort(CTicket.compareLastUpdateDown);
-    this.tickets = this.props.tickets;
+
 
 
     //le produit-ticket est filtre ou pas
@@ -111,6 +90,7 @@ class TabHome extends React.PureComponent {
     // } else {
     //   console.log(" ATTENTION TICKETS sont  EGAUX  ---------------------------------------------");
     // }
+    this.setState({ tickets : this.props.tickets, souscriptionTickets : this.props.souscriptionTickets });
     this.setState({ allNotificationsCount :props.allNotificationsCount });
     this.setState({ scrollTo: props.marginSearch, refreshing: false });
     typeof props.filters !== "undefined"
@@ -125,6 +105,7 @@ class TabHome extends React.PureComponent {
 
    // allUnderlyings.forEach((u) => {
       u = allUnderlyings[0];
+      console.log(u);
       let request = new CPSRequest();
       //request.setCriteria('type', autocall.getProductShortName(), autocall.getProductName());
       request.setCriteria('underlying', u.split(), u);
@@ -246,7 +227,7 @@ class TabHome extends React.PureComponent {
         style={{ marginTop: Platform.OS === "android" ? -65 : -45 }}
       >
 
-          {this.props.souscriptionTickets.length !== 0  ?
+          {this.state.souscriptionTickets.length !== 0  ?
                 <View style={{marginRight: 0.025*getConstant('width')}}>
                   <View
                     style={{
@@ -263,7 +244,7 @@ class TabHome extends React.PureComponent {
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
                     contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-                    data={this.props.souscriptionTickets}
+                    data={this.state.souscriptionTickets}
                     horizontal={true}
                     renderItem={({ item, index }) => {
                       // console.log(item.getType());
@@ -289,7 +270,7 @@ class TabHome extends React.PureComponent {
             : null
             }
 
-            {this.tickets.length !== 0  ?
+            {this.state.tickets.length !== 0  ?
                 <View  style={{marginRight: getConstant('width') * 0.025}}>
                   <TouchableOpacity style={{marginLeft: getConstant('width') * 0.025, marginRight: getConstant('width') * 0.025, alignItems: "flex-start", borderWidth: 0}}
                                     onPress={()=>{
@@ -322,14 +303,14 @@ class TabHome extends React.PureComponent {
                                    }}
                   >
                     <Text style={setFont("400", 18)}>
-                      Mes tickets en cours
+                      Mes trades en cours
                     </Text>
                   </TouchableOpacity>
                   <FlatList
                     //style={styles.wrapper}
                     //scrollTo={this.state.scrollTo}
-                    contentContainerStyle={{ marginTop: 10, marginBottom: 25 }}
-                    data={this.tickets}
+                    contentContainerStyle={{ marginTop: 10, marginBottom: 10 }}
+                    data={this.state.tickets}
                     extraData={this.state.allNotificationsCount}
                     horizontal={true}
                     renderItem={({ item, index }) => {
@@ -359,7 +340,7 @@ class TabHome extends React.PureComponent {
             : null
             }
 
-            <View  style={{marginRight: getConstant('width') * 0.025}}>
+            <View  style={{marginRight: getConstant('width') * 0.025, marginTop : 15}}>
                 <View
                   style={{
                     marginLeft: getConstant('width') * 0.025,

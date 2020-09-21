@@ -420,7 +420,7 @@ export const withNotification = Component => props => (
                                                 NavigationService.navigate('Accueil');
                                               } else if (store.typeNotification === 'CANCEL') {
                                                 console.log("NAVIGATION VERS Tickets");
-                                                NavigationService.navigate('Tickets');
+                                                NavigationService.navigate('Tickets', {filterTypeTicket : 'CLOSEDTICKETS'});
                                               }  
                                       }}          
                             >

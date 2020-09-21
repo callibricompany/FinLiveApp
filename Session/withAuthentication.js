@@ -138,11 +138,11 @@ const withAuthentication = Component => {
 
 
     UNSAFE_componentWillReceiveProps(props) {
- 
+
       if (!isEqual(props.newSouscription, this.props.newSouscription) && props.newSouscription !== 0) {
         //on verifie que le ticket n'existe pas déjà
         let found = false;
-
+        console.log("DEBIT COMPONENT MACHIN ..... y passe");
         this.state.souscriptionTickets.forEach((ticket) => {
           if (ticket.getSouscriptionId() === props.newSouscription) {
             found = true;
@@ -181,27 +181,32 @@ const withAuthentication = Component => {
         }
       } 
 
+
       //ticket passe dans la liste des annulés et on le retire donc des tickets actifs
       if (!isEqual(props.newCancelledTickets, this.props.newCancelledTickets) && props.newCancelledTickets !== 0) {
-
         let souscriptionTickets = this.state.souscriptionTickets;
-        souscriptionTickets = souscriptionTickets.map((ticket, index) => {
-          if (ticket.getSouscriptionId() === props.newSouscription) {
+        let newSouscriptionTickets = [];
+        souscriptionTickets.map((ticket, index) => {
+          if (ticket.getSouscriptionId() !== props.newCancelledTickets) {
             //on le supprime de la liste
-            souscriptionTickets.splice(index, 1);
-            return souscriptionTickets;
+            newSouscriptionTickets.push(ticket);
           }
         });
-        this.setState({ souscriptionTickets });
+        this.setState({ souscriptionTickets : newSouscriptionTickets});
 
         let productTickets = this.state.tickets;
-        productTickets = productTickets.map((ticket,  index) => {
-          if (ticket.isShared() && ticket.getSouscriptionId() === props.newSouscription) {
-            productTickets.splice(index, 1);
-            return productTickets;
+        let newProductTickets = [];
+        productTickets.map((ticket,  index) => {
+          let idTicket = ticket.getId();
+          if (ticket.isShared()) {
+             idTicket = ticket.getSouscriptionId();
           }
+          
+          if (idTicket !== props.newCancelledTickets) {
+            newProductTickets.push(ticket);
+          } 
         });
-        this.setState({ tickets : productTickets });
+        this.setState({ tickets : newProductTickets });
 
       } 
 
@@ -594,7 +599,7 @@ const withAuthentication = Component => {
 
     //retourne tous les sous-jacents d'une categories
     getAllUndelyings(type = "PS") {
-
+   
       let allCat = this.state.categories.filter(({ codeCategory }) => codeCategory === type )[0].subCategory;
       let result = [];
       

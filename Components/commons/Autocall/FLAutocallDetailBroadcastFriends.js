@@ -225,7 +225,7 @@ class FLAutocallDetailBroadcastFriends extends React.Component {
                                                 }}
                             >
                                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                                        <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
+                                        <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                                     </View>
                   
                             </TouchableOpacity>

@@ -3,6 +3,7 @@ import { CUser } from './CUser';
 
 
 
+
 export class CUsers {
     constructor(users, myId) {
 
@@ -74,14 +75,31 @@ export class CUsers {
 
       getUserFromCodeTS(codeTS) {
       
-        
+        let user = null;
         this.users.forEach((u) => {
+            
             if (codeTS === u.getCodeTS()) {
-                return u;
+                user = u;
             }
         });
 
-        return null;
+        return user;
+      }
+
+      getUserUIDFromCodeTS(codeTS) {
+      
+        let UID = '';
+        let user = null;
+        this.users.forEach((u) => {
+            //console.log(codeTS + " : "+u.getCodeTS());
+            if (codeTS === u.getCodeTS()) {
+                user = u;
+            }
+        });
+        if (user != null) {
+            UID = user.getId();
+        }
+        return UID;
       }
     
 }

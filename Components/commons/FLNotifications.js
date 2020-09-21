@@ -25,7 +25,7 @@ import 'numeral/locales/fr'
 
 import {  globalStyle, setFont, setColor } from '../../Styles/globalStyle';
 
-import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
+import FLTemplateAutocall from './Autocall/FLTemplateAutocall';
 
 
 
@@ -39,22 +39,11 @@ import { CAutocall } from '../../Classes/Products/CAutocall';
 
 
 
-class FLResultPricer extends React.PureComponent {
+class FLNotifications extends React.PureComponent {
   
     constructor(props) {
       super(props);
 
-      //recupération des résultats
-      
-      this.bestProducts = [];
-      let bestProducts =  this.props.navigation.getParam('bestProducts', '...');
-      
-      bestProducts.forEach((p) => {
-        this.bestProducts.push(new CAutocall(p));
-      })
-      this.optimizer = this.props.navigation.getParam('optimizer', 'CPN');
-      // console.log(this.bestProducts);
-      // console.log(this.optimizer);
       this.state = {
       
       };
@@ -79,14 +68,7 @@ class FLResultPricer extends React.PureComponent {
  
 
     
-    _renderPrice = (item , id) => {
-      //console.log('id : ' +id);
-      return (
-            <View style={{marginTop: 20, alignItems: 'center', justifyContent:'center', borderWidth: 0, marginLeft : 0, paddingLeft : 0, paddingRight: 2}}>
-              <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Pricer'} optimizer={this.optimizer}/>
-            </View>
-      );
-    }
+
 
     render() {
       //console.log("RENDER TAB RESULTS");
@@ -117,24 +99,18 @@ class FLResultPricer extends React.PureComponent {
               
                   <FlatList
                     //style={{alignItems : 'center'}}
-                    data={this.bestProducts}
+                    data={[]}
                     //extraData={this.state.isGoodToShow}
                     //renderItem={this._renderRow}
-                    keyExtractor={(item) => item.getInternalCode()}
+                    keyExtractor={(item) => "item.getInternalCode()"}
                     //tabRoute={this.props.route.key}
                     //numColumns={3}
                     renderItem={({item, id}) => (
-                      this._renderPrice(item, id)    
-              
+                      //this._renderPrice(item, id)    
+                      console.log("jhjh")
                     )}
                     horizontal={false}
-                    ListFooterComponent={() => {
-                      return (
-                        <View style={{height : 150, marginTop: 100,  alignItems: 'center'}}>
-                          <Text style={{fontFamily : 'FLFont'}}>F i n L i v e</Text>
-                        </View>
-                      );
-                    }}
+
                   />
             
        
@@ -151,5 +127,5 @@ const composedWithNav = compose(
    );
    
    //export default HomeScreen;
-export default hoistStatics(composedWithNav)(FLResultPricer);
+export default hoistStatics(composedWithNav)(FLNotifications);
 

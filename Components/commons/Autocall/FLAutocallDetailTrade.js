@@ -166,7 +166,7 @@ class FLAutocallDetailTrade extends React.Component {
                                                 onPress={() => this.props.navigation.goBack()}
                             >
                                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                                        <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
+                                        <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                                     </View>
                   
                             </TouchableOpacity>

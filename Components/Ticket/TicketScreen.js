@@ -45,10 +45,10 @@ const sortDatas = [
 ];
 
 const filterDatas = [
-  {'LIVETICKETS' : "Mes tickets en cours"},
-  {'UNREADTICKETS' : "Mes tickets non lus"},
-  {'CLOSEDTICKETS' : "Mes tickets fermés"},
-  {'ALLTICKETS' : "Tous mes tickets"}
+  {'LIVETICKETS' : "Mes trades en cours"},
+  {'UNREADTICKETS' : "Mes trades non lus"},
+  {'CLOSEDTICKETS' : "Mes trades clotûrés"},
+  {'ALLTICKETS' : "Tous mes trades"}
 ];
 
 class TicketScreen extends React.Component {
@@ -107,11 +107,15 @@ class TicketScreen extends React.Component {
       idFocused : this.props.idFocused,
 
       //filttre
-      filterSelected : 'LIVETICKETS',
+      filterSelected : this.props.navigation.getParam('filterTypeTicket', 'LIVETICKETS'),
 
       toto : true,
     };
     //this.dataSource = Array(19).fill().map((_, index) => ({id: index}));
+
+    //si le filtre par defaut n'est pas chargé au depart : on charge le filtre addequat
+    //console.log("ALOUETTTTTTTTTTTTTTTTTTTTTE : "+ this.state.filterSelected);
+    this.state.filterSelected !== 'LIVETICKETS' ? this._loadAppropriateTickets(this.state.filterSelected) : null; 
     this.filterOnAir = false;
   }
 
@@ -152,9 +156,11 @@ class TicketScreen extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps(props) {
-    if (!isEqual(props.tickets, this.props.tickets)) {
-      console.log("CHANGEMENT DANS LES TICKETS PABLITOTOTOTOTOTOTOTOTOTOTOT");
-    }
+    // if (!isEqual(props.tickets, this.props.tickets)) {
+    //   console.log("CHANGEMENT DANS LES TICKETS PABLITOTOTOTOTOTOTOTOTOTOTOT");
+    //   //this.setState({ toto : !this.state.toto });
+    // }
+    this._loadAppropriateTickets(this.state.filterSelected);
     this.setState({ allNotificationsCount :props.allNotificationsCount , idFocused : props.idFocuse});
   }
 
@@ -199,6 +205,37 @@ class TicketScreen extends React.Component {
     }
   }
 
+/**
+ * charge les tickets adequats selon le filtre voulu en params
+ * @param {*} filterCode 
+ */
+  _loadAppropriateTickets(filterCode) {
+    switch(filterCode) {
+      case 'LIVETICKETS' : 
+        this.allTickets = this.props.tickets;
+        break;
+      case 'UNREADTICKETS' :
+        this.allTickets = [];
+        break;
+      case 'CLOSEDTICKETS' : 
+        //on rappatrie les tickets 
+        this.allTickets = [];
+        getAllTicketClosed(this.props.firebase)
+        .then((tickets) => {
+          //console.log(tickets.userTickets);
+          this.allTickets = this.props.classifyTickets(tickets.userTickets, 'PRODUCT');
+          this.setState({ toto : !this.state.toto });
+        })
+        .catch((err) => alert(err));
+        console.log("fin chargement tickets archivés :  "+this.allTickets.length);
+        break;
+      case 'ALLTICKETS' :
+        break;
+      default : 
+        this.allTickets = [];
+        break;
+    }
+  }
 
   _renderModalDrawner () {
     return (
@@ -284,34 +321,9 @@ class TicketScreen extends React.Component {
                         <TouchableOpacity style={{flexDirection : 'row', marginTop : 15}} key={i}
                                           onPress={() => {
                                                 //selection des tickets a afficher
-
-                                                switch(filterCode) {
-                                                  case 'LIVETICKETS' : 
-                                                    this.allTickets = this.props.tickets;
-                                                    break;
-                                                  case 'UNREADTICKETS' :
-                                                    this.allTickets = [];
-                                                    break;
-                                                  case 'CLOSEDTICKETS' : 
-                                                    //on rappatrie les tickets 
-                                                    console.log("début chargement tickets archivés");
-                                                    this.allTickets = [];
-                                                    getAllTicketClosed(this.props.firebase)
-                                                    .then((tickets) => {
-                                                      console.log(tickets.userTickets);
-                                                      this.allTickets = this.props.classifyTickets(tickets.userTickets, 'PRODUCT');
-                                                      this.setState({ toto : !this.state.toto });
-                                                      //console.log(tickets);
-                                                    })
-                                                    .catch((err) => alert(err));
-                                                    console.log("fin chargement tickets archivés :  "+this.allTickets.length);
-                                                    break;
-                                                  case 'ALLTICKETS' :
-                                                    break;
-                                                  default : 
-                                                    this.allTickets = [];
-                                                    break;
-                                                }
+                                                //load appropaite tickets 
+                                                this._loadAppropriateTickets(filterCode);
+    
                                                 //apppel au rechargement des tickets
                                                 this.setState({ filterSelected : filterCode , showModalDrawner : false});
 

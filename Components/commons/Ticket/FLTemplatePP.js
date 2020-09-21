@@ -213,15 +213,16 @@ class FLTemplatePP extends React.Component {
     
   }
   componentWillUnmount() {
-    this.intervalTimerFirstDueBy != null ? clearInterval(this.intervalTimerFirstDueBy) : null;
+    //this.intervalTimerFirstDueBy != null ? clearInterval(this.intervalTimerFirstDueBy) : null;
     //this.intervalTimerFirstDueBy = null;
+    clearInterval(this.intervalTimerFirstDueBy);
 
   }
 
   //gere les notifications
   _updateNotifications() {
     //remets a jour les compteurs due dates
-    this.intervalTimerFirstDueBy = null;
+    this.intervalTimerFirstDueBy != null ? clearInterval(this.intervalTimerFirstDueBy) : this.intervalTimerFirstDueBy = null;
     this.firstDealineTicket = Moment(this.ticket.getFrDueBy()).fromNow();
     this.dealineTicket = Moment(this.ticket.getDueBy()).fromNow();
     this.intervalTimerFirstDueBy = setInterval( 
@@ -848,7 +849,7 @@ render () {
                           shadowOffset: { width: 0, height: 2 },
                           shadowOpacity: 0.9,
                           borderWidth :   1,
-                          borderColor : isAndroid() ? 'black' : 'white',
+                          borderColor : isAndroid() ? 'lightgray' : 'white',
                           //borderTopLeftRadius: 15,
                           borderRadius: 10,
                           //overflow: "hidden",

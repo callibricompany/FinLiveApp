@@ -653,12 +653,12 @@ class FLAutocallDetail extends React.Component {
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("création d'une demande de cotation").toUpperCase()}/>
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingUpdatePrice} text={String(this.state.messageUpdatePrice).toUpperCase()}/>
         
-            <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 40 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center'}}  >
+            <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 40 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center', justifyContent: 'space-around'}} >
                             <TouchableOpacity style={{ flex: 0.2, flexDirection : 'row', borderWidth: 0, padding : 5}}
                                                 onPress={() => this.props.navigation.goBack()}
                             >
                                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                                        <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/>
+                                        <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                                     </View>
                   
                             </TouchableOpacity>
@@ -670,7 +670,7 @@ class FLAutocallDetail extends React.Component {
                                 }
                               </Text>
                             </View>
-                            <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
+                            <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'flex-end', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
                                     <ModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
@@ -749,7 +749,7 @@ class FLAutocallDetail extends React.Component {
                    
                             </View>
             </View>
-            <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center'}}>
+            <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', marginLeft : 20}}>
                 <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false/*this.isEditable*/} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
             </View>
             {/* <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center'}}>

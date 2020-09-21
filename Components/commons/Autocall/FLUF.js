@@ -23,13 +23,15 @@ import 'numeral/locales/fr'
 
 
 
+
 export function FLUF (props) {
 
         const totalUF = props.UF + props.UFAssoc;
         const [UF, setUF] = useState(() => props.hasOwnProperty('UF') ? props.UF : 0);
         const [UFAssoc, setUFAssoc] = useState(() => props.hasOwnProperty('UFAssoc') ? props.UFAssoc : 0);
         const [splitValue, setSplitValue] = useState(() => {
-           return Math.round(100*UF/(UF+UFAssoc))
+           //return Math.round(100*UF/(UF+UFAssoc))
+           return UF;
         });
         const [isLocked, setIsLocked] = useState(() => props.hasOwnProperty('locked') ? props.locked : false);
         const [ showSlider, setShowSlider ] = useState(() => props.hasOwnProperty('showSlider') ? props.showSlider : true);
@@ -38,7 +40,7 @@ export function FLUF (props) {
             setIsLocked(props.hasOwnProperty('locked') ? props.locked : false);
             setShowSlider(props.hasOwnProperty('showSlider') ? props.showSlider : true);
           }, [props]);
-
+          
         return (
             <>
              
@@ -77,18 +79,34 @@ export function FLUF (props) {
                             }}
                             
                             minimumTrackTintColor={isLocked ? 'gray' : setColor('')}
-                            maximumValue={100}
+                            // maximumValue={100}
+                            // minimumValue={0}
+                            // value={splitValue}
+                            // step={1}
+                            // onValueChange={(v) => {
+                            //     setUF(v*totalUF/100);
+                            //     setUFAssoc((100-v)*totalUF/100);
+                            //     setSplitValue(v);
+                            // }}
+                            // onSlidingComplete={(v) => {
+                            //     setUF(v*totalUF/100);
+                            //     setUFAssoc((100-v)*totalUF/100);
+                            //     setSplitValue(v);
+                            //     props.updateProduct('UF', UF, currencyFormatDE(UF), false);
+                            //     props.updateProduct('UFAssoc', UFAssoc, currencyFormatDE(UFAssoc), false);
+                            // }}
+                            maximumValue={totalUF}
                             minimumValue={0}
-                            value={splitValue}
-                            step={1}
+                            value={totalUF}
+                            step={0.001}
                             onValueChange={(v) => {
-                                setUF(v*totalUF/100);
-                                setUFAssoc((100-v)*totalUF/100);
+                                setUF(v);
+                                setUFAssoc(totalUF-v);
                                 setSplitValue(v);
                             }}
                             onSlidingComplete={(v) => {
-                                setUF(v*totalUF/100);
-                                setUFAssoc((100-v)*totalUF/100);
+                                setUF(v);
+                                setUFAssoc(totalUF-v);
                                 setSplitValue(v);
                                 props.updateProduct('UF', UF, currencyFormatDE(UF), false);
                                 props.updateProduct('UFAssoc', UFAssoc, currencyFormatDE(UFAssoc), false);

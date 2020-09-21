@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, Modal, Ale
 import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Ionicons from "react-native-vector-icons/Ionicons";
+//import Ionicons from "react-native-vector-icons/Ionicons";
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 
 import RobotBlink from "../../../assets/svg/robotBlink.svg";
 
@@ -40,6 +41,7 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import { VictoryGroup, VictoryChart, VictoryBar, VictoryTheme, VictoryPie, VictoryLabel, VictoryContainer, VictoryLegend } from "victory-native";
 import {Svg, G } from 'react-native-svg';
 import { createIconSetFromFontello } from 'react-native-vector-icons';
+
 
 
 
@@ -2453,7 +2455,7 @@ _renderAutocallFullTemplate2() {
                                   //origin={{ x: 20, y: 20 }}
                                   width={150} 
                                   height={150} 
-                                  colorScale={[setColor('darkBlue'), setColor(''), setColor('lightBlue')]} 
+                                  colorScale={[setColor('lightBlue'), setColor(''), 'aliceblue']} 
                                   labelComponent={<VictoryLabel  style={{fontSize : 10, fill : 'gray'}} />}
                                   innerRadius={10}  
                                   animate={{ easing: 'exp' }}
@@ -2474,9 +2476,9 @@ _renderAutocallFullTemplate2() {
                                       symbolSpacer={2}
                                       labelComponent={<VictoryLabel  dx={3} style={{fontSize : isAndroid() ? 10 : 12, fill : 'gray'}} />}
                                       data={[
-                                        { name: "Coupons", symbol: { fill: setColor('darkBlue'), type: "square" } },
+                                        { name: "Coupons", symbol: { fill: setColor('lightBlue'), type: "square" } },
                                         { name: "Pair", symbol: { fill: setColor(''), type: "square"} },
-                                        { name: "Capital", symbol: { fill: setColor('lightBlue'), type: "square" } }
+                                        { name: "Capital", symbol: { fill: 'aliceblue', type: "square" } }
                                       ]}
                                       
                       />
@@ -4072,6 +4074,7 @@ _renderAutocallMediumTemplate() {
 }
 
 _renderAutocallShortTemplate() {
+  let colorIcon = 'gray';
   return (
    <TouchableOpacity style={{flexDirection : 'row', backgroundColor: 'white'}}
           onPress={() => {
@@ -4085,7 +4088,7 @@ _renderAutocallShortTemplate() {
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIcons name={"gavel"}  size={15} style={{color: this.stdLightColor}}/> 
+                  <MaterialCommunityIcons name={"gavel"}  size={15} style={{color: colorIcon}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, 'black', 'Light')}>{ Numeral(this.autocallResult.getAutocallLevel()).format('0%')} </Text>
@@ -4093,7 +4096,7 @@ _renderAutocallShortTemplate() {
             </View>
             <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIcons name={"alarm-multiple"}  size={18} style={{color: this.stdLightColor}}/> 
+                  <MaterialCommunityIcons name={"alarm-multiple"}  size={18} style={{color: colorIcon}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocallResult.getFrequencyPhoenixTitle().toLowerCase()} </Text>
@@ -4103,7 +4106,7 @@ _renderAutocallShortTemplate() {
         <View style={{flexDirection: 'row', borderWidth : 0}}>
            <View style={{flex: 0.5, flexDirection: 'row'}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIcons name={"calendar"}  size={18} style={{color: this.stdLightColor}}/> 
+                  <MaterialCommunityIcons name={"calendar"}  size={18} style={{color: colorIcon}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                     <Text style={setFont('300', 12, 'black', 'Light')}>{this.autocallResult.getMaturityName()} </Text>
@@ -4113,7 +4116,7 @@ _renderAutocallShortTemplate() {
             { this.request.getValue('isMemory') ? 
                   <View style={{flex: 0.5, flexDirection: 'row', paddingLeft: 5, borderWidth : 0}}>
                       <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                        <MaterialCommunityIcons name={"memory"}  size={15} style={{color: this.stdLightColor}}/>
+                        <MaterialCommunityIcons name={"memory"}  size={15} style={{color: colorIcon}}/>
                       </View>
                       <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                           <Text style={setFont('300', 12, 'black', 'Light')}>{(this.request.getValue('isMemory') ? 'mémoire': 'non mémoire')} </Text>
@@ -4125,7 +4128,7 @@ _renderAutocallShortTemplate() {
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',}}>
-                  <MaterialCommunityIcons name={"shield"}  size={15} style={{color: this.stdLightColor}}/> 
+                  <MaterialCommunityIcons name={"shield"}  size={15} style={{color: colorIcon}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, 'black', 'Light')}>{Numeral(this.request.getValue('barrierPDI') - 1).format('0%')}</Text>
@@ -4133,7 +4136,7 @@ _renderAutocallShortTemplate() {
             </View>
             <View style={{flex: 0.5, flexDirection: 'row', borderWidth: 0, paddingLeft: 5}}>
                 <View style={{ width: 25, borderWidth: 0, padding: 2, alignItems: 'center', justifyContent: 'center',paddingRight : 5}}>
-                  <MaterialCommunityIcons name={this.request.getValue('barrierPhoenix') === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: this.stdLightColor}}/> 
+                  <MaterialCommunityIcons name={this.request.getValue('barrierPhoenix') === 1 ? "airbag" : "shield-half-full"}  size={15} style={{color: colorIcon}}/> 
                 </View>
                 <View style={{paddingLeft : 3, borderWidth: 0, alignItems: 'flex-start', justifyContent: 'center'}}>
                   <Text style={setFont('300', 12, 'black', 'Light')} numberOfLines={1}>{this.request.getValue('barrierPhoenix') === 1  ? this.autocallResult.getAirbagTitle() : Numeral(this.request.getValue('barrierPhoenix') - 1).format('0%')}</Text>
@@ -4298,7 +4301,17 @@ _renderFooterFullTemplate(isFavorite) {
                                     })
                                 }}
                 >
-                  <MaterialCommunityIcons name="fast-forward" size={25} color={'white'}/>
+                  {/* <MaterialCommunityIcons name="fast-forward" size={25} color={'white'}/> */}
+                  <View style={{flexDirection: 'row'}}>
+                      <View style={{borderWidth : 0}}>
+                        <Text style={setFont('300', 16, 'white', 'Regular')}>Voir</Text>
+                      </View>
+                      <View style={{borderWidth : 0, justifyContent : 'center', alignItems: 'center', paddingLeft : 4}}>
+                        <Ionicons name="md-arrow-forward" size={18} style={{color : 'white'}}/>
+                      </View>
+                  
+                  </View>
+                  
                 </TouchableOpacity>
                 
 
@@ -4338,7 +4351,7 @@ render () {
                                                                       shadowOffset: { width: 0, height: 2 },
                                                                       shadowOpacity: this.stdShadowOpacity,
                                                                       borderWidth :   (this.props.hasOwnProperty('templateType') && this.props.templateType === TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE) ? 0 : 1,
-                                                                      borderColor : isAndroid() ? 'black' :  'white',
+                                                                      borderColor : isAndroid() ? 'lightgray' :  'white',
                                                                       //borderTopLeftRadius: 15,
                                                                       borderRadius: this.stdBorderRadius,
                                                                       //overflow: "hidden",
