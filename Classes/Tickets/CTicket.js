@@ -489,11 +489,6 @@ export class CTicket extends CObject {
     }
 
 
-
-    getDescription() {
-      return this.ticket.description_text;
-    }
-
     getCompanyId() {
       return this.ticket.company_id;
     }

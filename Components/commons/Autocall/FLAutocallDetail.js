@@ -749,7 +749,7 @@ class FLAutocallDetail extends React.Component {
                    
                             </View>
             </View>
-            <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', marginLeft : 20}}>
+            <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', marginLeft : 0}}>
                 <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false/*this.isEditable*/} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
             </View>
             {/* <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center'}}>

@@ -18,9 +18,17 @@ export class CProduct extends CObject {
       this.beginBroadCastDate = null;
       this.endBroadCastDate = null;
       this.targetNorminal = 0;
+      this.id = -1;
     }
     
- 
+    setId(id) {
+      this.id = id;
+    }
+
+    getId() {
+      return this.id;
+    }
+    
     setFinalNominal(nominal) {
       this.finalNominal = nominal;
     }

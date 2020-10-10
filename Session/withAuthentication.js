@@ -56,6 +56,7 @@ const withAuthentication = Component => {
 
         //tickets
         tickets: [],
+        productsFollowed : [],
         closedTickets : [],
         souscriptionTickets : [],
         apeTickets : [],
@@ -138,6 +139,10 @@ const withAuthentication = Component => {
 
 
     UNSAFE_componentWillReceiveProps(props) {
+      
+      if (props.notificationList.length !== this.state.allNotificationsCount) {
+         this.setState({ allNotificationsCount : props.notificationList.length });
+      }
 
       if (!isEqual(props.newSouscription, this.props.newSouscription) && props.newSouscription !== 0) {
         //on verifie que le ticket n'existe pas déjà
@@ -242,6 +247,11 @@ const withAuthentication = Component => {
             console.log("Workflow : "+t.id);
             //console.log(t);
             let ticketC = new CWorkflowTicket(t);
+            if (ticketC.getId() === 399) {
+              let productsFollowed = this.state.productsFollowed;
+              productsFollowed.push(ticketC.getProduct());
+              this.setState({ productsFollowed });
+            }
             productTickets.push(ticketC);
             break;
           case "Souscription" :
@@ -501,6 +511,7 @@ const withAuthentication = Component => {
                 //console.log(userDatas.userTickets.slice(0,1))
                 //console.log(this.getAllUndelyings());
                 console.log("Nbre APE du marché: " + this.state.apeSRP.length);
+                console.log(this.state.apeSRP.slice(0,1));
                 //console.log(this.state.apeSRP);
          
                 

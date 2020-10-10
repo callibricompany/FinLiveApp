@@ -9,6 +9,7 @@ const API_WTD = "ZEq1EhCADmbB87NB3YnHTUQmhPYdAetJ2zOWkMvKchINeiNRnyQYuExgSFKn";
 const API_ALPHAVANTAGE = "WZVI9B5ZBQZTQN4J";
 //https://eodhistoricaldata.com/cp/settings
 const API_EOD = "5cbccfc79c7102.17889450";
+const API_IEX = "pk_3eac56d3358944e1961ee7aec905961f"; //N° account : 309c4f9f29bc261e080836e68229d439 
 
 // To query /v2/top-headlines
 // All options passed to topHeadlines are optional, but you need to include at least one of them

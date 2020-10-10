@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Dimensions, 
         StyleSheet, Easing, View, Text, FlatList, SafeAreaView } from 'react-native';
 import { Icon } from 'native-base';
-import { MaterialIcons } from '@expo/vector-icons';
 
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
@@ -12,10 +12,12 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { ifIphoneX, ifAndroid, sizeByDevice , getConstant } from '../../Utils';
+import { ifIphoneX, ifAndroid, currencyFormatDE , getConstant } from '../../Utils';
 
+import Numeral from 'numeral'
+import 'numeral/locales/fr'
 
-
+import Moment from 'moment';
 
 const NAVBAR_HEIGHT = 45;
 
@@ -25,7 +27,7 @@ const NAVBAR_HEIGHT = 45;
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 
-class BroadcastingScreen extends React.Component {
+class FollowingScreen extends React.Component {
  
   constructor(props) {
     super(props);
@@ -36,11 +38,8 @@ class BroadcastingScreen extends React.Component {
     const offsetAnim = new Animated.Value(0);
 
     this.state = {
-      dataSource: data,
-
       //animation barre de recherche
       positionLeft: new Animated.Value(getConstant('width')), //indicateur si recherche ou pas 
-
 
       scrollAnim,
       offsetAnim,
@@ -57,9 +56,10 @@ class BroadcastingScreen extends React.Component {
         NAVBAR_HEIGHT ,
       ),
     };
-
+    console.log(this.props.productsFollowed.length);
   }
 
+  
 
   _clampedScrollValue = 0;
   _offsetValue = 0;
@@ -114,13 +114,92 @@ class BroadcastingScreen extends React.Component {
     }).start();*/
   };
 
-  _renderTicket = (item, id) => {
+
+  _renderProduct(item, id) {
+
+    let valo = 0.94+ Math.random()/10;
+    let alea = Math.random();
     return (
-      <ImageBackground key={id} style={styles.row} source={{ uri: item.image }} resizeMode="cover">
-        <Text style={styles.rowText}>{item.title}</Text>
-      </ImageBackground>
+      
+      <View style={{width : getConstant('width'), flexDirection: 'column', justifyContent: 'center', marginTop : 10, backgroundColor: 'white' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems : 'center', marginTop : 5}} >
+              <View style={{flex : 0.8, paddingLeft : 20}}>
+                  <Text style={setFont('400', 16,  setColor(''), 'Bold')}>
+                     {item.getProductName()} {item.getFullUnderlyingName(this.props.categories).toUpperCase()} {item.getMaturityName()}
+                  </Text>
+              </View>
+              <View style={{flex : 0.2, justifyContent : 'flex-start', alignItems: 'flex-start',   paddingRight : 20}}>
+                  <Text style={setFont('400', 16, valo >= 1 ? setColor('granny') : setColor('red'), 'Regular')}>
+                      {Numeral(valo).format('0.00%')}
+                  </Text>
+              </View>
+
+          </View>
+
+          <View style={{flexDirection : 'row', marginLeft : 20, marginRight : 20, marginTop : 5}}>
+                  <View style={{flex : 0.8}}>
+                      <Text style={setFont('200', 10, 'gray')}>ISIN :</Text>
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                                    <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
+                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Regular')}>FR000456377829</Text>
+                                    </View>
+                                
+                              </View>
+                  </View>  
+
+                  <View style={{flex : 0.2, backgroundColor : setColor(''), justifyContent : 'center', alignItems: 'center', margin : 5, borderWidth : 1, borderColor : setColor(''), borderRadius : 2}}>
+                      <Text style={setFont('300', 12, 'white', 'Regular')}>Vendre</Text>
+                  </View>  
+           
+          </View>
+
+          <View style={{flexDirection : 'row', marginLeft : 20, marginRight : 20, marginTop : 5}}>
+                  <View style={{flex : 0.33}}>
+                      <Text style={setFont('200', 10, 'gray')}>Nominal :</Text>
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                                    <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
+                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Regular')}>{currencyFormatDE(item.getNominal())}  </Text>
+                                    </View>
+                                    <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
+                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Regular')}>{item.getCurrency()}</Text>
+                                    </View>
+                              </View>
+                  </View>  
+
+                  <View style={{flex : 0.33}}>
+                      <Text style={setFont('200', 10, 'gray')}>Proch. obs. :</Text>
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+          
+                                    <View style={{justifyContent : 'center', alignItems : 'flex-start',  paddingLeft : 0}}>  
+                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Bold')}> 24/12/2027 </Text>
+                                    </View>
+                         
+                              </View>
+                  </View>  
+                  <View style={{flex : 0.33}}>
+                      <Text style={setFont('200', 10, 'gray')}>Mat :</Text>
+                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+          
+                                    <View style={{justifyContent : 'center', alignItems : 'flex-start',  paddingLeft : 0}}>  
+                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Bold')}>{Moment(item.getLastConstatDate()).format('DD/MM/YYYY')}</Text>
+                                    </View>
+                             
+                              </View>
+                  </View> 
+          </View>
+
+          <View style={{margin : 5, justifyContent : 'center', alignItems : 'center', backgroundColor :  alea > 0.5 ? 'transparent' : 'green'}}>
+           
+                      <Text style={setFont('200', alea > 0.5 ?  10 : 14,  alea > 0.5 ? 'gray' : 'white')}>{String( alea > 0.5 ? "pas d'évènement prévu" : "rappel imminent").toUpperCase()}</Text>
+     
+          </View>
+
+        </View>
+
+
     );
-  };
+  }
+
 
   render() {
     const { clampedScroll } = this.state;
@@ -149,37 +228,36 @@ class BroadcastingScreen extends React.Component {
       <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
 
       <View style={{flex :1, height: getConstant('height'), WIDTH: getConstant('width')}}>
-        {/* <AnimatedFlatList
-          contentContainerStyle={styles.contentContainer}
-          //dataSource={this.state.dataSource}
-          data={data}
-          renderItem={this._renderRow}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({item, id}) => (
-            this._renderTicket(item, id)     
-          )}
-          scrollEventThrottle={1}
-          onMomentumScrollBegin={this._onMomentumScrollBegin}
-          onMomentumScrollEnd={this._onMomentumScrollEnd}
-          onScrollEndDrag={this._onScrollEndDrag}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: this.state.scrollAnim } } }],
-            { useNativeDriver: true },
-          )}
-          ListFooterComponent={() => {
-            return (
-              <TouchableOpacity onPress={() => {
-                      Alert.alert("FinLive SAS","Copyright ©")
-                  }}
-                  style={{height : 150, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{}}>F i n L i v e</Text>
-              </TouchableOpacity>
-            );
-          }}
-        /> */}
-        <View style={{backgroundColor : 'white', width : getConstant('width'), height : getConstant('height'), alignItems :'flex-start', justifyContent : 'flex-start', marginTop : 45}}>
-          <Text style={setFont('400', 18, 'black','Regular')}>En construction</Text>
-        </View>
+
+        <AnimatedFlatList
+            style={{  backgroundColor: setColor('background')}}
+            contentContainerStyle={{alignItems : 'center', marginTop :   NAVBAR_HEIGHT}}
+            data={this.props.productsFollowed}
+            keyExtractor={(item) => Math.random()+""}
+            //tabRoute={this.props.route.key}
+            //numColumns={3}
+            renderItem={({item, id}) => {
+  
+              return this._renderProduct(item, id);
+              //this._renderPrice(item, id)    
+
+            }}
+            horizontal={false}
+            scrollEventThrottle={1}
+            //extraData={this.state.allNotificationsCount}
+            onMomentumScrollBegin={this._onMomentumScrollBegin}
+            onMomentumScrollEnd={this._onMomentumScrollEnd}
+            onScrollEndDrag={this._onScrollEndDrag}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: this.state.scrollAnim } } }],
+              { useNativeDriver: true },
+            )}
+            ListFooterComponent={() => {
+              return (
+                <View style={{height : 150, justifyContent: 'center', alignItems: 'center'}} />
+              );
+            }}
+        />
 
         <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
          
@@ -255,8 +333,8 @@ class BroadcastingScreen extends React.Component {
                                         onPress={() => {
                                           alert("Vers ecran des notifs");
                                         }}> 
-                         <Icon
-                            name='ios-notifications-outline' 
+                         <MaterialCommunityIcons
+                            name='plus' 
                             size={25} 
                             style={{color : 'white'}}
                           />
@@ -391,72 +469,4 @@ const composedPricerScreen = compose(
 );
 
 //export default HomeScreen;
-export default hoistStatics(composedPricerScreen)(BroadcastingScreen);
-
-/*
-
- <Animated.Text style={[styles.title, { opacity: navbarOpacity }]}>
-
- */
-const data = [
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkvHXu_Il/rkvHXu_Il-1100-700.jpg',
-    title: 'Le Brûloir',
-    id :1
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkTnGunIx/rkTnGunIx-1100-700.jpg',
-    title: 'Le Petit Brûloir',
-    id : 2
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/HknxZ9awg/HknxZ9awg-1100-700.jpg',
-    title: 'Oui Mais Non',
-    id : 3
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'PERKO',
-    id : 4
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'Perko',
-    id : 5
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/B1XmNBmLe/B1XmNBmLe-1100-700.jpg',
-    title: 'Café Saint-Henri | Marché Jean-Talon',
-    id : 12
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkvHXu_Il/rkvHXu_Il-1100-700.jpg',
-    title: 'Le Brûloir',
-    id : 6
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/rkTnGunIx/rkTnGunIx-1100-700.jpg',
-    title: 'Le Petit Brûloir',
-    id : 7
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/HknxZ9awg/HknxZ9awg-1100-700.jpg',
-    title: 'Oui Mais Non',
-    id : 8
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'PERKO',
-    id : 9
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/merchants/rJWPQ2mKx/rJWPQ2mKx-1100-700.jpg',
-    title: 'Perko',
-    id : 10
-  },
-  {
-    image: 'https://cdn.th3rdwave.coffee/articles/B1XmNBmLe/B1XmNBmLe-1100-700.jpg',
-    title: 'Café Saint-Henri | Marché Jean-Talon',
-    id : 11
-  },
-];
+export default hoistStatics(composedPricerScreen)(FollowingScreen);

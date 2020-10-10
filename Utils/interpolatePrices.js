@@ -13,10 +13,12 @@ function print(df, tab) {
 
 function getBumps(type, vega, maturity, nominal) {
     //on renorme les bumps vega avec la maturite
-    let bump = maturity * Math.abs(0.8*vega) / 10;
-
+    let vegaBump = 1.5 * maturity * Math.abs(vega) / 10;
+    let repoSto  = 0.0005*maturity ;
+    bump = vegaBump + repoSto ;
     //estimation CC vendeur emetteur
-    bump = 1.5 * bump;
+    bump = 2 * bump + 0.01;
+    console.log("BUMPS : " + bump + " VEga : "+ vega + "   mat : "+maturity + " repoSto : "+repoSto+ "   vega : "+vegaBump);
     return bump;
     //return 0;
 }
@@ -605,8 +607,11 @@ export  function interpolateBestProducts(data, request, optimizer='CPN') {
 
                               
                               points = [];
-                              coupons.map((x, i) => {prix[i] = prix[i] + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, vega[i],  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin()});
                               
+           
+                              coupons.map((x, i) => console.log(x + " avant : " + prix[i]));
+                              coupons.map((x, i) => {prix[i] = prix[i] + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, vega[i],  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin()});
+                              coupons.map((x, i) => console.log(x + " apres : " + prix[i]));
                               //coupons.map((x, i) => points[i] = [(prix[i] + product.UF.value + product.UFAssoc.value + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, vega[i],  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin()), coupons[i]]);
                               coupons.map((x, i) => points[i] = [prix[i] , coupons[i]]);
                               
@@ -657,9 +662,9 @@ export  function interpolateBestProducts(data, request, optimizer='CPN') {
                                 coupons.map((x, i) => pointsVega[i] = [prix[i], vega[i]]);
                                 fVega = interpolator(pointsVega);
                                 newVega = fVega(PRICE);
-
+                                
                                 PRICE = PRICE + (product.typeAuction.value === 'PP' ? 0 : 0.005) + getBumps(1, newVega,  Number(mat.substring(0, mat.length - 1)), nominal) + getFLMargin();
-                                console.log(product.coupon.value);
+                                console.log("PRICE  : "+ price);
                                 if (PRICE <= 0) {//on conserve le produit
                                   dTemp = d9.head(1);
                                   cpnToChange = dTemp.getSeries('coupon').toArray().toString();

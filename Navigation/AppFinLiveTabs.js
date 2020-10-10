@@ -30,7 +30,7 @@ import TicketScreen from '../Components/Ticket/TicketScreen';
 import FLTicketDetail from '../Components/commons/Ticket/FLTicketDetail';
 import {FLAddFriendOnBroadcast} from '../Components/commons/Ticket/FLAddFriendOnBroadcast';
 
-import BroadcastingScreen from '../Components/Broadcast/BroadcastingScreen';
+import FollowingScreen from '../Components/Following/FollowingScreen';
 
 import AdminScreen from '../Components/Admin/AdminScreen';
 import AdminUser from '../Components/Admin/AdminUser';
@@ -169,12 +169,12 @@ function labelStyle (focused, tintColor) {
 
     })
 
-  //Ecran broadcast
-  const BroadcastingScreenStack = createStackNavigator({
-    Broadcasting: {
-      screen: BroadcastingScreen,
+  //Ecran suivi de produits
+  const FollowingScreenStack = createStackNavigator({
+    Following: {
+      screen: FollowingScreen,
       navigationOptions: {
-        title: 'Broadcast',
+        title: 'Suivi',
 
       }
     },
@@ -217,8 +217,8 @@ function labelStyle (focused, tintColor) {
       Tickets: {
         screen: TicketScreenStack,
       },
-      Broadcasting: {
-        screen: BroadcastingScreenStack,
+      Following: {
+        screen: FollowingScreenStack,
         navigationOptions: {
     
           tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
@@ -252,7 +252,7 @@ function labelStyle (focused, tintColor) {
           tabBarLabel: ({ focused, tintColor }) => {
             return (
               <View style={{alignItems:'center', justifyContent:'center'}}>
-              <Text style={labelStyle(focused,tintColor)}>Stats</Text>
+              <Text style={labelStyle(focused,tintColor)}>Suivi</Text>
               </View>
             );
             }
@@ -550,12 +550,12 @@ function labelStyle (focused, tintColor) {
   export function  AppFinLiveTabs (role) {
         let tabs = {};
         if (role === ROLES.ADMIN) {
-          const {Accueil, Tickets, Pricer, Broadcasting, Profil, Admin} = TABS;
-          tabs = {Accueil, Tickets, Pricer, Broadcasting, Profil, Admin};
+          const {Accueil, Tickets, Pricer, Following, Profil, Admin} = TABS;
+          tabs = {Accueil, Tickets, Pricer, Following, Profil, Admin};
         }
         else {
-          const {Accueil, Tickets, Pricer, Broadcasting, Profil} = TABS;
-          tabs = {Accueil, Tickets, Pricer,  Broadcasting, Profil};
+          const {Accueil, Tickets, Pricer, Following, Profil} = TABS;
+          tabs = {Accueil, Tickets, Pricer,  Following, Profil};
         }
         
         return tabs;

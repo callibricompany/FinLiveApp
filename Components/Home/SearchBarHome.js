@@ -5,7 +5,10 @@ import IonIcons  from "react-native-vector-icons/Ionicons";
 
 import { ifIphoneX, ifAndroid, sizeByDevice , getConstant } from '../../Utils';
 
-
+import { FLNotifications } from '../commons/FLNotifications';
+import { withNavigation } from 'react-navigation';
+import { withUser } from '../../Session/withAuthentication'; 
+import { compose, hoistStatics } from 'recompose';
 import FadeInLeft  from '../../Animated/FadeInLeft';
 import {
   View,
@@ -31,7 +34,7 @@ import {  globalSyle, setFont, setColor } from '../../Styles/globalStyle';
 
 
 
-export default class SearchBarHome extends Component {
+class SearchBarHome extends Component {
 
   constructor(props) {
     super(props);
@@ -427,12 +430,18 @@ export default class SearchBarHome extends Component {
                           }}>  
                             <IonIcons name='ios-search' size={25} color={'white'} />
                         </TouchableOpacity>
-                        <TouchableOpacity style={{marginLeft : 20}}
+                        <TouchableOpacity style={{marginLeft : 20, borderWidth : 0, padding: 2}}
                                           onPress={() => {
-                                            console.log("kgahgdzhd");
+                                            this.props.navigation.navigate('FLNotifications');
                                           }}
                         >
+                            {this.props.allNotificationsCount > 0
+                              ? <View style={{position : 'absolute', top : 0, right : 0, backgroundColor : 'red', width : 5, height : 5}} />
+                              : null
+                            }
+                            
                             <IonIcons name='ios-notifications-outline' size={25} color={'white'} />
+                            
                         </TouchableOpacity>
                     </View>
                   </View>
@@ -620,3 +629,11 @@ const styles = StyleSheet.create({
     color: '#999',
   },
 });
+
+const composedFLNavigationsScreen = compose(
+  withUser,
+  withNavigation,
+ );
+ 
+ //export default HomeScreen;
+ export default hoistStatics(composedFLNavigationsScreen)(SearchBarHome);

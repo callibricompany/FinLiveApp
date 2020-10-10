@@ -202,17 +202,24 @@ class NotificationProvider extends Component {
           let arrayTemp = [];
           this.state.notificationList.map((n, i) => {
             //console.log(n.id + "   "+ n.type);
-            if (n.type !== typeObject || n.id !== idObject) {
+            //if (n.type !== typeObject || n.id !== idObject) {
+            if (n.id !== idObject) {
               arrayTemp.push(n);
             } 
           })
 
-          deleteNotification(this.props.firebase, typeObject, idObject);
+          deleteNotification(this.props.firebase, typeObject, idObject)
+          .then((result) => {
+            this._handleCounter(typeObject, arrayTemp.filter(({ type }) => type === typeObject).length);
           
-          this._handleCounter(typeObject, arrayTemp.filter(({ type }) => type === typeObject).length);
-          
-          //this.setState({ notificationList : arrayTemp }, () => console.log(this.state.notificationList));
-          this.setState({ notificationList : arrayTemp });
+            //this.setState({ notificationList : arrayTemp }, () => console.log(this.state.notificationList));
+            this.setState({ notificationList : arrayTemp });
+          })
+          .catch((err) => {
+            console.log("Impossible supprimer notificiations : " + err);
+            alert("Impossible supprimer notificiations : " + err);
+          });
+
     
     }
 
@@ -338,10 +345,10 @@ class NotificationProvider extends Component {
             //console.log(notification.data);
             this.addNotification([].concat(notification.data));                   
             //NavigationService.handleBadges(this.ticketBadgesCount);
-        
+             
             //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
             if (notification.origin == 'received') {
-                
+              if (this.state.idFocused !== notification.data.id) {
                 //retourne un ticket donné
                 this.setState({newCancelledTickets : notification.data.id}, () => {
                     this._showToast(notification.data, null);
@@ -351,6 +358,7 @@ class NotificationProvider extends Component {
                       isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
                     }, 10000);
                 });
+              }
             } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
                 let localnotificationId = notification.notificationId;
                 isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;

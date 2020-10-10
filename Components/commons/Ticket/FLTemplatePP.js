@@ -484,7 +484,7 @@ class FLTemplatePP extends React.Component {
 
               {  this.state.isNotified
                     ?
-                      <View style={{position : 'absolute', top : 5, right : -5, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
+                      <View style={{position : 'absolute', top : 205, right : 5, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
                               <Ionicons name={'ios-notifications'} size={30} style={{color : 'red'}} />
                               <View style={{position : 'relative', top : -25, left : 0, width : 16, height : 16, backgroundColor : 'transparent',  alignItems : 'center', justifyContent : 'center'}}>
                                   <Text style={setFont('300', 12, 'white', 'Bold')}>{this.state.notifications.length}</Text> 
@@ -495,7 +495,7 @@ class FLTemplatePP extends React.Component {
               }
               {  this.ticket.isShared() && this.ticket.isMine(this.props.user)
                     ?
-                      <View style={{position : 'absolute', top : 85, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor(''), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('')}} >
+                      <View style={{position : 'absolute', top : 75, right : 10, justifyContent : 'center', alignItems : 'center',  zIndex : 10, backgroundColor: setColor(''), width: 40, height: 40, borderRadius : 20, borderWidth : 1, borderColor : setColor('')}} >
                             
                             <MaterialCommunityIcons name={'radio-tower'} size={40} color={'white'}/>
                       </View>                                            
@@ -649,7 +649,7 @@ class FLTemplatePP extends React.Component {
 
                 {  this.state.isNotified
                     ?
-                      <View style={{position : 'absolute', top : 5, right : -5, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
+                      <View style={{position : 'absolute', top : 150, right : 0, justifyContent : 'center', alignItems : 'center',  zIndex : 10, width: 30, height: 30, borderWidth : 0}} >
                               <Ionicons name={'ios-notifications'} size={30} style={{color : 'red'}} />
                               <View style={{position : 'relative', top : -25, left : 0, width : 16, height : 16, backgroundColor : 'transparent',  alignItems : 'center', justifyContent : 'center'}}>
                                   <Text style={setFont('300', 12, 'white', 'Bold')}>{this.state.notifications.length}</Text> 
@@ -668,6 +668,7 @@ class FLTemplatePP extends React.Component {
 
 
                 <View style={{ flexDirection : 'row', paddingLeft : 10, paddingTop: 3, width : this.screenWidth, borderWidth : 0}} >   
+                
                     <View style={{flex :  0.8, borderWidth : 0}}>
                           <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} numberOfLines={1}>
                                       {this.ticket.getSubject()} 

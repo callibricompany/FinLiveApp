@@ -6,6 +6,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import * as Progress from 'react-native-progress';
 
@@ -156,6 +158,47 @@ _renderHeaderFullTemplate() {
               </View>
 
       </View>
+  );
+}
+
+_renderHeaderFullTemplate2() {
+  let isCouponNull = true;
+  if (this.autocall.getCoupon() != null && Number(this.autocall.getCoupon()) !== 0) {
+    isCouponNull = false;
+  }
+ 
+  return (
+          <View style={{flex : 0.35, flexDirection : 'row'}}>
+                <View style={{ flex : isCouponNull ? 1 : 0.7, flexDirection : 'column', justifyContent: 'center' , paddingLeft : 15,   backgroundColor: 'white',  borderTopLeftRadius: 10, borderBottomWidth :  0,}} >                                                    
+ 
+                    <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems : 'center', paddingTop : 5}}>
+          
+                        <Text style={setFont('400', 16,  setColor('darkBlue'), 'Bold')}>
+                        {this.autocall.getProductTile()} 
+                        </Text>
+                    </View>
+                    <View style={{flexDirection: 'row', paddingTop : 0, borderWidth: 0, justifyContent: 'flex-start', alignItems : 'center'}}>
+                   
+                            <Text style={setFont('400',  12, setColor('darkBlue'), 'Regular')}>
+                            {this.autocall.getUnderlying()} 
+                            </Text>
+             
+           
+                    </View>
+                  </View>
+                  {!isCouponNull
+                    ?
+                      <View style={{flex : isCouponNull ? 0 : 0.3,  borderWidth: 0,  borderTopRightRadius: 10, backgroundColor : 'white', alignItems: 'center', justifyContent : 'flex-start', borderColor: 'white', paddingTop : 5}}>
+                  
+                            <Text style={setFont('400', 20,  setColor('FLGreen'), 'Bold')} numberOfLines={1}>
+                                { Numeral(this.autocall.getCoupon() == null ? 0 : this.autocall.getCoupon()).format('0.00%')}
+                                </Text>
+                                <Text style={setFont('300', 12, setColor('FLGreen') )}> {' p.a.'}</Text>  
+                      </View>
+                    : null
+                  }
+          </View>
+  
   );
 }
 
@@ -362,7 +405,7 @@ _renderAutocallMediumTemplate() {
 _renderFooterFullTemplate(isFavorite) {
 
   return (
-    <View style={{flex : 0.10, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', paddingTop : 5, backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+    <View style={{flex : 0.10, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
                                   onPress={() => {
              
@@ -380,10 +423,7 @@ _renderFooterFullTemplate(isFavorite) {
                   <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor('lightBlue')}/>
                 </TouchableOpacity>
 
-   
-                <View style={[{flex : 0.2}, globalStyle.templateIcon]}>              
 
-                </View>
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]}>
                  
                 </TouchableOpacity>
@@ -404,7 +444,26 @@ _renderFooterFullTemplate(isFavorite) {
                  
                   <FontAwesome name={"file-text-o"}  size={20} style={{color: setColor('lightBlue')}}/> 
                 </TouchableOpacity>   
-
+                <TouchableOpacity style={[{flex : 0.2, backgroundColor : setColor(''), borderBottomRightRadius: 10,}, globalStyle.templateIcon]}
+                                  onPress={() => {
+                                    this.props.navigation.navigate('FLSRPDetail', {
+                                      autocall: this.autocall,
+                                      //ticketType: TICKET_TYPE.PSCREATION
+                                    })
+                                }}
+                >
+                  {/* <MaterialCommunityIcons name="fast-forward" size={25} color={'white'}/> */}
+                  <View style={{flexDirection: 'row'}}>
+                      <View style={{borderWidth : 0}}>
+                        <Text style={setFont('300', 16, 'white', 'Regular')}>Voir</Text>
+                      </View>
+                      <View style={{borderWidth : 0, justifyContent : 'center', alignItems: 'center', paddingLeft : 4}}>
+                        <Ionicons name="md-arrow-forward" size={18} style={{color : 'white'}}/>
+                      </View>
+                  
+                  </View>
+                  
+                </TouchableOpacity>
                 
               </View>
 
@@ -453,8 +512,8 @@ render () {
                           shadowColor: 'rgb(75, 89, 101)',
                           shadowOffset: { width: 0, height: 2 },
                           shadowOpacity: 0.9,
-                          borderWidth :  isAndroid() ? 0 : 1,
-                          borderColor : 'white',
+                          borderWidth :  1, //isAndroid() ? 0 : 1,
+                          borderColor : isAndroid() ? 'lightgray' :  'white',
                           //borderTopLeftRadius: 15,
                           borderRadius: 10,
                           //overflow: "hidden",
@@ -466,30 +525,15 @@ render () {
                     <YourTeam_SVG width={50} height={80} />
                 </View>*/}
 
-                {this._renderHeaderFullTemplate()}
+                {this._renderHeaderFullTemplate2()}
 
                 <View style={{flexDirection: 'column', backgroundColor: 'white'}}>
                         <View style={{flexDirection: 'row'}}>
                             <View style={{flex: 0.6}}>
                             {this._renderAutocallShortTemplate()}
                             </View>
-                            <View style={{flex: 0.4, padding: 5}}>
-                                <View>
-                                    <Text style={setFont('300', 12, 'black', 'Bold')}>
-                                      Emetteur : 
-                                    </Text>
-                                    <Text style={setFont('300', 12, 'black', 'Regular')}>
-                                      {this.autocall.getIssuer()}
-                                    </Text>
-                                </View>
-                                <View style={{paddingTop : 3}}>
-                                    <Text style={setFont('300', 12, 'black', 'Bold')}>
-                                      Distributeur : 
-                                    </Text>
-                                    <Text style={setFont('300', 12, 'black', 'Regular')}>
-                                      {this.autocall.getDistributor()}
-                                    </Text>
-                                </View>
+                            <View style={{flex: 0.4, padding: 5, justifyContent : 'center'}}>
+                                
                                 {Moment(this.autocall.getIssueDate()).diff(Moment(Date.now()), 'days') === 0 ?
                                     <View style={{marginTop : 10, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', borderRadius: 3}}>
                                         <Text style={setFont('300', 12, 'white', 'Regular')}>
@@ -506,9 +550,41 @@ render () {
 
                             </View>
                         </View>
-                        <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft : 0.05*getConstant('width')}}>
+
+
+                        <View style={{flexDirection : 'row', marginLeft : 10, marginRight : 10, marginTop : 0}}>
+                            <View style={{flex : 0.5}}>
+                                <Text style={setFont('200', 10, 'gray')}>Emetteur :</Text>
+                                        <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                                              <View style={{justifyContent : 'center', alignItems : 'center'}}>  
+                                                  <MaterialCommunityIcons name={'margin'} size={15} color={setColor('')}/>
+                                              </View>
+                                              <View style={{justifyContent : 'center', alignItems : 'flex-start',  paddingLeft : 3}}>  
+                                                  <Text style={setFont('200', 12, setColor(''), 'Bold')}> {this.autocall.getIssuer()}</Text>
+                                              </View>
+                                        </View>
+                            </View>    
+                            
+                            <View style={{flex : 0.5}}>
+                                <Text style={setFont('200', 10, 'gray')}>Distributeur : </Text>
+                                        <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
+                                              <View style={{justifyContent : 'center', alignItems : 'center'}}>  
+                                                  <FontAwesome5 name={'donate'} size={15} color={setColor('')}/>
+                                              </View>
+                                              <View style={{justifyContent : 'center', alignItems : 'flex-start', paddingLeft : 3}}>  
+                                                  <Text style={setFont('200', 12, setColor(''), 'Bold')}> {this.autocall.getDistributor()}</Text>
+                                              </View>
+                                        </View>
+                            </View>   
+                        </View>
+
+
+
+
+
+                        <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginLeft : 10, marginRight : 10, marginTop : 10}}>
                             <View>
-                                <Text style={setFont('300', 12, 'black', 'Regular')} numberOfLines={5}>
+                                <Text style={setFont('300', 10, 'black')} numberOfLines={5}>
                                   {this.autocall.getDescription(2)}
                                 </Text>
                             </View>
