@@ -217,7 +217,7 @@ class NotificationProvider extends Component {
           })
           .catch((err) => {
             console.log("Impossible supprimer notificiations : " + err);
-            alert("Impossible supprimer notificiations : " + err);
+            //alert("Impossible supprimer notificiations : " + err);
           });
 
     
@@ -288,7 +288,7 @@ class NotificationProvider extends Component {
                                   
                               })
                               .catch((error) => {
-                                console.log(error);
+                                console.log("getTicket from notification : " + error);
                                 alert("Impossible de récupérer les changements du ticket " + notification.data.idTicket);
                               });
                           } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
@@ -305,7 +305,7 @@ class NotificationProvider extends Component {
                                   //})
                                 })
                                 .catch((error) => {
-                                  console.log(error);
+                                  console.log("getTicket from notification : " + error);
                                   alert("Impossible de récupérer les changements du ticket " + notification.data.id);
                                 });
                           }

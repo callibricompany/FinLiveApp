@@ -193,7 +193,7 @@ class Firebase {
                   })
                 }).catch(function (error) {
                   idTokenUser = '';
-                    console.log(error);
+                    console.log("onAuthListener : " + error);
       
                   });
       } else {

@@ -177,8 +177,8 @@ class FLTicketDetail extends React.Component {
     console.log("RECHARGE LE TICKET ");
       return new Promise((resolve, reject) => {
           //this.setState({ isLoading : true });
-          
-          getTicket(this.props.firebase, this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId())
+          let idTicketToReload = this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId();
+          getTicket(this.props.firebase, idTicketToReload)
           .then((ticket) => {
 
               console.log("load ticket : isShared : "+ this.ticket.isShared());
@@ -196,7 +196,7 @@ class FLTicketDetail extends React.Component {
                     });
                   })
                   .catch((error) => {
-                    console.log(error);
+                    console.log("getBroadcastAmount : "+ error);
                   });
               } else {
                 this._processUptadedTicket(ticket);
@@ -204,7 +204,7 @@ class FLTicketDetail extends React.Component {
               }
           })
           .catch((error) => {
-            console.log(error);
+            console.log("Erreur getTicket #" + idTicketToReload + "  : "  + error);
             alert("Impossible de récupérer les changements du ticket ");
             this.setState({ isLoading : false });
             reject(error);
@@ -369,7 +369,7 @@ class FLTicketDetail extends React.Component {
     ticketsConvToRetreive.push(this.ticket.getId());
     if (this.ticket.isShared()) {
         ticketsConvToRetreive.push(this.ticket.getBroadcastId());
-        console.log("C'EST MON TICKET : "+ this.ticket.isMine(this.props.user));
+        //console.log("C'EST MON TICKET : "+ this.ticket.isMine(this.props.user));
         if (this.ticket.isMine(this.props.user)) {
           if (this.state.subscripters.hasOwnProperty('idTicket')) {
             ticketsConvToRetreive = ticketsConvToRetreive.concat(this.state.subscripters['idTicket']);
@@ -1106,11 +1106,14 @@ class FLTicketDetail extends React.Component {
     // } else {
     //   return null;
     // }
+    
          return (
+           
           <View style={{flex:1, marginRight : 10, marginTop : -10, paddingBottom: 40}}>
- 
-                 <HTML html={textToSplit.replace('\\','')}  />
-
+              <HTMLView
+                value={"<div>" + textToSplit.replace('\\','') + "</div>"}
+              />
+                 {/* <HTML html={textToSplit.replace('\\','')}  /> */}
           </View>
         );
   }
@@ -1187,7 +1190,7 @@ class FLTicketDetail extends React.Component {
                     data={distinctFilesClassification}
                     horizontal={true}
                     renderItem={({ item, index }) => {
-
+                          
                           return (
                             <TouchableOpacity style={{borderWidth : this.state.categoryFilesToShow === item ? 0 : 1, marginRight : 10, paddingLeft : 10, paddingRight : 10, alignItems: 'center', justifyContent : 'center', borderRadius : 15, backgroundColor : this.state.categoryFilesToShow === item ? 'gray' : 'white'}}
                                               onPress={() => {
@@ -1212,7 +1215,7 @@ class FLTicketDetail extends React.Component {
                     contentContainerStyle={{}}
                     data={filesToShow}
                     renderItem={({ item, index }) => {
-
+                            
                             let contentIcon = getContentTypeIcon(item.content_type);
                             return (
                               <TouchableOpacity style={{flexDirection : 'row', height : 60}}

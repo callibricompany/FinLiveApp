@@ -37,7 +37,7 @@ import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
 import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
-import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
+import { ifIphoneX, ifAndroid, isEqual, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 import { interpolateColor, interpolateColorFromGradient } from '../../../Utils/color';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
@@ -145,35 +145,41 @@ class FLTemplatePP extends React.Component {
 
     //component rcceved props
     UNSAFE_componentWillReceiveProps(props) {
-      //console.log("RCOIT UNE PROPS : " + this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId());
-      if (this.ticket.isShared()) {
-          let id = this.ticket.getSouscriptionId();
-          getTicket(this.props.firebase, id)
-          .then((ticket) => {
-              //console.log(ticket);
-              this.ticket = new CSouscriptionTicket(ticket);
-              this._updateAmountSubscription();
-              //check if notified
-              this._updateNotifications();
+      let oldNotifStatus = this.props.isNotified('TICKET', this.ticket.isShared() ? this.props.ticket.getSouscriptionId() : this.props.ticket.getId());
+      let newNotifStatus = props.isNotified('TICKET', this.ticket.isShared() ? this.props.ticket.getSouscriptionId() : this.props.ticket.getId());
+      //let id = this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId();
+      //console.log(id + " : RECEIVED PROPS : " + isEqual(props, this.props) + "  /  " + oldNotifStatus + " vs " + newNotifStatus);
 
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        getTicket(this.props.firebase, this.ticket.getId())
-        .then((ticket) => {
-            this.ticket = new CWorkflowTicket(ticket);
-            this._updateStepIndicator();
-     
-            //check if notified
-            this._updateNotifications();
+      if (oldNotifStatus !== newNotifStatus) {
+          if (this.ticket.isShared()) {
+              let id = this.ticket.getSouscriptionId();
+              getTicket(this.props.firebase, id)
+              .then((ticket) => {
+                  //console.log(ticket);
+                  this.ticket = new CSouscriptionTicket(ticket);
+                  this._updateAmountSubscription();
+                  //check if notified
+                  this._updateNotifications();
 
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      }
+              })
+              .catch((error) => {
+                console.log("getTicket FLTemplatePP : " + error);
+              });
+          } else {
+            getTicket(this.props.firebase, this.ticket.getId())
+            .then((ticket) => {
+                this.ticket = new CWorkflowTicket(ticket);
+                this._updateStepIndicator();
+        
+                //check if notified
+                this._updateNotifications();
+
+            })
+            .catch((error) => {
+              console.log("getTicket FLTemplatePP : " + error);
+            });
+          }
+        }
 
       
     }
@@ -193,7 +199,7 @@ class FLTemplatePP extends React.Component {
           this.setState({ isProgressbarDeterminated : true , subscripters});
         })
         .catch((error) => {
-          console.log(error);
+          console.log("_updateAmountSubscription FLTemplatePP " + error);
         });
       }
   }

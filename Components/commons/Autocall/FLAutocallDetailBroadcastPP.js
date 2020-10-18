@@ -173,7 +173,7 @@ _setFriends(friends) {
     return (
       <View  style={{ flex: 1, backgroundColor: "white" , opacity: this.state.showModalDescription ? 0.3 : (this.state.isLoadingCreationTicket || this.state.isLoadingUpdatePrice) ? 0.2 : 1}} >
          
-            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("création d'une demande de cotation").toUpperCase()}/>
+            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("partage d'une demande de cotation avec mon réseau d'amis").toUpperCase()}/>
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingUpdatePrice} text={String(this.state.messageUpdatePrice).toUpperCase()}/>
         
             <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 45 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center'}}  >
@@ -500,11 +500,12 @@ _setFriends(friends) {
 
             <TouchableOpacity     style={{opacity : this.state.friends.length === 0 ? 0.8 : 0.8, position : 'absolute',top: getConstant('height')-110-this.state.keyboardHeight - (isAndroid() ? 30 : 0) , right : 20, alignItems: 'center', justifyContent: 'center', borderWidth : 1, height: 70, width: 70, borderColor: setColor('subscribeBlue'), borderRadius: 35,  backgroundColor: setColor('subscribeBlue')}}
                                   onPress={() => {
-
+                                    
                                     if (this.state.friends.length === 0) {
                                       alert("Veuiller indiquer avec qui partager ce produit !");
                                       return;
                                     }
+                                    this.setState( {isLoadingCreationTicket : true });
                                     let productToSend = {};
                                     this.autocall.setStepPP('PPRIR');
                                     this.autocall.setSubject(this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.autocall.getFrequencyAutocallTitle().toLowerCase());
@@ -529,27 +530,30 @@ _setFriends(friends) {
                                     productToSend['cf_ps_shared'] = true;
                                     productToSend['cf_cpg_choice'] = "Placement Privé";
 
-                                    console.log(productToSend);
+                                    console.log(this.state.friends);
 
                                    //"due_by": 2020-05-03T15:30:00.912Z,
 
-                                    broadcastPP(this.props.firebase, productToSend)
-                                   .then((data) => {
-                                      //console.log("USER CREE AVEC SUCCES DANS ZOHO");
+                                  //   broadcastPP(this.props.firebase, productToSend)
+                                  //  .then((data) => {
+                                  //     //console.log("USER CREE AVEC SUCCES DANS ZOHO");
                                       
-                                      console.log("SUCCES CREATION TICKET");
-                                      // let t = new CWorkflowTicket(data.data);
-                                      // this.props.addTicket(t);
-                                      console.log(data);
-                                      // this.setState({ isLoadingCreationTicket : false }, () => {
-                                      //   this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
-                                      // })
-                                    })
-                                    .catch(error => {
-                                       console.log("ERREUR CREATION TICKET: " + error);
-                                       this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
+                                  //     console.log("SUCCES CREATION TICKET BROADCAST");
+                                          
+                                  //     let t = new CWorkflowTicket(data.data);
+                                  //     this.props.addTicket(t);
+                                  //     console.log("TICKET AJOUTE");
+                                  //     this.setState({ isLoadingCreationTicket : false }, () => {
+                                  //       this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
+                                  //     })
+                                  //   })
+                                  //   .catch(error => {
+                                  //      console.log("ERREUR CREATION TICKET: " + error);
+                                  //      this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
                                       
-                                    });                 
+                                  //   }); 
+                               
+                                    
                                   }}  
             >
                       <View style={{marginTop: 0, }}>

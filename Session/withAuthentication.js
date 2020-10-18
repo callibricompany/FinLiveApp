@@ -511,7 +511,7 @@ const withAuthentication = Component => {
                 //console.log(userDatas.userTickets.slice(0,1))
                 //console.log(this.getAllUndelyings());
                 console.log("Nbre APE du marché: " + this.state.apeSRP.length);
-                console.log(this.state.apeSRP.slice(0,1));
+                //console.log(this.state.apeSRP.slice(0,1));
                 //console.log(this.state.apeSRP);
          
                 

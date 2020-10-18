@@ -14,6 +14,8 @@ import { CUsers } from '../CUsers';
 
 
 
+const urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
 //classe mere de tous les objets tickets
 export class CTicket extends CObject { 
 
@@ -205,9 +207,15 @@ export class CTicket extends CObject {
     }
 
 
+    linkify(text) {
+        return text.replace(urlRegex, function(url) {
+            return '<a href="' + url + '">' + url + '</a>';
+        });
+    }
     //retourne tous les fichiers liés au ticket
     getFiles() {
 
+      let id = 10000000;
       //on charge tous les fichiers de toutes les conversations
       this.files = [];
 
@@ -260,7 +268,62 @@ export class CTicket extends CObject {
               //console.log(c['attachments']);
               
             }
+          } else if (c.source === 2 || c.source === 15) {
+            //console.log(c);
+            if (c.body.includes("href=")){
+
+                //   "content_type": "application/pdf",
+              //   "created_at": "2020-07-27T07:32:11Z",
+              //   "id": 2043131326963,
+              //   "name": "Mark-To-Model Validation of ECO5E Index.pdf",
+              //   "size": 589006,
+              //   "type": "PDF",
+              // }
+              let url = c.body.match(urlRegex);
+              if (url != null && url.length > 0) {
+                let conver = {}
+
+                conver['attachment_url'] = url;
+                conver['content_type'] = "application/octet-stream";
+                conver['created_at'] = c.created_at;
+                conver['updated_at'] = c.updated_at;
+                conver['size'] = 0;
+                conver['name'] = "unknown.";
+                conver['type'] = "unknown";
+                conver['id'] = id;
+                id = id + 1;
+                if (url[0].includes(".pdf")) {
+                  conver['type'] = "PDF";
+                  conver['content_type'] = "application/pdf";
+                }
+                if(c.body.includes("TermSheet indicative")) {
+                  conver['name'] = "TermSheet indicative.";
+                }
+                
+                var http = new XMLHttpRequest();
+                http.open('HEAD', url[0], true); // true = Asynchronous
+                http.onreadystatechange = function() {
+                    if (this.readyState == this.DONE) {
+                        if (this.status === 200) {
+                            fileSize = this.getResponseHeader('content-length');
+                            conver['size'] = fileSize;
+                            console.log('fileSize = ' + fileSize);
+                            //
+                            // ok here is the only place in the code where we have our request result and file size ...
+                            // the problem is that here we are in the middle of anonymous function nested into another function and it does not look pretty
+                            // this stupid ASYNC pattern makes me hate Javascript even more than I already hate it :)
+                            //
+                            //
+                        }
+                    }
+                };
+                http.send();
+
+                this.files.push(conver);
+              }
+            }
           } 
+
         });
       });
 
@@ -270,6 +333,7 @@ export class CTicket extends CObject {
       }
       return this.files;
     }
+
 
 
     //on analyse les conversations pour le whatsapp

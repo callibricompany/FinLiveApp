@@ -144,6 +144,12 @@ function labelStyle (focused, tintColor) {
     FLAutocallDetailTrade: {
       screen : FLAutocallDetailTrade
     },
+    FLAutocallDetailBroadcastFriends: {
+      screen : FLAutocallDetailBroadcastFriends
+    },
+    FLAddFriendOnBroadcast: {
+      screen : FLAddFriendOnBroadcast
+    },
     FLAutocallDetailBroadcastPP: {
       screen : FLAutocallDetailBroadcastPP
     },
@@ -365,7 +371,7 @@ function labelStyle (focused, tintColor) {
     let badgeCount = 0
     
     
-    if(routes[index].routeName === 'Tickets' || routes[index].routeName === 'FLTicketDetailTicket'){
+    if(routes[index].routeName === 'Tickets' || routes[index].routeName === 'FLTicketDetailTicket' ){
       
       if (typeof routes[index].params !== 'undefined') {
         if (routes[index].params.hasOwnProperty('hideBottomTabBar')) {
@@ -454,7 +460,8 @@ function labelStyle (focused, tintColor) {
     let tabBarVisible = true;
     //console.log("TOOOLLLLBAR : " + routes[index].routeName);
     //console.log(routes[index].params);
-    if(routes[index].routeName === 'FLAutocallDetailPricer'){
+    if(routes[index].routeName === 'FLAutocallDetailPricer'  || routes[index].routeName === 'FLAutocallDetailTrade'   || routes[index].routeName === 'FLAutocallDetailBroadcastPP'
+    || routes[index].routeName === 'FLAutocallDetailBroadcastFriends'){
       if (typeof routes[index].params !== 'undefined') {
           tabBarVisible = !routes[index].params['hideBottomTabBar'];
       }

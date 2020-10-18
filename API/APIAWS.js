@@ -255,7 +255,7 @@ export function getAllUsers (firebase) {
           });
       })
       .catch((error) => {
-        console.log(error);
+        console.log("getAllUser APIAWS " +error);
         reject(error);
       });
 
