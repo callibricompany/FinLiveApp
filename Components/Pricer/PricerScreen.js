@@ -213,6 +213,7 @@ class PricerScreen extends React.Component {
     console.log(this.request.getCriteria());
     
     //criteria['maturity'] = ["3Y", "5Y", "8Y"];
+    this.request.getCriteria2()
     searchProducts(this.props.firebase, this.request.getCriteria())
     .then((data) => {
       this.setState({ messageLoading : 'Réception et analyse des prix' });

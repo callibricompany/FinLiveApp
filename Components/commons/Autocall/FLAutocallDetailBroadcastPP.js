@@ -31,7 +31,7 @@ import { compose, hoistStatics } from 'recompose';
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 import { broadcastPP } from '../../../API/APIAWS';
-import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
+
 
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
@@ -530,28 +530,34 @@ _setFriends(friends) {
                                     productToSend['cf_ps_shared'] = true;
                                     productToSend['cf_cpg_choice'] = "Placement Privé";
 
-                                    console.log(this.state.friends);
+                                    console.log(productToSend);
 
                                    //"due_by": 2020-05-03T15:30:00.912Z,
-
-                                  //   broadcastPP(this.props.firebase, productToSend)
-                                  //  .then((data) => {
-                                  //     //console.log("USER CREE AVEC SUCCES DANS ZOHO");
-                                      
-                                  //     console.log("SUCCES CREATION TICKET BROADCAST");
+                                   console.log("++++++++++++");
+                                    broadcastPP(this.props.firebase, productToSend)
+                                   .then((data) => {
+                                      console.log(data);
+                                      if (data != null && data !== 'Error') {
+                                          //console.log("USER CREE AVEC SUCCES DANS ZOHO");
                                           
-                                  //     let t = new CWorkflowTicket(data.data);
-                                  //     this.props.addTicket(t);
-                                  //     console.log("TICKET AJOUTE");
-                                  //     this.setState({ isLoadingCreationTicket : false }, () => {
-                                  //       this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
-                                  //     })
-                                  //   })
-                                  //   .catch(error => {
-                                  //      console.log("ERREUR CREATION TICKET: " + error);
-                                  //      this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
+                                          console.log("SUCCES CREATION TICKET BROADCAST");
+                                          
+                                          // let t = new CWorkflowTicket(data.data);
+                                          // this.props.addTicket(t);
+                                          // console.log("TICKET AJOUTE");
+                                          // this.setState({ isLoadingCreationTicket : false }, () => {
+                                          //   this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
+                                          // })
+                                      } else {
+                                        console.log("ERREUR CREATION TICKET: " + error);
+                                        this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR ' + error));
+                                      }
+                                    })
+                                    .catch(error => {
+                                       console.log("ERREUR CREATION TICKET: " + error);
+                                       this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR '  + error));
                                       
-                                  //   }); 
+                                    }); 
                                
                                     
                                   }}  

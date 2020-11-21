@@ -29,7 +29,7 @@ import * as TEMPLATE_TYPE from '../../../constants/template'
 
 import * as Progress from 'react-native-progress';
 
-import { searchProducts, getTicket, getBroadcastAmount} from '../../../API/APIAWS';
+import { getTicket, getBroadcastAmount} from '../../../API/APIAWS';
 
 import { FLPDIDetail } from '../../Pricer/description/FLPDIDetail';
 import { FLPhoenixBarrierDetail } from '../../Pricer/description/FLPhoenixBarrierDetail';
@@ -39,7 +39,7 @@ import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
 import { ifIphoneX, ifAndroid, isEqual, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 import { interpolateColor, interpolateColorFromGradient } from '../../../Utils/color';
-import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
+
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';

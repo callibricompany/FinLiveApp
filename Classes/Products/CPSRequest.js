@@ -5,6 +5,7 @@ import 'numeral/locales/fr'
 
 
 
+
 export class CPSRequest extends CRequest { 
     constructor() {
       super();
@@ -515,6 +516,15 @@ export class CPSRequest extends CRequest {
       }
     }
 
+    getCriteria2 () {
+      //construction des objets qui seront mis en base
+      var product = {};
+
+      product['CURRENCY'] = 'EUR';
+
+      console.log(product);
+    }
+
     getCriteria() {
       let criteria = {};
 
@@ -523,11 +533,13 @@ export class CPSRequest extends CRequest {
       criteria['freqAutocall'] =  this.product.freq.isActivated ? this.product.freq.value : "3M";
       criteria['noCallNbPeriod'] =  this.product.freq.isActivated ? this.product.nncp.value : 12;
 
+      criteria['maturity'] =  this.product.maturity.isActivated ? this.product.maturity.value : ['10Y'];
+      
       //type de placement
       criteria['typeAuction'] =  this.product.typeAuction.value;
 
       //autocall
-      criteria['isIncremental'] =  this.product.type.value === 'athena' ? this.product.isIncremental.value : false;
+      //criteria['isIncremental'] =  this.product.type.value === 'athena' ? this.product.isIncremental.value : false;
       
       //gestion du stepdown et du non airbag et barrier coupon
       if (this.product.type.value === 'athena') {
@@ -587,6 +599,9 @@ export class CPSRequest extends CRequest {
         }
       }
       criteria['isPDIUS'] =  this.product.barrierPDI.isActivated  ? this.product.isPDIUS.value : false;
+
+      criteria['UF'] = this.product.UF.value;
+      criteria['UFAssoc'] = this.product.UFAssoc.value;
 
 
       //memoire phoenix

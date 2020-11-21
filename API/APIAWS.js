@@ -367,14 +367,6 @@ export function updateSouscriptionTicket (firebase, idSouscriptionTicket, idBroa
 ///////////////////////////
 export function broadcastPP (firebase, product) {
 
-  var FormData = require('form-data');
-  var form = new FormData();
-
-  // Object.keys(product).forEach(key => {
-  //   //console.log(key + "   -   " + product[key] + "   :  " + typeof product[key]);
-  //   form.append(key, typeof product[key] != 'boolean' ? product[key] : product[key].toString());
-  // });
-  
   return new Promise((resolve, reject) => {
     firebase.doGetIdToken()
     .then(token => {
@@ -389,7 +381,9 @@ export function broadcastPP (firebase, product) {
         };  
         axios.post(URL_AWS + '/broadcastPP', product, axiosConfig)
         .then((response) => {
-          resolve(response)
+          console.log("LE SERVEUR A BIEN REPONDU UN TRUC");
+          //console.log(Object(response).keys())
+          resolve(response.data)
         })
         .catch(function (error) {
           console.log("Erreur requete aws : " + error);
@@ -783,7 +777,7 @@ export function searchProducts (firebase, criteria) {
 
   var FormData = require('form-data');
   var form = new FormData();
-
+  console.log(criteria)
   Object.keys(criteria).forEach(key => {
     //console.log(key + "   -   " + criteria[key]);
     form.append(key, criteria[key]);
@@ -806,9 +800,12 @@ export function searchProducts (firebase, criteria) {
             }
           };
 
-          axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
+          //axios.post(URL_AWS + '/searchautocall', criteria, axiosConfig)
+          axios.post(URL_AWS + '/price', criteria, axiosConfig)
           .then((response) => {
             //console.log("Succes demande prix : " + response.data.length);
+            console.log("Nbre de produits recus : " + response.data.length);
+
             resolve(response.data)
             //res.render('pages/register',{email: email, isConnected: isConnected});
           })

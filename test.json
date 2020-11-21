@@ -1,0 +1,199 @@
+Array [
+    Object {
+      "CODE_PRODUCT": "AUTOCALL_INCREMENTAL",
+      "CODE_PRODUCT_DETAIL": "M:8Y_U:CAC_BPDI:0.6_S:1.0_LA:1.0_FA:1Y_DS:0.0_NNCP:12_AL:1.0_PDIUS:False_GP:-1.0_FP:1Y_BP:1.0_IM:True_UF:0.03_UFA:0.002_TA:PP_IP:1",
+      "CURRENCY": "EUR",
+      "DATE_EFFECTIVE_RELATIVE": "0D",
+      "DATE_EFFECTIVE_STRING": "",
+      "PAYMENTS": Array [
+        Object {
+          "DATES_STRING": "20211130",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.048687210697203394,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "1": "WO",
+              },
+            },
+          ],
+        },
+        Object {
+          "DATES_STRING": "20221130",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.09737442139440679,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "2": "WO",
+              },
+            },
+          ],
+        },
+        Object {
+          "DATES_STRING": "20231130",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.1460616320916102,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "3": "WO",
+              },
+            },
+          ],
+        },
+        Object {
+          "DATES_STRING": "20241202",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.19474884278881358,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "4": "WO",
+              },
+            },
+          ],
+        },
+        Object {
+          "DATES_STRING": "20251201",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.24343605348601696,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "5": "WO",
+              },
+            },
+          ],
+        },
+        Object {
+          "DATES_STRING": "20261130",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.2921232641832204,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "6": "WO",
+              },
+            },
+          ],
+        },
+        Object {
+          "DATES_STRING": "20271130",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.34081047488042376,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "7": "WO",
+              },
+            },
+          ],
+        },
+        Object {
+          "DATES_STRING": "20281130",
+          "PAYOFF": Array [
+            Object {
+              "COUPON": 0.38949768557762715,
+              "FORMULA": "AUTOCALL",
+              "LEVEL": 1,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "8": "WO",
+              },
+            },
+            Object {
+              "FORMULA": "PDI_EU",
+              "LEVEL": 0.6,
+              "OBSERVATIONS": Object {
+                "0": "STRIKE",
+                "8": "WO",
+              },
+            },
+          ],
+        },
+      ],
+      "PRICINGLOG": "kHQc8G4mm8yeGK00nsTi",
+      "PRICINGS": Array [
+        Object {
+          "ISSUING_PRICE": 1,
+          "PRICING_DATE": "20201121_174304",
+          "RESPONSE": 0.048687210697203394,
+          "UF": 0.03,
+          "UFAssoc": 0.002,
+        },
+      ],
+      "SHORT_NAME": "Autocall incremental 8Y CAC 4.87%",
+      "TYPE": "STRUCTURED_PRODUCT",
+      "UNDERLYINGS": Object {
+        "CAC": Object {
+          "0": Object {
+            "DATES_RELATIVE": Array [
+              "1D",
+            ],
+            "DATES_STRING": Array [
+              "20201123",
+            ],
+            "FUNCTION": Array [
+              "AVG",
+            ],
+          },
+          "1": Object {
+            "DATES_RELATIVE": "1Y",
+            "DATES_STRING": "20211123",
+            "FUNCTION": "AVG",
+          },
+          "2": Object {
+            "DATES_RELATIVE": "2Y",
+            "DATES_STRING": "20221123",
+            "FUNCTION": "AVG",
+          },
+          "3": Object {
+            "DATES_RELATIVE": "3Y",
+            "DATES_STRING": "20231123",
+            "FUNCTION": "AVG",
+          },
+          "4": Object {
+            "DATES_RELATIVE": "4Y",
+            "DATES_STRING": "20241125",
+            "FUNCTION": "AVG",
+          },
+          "5": Object {
+            "DATES_RELATIVE": "5Y",
+            "DATES_STRING": "20251124",
+            "FUNCTION": "AVG",
+          },
+          "6": Object {
+            "DATES_RELATIVE": "6Y",
+            "DATES_STRING": "20261123",
+            "FUNCTION": "AVG",
+          },
+          "7": Object {
+            "DATES_RELATIVE": "7Y",
+            "DATES_STRING": "20271123",
+            "FUNCTION": "AVG",
+          },
+          "8": Object {
+            "DATES_RELATIVE": "8Y",
+            "DATES_STRING": "20281123",
+            "FUNCTION": "AVG",
+          },
+        },
+      },
+      "USER": "ZzSALJwEp1gVzz74pJLH6rpu4B12",
+    },
+  ]

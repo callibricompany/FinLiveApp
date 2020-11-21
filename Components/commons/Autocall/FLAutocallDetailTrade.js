@@ -30,8 +30,6 @@ import { compose, hoistStatics } from 'recompose';
 
 import { CAutocall } from '../../../Classes/Products/CAutocall';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { searchProducts } from '../../../API/APIAWS';
-import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'

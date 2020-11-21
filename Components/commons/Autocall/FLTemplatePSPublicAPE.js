@@ -33,8 +33,6 @@ import localization from 'moment/locale/fr'
 
 import * as TEMPLATE_TYPE from '../../../constants/template'
 
-import { searchProducts } from '../../../API/APIAWS';
-
 import { FLPDIDetail } from '../../Pricer/description/FLPDIDetail';
 import { FLPhoenixBarrierDetail } from '../../Pricer/description/FLPhoenixBarrierDetail';
 import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
@@ -42,7 +40,7 @@ import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
-import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
+
 
 import { CAutocallSRP } from '../../../Classes/Products/CAutocallSRP';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
