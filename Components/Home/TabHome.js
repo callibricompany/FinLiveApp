@@ -31,6 +31,7 @@ import RobotBlink from "../../assets/svg/robotBlink.svg";
 import { setFont, setColor } from "../../Styles/globalStyle";
 
 import FLTemplateAutocall from "../commons/Autocall/FLTemplateAutocall";
+import FLTemplateAutocall2 from "../commons/Autocall/FLTemplateAutocall2";
 import FLTemplateEmpty from "../commons/Autocall/FLTemplateEmpty";
 import FLTemplatePSBroadcast from '../commons/Ticket/FLTemplatePSBroadcast';
 import FLTemplatePSPublicAPE from '../commons/Autocall/FLTemplatePSPublicAPE';
@@ -45,6 +46,7 @@ import { CBroadcastTicket } from '../../Classes/Tickets/CBroadcastTicket';
 import { CTicket } from '../../Classes/Tickets/CTicket';
 import { CSouscriptionTicket } from "../../Classes/Tickets/CSouscriptionTicket";
 
+import { CAutocall2 } from '../../Classes/Products/CAutocall2';
 
 
 
@@ -84,7 +86,7 @@ class TabHome extends React.PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(props) {
-    //console.log("RECEIVE PROPS HOME : ");
+    console.log("RECEIVE PROPS HOME : ");
     // if (!isEqual(props.tickets, this.props.tickets)) {
     //   console.log("##########################################  ATTENTION TICKETS NON EGAUX IL FAUT LES RAJOUTER");
     // } else {
@@ -105,23 +107,33 @@ class TabHome extends React.PureComponent {
 
    // allUnderlyings.forEach((u) => {
       u = allUnderlyings[0];
-      console.log(u);
+      //console.log(u);
       let request = new CPSRequest();
-      //request.setCriteria('type', autocall.getProductShortName(), autocall.getProductName());
+      //request.setCriteria('type', autocall.getProductCode(), autocall.getProductName());
       request.setCriteria('underlying', u.split(), u);
       request.setCriteria('maturity', [8,8], "8Y");
       request.setCriteria('barrierPDI', 0.6, "Protégé jusqu'à -40%");
-      request.setCriteria('isIncremental', true, "Incremental");
+      request.setCriteria('barrierPhoenix', 1, "Coupon payé au rappel");
+      request.setCriteria('isMemory', true, "Mémoire");
 
-      searchProducts(this.props.firebase, request.getCriteria())
+
+      searchProducts(this.props.firebase, request.getCriteria(), false)
       .then((data) => {
         
-          let autocall = interpolateBestProducts(data, request);
+          /*let autocall = interpolateBestProducts(data, request);
           if (autocall.length === 1){
             this.bestCoupons.push(new CAutocall(autocall[0]));
             this.setState({ bestCouponsExtraData : !this.state.bestCouponsExtraData });
           } else if (autocall.length === 0) {
             console.log("Pas résultat possible.\nModifiez vos critères : " + u);
+          }*/
+
+          if (data.length > 0) {
+            data.forEach((autocall) => {
+              this.bestCoupons.push(new CAutocall2(autocall));
+            });
+            this.setState({ bestCouponsExtraData : !this.state.bestCouponsExtraData });
+            
           }
       })
       .catch(error => {
@@ -369,7 +381,7 @@ class TabHome extends React.PureComponent {
                   renderItem={({ item, index }) => {
                     return (
                         <View style={{marginLeft: getConstant('width') * 0.025}}>
-                          <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/>
+                          {/* <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/> */}
                         </View>
                     )
                   }}
@@ -410,7 +422,7 @@ class TabHome extends React.PureComponent {
                           <View style={{marginLeft: getConstant('width') * 0.025}}>
                           {this.bestCoupons.length === 0 ?
                               <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} />
-                            : <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE} source={'Home'}/> 
+                            : <FLTemplateAutocall2 autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_SHORT_TEMPLATE}/> 
                           }
                           </View>
                         );
@@ -419,7 +431,7 @@ class TabHome extends React.PureComponent {
                   extraData={this.state.extraData}
                   //tabRoute={this.props.route.key}
                   //keyExtractor={item => item.getInternalCode()}
-                  keyExtractor={item =>  item.getInternalCode()}
+                  keyExtractor={item =>  this.bestCoupons.length === 0 ? item.getInternalCode() : item.getUniqueId()}
                 />
             </View>
 
@@ -449,7 +461,7 @@ class TabHome extends React.PureComponent {
                         case TEMPLATE_TYPE.PSSRPLIST:
                           return (
                             <View style={{marginLeft: getConstant('width') * 0.025}}>
-                              <FLTemplatePSPublicAPE object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/>
+                              {/* <FLTemplatePSPublicAPE object={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'}/> */}
                             </View>
                           );
                         default:

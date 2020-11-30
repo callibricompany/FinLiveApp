@@ -46,6 +46,9 @@ export class CObject {
         }
       }
 
+    isFavorite() {
+      return false;
+    }
     setTemplate(template) {
       this.object['template'] = template;
       this.object['toFavorites']['code'] = template === TEMPLATE_TYPE.PSLIST ? this.object.code : this.object.id;
@@ -55,23 +58,7 @@ export class CObject {
       return this.object['template'];
     }
 
-    //verifie si ce produit est dans la liste des favoris
-    isFavorite(favoriteList) {
-        /*let isFavorite = false;
-      
-        favoriteList.forEach((fav) => {
-          if (isEqual(fav.data, this.product)) {
-            //isFavorite = this.item.isFavorite && this.item.toFavorites.active;
-            isFavorite = true;
-          }
-        });
-        //remise a jour de l'objet item en fonction de ce qui a été trouve dans favorites
-        this.object.isFavorite = isFavorite;
-        this.object.toFavorites.active = isFavorite;*/
-        return this.object['isFavorite'];
-        
-  
-      }
+
       setUserId (userId) {
         this.object['toFavorites']['userId'] = userId;
       }

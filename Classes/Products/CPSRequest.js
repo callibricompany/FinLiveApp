@@ -6,6 +6,7 @@ import 'numeral/locales/fr'
 
 
 
+
 export class CPSRequest extends CRequest { 
     constructor() {
       super();
@@ -143,7 +144,7 @@ export class CPSRequest extends CRequest {
           'isMandatory': false,
           'isLocked': false,
         },
-        'isIncremental': {
+        /*'isIncremental': {
           'value': false,
           'isActivated': false,
           'defaultValueLabel': 'Optimisé',
@@ -151,7 +152,7 @@ export class CPSRequest extends CRequest {
           'title': 'Non Incréméntal',
           'isMandatory': false,
           'isLocked': false,
-        },
+        },*/
   
         //pas de choix pour le user
         'nominal': {
@@ -192,6 +193,13 @@ export class CPSRequest extends CRequest {
           'defaultValueLabel': 'Optimisé',
           'valueLabel': Numeral(0.002).format('0.00%'),
           'isMandatory': true,
+        },
+        'PREVIOUS_PRODUCT_PRICED': {
+          'value': "",
+          'isActivated': true,
+          'defaultValueLabel': "",
+          'valueLabel': "",
+          'isMandatory': false,
         },
       };
 
@@ -301,9 +309,9 @@ export class CPSRequest extends CRequest {
     setRequestFromCAutocall (autocall) {
       //console.log("SOUS JACENT : " + autocall.getUnderlyingTicker());
       this.autocall = autocall;
-      this._fillCriteria('typeAuction', autocall.getAuctionType() === 'Placement Privé' ? 'PP' : 'APE', autocall.getAuctionType());
-      this._fillCriteria('type', autocall.getProductShortName(), autocall.getProductName());
-      this._fillCriteria('underlying', [autocall.getUnderlyingTicker()], autocall.getUnderlyingTicker());
+      this._fillCriteria('typeAuction', autocall.getAuctionType() ,autocall.getAuctionType());
+      this._fillCriteria('type', autocall.getProductCode(), autocall.getProductName());
+      this._fillCriteria('underlying', [autocall.getUnderlyingTickers()], autocall.getUnderlyingTickers());
       this._fillCriteria('maturity', [autocall.getMaturityInMonths()/12, autocall.getMaturityInMonths()/12], autocall.getMaturityName());
       this._fillCriteria('barrierPDI', autocall.getBarrierPDI(), "Protégé jusqu'à " + Numeral(autocall.getBarrierPDI()-1).format('0%'));
       this._fillCriteria('freq', autocall.getFrequencyAutocall(), autocall.getFrequencyAutocallTitle());
@@ -329,7 +337,7 @@ export class CPSRequest extends CRequest {
           'isUpdated': false,
         },
         'type': {
-          'value': autocall.getProductShortName(),
+          'value': autocall.getProductCode(),
           'valueLabel': autocall.getProductName(),
           'defaultValueLabel': 'Optimisé',
           'title': 'CHOIX DU PRODUIT',
@@ -516,14 +524,7 @@ export class CPSRequest extends CRequest {
       }
     }
 
-    getCriteria2 () {
-      //construction des objets qui seront mis en base
-      var product = {};
 
-      product['CURRENCY'] = 'EUR';
-
-      console.log(product);
-    }
 
     getCriteria() {
       let criteria = {};
@@ -537,19 +538,27 @@ export class CPSRequest extends CRequest {
       
       //type de placement
       criteria['typeAuction'] =  this.product.typeAuction.value;
-
+      criteria['nominal'] =  this.product.nominal.value;
       //autocall
       //criteria['isIncremental'] =  this.product.type.value === 'athena' ? this.product.isIncremental.value : false;
       
       //gestion du stepdown et du non airbag et barrier coupon
-      if (this.product.type.value === 'athena') {
+      
+      /*AUTOCALL_CLASSIC', 
+                'AUTOCALL_INCREMENTAL',
+                'PHOENIX',
+                'PHOENIX_MEMORY',
+                'REVERSE',
+                "UNKNOWN"]*/
+      criteria['barrierPhoenix'] =  1;
+      if (this.product.type.value === 'AUTOCALL_CLASSIC' || this.product.type.value === 'AUTOCALL_INCREMENTAL') {
         let ds = this.product.degressiveStep.value;
         let ds_array = [0, 2, 5];
         if (ds_array.indexOf(ds) !== -1) {
           criteria['degressiveStep'] =  this.product.degressiveStep.value;
         }
         criteria['barrierPhoenix'] =  1;
-      } else if (this.product.type.value === 'phoenix') {
+      } else if (this.product.type.value === 'PHOENIX' || this.product.type.value === 'PHOENIX_MEMORY') {
         if (this.product.barrierPhoenix.isActivated) {
           let bp = this.product.barrierPhoenix.value;
           let bp_array = [0.5, 0.7, 0.9];
@@ -599,14 +608,16 @@ export class CPSRequest extends CRequest {
         }
       }
       criteria['isPDIUS'] =  this.product.barrierPDI.isActivated  ? this.product.isPDIUS.value : false;
-
+      this.product.barrierPDI.isActivated ? criteria['barrierPDI'] =  this.product.barrierPDI.value : null;
       criteria['UF'] = this.product.UF.value;
       criteria['UFAssoc'] = this.product.UFAssoc.value;
-
+      criteria['degressiveStep'] = this.product.degressiveStep.value;
 
       //memoire phoenix
       //criteria['isMemory'] =  this.product.type.value === 'phoenix'  ? this.product.isMemory.value : false;
       criteria['isMemory'] =  this.product.isMemory.value;
+      criteria['PREVIOUS_PRODUCT_PRICED'] = this.product.PREVIOUS_PRODUCT_PRICED.value;
+      criteria['nominal'] = this.product.nominal.value;
 
       //criteria['nominal'] = this.product.nominal.value;
       

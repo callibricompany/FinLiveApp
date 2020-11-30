@@ -7,6 +7,7 @@ import NewsList from '../Components/Home/NewsList';
 import NewsDetail from '../Components/Home/NewsDetail';
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb';
 import FLTicketDetailHome from '../Components/Home/FLTicketDetailHome';
+import FLAutocallDetail from '../Components/commons/Autocall/FLAutocallDetail';
 import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
 import FLAutocallDetailTrade from '../Components/commons/Autocall/FLAutocallDetailTrade';
 import FLAutocallDetailBroadcastPP from '../Components/commons/Autocall/FLAutocallDetailBroadcastPP';
@@ -94,6 +95,9 @@ function labelStyle (focused, tintColor) {
     FLAutocallDetailHome : {
       screen : FLAutocallDetailHome
     },
+    FLAutocallDetail : {
+      screen : FLAutocallDetail
+    },
     FLSRPDetail: {
       screen : FLSRPDetail
     },
@@ -132,6 +136,9 @@ function labelStyle (focused, tintColor) {
         title: 'Evaluer'
       },
     },
+    FLAutocallDetail : {
+      screen : FLAutocallDetail
+    },
     FLAutocallDetailPricer : {
       screen : FLAutocallDetailPricer
     },
@@ -165,6 +172,9 @@ function labelStyle (focused, tintColor) {
       },
       FLTicketDetail : {
         screen : FLTicketDetail
+      },
+      FLAutocallDetail : {
+        screen : FLAutocallDetail
       },
       FLAutocallDetailTicket: {
         screen : FLAutocallDetailTicket

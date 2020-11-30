@@ -769,12 +769,40 @@ export function setFavoriteAPI (idToken, obj) {
     });
 }
 
+export function setFavorite (firebase, idProduct) {
+
+  return new Promise((resolve, reject) => {
+      firebase.doGetIdToken()
+      .then(token => {
+          var axiosConfig = {
+            headers :{
+              //'Content-Type': 'application/x-www-form-urlencoded',
+              //'Content-Type': 'application/json; charset=utf-8',
+              //'Accept'      : 'application/json',
+              'bearer'      : token
+            }
+          };
+          console.log(idProduct);
+          axios.get(URL_AWS + '/switchfavorite2/' + idProduct,  axiosConfig)
+          .then((response) => {
+            //console.log("Succes : " + JSON.stringify(response["data"]));
+            resolve(response.data);
+            //res.render('pages/register',{email: email, isConnected: isConnected});
+          })
+          .catch(function (error) {
+            console.log("Erreur requete prix : " + error);
+            reject(error)
+          });
+    });
+  });
+}
+
 
 /**************************************
           RECHERCHE DES AUTOCALLS
 */
-export function searchProducts (firebase, criteria) {
-
+export function searchProducts (firebase, criteria, toSave=true) {
+  toSave = (typeof toSave !== 'undefined') ? toSave : true;
   var FormData = require('form-data');
   var form = new FormData();
   console.log(criteria)
@@ -796,6 +824,7 @@ export function searchProducts (firebase, criteria) {
               //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
               'Accept'      : 'application/json',
               'bearer'      : token,
+              'tosave'      : toSave,
               //'type'        : 'Produit structuré'
             }
           };
@@ -804,6 +833,7 @@ export function searchProducts (firebase, criteria) {
           axios.post(URL_AWS + '/price', criteria, axiosConfig)
           .then((response) => {
             //console.log("Succes demande prix : " + response.data.length);
+            //console.log(response.data);
             console.log("Nbre de produits recus : " + response.data.length);
 
             resolve(response.data)
@@ -818,6 +848,32 @@ export function searchProducts (firebase, criteria) {
     });
   }
 
+
+  export async function reprice (firebase, product) {
+
+    try {
+      var token = await firebase.doGetIdToken();
+
+      var axiosConfig = {
+        headers :{
+          //'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json; charset=utf-8',
+          //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+          'Accept'      : 'application/json',
+          'bearer'      : token,
+        }
+      };
+
+      var response = axios.post(URL_AWS + '/reprice', product, axiosConfig);
+      //resolve(response.data)
+      return await Promise.resolve("toto");
+    }
+    catch(err) {
+      // catches errors both in fetch and response.json
+      return await Promise.reject(err);
+    }
+    
+  }
 
 /**************************************
          NOTIFICATIONS

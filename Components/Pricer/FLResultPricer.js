@@ -25,12 +25,11 @@ import 'numeral/locales/fr'
 
 import {  globalStyle, setFont, setColor } from '../../Styles/globalStyle';
 
-import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
-
+import FLTemplateAutocall2 from '../commons/Autocall/FLTemplateAutocall2';
 
 
 import * as TEMPLATE_TYPE from '../../constants/template'
-import { CAutocall } from '../../Classes/Products/CAutocall';
+import { CAutocall2 } from '../../Classes/Products/CAutocall2';
 
 
 
@@ -50,7 +49,7 @@ class FLResultPricer extends React.PureComponent {
       let bestProducts =  this.props.navigation.getParam('bestProducts', '...');
       
       bestProducts.forEach((p) => {
-        this.bestProducts.push(new CAutocall(p));
+        this.bestProducts.push(new CAutocall2(p));
       })
       this.optimizer = this.props.navigation.getParam('optimizer', 'CPN');
       // console.log(this.bestProducts);
@@ -83,7 +82,7 @@ class FLResultPricer extends React.PureComponent {
       //console.log('id : ' +id);
       return (
             <View style={{marginTop: 20, alignItems: 'center', justifyContent:'center', borderWidth: 0, marginLeft : 0, paddingLeft : 0, paddingRight: 2}}>
-              <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Pricer'} optimizer={this.optimizer}/>
+              <FLTemplateAutocall2 autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} optimizer={this.optimizer}/>
             </View>
       );
     }
@@ -120,7 +119,7 @@ class FLResultPricer extends React.PureComponent {
                     data={this.bestProducts}
                     //extraData={this.state.isGoodToShow}
                     //renderItem={this._renderRow}
-                    keyExtractor={(item) => item.getInternalCode()}
+                    keyExtractor={(item) => item.getUniqueId()}
                     //tabRoute={this.props.route.key}
                     //numColumns={3}
                     renderItem={({item, id}) => (

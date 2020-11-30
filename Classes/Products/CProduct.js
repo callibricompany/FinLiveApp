@@ -183,13 +183,7 @@ export class CProduct extends CObject {
       return this.friends;
     }
 
-    setBeginBroadcastDate(beginBroadCastDate) {
-      this.beginBroadCastDate = beginBroadCastDate;
-    }
-
-    getBeginBroadcastDate() {
-      return this.beginBroadCastDate === null ? new Date(Date.now()) : this.beginBroadCastDate;
-    }
+ 
 
     setEndBroadcastDate(endBroadCastDate) {
       this.endBroadCastDate = endBroadCastDate;

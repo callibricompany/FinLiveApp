@@ -10,7 +10,7 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
-import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket, getAllUsers, getAllTicketClosed } from "../API/APIAWS";
+import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket, getAllUsers, setFavorite } from "../API/APIAWS";
 
 
 import { isAndroid , isEqual } from '../Utils'; 
@@ -84,6 +84,7 @@ const withAuthentication = Component => {
         //toFavorites
         favorites: [],
         setFavorite: obj => this.setFavorite(obj),
+        setFavorite2: obj => this.setFavorite2(obj),
 
         //les filtres a appliquer sur la home page
         filtersHomePage: [],
@@ -562,6 +563,21 @@ const withAuthentication = Component => {
     };
 
     //on met en favori un objet passé
+    async setFavorite2(codeProduct) {
+      return new Promise((resolve, reject) => {
+
+            setFavorite(this.props.firebase, codeProduct)
+              .then(data => {
+                console.log("Mis en favori ok : " + data);
+                resolve("ok");
+               
+              })
+              .catch(error => {
+                console.log("Echec mis en favori : " + JSON.stringify(obj));
+                reject(error);
+              });
+          });
+    }
     async setFavorite(obj) {
       return new Promise((resolve, reject) => {
         console.log("Doit etre mis en favori : " + !obj.isFavorite);

@@ -10,10 +10,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-import FLTemplateAutocall from "./FLTemplateAutocall";
+import FLTemplateAutocall2 from "./FLTemplateAutocall2";
 import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 
-import { ssCreateStructuredProduct } from '../../../API/APIAWS';
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant } from '../../../Utils';
 import { interpolateColorFromGradient } from '../../../Utils/color';
 
@@ -29,9 +28,9 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { CAutocall } from '../../../Classes/Products/CAutocall';
+import { CAutocall2 } from '../../../Classes/Products/CAutocall2';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { searchProducts } from '../../../API/APIAWS';
+import { reprice } from '../../../API/APIAWS';
 import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
 
 import Numeral from 'numeral'
@@ -62,10 +61,10 @@ class FLAutocallDetail extends React.Component {
 
     //recuperation de l'autocall
    // this.autocall =  this.props.navigation.getParam('autocall', '...');
-   this.autocall = this.props.autocall;
-   this.isEditable = typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : true,
-   // this.isEditable = this.props.navigation.getParam('isEditable', true);
-   //console.log("CONSTRUCTEUR AUTOCALL : " +this.isEditable);
+   //this.autocall = this.props.autocall;
+   //this.isEditable = typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : true,
+   this.autocall =  this.props.navigation.getParam('autocall', '...');
+   this.isEditable =  this.props.navigation.getParam('isEditable', true);
     
     this.state = { 
 
@@ -237,30 +236,36 @@ class FLAutocallDetail extends React.Component {
   _updateAutocall=(autocall) => {
       this.autocall = autocall;
       this._constructMenu();
-      this.setState({ toto : !this.state.toto }, () => console.log(this.autocall.getObject()));
+      this.setState({ toto : !this.state.toto }, () => console.log(this.autocall.getProductJSON()));
   }
 
   //une modif a été faite il faut recalculer
   _updateProduct=(id, value, valueLabel, needToRecalculate=true) => {
 
     if (needToRecalculate) {
-        let request = new CPSRequest();
-        request.setRequestFromCAutocall(this.autocall);
+        // let request = new CPSRequest();
+        // request.setRequestFromCAutocall(this.autocall);
         console.log(id + "  :  "+value+"  :  "+valueLabel);
-        request.setCriteria(id, value, valueLabel);
-
+        // request.setCriteria(id, value, valueLabel);
+        switch(id) {
+          case 'typeAuction' :
+              this.autocall.setAuctionType(value);
+              break;
+          default : break;
+        }
 
         this.setState({ isLoadingUpdatePrice : true, messageUpdatePrice : 'Demande des prix au marché'});
       
-        searchProducts(this.props.firebase, request.getCriteria())
+        reprice(this.props.firebase, this.autocall.getProductJSON())
         .then((data) => {
+          console.log(data);
           this.setState({ messageUpdatePrice : 'Réception et analyse des prix' });
       
-          var autocall = interpolateBestProducts(data, request);
+          //var autocall = interpolateBestProducts(data, request);
           
-          if (autocall.length === 1){
-            this.autocall = new CAutocall(autocall[0]);
-          } else if (autocall.length === 0) {
+          if (data.length === 1){
+            this.autocall = new CAutocall2(data[0]);
+          } else if (data.length === 0) {
             alert("Pas résultat possible.\nModifiez vos critères.");
           }
       
@@ -294,7 +299,7 @@ class FLAutocallDetail extends React.Component {
     let body = null;
     switch(item.key) {
       case 'ISSUER' : 
-          body = <FLIssuer  codeAuction={'PP'} 
+          body = <FLIssuer  codeAuction={this.autocall.getAuctionType()} 
                             isEditable={this.state.showButtonsToTrade ? false :  this.isEditable} 
                             issueDate={this.autocall.getIssueDate()}
                             endIssueDate={this.autocall.getEndIssueDate()}
@@ -750,7 +755,7 @@ class FLAutocallDetail extends React.Component {
                             </View>
             </View>
             <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', marginLeft : 0}}>
-                <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false/*this.isEditable*/} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
+                <FLTemplateAutocall2 autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false/*this.isEditable*/} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
             </View>
             {/* <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center'}}>
                 <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={this.isEditable} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
@@ -797,7 +802,7 @@ class FLAutocallDetail extends React.Component {
             </View>
             
             {this.state.showButtonsToTrade ? this._renderButtonsTotrade() : null}     
-            {(this.autocall.getFinalNominal() === -1 && this.isEditable) ? this._renderButtonTotrade() : null}
+            {(this.state.finalNominal === -1 && this.isEditable) ? this._renderButtonTotrade() : null}
       </View>
     );
   }

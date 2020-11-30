@@ -9,13 +9,15 @@ import AnimatedProgressWheel from 'react-native-progress-wheel';
 
 import { globalStyle, setColor, setFont } from '../../Styles/globalStyle'
 
-import Robot from "../../assets/svg/robotBlink.svg";
+import RobotBlink from "../../assets/svg/robotBlink.svg";
 import FLAnimatedSVG from '../commons/FLAnimatedSVG';
 
 import { ifIphoneX, ifAndroid, isAndroid, isIphoneX, isEqual , currencyFormatDE, getConstant, sizeByDevice } from '../../Utils';
 import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 
-import SwipeGesture from '../../Gesture/SwipeGesture';
+import { WebView } from 'react-native-webview';
+import { URL_AWS } from '../../API/APIAWS';
+
 import { CPSRequest } from '../../Classes/Products/CPSRequest';
 
 
@@ -213,11 +215,11 @@ class PricerScreen extends React.Component {
     console.log(this.request.getCriteria());
     
     //criteria['maturity'] = ["3Y", "5Y", "8Y"];
-    this.request.getCriteria2()
-    searchProducts(this.props.firebase, this.request.getCriteria())
+    this.setState({ messageLoading : 'Interrogation du pricer FinLive' });
+    searchProducts(this.props.firebase, this.request.getCriteria(), false)
     .then((data) => {
       this.setState({ messageLoading : 'Réception et analyse des prix' });
-      console.log("APRES RETOUR SERVEUR : ");
+      /*console.log("APRES RETOUR SERVEUR : ");
       //console.log(data[0]);
       let product = [...new Set(data.map(x => x.product))];
       console.log("product : " + product);
@@ -234,8 +236,8 @@ class PricerScreen extends React.Component {
       let airbagLevel = [...new Set(data.map(x => x.airbagLevel))];
       console.log("airbagLevel : " + airbagLevel);
 
-      let isIncremental = [...new Set(data.map(x => x.isIncremental))];
-      console.log("isIncremental : " + isIncremental);
+      //let isIncremental = [...new Set(data.map(x => x.isIncremental))];
+      //console.log("isIncremental : " + isIncremental);
 
       let degressiveStep = [...new Set(data.map(x => x.degressiveStep))];
       console.log("degressiveStep : " + degressiveStep);
@@ -253,14 +255,15 @@ class PricerScreen extends React.Component {
 
       let isPDIUS = [...new Set(data.map(x => x.isPDIUS))];
       console.log("isPDIUS : " + isPDIUS);
-
+      */
       //calcul du produit
 
-      this.bestProducts = interpolateBestProducts(data, this.request, optimizer);
+      //this.bestProducts = interpolateBestProducts(data, this.request, optimizer);
       //console.log(this.bestProducts);
       this.setState({ isLoading: false }, () => {
           this.props.navigation.navigate('FLResultPricer', {
-          bestProducts: this.bestProducts,
+          //bestProducts: this.bestProducts,
+          bestProducts: data,
           optimizer 
           //ticketType: TICKET_TYPE.PSCREATION
         })
@@ -383,7 +386,7 @@ _renderProductTile() {
                                          case 0 :   //autocall
                                             this._updateValue('type', 'athena', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
-                                            this._updateValue('isIncremental', true, "incremental");
+                                            //this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
                                             this.request.setActivation('airbagLevel', true);
                                             this.request.setActivation('degressiveStep', true);
@@ -1136,12 +1139,26 @@ _renderCalculateButton(position='right') {
 render() {
     if (this.state.isLoading) {
           return (
-              <View style ={{flex: 1,  backgroundColor: 'white', justifyContent: 'center', alignItems: 'center'}}>
-                    <Robot width={200} height={200} />
-                    <Text style={setFont('300', 16)}>
-                      {this.state.messageLoading}
-                    </Text>
-              </View>
+
+
+            <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 300}}>
+              <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} scalesPageToFit={false}
+                startInLoadingState={true}
+                //renderLoading={() => <RobotBlink width={120} height={120} />}
+                />
+              
+              <Text>{this.state.messageLoading}</Text>
+            </View>
+
+
+
+
+              // <View style ={{flex: 1,  backgroundColor: 'white', justifyContent: 'center', alignItems: 'center'}}>
+              //       <Robot width={200} height={200} />
+              //       <Text style={setFont('300', 16)}>
+              //         {this.state.messageLoading}
+              //       </Text>
+              // </View>
           );
     }
     // <FLAnimatedSVG name={'robotFlash'} visible={this.state.isLoading} text={this.state.messageLoading}/>

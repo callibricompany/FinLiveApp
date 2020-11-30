@@ -253,7 +253,7 @@ export class CAutocall extends CProduct {
   }
 
   //retourne le nom commercial du produit
-  getProductShortName() {
+  getProductCode() {
     let name = "";
 
     if (this.product.hasOwnProperty("product")) {
