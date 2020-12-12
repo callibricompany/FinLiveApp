@@ -453,7 +453,7 @@ const withAuthentication = Component => {
 
 
                 //on cree les objets autocalls
-                let featuredAutocalls = [];
+                
                 userDatas.startPage.bestCoupon.forEach((t) => {            
                   switch (t.template) {
                     case TEMPLATE_TYPE.PSLIST :

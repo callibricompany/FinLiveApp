@@ -1,4 +1,4 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useEffect} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -14,8 +14,10 @@ import { getConstant, currencyFormatDE } from '../../../Utils';
 
 import { FLDatePicker } from '../FLDatePicker';
 
-import Numeral from 'numeral'
-import 'numeral/locales/fr'
+import Numeral from 'numeral';
+import Moment from 'moment';
+import 'numeral/locales/fr';
+
 
 
 
@@ -23,10 +25,10 @@ import 'numeral/locales/fr'
 
 export function FLStrike (props) {
 
-
-
-        const refAuctionDropDown = useRef();
-        const refNominal = useRef();
+        
+        useEffect(() => {
+            //console.log("MAXIMUM DATE CHANGED : " + props.maximumDate);
+        }, [props.maximumDate]);
 
         return (
             <>
@@ -37,7 +39,12 @@ export function FLStrike (props) {
                     <View style={{marginBottom : 5}}>
                         <Text style={setFont('200', 12, 'gray')}>Date de constation initiale</Text>
                     </View>
-                    <FLDatePicker date={props.strikedate} onChange={() =>  console.log("en attente fin de dev pricer")} isEditable={props.isEditable} />
+                    <FLDatePicker   date={props.strikedate} 
+                                    onChange={(d) =>  props.updateProduct('strikingDate', d, "Striking date : "+d, false)} 
+                                    isEditable={props.isEditable} 
+                                    maximumDate={props.maximumDate}
+                                    minimumDate={props.minimumDate}
+                                 />
                 </View>
                
   

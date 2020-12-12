@@ -2,7 +2,6 @@ import Moment from 'moment';
 
 
 
-
 //classe mere de tous les objets financiers, immos, arts, etc...
 export class CProduct2 { 
     constructor(product) {
@@ -32,6 +31,7 @@ export class CProduct2 {
 
     setNominal(nominal) {
       this.nominal = nominal;
+      this.setToPricing("NOMINAL", nominal);
     }
 
     //verifie si le prix du produit est valide ou a expiré
@@ -91,21 +91,34 @@ export class CProduct2 {
     //renvoie un  element du pricing
     getFromPricing(field, whichPricing=-1) {
       let resp = -1;
-      
+
       if (this.product.hasOwnProperty("PRICINGS")) {
+        //on prend le dernier pricing
         if (whichPricing === -1) {
-          let arrayKeys = Object.keys(this.product["PRICINGS"]);
-          //on prend le dernier pricing
-          if (arrayKeys != null && arrayKeys.length > 0) {
-            whichPricing = Math.max(arrayKeys);
-          }
+          whichPricing = this.product["PRICINGS"].length - 1;
+          
         }
+
         var pricing = this.product["PRICINGS"][whichPricing];
         if (pricing.hasOwnProperty(field)) {
           resp = pricing[field];
         }
       }
+      //console.log(field + " : " + resp);
       return resp;
+    }
+    setToPricing(field, value, whichPricing=-1) {
+      if (this.product.hasOwnProperty("PRICINGS")) {
+        //on prend le dernier pricing
+        if (whichPricing === -1) { 
+            whichPricing = this.product["PRICINGS"].length - 1;
+          
+        } 
+        var pricing = this.product["PRICINGS"][whichPricing];
+        if (pricing.hasOwnProperty(field)) {
+          pricing[field] = value;
+        }
+      }
     }
     
     //renvoie le json du produit
@@ -142,6 +155,7 @@ export class CProduct2 {
     }
     setAuctionType(auctionType) {
       this.typeAuction = auctionType;
+      this.setToPricing("TYPE_AUCTION", auctionType);
     }
 
     //gestions des marges liés au produit (sa marge + celle d'une eventuelle association)
@@ -155,10 +169,12 @@ export class CProduct2 {
 
     setUF(UF) {
       this.UF = UF;
+      this.setToPricing("UF", UF);
     }
 
     setUFAssoc(UFAssoc) {
       this.UFAssoc = UFAssoc;
+      this.setToPricing("UFAssoc", UFAssoc);
     }
 
     //retroune l'ISIN

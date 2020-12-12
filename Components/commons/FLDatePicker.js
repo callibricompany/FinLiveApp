@@ -51,6 +51,7 @@ export function FLDatePicker (props) {
                                         onChange={(event, selectedDate) => {
                                             const currentDate = selectedDate || date;
                                             setDate(currentDate);
+                                            props.onChange(currentDate);
                                         }}
                                     />
                                 )

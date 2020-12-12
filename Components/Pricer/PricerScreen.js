@@ -384,7 +384,7 @@ _renderProductTile() {
                                       this.request.setTitle('freq', String("fréquence de rappel").toUpperCase());
                                       switch (Number(index))  {
                                          case 0 :   //autocall
-                                            this._updateValue('type', 'athena', value);
+                                            this._updateValue('type', 'AUTOCALL_INCREMENTAL', value);
                                             this._updateValue('barrierPhoenix', 1, "100%");
                                             //this._updateValue('isIncremental', true, "incremental");
                                             this._updateValue('isMemory', true, "Effet mémoire");
@@ -393,7 +393,7 @@ _renderProductTile() {
                                             this.request.setActivation('barrierPhoenix', false);
                                             break;
                                          case 1 : 
-                                            this._updateValue('type', 'phoenix', value);
+                                            this._updateValue('type', 'PHOENIX', value);
                                             this._updateValue('isMemory', false, "non mémoire");
                                             this._updateValue('degressiveStep', 0, 'sans stepdown');
                                             this._updateValue('airbagLevel', 'NA', 'Non airbag');
@@ -404,7 +404,7 @@ _renderProductTile() {
                                             break;
                                           case 2 :
                                             this._updateValue('nncp', 12, '1 an');
-                                            this._updateValue('type', 'reverse', value);
+                                            this._updateValue('type', 'REVERSE', value);
                                             this._updateValue('isMemory', false, "non mémoire");
                                             this._updateValue('autocallLevel', 99.99, 'pas de rappel');
                                             this._updateValue('degressiveStep', 0, 'sans stepdown');
@@ -517,11 +517,12 @@ _renderGenericTile=(criteria) => {
 
 //choix de la fréquence et du no call périod
 _renderPhoenixTile=() => {
+  console.log("TOTO : " + this.request.getValue('type').includes('PHOENIX'));
   let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];
   //console.log("PHOENIX ACTIVE : "+ this.request.isActivated('barrierPhoenix') + "    :     " +this.request.getValue('barrierPhoenix'));
   //determination de la couleur backgound
   let bgColorPhoenix = 'white';
-  let iconColorPhoenix = this.request.getValue('type') === 'phoenix' ? setColor('') : setColor('lightBlue');
+  let iconColorPhoenix = this.request.getValue('type').includes('PHOENIX') ? setColor('') : setColor('lightBlue');
   /*if (this.request.getValue('type') !== 'phoenix') {
     bgColorPhoenix = setColor('gray');
     iconColorPhoenix = setColor('lightBlue');
@@ -551,14 +552,14 @@ _renderPhoenixTile=() => {
                 <View style={{flexDirection: 'row', height: 2*(getConstant('width')*0.925-20)/3/3, borderWidth : 0, padding: 2, flexGrow: 1}}>
                     <TouchableOpacity style={{flexDirection: 'column', width :(getConstant('width')*0.925-20)/3 +5, borderWidth: 0,  justifyContent: 'space-between', alignItems: 'center'}}
                                       onPress={() => {
-                                        if (this.request.getValue('type') === 'phoenix'){
+                                        if (this.request.getValue('type').includes('PHOENIX')){
                                             this.currentParameter = 'barrierPhoenix';
                                             //this.request.setActivation(this.currentParameter, true);
                                   
                                             this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[1] });
                                         }
                                       }}
-                                      activeOpacity={this.request.getValue('type') === 'phoenix' ? 0.2 : 1}
+                                      activeOpacity={this.request.getValue('type').includes('PHOENIX') ? 0.2 : 1}
                     >
                         <View style={{flexDirection: 'row', borderWidth : 0}}>
                               <View style={{flex: 0.6, justifyContent : 'center', alignItems: 'center'}}>
@@ -567,15 +568,15 @@ _renderPhoenixTile=() => {
 
                               <TouchableOpacity style={{flex: 0.4, justifyContent : "flex-start", alignItems: 'flex-end', paddingRight: 8, borderWidth: 0}}
                                                 onPress={() => {
-                                                  if (this.request.getValue('type') === 'phoenix') {
+                                                  if (this.request.getValue('type').includes('PHOENIX')) {
                                                     this.currentParameter = 'barrierPhoenix';
                                                     this.setState({ bottomPanelPosition : SNAP_POINTS_FROM_TOP[0] });
                                                     }
                                                 
                                                 }}
-                                                activeOpacity={this.request.getValue('type') === 'phoenix' ? 0.2 : 1}
+                                                activeOpacity={this.request.getValue('type').includes('PHOENIX') ? 0.2 : 1}
                               >
-                              {this.request.getValue('type') === 'phoenix' ?
+                              {this.request.getValue('type').includes('PHOENIX') ?
                                   <MaterialCommunityIcons name={'plus'}  size={14} style={{color: setColor('lightBlue')}}/>
                                 : null
                               }
@@ -583,8 +584,8 @@ _renderPhoenixTile=() => {
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start', marginLeft : -30}}>
                             
-                          <Text style={[setFont('300', 14, this.request.isActivated('barrierPhoenix') ? setColor('') : setColor('lightBlue')), {textAlign: 'left'}]}>
-                                  {this.request.getValue('type') !== 'phoenix' ? Numeral(this.request.getValue('autocallLevel')).format('0%') : this.request.getValueLabel('barrierPhoenix') }
+                          <Text style={[setFont('300', 14, this.request.isActivated('barrierPhoenix') ? setColor('') : setColor('lightBlue')), {textAlign: 'center', paddingHorizontal : 30}]} >
+                                 {!this.request.getValue('type').includes('PHOENIX') ? Numeral(this.request.getValue('autocallLevel')).format('0%') : this.request.getValueLabel('barrierPhoenix') }
                           </Text>
 
                             

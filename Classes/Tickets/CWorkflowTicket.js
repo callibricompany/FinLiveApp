@@ -27,6 +27,7 @@ export class  CWorkflowTicket extends CTicket {
 
         //convertFresh(this.ticket['custom_fields']);
         this.product = new CAutocall(convertFresh(ticket['custom_fields']));
+        //this.product = new CAutocall2('2020-12-02T17:58:38.973Z262523912');
         
         break;
       default : 

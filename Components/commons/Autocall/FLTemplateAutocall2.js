@@ -5,7 +5,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 //import Ionicons from "react-native-vector-icons/Ionicons";
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-
+var _ = require('lodash');
 import RobotBlink from "../../../assets/svg/robotBlink.svg";
 
 import { WebView } from 'react-native-webview';
@@ -58,7 +58,7 @@ class FLTemplateAutocall2 extends React.Component {
       isEditable : typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : false,
       showModalUpdate : false,
       messageLoading: '',
-      nominal : typeof this.props.nominal !== 'undefined' ? this.props.nominal  : 2020,
+      //nominal : typeof this.props.nominal !== 'undefined' ? this.props.nominal  : 2020,
       isFavorite : false,
       toto : true,
     }
@@ -111,8 +111,8 @@ class FLTemplateAutocall2 extends React.Component {
     }
 
     //this.autocallResult = new CAutocall2(this.autocall.getProductJSON());
-    this.autocallResult = Object.assign(Object.create(Object.getPrototypeOf(this.autocall)), this.autocall);
-    
+    //this.autocallResult = Object.assign(Object.create(Object.getPrototypeOf(this.autocall)), this.autocall);
+    this.autocallResult = _.cloneDeep(this.autocall);
     
 
     this.request = new CPSRequest();
@@ -126,8 +126,8 @@ class FLTemplateAutocall2 extends React.Component {
   UNSAFE_componentWillReceiveProps (props) {
     //console.log("PASSSE UNSAFE_componentWillReceiveProps");
     //console.log(Object.keys(props));
-    // this.autocallResult = props.autocall;
-    // //this.setState({ toto : !this.state.toto });
+    this.autocallResult = props.autocall;
+    this.setState({ toto : !this.state.toto });
 
     // if (typeof props.nominal !== 'undefined' && this.state.isEditable) {
     //   this.state.nominal !== props.nominal ? this.setState({ nominal : props.nominal }, this._updateNominal()) : null;
@@ -135,11 +135,11 @@ class FLTemplateAutocall2 extends React.Component {
     
   }
  
- _updateNominal() {
-  console.log("PASSSE _updateNominal");
-    this._updateValue('nominal', this.state.nominal, currencyFormatDE(this.state.nominal) );
-    this._recalculateProduct();
- }
+//  _updateNominal() {
+//   console.log("PASSSE _updateNominal");
+//     this._updateValue('nominal', this.state.nominal, currencyFormatDE(this.state.nominal) );
+//     this._recalculateProduct();
+//  }
 
 
 _renderRecalculateProduct() {

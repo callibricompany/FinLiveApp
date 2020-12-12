@@ -30,7 +30,7 @@ import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 
 import { Dropdown } from 'react-native-material-dropdown';
 import ModalDropdown from 'react-native-modal-dropdown';
-
+import { VictoryPie, VictoryLabel, VictoryLegend } from "victory-native";
 
 
 
@@ -207,7 +207,195 @@ _renderFooterShortTemplate(isFavorite) {
 
 
 
+_renderAutocallFullTemplate() {
 
+  return (
+   <View style={{ flexDirection : 'row', backgroundColor: 'white', paddingTop:5}}>
+      <View style={{flex : 0.8, borderWidth : 0, marginLeft : 10,  marginTop : 10}}>
+            <View style={{flexDirection : 'row',  marginTop : 0, marginBottom : 10}} >
+
+                    <View style={{flex : 0.5, borderWidth : 0, paddingRight : 15}}>
+                                    <View style={{marginBottom : 5}}>
+                                        <Text style={setFont('200', 12, 'lightgray')}>Capital</Text>
+                                    </View>
+
+                                    <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+                                            <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                              
+                                            </View>
+                                            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
+                   
+                                            </View>
+                       
+                                        </View>
+
+                            </View>    
+
+
+                    <View style={{flex : 0.5, borderWidth : 0, paddingRight : 15}}>
+                            <View style={{marginBottom : 5}}>
+                                <Text style={setFont('200', 12, 'lightgray')}>Maturité</Text>
+                            </View>
+
+                            <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }} >
+                                  <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                         
+                                  </View>
+                                  <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
+                                  </View>
+                  
+                              </View>
+
+                    </View>  
+
+
+                    </View>
+            <View style={{flexDirection : 'row', borderWidth : 0, height : 105}}>
+
+
+                    <View style={{flex : 0.5, borderWidth : 0, paddingRight : 15}}>
+                                <View style={{marginBottom : 5}}>
+                                    <Text style={setFont('200', 12, 'lightgray')}>Coupons</Text>
+                                </View>
+
+                                <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+              
+
+                                      <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        
+                                      </View>
+
+                                      <View style={{flex: 1, justifyContent: 'center',  alignItems: 'flex-start', paddingLeft : 5}}>
+                                       
+                                      </View>
+                                </View>
+
+
+
+
+
+                                <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+                                      <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        
+                                      </View>
+                                      <View style={{flex: 1, justifyContent: 'center',  alignItems: 'flex-start', paddingLeft : 5}}>
+                                            <Text style={[setFont('200', 12, setColor(''),'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+            
+                                                <Text style={setFont('200', 12, setColor(''),'Regular')}> </Text>   
+                                            </Text>     
+                                      </View>
+                                </View>
+
+
+
+
+                                <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+                                      <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                       
+                                      </View>
+                                      <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
+                 
+                                      </View>     
+                                </View>
+                    </View>    
+
+
+                    <View style={{flex : 0.5, borderWidth : 0, paddingRight : 15}}>
+                                <View style={{marginBottom : 5}}>
+                                    <Text style={setFont('200', 12, 'lightgray')}>Rappels</Text>
+                                </View>
+
+                                <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }} >
+              
+
+                                      <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                       
+                                      </View>
+
+                                      <View style={{flex: 1, justifyContent: 'center',  alignItems: 'flex-start', paddingLeft : 5}}>
+                                   
+                                      </View>
+
+                                      
+                                </View>
+
+
+
+
+
+                                <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+                                      <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        
+                                      </View>
+                                      <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
+       
+                                        </View>
+                                </View>
+
+
+
+
+                                <View style={{flexDirection: 'row', borderWidth: 0, justifyContent: 'flex-start', alignItems: 'center', }}>
+                                      <View style={{ borderLeftWidth: 1, borderLeftColor : 'lightgray',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
+                                        
+                                      </View>
+                                      <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
+                                    </View>
+                                </View>
+                    </View>     
+            </View>
+
+
+      </View>     
+      <View style={{flex : 0.2, borderWidth : 0, marginRight : 10, marginTop : 10,}} >
+          <View style={{marginBottom : 5}}>
+              <Text style={setFont('200', 12, 'lightgray')}>Probabilités</Text>
+          </View>
+
+              <View style={{borderWidth : 0, height : 80}}>
+                  
+                      <VictoryPie data={[{ y: 100 }, { y: 0 }, { y: 0 }]} 
+                                  origin={{ x: 0.2*(0.9*getConstant('width') - 10)/2, y: 40 }}
+                                  //origin={{ x: 20, y: 20 }}
+                                  width={150} 
+                                  height={150} 
+                                  colorScale={['lightgray', 'lightgray', 'lightgray']} 
+                                  labelComponent={<VictoryLabel  style={{fontSize : 10, fill : 'lightgray'}} />}
+                                  innerRadius={10}  
+                                  animate={{ easing: 'exp' }}
+                                  labels={( data ) => ''}
+                                  labelRadius={28}
+                                  startAngle={-120}
+                      />
+              </View>
+              <View style={{marginTop : 0, borderWidth: 0, height : 60}}>
+                      <VictoryLegend x={5} y={10}
+                                      //title="Legend"
+                                      centerTitle
+                                      orientation="vertical"
+                                      rowGutter={0}
+                                      height={100}
+                                      style={{ labels: {fontSize: 11 } }}
+                                      symbolSpacer={2}
+                                      labelComponent={<VictoryLabel  dx={3} style={{fontSize : isAndroid() ? 10 : 12, fill : 'gray'}} />}
+                                      data={[
+                                        { name: "", symbol: { fill: 'snow', type: "square" } },
+                                        { name: "", symbol: { fill: 'snow', type: "square"} },
+                                        { name: "", symbol: { fill: 'snow', type: "square" } }
+                                      ]}
+                                      
+                      />
+              </View>
+    
+                                  
+      </View>                  
+
+    </View>
+         
+
+  );
+
+}
 
 
 render () {
@@ -218,6 +406,15 @@ render () {
           <Animated.View style={{width: this.screenWidth, opacity : this.state.animatedValue}}>
             {this._renderHeaderShortTemplate()}
             {this._renderAutocallShortTemplate()}
+            {this._renderFooterShortTemplate()}
+          </Animated.View>
+        );
+      } else if (this.type === TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE) {
+        
+        return (
+          <Animated.View style={{width: this.screenWidth, opacity : this.state.animatedValue}}>
+            {this._renderHeaderShortTemplate()}
+            {this._renderAutocallFullTemplate()}
             {this._renderFooterShortTemplate()}
           </Animated.View>
         );

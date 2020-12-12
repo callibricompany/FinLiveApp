@@ -471,7 +471,7 @@ function labelStyle (focused, tintColor) {
     //console.log("TOOOLLLLBAR : " + routes[index].routeName);
     //console.log(routes[index].params);
     if(routes[index].routeName === 'FLAutocallDetailPricer'  || routes[index].routeName === 'FLAutocallDetailTrade'   || routes[index].routeName === 'FLAutocallDetailBroadcastPP'
-    || routes[index].routeName === 'FLAutocallDetailBroadcastFriends'){
+    || routes[index].routeName === 'FLAutocallDetailBroadcastFriends' || routes[index].routeName === 'FLAutocallDetail'){
       if (typeof routes[index].params !== 'undefined') {
           tabBarVisible = !routes[index].params['hideBottomTabBar'];
       }

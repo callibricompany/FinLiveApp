@@ -67,6 +67,7 @@ export class CAutocall2 extends CStructuredProduct {
     
     //initialisation d'autres variables
     console.log(this.getShortName());
+
     this.probability = {};
     this.calculateProbabilities();
   }
@@ -290,7 +291,8 @@ export class CAutocall2 extends CStructuredProduct {
 
   //verifie si c'est c'est un phoenix
   isPhoenix() {
-    return this.barrierPhoenix !== this.autocallLevel;
+      return this.getProductCode().includes('PHOENIX');
+    //return this.barrierPhoenix !== this.autocallLevel;
   }
 
   //verifie si c'est c'est une reverse
@@ -310,65 +312,36 @@ export class CAutocall2 extends CStructuredProduct {
   }
 
 
-  //calcule les dates et les niveaux de paiements et les niveaux de coupons
-  getPhoenixDatas() {
-        let phoenixDatas = [];
-        if (this.isPhoenix()){
-              
-            let freq = this.getFrequencyAutocallNumber();
-            let mat = this.getMaturityInMonths();
+ //calcule les dates et les niveaux de paiements et les niveaux de rappels et de coupons
+  getAutocallDatas(formula) {
+    
+    let datas = [];
+    if (this.product.hasOwnProperty("PAYMENTS")) {
+        let pdates = this.product["PAYMENTS"];
 
-            let numberOfDates = mat / freq;
-            //console.log("nb red ates : " + numberOfDates);
+        pdates.forEach((p) => {
             let obj = {};
-            let currentYear = 0;
-            let incrementalMultiplier = 1;
-            for (let i = 0; i < numberOfDates; i++) {
-              currentYear = Math.trunc(i / freq);
-              obj = {};
-              d = Moment(this.getStrikingDate(), "YYYYMMDD").add((i+1) * freq, 'months');
-              obj["date"] = d;
-              obj["level"] = Number(this.getBarrierPhoenix());
-              obj["coupon"] = Number(this.getCouponPhoenix())*freq/12;
-              
-              phoenixDatas.push(obj);
+            if (p.hasOwnProperty('PAYOFF') && p.hasOwnProperty('DATES_STRING')) {
+                p['PAYOFF'].forEach((payoff) => {
+                    if (payoff.hasOwnProperty('FORMULA') && payoff.hasOwnProperty('LEVEL') && payoff.hasOwnProperty('OBSERVATIONS') && payoff.hasOwnProperty('COUPON') && payoff['FORMULA'] === formula) {
+                        let maxKeyNumber = 0;
+                        Object.keys(payoff['OBSERVATIONS']).forEach((k) => {
+                            Number(k) > maxKeyNumber ? maxKeyNumber = Number(k) : null;
+                        });
+
+                        obj["date"]  = this.getObservationDate(maxKeyNumber);
+                        obj["coupon"] = payoff['COUPON'];
+                        obj["level"] = payoff['LEVEL'];
+                        obj["payments"] =  Moment(p['DATES_STRING'], 'YYYYMMDD_HHmmss').toDate();
+                        datas.push(obj);
+                    }
+               })
             }
-        }
-        return phoenixDatas;
+            //paymentDates.push(Moment(p['DATES_STRING'], 'YYYYMMDD').toDate());                
+        })
+    }  
+    
+    return datas;
   }
-
-    //calcule les dates et les niveaux de paiements et les niveaux de rappels et de coupons
-  getAutocallDatas() {
-
-    //Nombres de dates : 20  -  Nombre NNCall : 4  -  Freq : 6         DS : 3
-
-      callableDatas = [];
-      let freq = this.getFrequencyAutocallNumber();
-      let mat = this.getMaturityInMonths();
-      let numberOfDates = mat / freq;
-      
-      let numberWithNoCall = this.getNNCP()/ freq;
-      
-      
-      let obj = {};
-      let ds = Number(this.getDegressivity());
-      let currentYear = 0;
-      let incrementalMultiplier = 1;
-      //console.log("Nombres de dates : " +numberOfDates + "  -  Nombre NNCall : " + numberWithNoCall + "  -  Freq : " + freq + "         DS : "+ds);
-      for (let i = numberWithNoCall; i <= numberOfDates; i++) {
-        currentYear = Number(freq* i / 12);
-        obj = {};
-        d = Moment(this.getStrikingDate(), "YYYYMMDD").add(i * freq, 'months');
-        obj["date"] = d;
-        obj["level"] = Number(this.getAutocallLevel()) - currentYear * ds/100;
-        if (i === numberOfDates) {
-          obj["level"] = Math.min(obj["level"], Number(this.getAirbagLevel()))
-        }
-        incrementalMultiplier = this.isMemory() ? currentYear : freq/12;
-        obj["coupon"] = this.isPhoenix() ? 1 : (1+(incrementalMultiplier * Number(this.getCoupon())));
-        
-        callableDatas.push(obj);
-      }
-      return callableDatas;
-  }
+  
 }

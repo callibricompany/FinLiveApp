@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, ScrollView, Text, View, Animated, StyleSheet, KeyboardAvoidingView, Dimensions, TouchableOpacity, TextInput, StatusBar, Modal, Keyboard, FlatList, ClippingRectangle } from "react-native";
+import { Image, ScrollView, Text, View, Animated, Alert, KeyboardAvoidingView, Dimensions, TouchableOpacity, TextInput, StatusBar, Modal, Keyboard, FlatList, ClippingRectangle } from "react-native";
 
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -9,7 +9,7 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-import FLTemplateAutocall from "./FLTemplateAutocall";
+import FLTemplateAutocall2 from "./FLTemplateAutocall2";
 import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 
 import { ssCreateStructuredProduct } from '../../../API/APIAWS';
@@ -28,7 +28,7 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { CAutocall } from '../../../Classes/Products/CAutocall';
+import { CAutocall } from '../../../Classes/Products/CAutocall2';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 
 import Numeral from 'numeral'
@@ -80,13 +80,12 @@ class FLAutocallDetailTrade extends React.Component {
         isKeyboardVisible: false,
   
         //affchage du modal description avant traiter
-        showModalDescription : false,
         description : '',
         isAutomatique : true,
        
         isLoadingCreationTicket : false,
-        isLoadingUpdatePrice : false,
-        messageUpdatePrice : '',
+        showErrorMessage : false,
+        messageToShow : '',
         toto : true,
 
     };
@@ -154,10 +153,10 @@ class FLAutocallDetailTrade extends React.Component {
   render() {
     let dataOptions = ['Clone', 'Shadow'];
     return (
-      <View  style={{ flex: 1, backgroundColor: "white" , opacity: this.state.showModalDescription ? 0.3 : (this.state.isLoadingCreationTicket || this.state.isLoadingUpdatePrice) ? 0.2 : 1}} >
+      <View  style={{ flex: 1, backgroundColor: "white" , opacity: this.state.isLoadingCreationTicket ? 0.2 : 1}} >
          
-            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("création d'une demande de cotation").toUpperCase()}/>
-            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingUpdatePrice} text={String(this.state.messageUpdatePrice).toUpperCase()}/>
+            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={this.state.messageToShow}/>
+      
         
             <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 45 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center'}}  >
                             <TouchableOpacity style={{ flex: 0.2, flexDirection : 'row', borderWidth: 0, padding : 5}}
@@ -296,7 +295,7 @@ class FLAutocallDetailTrade extends React.Component {
 
             </View>
             <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', borderWidth: 0}}>
-                <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={false} source={'Home'}  nominal={this.state.finalNominal} screenWidth={0.9} />
+                <FLTemplateAutocall2 autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={false} screenWidth={0.9} />
             </View>
 
             <View style={{backgroundColor: setColor(''), alignItems:'center', justifyContent: 'center', padding: 10}}>
@@ -334,23 +333,27 @@ class FLAutocallDetailTrade extends React.Component {
                     <TouchableOpacity style={{borderWidth: 1, borderColor : setColor('subscribeBlue'), borderRadius : 10, backgroundColor: setColor('subscribeBlue'), padding : 10}}
                                       onPress={() => {
                                         //on envoie le ticket 
-                                        this.setState({ isLoadingCreationTicket : true , showModalDescription : false });
+                                        this.setState({ isLoadingCreationTicket : true ,  messageToShow : String("création d'une demande de cotation").toUpperCase()});
                                  
                                         
-                                        let productToSend = this.autocall.getProduct();;
-                                        productToSend['subject'] = this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.autocall.getFrequencyAutocallTitle().toLowerCase();
+                                        let productToSend = {}; //this.autocall.getProduct();
+                                        productToSend['subject'] = this.autocall.getShortName();//this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.autocall.getFrequencyAutocallTitle().toLowerCase();
                                         productToSend['description'] = this.state.description ==='' ? "Aucune instruction particulière" : this.state.description;
                                         productToSend['type'] = 'Produit structuré';
                                         productToSend['department'] = 'FIN';
-                                        productToSend['nominal'] = Number(this.state.nominal);
+                                        productToSend['nominal'] = this.autocall.getNominal();
                                         productToSend['cf_ps_shared'] = false;
                                         
-                                        if (productToSend['cf_cpg_choice'] === "Placement Privé") {
+                                        if (this.autocall.getAuctionType() === 'PP') {
+                                          productToSend['cf_cpg_choice'] = "Placement Privé";
+                                          productToSend['codeOperation'] = 'pp';
                                           productToSend['cf_step_pp'] = "PPDVB";
                                         } else {
+                                          productToSend['cf_cpg_choice'] = "Appel public à l'épargne";
+                                          productToSend['codeOperation'] = 'ape';
                                           productToSend['cf_step_ape'] = "APEDVB";
                                         }
-                                        
+                                        productToSend['productcode'] = this.autocall.getUniqueId();
                                         //date de fin de resolution du ticket 
                                         //si PP dans 3 jours fin de journée
                                         let due_byDate = Moment(Date.now()).add(3, 'days').set({"hour": 17, "minute": 30, "second" : 0}).toDate();
@@ -365,17 +368,15 @@ class FLAutocallDetailTrade extends React.Component {
                                         
                                         productToSend['UF'] = this.autocall.getUF();
                                         productToSend['UFAsso'] = this.autocall.getUFAssoc();
-                                        //console.log(productToSend);
+                                        console.log(productToSend);
 
                                        //"due_by": 2020-05-03T15:30:00.912Z,
 
                                         ssCreateStructuredProduct(this.props.firebase, productToSend)
                                        .then((data) => {
-                                          //console.log("USER CREE AVEC SUCCES DANS ZOHO");
-                                          
                                           console.log("SUCCES CREATION TICKET");
                                           
-                                          let t = new CWorkflowTicket(data.data);
+                                          let t = new CWorkflowTicket(data);
                                           this.props.addTicket(t);
                                           console.log("TICKET AJOUTE");
                                           this.setState({ isLoadingCreationTicket : false }, () => {
@@ -384,7 +385,13 @@ class FLAutocallDetailTrade extends React.Component {
                                         })
                                         .catch(error => {
                                            console.log("ERREUR CREATION TICKET: " + error);
-                                           this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR CREATION DE TICKET', '' + error));
+                                           this.setState({ messageToShow : String('Erreur création demande de prix').toUpperCase()})
+                                           setTimeout(()=> { 
+                                              this.setState({ isLoadingCreationTicket : false, messageToShow : ''});
+                                              this.props.navigation.goBack();
+                                            }, 4000);
+                                           //this.setState({ isLoadingCreationTicket : false }, () => Alert.alert('ERREUR CREATION DE DEMANDE DE PRIX',  error));
+                                      
                                           
                                         });
                                         

@@ -382,7 +382,7 @@ class FLTemplatePP extends React.Component {
                   if (duedate > Date.now()) {
                       return (
                         <View style={{ padding : 2, alignItems: 'center', justifyContent: 'center', borderWidth: 0}}>
-                            <Text style={[setFont('200', 9),{textAlign: 'center'}]}>{this.firstDealineTicket}</Text>
+                            <Text style={[setFont('200', 9),{textAlign: 'center'}]} numberOfLines={2}>{this.firstDealineTicket}</Text>
                         </View>
                       );
                   } else {
@@ -395,14 +395,13 @@ class FLTemplatePP extends React.Component {
                 case 0 :
                   return (
                     <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
-                        <Text style={setFont('200', 9)}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
+                        <Text style={setFont('200', 9)} numberOfLines={2}>{Moment(this.ticket.getCreationDate()).format('lll')}</Text>
                     </View>
                   );
                 case this.labels.length - 1 :  //dernier
                   return (
                     <View style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2}}>
                         <Text style={setFont('200', 8, setColor('lightBlue'))}>Traité</Text>
-                        
                     </View>
                   );
                 default : 
@@ -479,7 +478,7 @@ class FLTemplatePP extends React.Component {
   }
   _renderFullTemplate() {
     return (
-            <TouchableOpacity style={{}}
+            <TouchableOpacity style={{borderWidth : 0}}
                               onPress={() => {
                                 this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
                                   ticket: this.ticket,
@@ -643,7 +642,7 @@ class FLTemplatePP extends React.Component {
 
   _renderMediumTemplate() {
     return (
-            <TouchableOpacity style={{}}
+            <TouchableOpacity style={{borderWidth : 0}}
                               onPress={() => {
                                 
                                 this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
@@ -691,7 +690,7 @@ class FLTemplatePP extends React.Component {
 
                 </View>
                 {this.ticket.isShared() && !this.ticket.isMine(this.props.user)
-                ? <View>
+                ? 
                   <View style={{ flexDirection : 'row', paddingLeft : 0, paddingRight : 10, paddingVertical:  3, borderRadius : 10, }} >   
                                     <View style={{flexDirection : 'row', width : '70%', marginTop : 5, marginBottom : 2, padding : 1, justifyContent : 'space-between'}}>
                                             <View style={{height : 40, width : 40, borderWith : 0, borderColor : 'white', borderRadius : 20, backgroundColor : setColor(''), marginLeft : 10,  marginTop :5, marginBottom : 5, alignItems : 'center', justifyContent : 'center'}}  >
@@ -716,12 +715,7 @@ class FLTemplatePP extends React.Component {
                                             <Image style={{ borderWidth : 0, height : 50, width : 50}} source={{uri : this.requesterOrg.logoUrl}} resizeMode={'cover'} />
                                     </View>
                   </View>
-                  {/* <View style={{marginLeft : 10, paddingBottom : 10 , backgroundColor : setColor('background') }}>
-                          <Text style={setFont('400', 14, 'black')}>
-                                    vous propose : 
-                          </Text>     
-                  </View> */}
-                  </View>
+
 
                 : null
                 }
@@ -733,8 +727,8 @@ class FLTemplatePP extends React.Component {
                         this.ticket.isMine(this.props.user)
                         ?
                               <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'flex-start', height : 19}}>
-                                    <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
-                                          <Text style={setFont('200', 12, setColor(''), 'Bold')}>
+                                    <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0, width : '85%'}}>  
+                                          <Text style={setFont('200', 12, setColor(''), 'Bold')} numberOfLines={2}>
                                               {currencyFormatDE(this.amount)}  {this.ticket.getCurrency()} collecté sur {currencyFormatDE(this.ticket.getBroadcastAmount())} {this.ticket.getCurrency()}
                                           </Text>
                                       </View>

@@ -3,6 +3,7 @@ import { object } from 'prop-types';
 import Moment from 'moment';
 
 
+
 export class CStructuredProduct extends CFinancialProduct {
     constructor(structuredproduct) {
       super(structuredproduct); 
@@ -117,6 +118,28 @@ export class CStructuredProduct extends CFinancialProduct {
         }  
         return obsDates;
     }
+    getObservationDate(whichDateNumber) {
+        let obsDate = "";
+        if (this.product.hasOwnProperty("UNDERLYINGS")) {
+            //on passe sur tous les sous-jacents
+            Object.keys(this.product["UNDERLYINGS"]).forEach((udl) => { 
+                let allDatesObsOfUdl = this.product["UNDERLYINGS"][udl];
+                if (whichDateNumber in Object.keys(allDatesObsOfUdl)) {
+                    d = allDatesObsOfUdl[whichDateNumber];
+                    if ("DATES_STRING" in d) {
+                        if (Array.isArray(d['DATES_STRING'])) {
+                            obsDate = Moment(d['DATES_STRING'][0], 'YYYYMMDD').toDate();
+                        } else {
+                            obsDate = Moment(d['DATES_STRING'], 'YYYYMMDD').toDate();
+                        }
+                    }
+                }
+                //console.log(Object.keys(allDatesObsOfUdl));
+            });
+            
+        }  
+        return obsDate;
+    }
 
     //renvoie la maturité
     getMaturityName() {
@@ -167,6 +190,10 @@ export class CStructuredProduct extends CFinancialProduct {
         return dateIssuing;
     }
 
+    setIssuingDate(dateIssuing) {
+        this.product['DATE_START_ISSUING'] = Moment(dateIssuing).format("YYYYMMDD");
+    }
+
     getStrikingDate() {
         let strikingDate = [];
         if (this.product.hasOwnProperty("UNDERLYINGS")) {
@@ -195,7 +222,25 @@ export class CStructuredProduct extends CFinancialProduct {
         }
         
     }
+    setStrikingDate(strikingDate) {
+        if (this.product.hasOwnProperty("UNDERLYINGS")) {
+            //on passe sur tous les sous-jacents
+            Object.keys(this.product["UNDERLYINGS"]).forEach((udl) => { 
+                if (0 in this.product["UNDERLYINGS"][udl]) {
+                    if("DATES_STRING" in this.product["UNDERLYINGS"][udl][0]) {
+                        if (Array.isArray(this.product["UNDERLYINGS"][udl][0]['DATES_STRING'])) {
+                            this.product["UNDERLYINGS"][udl][0]['DATES_STRING'] = [Moment(strikingDate, "YYYYMMDD")];
+                        } else {
+                            this.product["UNDERLYINGS"][udl][0]['DATES_STRING'] = Moment(strikingDate, "YYYYMMDD");
+                        }
+                    }
+                }
+            });
+        }  
+    }
 
+
+    
     //renvoie la date de fin du produit
     getEndIssueDate() {
         let endIssuingdate = new Date(Date.now());
@@ -209,6 +254,9 @@ export class CStructuredProduct extends CFinancialProduct {
         }
 
         return endIssuingdate;
+    }
+    setEndIssuingDate(dateEndIssuing) {
+        this.product['DATE_END_ISSUING'] = Moment(dateEndIssuing).format("YYYYMMDD");
     }
 
     //renvoie la dernière date d'obeservation

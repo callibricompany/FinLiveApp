@@ -22,7 +22,7 @@ import { withNavigation } from "react-navigation";
 import NavigationService from '../../Navigation/NavigationService';
 import { compose, hoistStatics } from "recompose";
 
-import { searchProducts } from '../../API/APIAWS';
+import { searchProducts, getMostPricedPS } from '../../API/APIAWS';
 import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 
 import RobotBlink from "../../assets/svg/robotBlink.svg";
@@ -74,7 +74,8 @@ class TabHome extends React.PureComponent {
       souscriptionTickets : this.props.souscriptionTickets,
     };
 
-    this.bestCoupons = [];
+	this.bestCoupons = [];
+
 
 
 
@@ -101,47 +102,48 @@ class TabHome extends React.PureComponent {
   }
 
   
-  componentDidMount(){
+  async componentDidMount(){
     //chargement des meilleurs coupons
     let allUnderlyings = this.props.getAllUndelyings();
 
    // allUnderlyings.forEach((u) => {
-      u = allUnderlyings[0];
-      //console.log(u);
-      let request = new CPSRequest();
-      //request.setCriteria('type', autocall.getProductCode(), autocall.getProductName());
-      request.setCriteria('underlying', u.split(), u);
-      request.setCriteria('maturity', [8,8], "8Y");
-      request.setCriteria('barrierPDI', 0.6, "Protégé jusqu'à -40%");
-      request.setCriteria('barrierPhoenix', 1, "Coupon payé au rappel");
-      request.setCriteria('isMemory', true, "Mémoire");
+	u = allUnderlyings[0];
+	//console.log(u);
+	let request = new CPSRequest();
+	//request.setCriteria('type', autocall.getProductCode(), autocall.getProductName());
+	//request.setCriteria('underlying', u.split(), u);
+	request.setCriteria('underlying', ['CAC'], 'CAC');
+	request.setCriteria('maturity', [8,8], "8Y");
+	request.setCriteria('barrierPDI', 0.6, "Protégé jusqu'à -40%");
+	request.setCriteria('barrierPhoenix', 1, "Coupon payé au rappel");
+	request.setCriteria('isMemory', true, "Mémoire");
 
+	try {
+		var data = await searchProducts(this.props.firebase, request.getCriteria(), false)
+		if (data.length > 0) {
+			data.forEach((autocall) => {
+				this.bestCoupons.push(new CAutocall2(autocall));
+			});
+			this.setState({ bestCouponsExtraData : !this.state.bestCouponsExtraData });
+		}
+	}
+	catch(error) {
+		console.log("ERREUR recup prix " + error);
+		//alert('ERREUR calcul des prix', '' + error);
+	};
 
-      searchProducts(this.props.firebase, request.getCriteria(), false)
-      .then((data) => {
-        
-          /*let autocall = interpolateBestProducts(data, request);
-          if (autocall.length === 1){
-            this.bestCoupons.push(new CAutocall(autocall[0]));
-            this.setState({ bestCouponsExtraData : !this.state.bestCouponsExtraData });
-          } else if (autocall.length === 0) {
-            console.log("Pas résultat possible.\nModifiez vos critères : " + u);
-          }*/
-
-          if (data.length > 0) {
-            data.forEach((autocall) => {
-              this.bestCoupons.push(new CAutocall2(autocall));
-            });
-            this.setState({ bestCouponsExtraData : !this.state.bestCouponsExtraData });
-            
-          }
-      })
-      .catch(error => {
-        console.log(u+" - ERREUR recup prix " + error);
-        //alert('ERREUR calcul des prix', '' + error);
-      });
-    
-  //  })
+	//chargement des produits structurés les plus demandés
+	try {
+		var dataFeatured = await getMostPricedPS(this.props.firebase)
+		//console.log(JSON.stringify(dataFeatured));
+		var autocallArray = [];
+		dataFeatured.forEach((autocall) => autocallArray.push(new CAutocall2(autocall)))
+		this.setState({ filteredFeaturedProducts : autocallArray });
+	}
+	catch(error) {
+		console.log("ERREUR recup prix les plus demandés " + error);
+		//alert('ERREUR calcul des prix', '' + error);
+	};
   }
 
   //va aider pour savoir si on affiche ou pas
@@ -376,24 +378,21 @@ class TabHome extends React.PureComponent {
                   //     ? this.state.filteredFeaturedProducts
                   //     : this.props.featured
                   // }
-                  data={this.props.featured}
+                  data={this.state.filteredFeaturedProducts.length === 0 ? this.props.featured.slice(0,2) : this.state.filteredFeaturedProducts}
                   horizontal={true}
                   renderItem={({ item, index }) => {
                     return (
                         <View style={{marginLeft: getConstant('width') * 0.025}}>
+                          {this.state.filteredFeaturedProducts.length === 0 ?
+                              <FLTemplateEmpty templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} />
+                            : 	<FLTemplateAutocall2 autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true}/> 
+                          }
+						            
                           {/* <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} source={'Home'}/> */}
                         </View>
                     )
                   }}
-                  //tabRoute={this.props.route.key}
-                  // keyExtractor={item => {
-                  //   let key =
-                  //     typeof item.data["id"] === "undefined"
-                  //       ? item.data["code"]
-                  //       : item.data["id"];
-                  //   return key.toString();
-                  // }}
-                  keyExtractor={item => item.getInternalCode()}
+                  keyExtractor={item =>  this.state.filteredFeaturedProducts.length === 0 ? item.getInternalCode() : item.getUniqueId()}
                 />
             </View>
 
@@ -429,8 +428,6 @@ class TabHome extends React.PureComponent {
         
                   }}
                   extraData={this.state.extraData}
-                  //tabRoute={this.props.route.key}
-                  //keyExtractor={item => item.getInternalCode()}
                   keyExtractor={item =>  this.bestCoupons.length === 0 ? item.getInternalCode() : item.getUniqueId()}
                 />
             </View>

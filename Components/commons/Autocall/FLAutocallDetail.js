@@ -1,6 +1,6 @@
 import React from "react";
 import { Image, ScrollView, Text, View, Animated, StyleSheet, KeyboardAvoidingView, Dimensions, TouchableOpacity, TextInput, StatusBar, Modal, Keyboard, FlatList, ClippingRectangle } from "react-native";
-
+var _ = require('lodash');
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -187,6 +187,16 @@ class FLAutocallDetail extends React.Component {
         title: 'Protection du capital',
         body: ''
       });
+
+      this.descProduct.push(
+        {
+          key : 'EMPTY_SECTION',
+          iconName : '',
+          iconFamily : '',
+          level : 1, 
+          title: '',
+          body: ''
+        });
  
  }
 
@@ -247,33 +257,30 @@ class FLAutocallDetail extends React.Component {
         // request.setRequestFromCAutocall(this.autocall);
         console.log(id + "  :  "+value+"  :  "+valueLabel);
         // request.setCriteria(id, value, valueLabel);
+        //this.autocallResult = Object.assign(Object.create(Object.getPrototypeOf(this.autocall)), this.autocall);
+        
+        this.autocallResult = _.cloneDeep(this.autocall);
         switch(id) {
           case 'typeAuction' :
-              this.autocall.setAuctionType(value);
+              this.autocallResult.setAuctionType(value);
+              break;
+          case 'nominal' :
+              this.autocallResult.setNominal(value);
               break;
           default : break;
         }
 
-        this.setState({ isLoadingUpdatePrice : true, messageUpdatePrice : 'Demande des prix au marché'});
-      
-        reprice(this.props.firebase, this.autocall.getProductJSON())
+        this.setState({ isLoadingUpdatePrice : true, messageUpdatePrice : 'Raffraichissement du prix indicatif'});
+        reprice(this.props.firebase, this.autocallResult.getProductJSON(), this.autocall.getProductJSON())
         .then((data) => {
-          console.log(data);
-          this.setState({ messageUpdatePrice : 'Réception et analyse des prix' });
-      
-          //var autocall = interpolateBestProducts(data, request);
-          
-          if (data.length === 1){
-            this.autocall = new CAutocall2(data[0]);
-          } else if (data.length === 0) {
-            alert("Pas résultat possible.\nModifiez vos critères.");
-          }
-      
+          //console.log(data);
+          console.log("===================================");
+          this.autocall = new CAutocall2(data);
           this.setState({isLoadingUpdatePrice : false, messageUpdatePrice : ''});
           
         })
         .catch(error => {
-          console.log("ERREUR recup prix: " + error);
+          console.log("ERREUR recupération du  prix: " + error);
           alert('ERREUR calcul des prix', '' + error);
           this.setState({ isLoadingUpdatePrice : false, messageUpdatePrice : ''});
         });
@@ -285,8 +292,17 @@ class FLAutocallDetail extends React.Component {
         case 'UFAssoc' :   
             this.autocall.setUFAssoc(value);
             break;
-        case 'UFAssoc' : 
-        default : null;
+        case 'issuingDate' : 
+            this.autocall.setIssuingDate(value);
+          break;
+        case 'endIssuingDate' : 
+            this.autocall.setEndIssuingDate(value);
+          break;
+        case 'strikingDate' : 
+            this.autocall.setStrikingDate(value);
+            break;
+            
+        default : break;
       }
     }
   }
@@ -305,6 +321,7 @@ class FLAutocallDetail extends React.Component {
                             endIssueDate={this.autocall.getEndIssueDate()}
                             notionnal={this.autocall.getNominal()}
                             updateProduct={this._updateProduct} 
+                            currency={this.autocall.getCurrency()}
                   />;
           break;
       case 'CC' : 
@@ -320,16 +337,18 @@ class FLAutocallDetail extends React.Component {
       case 'STRIKE' : 
           body = <FLStrike  isEditable={this.isEditable} 
                             strikedate={this.autocall.getStrikingDate()}
-                            updateProduct={this._updateProduct} 
+                            updateProduct={this._updateProduct}
+                            maximumDate={this.autocall.getIssueDate()}
+                            minimumDate={new Date(Date.now())}
                   />;
           break;
       case 'CALLABLE' : 
-          body = <FLCallable  autocalldatas = {this.autocall.getAutocallDatas()}
+          body = <FLCallable  autocalldatas = {this.autocall.getAutocallDatas('AUTOCALL')}
                               updateProduct={this._updateProduct} 
                   />;
           break;
       case 'COUPON' : 
-          body = <FLCoupons   phoenixDatas = {this.autocall.getPhoenixDatas()}
+          body = <FLCoupons   phoenixDatas = {this.autocall.getAutocallDatas('DIGIT')}
                               isMemory={this.autocall.isMemory()}
                               updateProduct={this._updateProduct} 
                   />;
@@ -339,6 +358,9 @@ class FLAutocallDetail extends React.Component {
                               isPDIUS={this.autocall.isPDIUS()}
                               updateProduct={this._updateProduct} 
                   />;
+          break;  
+      case 'EMPTY_SECTION' : 
+          body = <View style={{ height: 150}}/>;
           break;         
       default : 
           body = <Text style={{
@@ -352,7 +374,7 @@ class FLAutocallDetail extends React.Component {
           break;
     }
 
-    let icon = '';
+    let icon = <View />;
     switch(item.iconFamily) {
       case 'FontAwesome5' :
         icon = <FontAwesome5 name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
@@ -365,16 +387,20 @@ class FLAutocallDetail extends React.Component {
         break;
       case 'SimpleLineIcons' :
           icon = <SimpleLineIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
-          break;      
+          break;   
+      case 'MaterialCommunityIcons' :
+          icon = <MaterialCommunityIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
+          break;          
+          
       default : 
-       icon = <MaterialCommunityIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
+       //icon = <MaterialCommunityIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
        break;
     }
     return (
       <View style={{flex : 1, paddingBottom : 55}}>
         {item.level === 2
          ?
-            <View style={{}}>
+            <View style={{opacity: this.state.isLoadingUpdatePrice ? 0.2 : 1}}>
                 <View style={{flexDirection: 'row', paddingBottom : 10, marginRight : 10}}>
                     <View style={{alignItems: 'flex-start', justifyContent : 'center', borderWidth: 0}}>
                         {icon}
@@ -387,7 +413,7 @@ class FLAutocallDetail extends React.Component {
                 {body}
             </View>
           :           
-            <View><Text style={[setFont('600', item.level === 1 ? 24 : 14, setColor('darkBlue'), 'Regular'), {paddingBottom: 16}]}>{item.title}</Text>
+            <View style={{}}><Text style={[setFont('600', item.level === 1 ? 24 : 14, setColor('darkBlue'), 'Regular'), {paddingBottom: 16}]}>{item.title}</Text>
               {body}
             </View>
         }
@@ -453,7 +479,7 @@ class FLAutocallDetail extends React.Component {
     //if (isActive) { color = setColor('darkBlue')}
 
     //creation de l'icone
-    let icon = '';
+    let icon = <View />;
     switch(content.iconFamily) {
       case 'FontAwesome5' :
         icon = <FontAwesome5 name={content.iconName}  size={30} color={isActive ?  'white' : color}/>;
@@ -466,9 +492,11 @@ class FLAutocallDetail extends React.Component {
         break;
       case 'SimpleLineIcons' :
           icon = <SimpleLineIcons name={content.iconName}  size={30} color={isActive ?  'white' : color}/>;
-          break;   
+          break;  
+      case 'MaterialCommunityIcons' : 
+          icon = <MaterialCommunityIcons name={content.iconName}  size={30} color={isActive ?  'white' : color}/>;
+          break;  
       default : 
-       icon = <MaterialCommunityIcons name={content.iconName}  size={30} color={isActive ?  'white' : color}/>;
        break;
     }
     return (
@@ -655,10 +683,10 @@ class FLAutocallDetail extends React.Component {
                       }}
       >
          
-            <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("création d'une demande de cotation").toUpperCase()}/>
+            {/* <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={String("création d'une demande de cotation").toUpperCase()}/> */}
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingUpdatePrice} text={String(this.state.messageUpdatePrice).toUpperCase()}/>
         
-            <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 40 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center', justifyContent: 'space-around'}} >
+            <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 40 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center', justifyContent: 'space-around', opacity: this.state.isLoadingUpdatePrice ? 0.2 : 1}} >
                             <TouchableOpacity style={{ flex: 0.2, flexDirection : 'row', borderWidth: 0, padding : 5}}
                                                 onPress={() => this.props.navigation.goBack()}
                             >
@@ -763,7 +791,7 @@ class FLAutocallDetail extends React.Component {
      
         
 
-            <View style={{opacity : this.state.showButtonsToTrade ? 0.3 : 1, flex : 1, flexDirection : 'row'}}>
+            <View style={{opacity : this.state.showButtonsToTrade ? 0.3 : 1, flex : 1, flexDirection : 'row', opacity: this.state.isLoadingUpdatePrice ? 0.2 : 1}}>
                 <View style={{width : 50,  marginLeft : 0,  zIndex : 10, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'center', backgroundColor : setColor('background')}}>
                       <Accordion
                          
@@ -798,11 +826,12 @@ class FLAutocallDetail extends React.Component {
                       viewabilityConfig={{ viewAreaCoveragePercentThreshold: 40, minimumViewTime : 500 }}
                       keyExtractor={item => item.key}
                     />
-                </View>
+
+                  </View>
             </View>
             
             {this.state.showButtonsToTrade ? this._renderButtonsTotrade() : null}     
-            {(this.state.finalNominal === -1 && this.isEditable) ? this._renderButtonTotrade() : null}
+            {(/*this.state.finalNominal === -1 && */this.isEditable) ? this._renderButtonTotrade() : null}
       </View>
     );
   }

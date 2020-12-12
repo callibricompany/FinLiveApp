@@ -1,4 +1,4 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -14,14 +14,15 @@ import { getConstant, currencyFormatDE } from '../../../Utils';
 
 import { FLDatePicker } from '../FLDatePicker';
 
-import Numeral from 'numeral'
-import 'numeral/locales/fr'
+import Numeral from 'numeral';
+import 'numeral/locales/fr';
+import Moment from 'moment';
 
 
 
 
 
-export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIssueDate, updateProduct }) {
+export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIssueDate, updateProduct, currency }) {
 
 
         const dataAuction = [
@@ -32,14 +33,18 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                         label : "Appel public à l'épargne",
                     },
                 ];
+
+        const dataAuctionLabels = dataAuction.map((value, index) => value.label)
+        
+        
         const [typeAuction, setTypeAuction] = useState(() => {
             let auction = dataAuction.filter(({ key }) => key === codeAuction);
             return auction[0].label;
         });
         const [nominal, setNominal] = useState(notionnal);
 
+        
 
-        const dataAuctionLabels = dataAuction.map((value, index) => value.label)
 
 
         const refAuctionDropDown = useRef();
@@ -121,14 +126,24 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                     <View style={{marginBottom : 5}}>
                         <Text style={setFont('200', 12, 'gray')}>Date d'émission</Text>
                     </View>
-                    <FLDatePicker date={issueDate} onChange={() =>  console.log("en attente fin de dev pricer")} isEditable={isEditable} />
+                    <FLDatePicker   date={issueDate} 
+                                    onChange={(d) =>  updateProduct('issuingDate', d, "Date issuing : "+d, false)} 
+                                    isEditable={isEditable} 
+                                    maximumDate={Moment(Date.now()).add(3, 'months').toDate()}
+                                    minimumDate={Moment(Date.now()).toDate()}
+                                    />
                 </View>
                
                 <View style={{flex : 0.5}}>
                     <View style={{marginBottom : 5}}>
                         <Text style={setFont('200', 12, 'gray')}>Date de remboursement</Text>
                     </View>
-                    <FLDatePicker date={endIssueDate} onChange={() =>  console.log("en attente fin de dev pricer")} isEditable={isEditable} />
+                    <FLDatePicker   date={endIssueDate} 
+                                    onChange={(d) =>  updateProduct('endIssuingDate', d, "Date issuing : "+d, false)} 
+                                    isEditable={isEditable} 
+                                    maximumDate={Moment(endIssueDate).add(3, 'months').toDate()}
+                                    minimumDate={Moment(endIssueDate).add(-2, 'months').toDate()}
+                                    />
                 </View>
             </View>
             
@@ -189,7 +204,7 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                             </View>
                             <View style={{width : 0.2*getConstant('width'), borderWidth : 0, justifyContent : 'center', paddingLeft : 5}}>
                                 <Text style={setFont('400', 18, isEditable ? 'gray' : 'black', 'Regular')}>
-                                    {'EUR'}
+                                    {currency}
                                 </Text>
                             </View>
 

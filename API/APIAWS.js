@@ -436,7 +436,11 @@ export function ssCreateStructuredProduct (firebase, product) {
         axios.post(URL_AWS + '/createTicket', form, axiosConfig)
         .then((response) => {
           //console.log(response);
-          resolve(response)
+          if (response.data === 'Error') {
+            reject('Error');
+          } else {
+            resolve(response.data);
+          }
           //res.render('pages/register',{email: email, isConnected: isConnected});
         })
         .catch(function (error) {
@@ -849,7 +853,8 @@ export function searchProducts (firebase, criteria, toSave=true) {
   }
 
 
-  export async function reprice (firebase, product) {
+  //reprice un autocall avec de bouveaux criteres
+  export async function reprice (firebase, product, productOrigin) {
 
     try {
       var token = await firebase.doGetIdToken();
@@ -863,10 +868,41 @@ export function searchProducts (firebase, criteria, toSave=true) {
           'bearer'      : token,
         }
       };
+      var dataToSend = {};
+      dataToSend['ORIGIN'] = productOrigin;
+      dataToSend['TARGET'] = product;
+      var response = await axios.post(URL_AWS + '/reprice', dataToSend, axiosConfig);
 
-      var response = axios.post(URL_AWS + '/reprice', product, axiosConfig);
-      //resolve(response.data)
-      return await Promise.resolve("toto");
+      return await Promise.resolve(response.data);
+    }
+    catch(err) {
+      // catches errors both in fetch and response.json
+      return await Promise.reject(err);
+    }
+    
+  }
+
+  //recupere le r-tableau des produits les plus prices
+  export async function getMostPricedPS (firebase) {
+
+    try {
+      var token = await firebase.doGetIdToken();
+
+      var axiosConfig = {
+        headers :{
+          //'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json; charset=utf-8',
+          //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+          'Accept'      : 'application/json',
+          'bearer'      : token,
+        }
+      };
+      var criteria = {};
+      criteria['nbOfPricings'] = 2;
+      
+      var response = await axios.post(URL_AWS + '/getMostPricedPS', criteria, axiosConfig);
+
+      return await Promise.resolve(response.data);
     }
     catch(err) {
       // catches errors both in fetch and response.json

@@ -35,9 +35,6 @@ import FLTemplateAutocall from '../Autocall/FLTemplateAutocall';
 import { FLDetailBroadcastPSSubscripter } from './FLDetailBroadcastPSSubscripter';
 import { FLChat } from './FLChat';
 
-import logo_white from '../../../assets/LogoWithoutTex_white.png';
-import logo from '../../../assets/LogoWithoutText.png';
-
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant, getContentTypeIcon, getContentTypeColor, niceBytes } from '../../../Utils';
 
 import HTML from 'react-native-render-html';
@@ -71,6 +68,7 @@ class FLTicketDetail extends React.Component {
 
 
     this.ticket= this.props.ticket;
+    console.log(this.ticket);
     this.autocall = this.ticket.getProduct();
     //console.log("Constructeur ticket");
     this.props._removeToast();
