@@ -6,12 +6,6 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import AnimatedProgressWheel from 'react-native-progress-wheel';
-
-import RobotBlink from "../../../assets/svg/robotBlink.svg";
-import banniere from '../../../assets/yourTeam.png';
-import YourTeam_SVG from "../../../assets/svg/yourTeam.svg";
-
 import { globalStyle, setFont, setColor } from '../../../Styles/globalStyle';
 
 import Numeral from 'numeral'
@@ -27,32 +21,25 @@ import localization from 'moment/locale/fr'
 
 import * as TEMPLATE_TYPE from '../../../constants/template'
 
-import * as Progress from 'react-native-progress';
+//import * as Progress from 'react-native-progress';
+import ProgressBar from 'react-native-progress/Bar';
 
 import { getTicket, getBroadcastAmount} from '../../../API/APIAWS';
-
-import { FLPDIDetail } from '../../Pricer/description/FLPDIDetail';
-import { FLPhoenixBarrierDetail } from '../../Pricer/description/FLPhoenixBarrierDetail';
-import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
-import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
-import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
 import { ifIphoneX, ifAndroid, isEqual, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 import { interpolateColor, interpolateColorFromGradient } from '../../../Utils/color';
 
 
-import { CAutocall } from '../../../Classes/Products/CAutocall';
-import { CPSRequest } from '../../../Classes/Products/CPSRequest';
+
 import { CUser } from '../../../Classes/CUser';
-import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
 import { CWorkflowTicket } from '../../../Classes/Tickets/CWorkflowTicket';
 
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
 
 
 import StepIndicator from 'react-native-step-indicator';
 import { CSouscriptionTicket } from '../../../Classes/Tickets/CSouscriptionTicket';
-import { CTicket } from '../../../Classes/Tickets/CTicket';
+
 
 
 
@@ -445,7 +432,7 @@ class FLTemplatePP extends React.Component {
                     encore {currencyFormatDE(Math.max(0, this.ticket.getBroadcastAmount()- this.amount))} {this.ticket.getCurrency()}
                   </Text>
                   <View style={{flex : 0.6,  justifyContent: 'center', alignItems: 'flex-start'}}>
-                      <Progress.Bar progress={this.amount/this.ticket.getBroadcastAmount()} 
+                      <ProgressBar progress={this.amount/this.ticket.getBroadcastAmount()} 
                                     color={this.state.isProgressbarDeterminated ? setColor('') : setColor('lightBlue')} 
                                     indeterminate={!this.state.isProgressbarDeterminated} 
                                     indeterminateAnimationDuration={2000}
@@ -509,20 +496,23 @@ class FLTemplatePP extends React.Component {
 
   
                 <View style={{ flexDirection : 'row', paddingLeft : 10, paddingTop: 3, width : this.screenWidth, borderWidth : 0}} >   
-                    <View style={{flex :  0.8, borderWidth : 0}}>
+                    {/* <View style={{flex :  0.8, borderWidth : 0}}> */}
                           <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} numberOfLines={1}>
                                       {this.ticket.getSubject()} 
                           </Text>
-                          <Text style={setFont('300', 14, 'black', this.state.isNotified ? 'Regular' : 'Light')}>
-                                      {this.ticket.getWorkflowName()} : {this.ticket.getType()} 
-                          </Text>
-                    </View>
-                    <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
+ 
+                    {/* </View> */}
+                    {/* <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
                           <Text style={setFont('200', 18, setColor('FLGreen'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
                           <Text style={setFont('200', 12, setColor('FLGreen'))}> p.a.
                           </Text>
-                    </View>   
+                    </View>    */}
 
+                </View>
+                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingTop: 1, width : this.screenWidth, borderWidth : 0}} > 
+                    <Text style={setFont('300', 14, 'black', this.state.isNotified ? 'Regular' : 'Light')}>
+                                      {this.ticket.getWorkflowName()} : {this.ticket.getTicketType()} 
+                    </Text>
                 </View>
                 {
                   this.ticket.isClosed() 
@@ -674,20 +664,23 @@ class FLTemplatePP extends React.Component {
 
                 <View style={{ flexDirection : 'row', paddingLeft : 10, paddingTop: 3, width : this.screenWidth, borderWidth : 0}} >   
                 
-                    <View style={{flex :  0.8, borderWidth : 0}}>
+                    {/* <View style={{flex :  0.8, borderWidth : 0}}> */}
                           <Text style={setFont('400', 16, 'black', this.state.isNotified ? 'Bold' : 'Regular')} numberOfLines={1}>
                                       {this.ticket.getSubject()} 
                           </Text>
-                          <Text style={setFont('300', 14, 'black', this.state.isNotified ? 'Regular' : 'Light')}>
-                                      {this.ticket.getWorkflowName()} : {this.ticket.getType()} 
-                          </Text>
-                    </View>
-                    <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
+
+                    {/* </View> */}
+                    {/* <View style={{flex : 0.25, justifyContent : 'center', alignItems : 'center', borderWidth : 0}}>
                           <Text style={setFont('200', 18, setColor('FLGreen'), 'Bold')}>{Numeral(this.autocall.getCoupon()).format("0.00%")}</Text>
                           <Text style={setFont('200', 12, setColor('FLGreen'))}> p.a.
                           </Text>
-                    </View>   
+                    </View>    */}
 
+                </View>
+                <View style={{ flexDirection : 'row', paddingLeft : 10, paddingTop: 1, width : this.screenWidth, borderWidth : 0}} >
+                      <Text style={setFont('300', 14, 'black', this.state.isNotified ? 'Regular' : 'Light')}>
+                          {this.ticket.getWorkflowName()} : {this.ticket.getTicketType()} 
+                      </Text>
                 </View>
                 {this.ticket.isShared() && !this.ticket.isMine(this.props.user)
                 ? 
@@ -819,9 +812,7 @@ render () {
       if (this.ticket.isShared() && !(this.ticket instanceof CSouscriptionTicket)) {
         return null;
       }
-      //check if it is in favorites
-      let isFavorite = false;
-      isFavorite = this.ticket.isFavorite(this.props.favorite);
+
        
       let render = <View></View>;
 

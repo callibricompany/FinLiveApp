@@ -7,17 +7,14 @@ import { useNavigation, useNavigationParam } from 'react-navigation-hooks'
 
 import Moment from 'moment';
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
-
-import * as Progress from 'react-native-progress';
+//import * as Progress from 'react-native-progress';
+import ProgressBar from 'react-native-progress/Bar';
 
 import { globalStyle, setFont, setColor} from '../../../Styles/globalStyle'
 import { getConstant, currencyFormatDE } from '../../../Utils';
 
 import { updateSouscriptionTicket } from '../../../API/APIAWS';
 
-import { FLDatePicker } from '../FLDatePicker';
 import FLTemplateAutocall from '../Autocall/FLTemplateAutocall';
 import { FLUF } from "../Autocall/FLUF";
 
@@ -79,7 +76,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                         </View>
                         <View style={{flex : 0.6,  justifyContent: 'center', alignItems: 'flex-end', marginRight : '5%', borderWidth : 0}}>
                             <View>
-                                    <Progress.Bar progress={amount/ticket.getBroadcastAmount()} 
+                                    <ProgressBar progress={amount/ticket.getBroadcastAmount()} 
                                                     color={setColor('')} 
                                                     //width={this.screenWidth/2}
                                     />
@@ -302,7 +299,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
         
                     <TouchableOpacity style={{alignItems: 'center', marginTop : 20, borderWidth : 0, width : getConstant('width')*0.95, marginLeft : 0.025*getConstant('width')}}
                                     onPress={() => {
-                                        navigate('FLAutocallDetailHome', {
+                                        navigate('FLAutocallDetail', {
                                             autocall: ticket.getProduct(),
                                             isEditable : false,
                                         });

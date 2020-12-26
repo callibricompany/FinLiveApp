@@ -18,7 +18,6 @@ import { compose, hoistStatics } from 'recompose';
 import { CWorkflowTicket } from '../../Classes/Tickets/CWorkflowTicket';
 import { CSouscriptionTicket } from '../../Classes/Tickets/CSouscriptionTicket';
 
-import * as Progress from 'react-native-progress';
 
 import botImage from '../../assets/bot.png'
 

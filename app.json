@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "20201114 - FinLive",
+    "name": "20201225 - FinLive",
     "slug": "FinLiveApp",
     "privacy": "public",
     "platforms": [
@@ -31,10 +31,12 @@
     "packagerOpts": {
       "config": "metro.config.js",
       "sourceExts": [
-        "js",
-        "jsx",
         "ts",
         "tsx",
+        "js",
+        "jsx",
+        "json",
+        "wasm",
         "svg"
       ]
     },

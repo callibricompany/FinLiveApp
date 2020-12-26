@@ -5,9 +5,10 @@ import Moment from 'moment';
 
 
 export class CStructuredProduct extends CFinancialProduct {
-    constructor(structuredproduct) {
-      super(structuredproduct); 
+    constructor(structuredproduct, source='products') {
+      super(structuredproduct, source); 
       this.nominal = 1000000;
+      this.strikingDate = "";
     }
 
     //retourne le prix d'emission
@@ -61,6 +62,20 @@ export class CStructuredProduct extends CFinancialProduct {
             return underlyings[0];
         } else {
             return underlyings;
+        }
+    }
+
+    addUnderlyings(underlying) {
+        if (this.product.hasOwnProperty("UNDERLYINGS_LIST")) {
+            let udl = this.product["UNDERLYINGS_LIST"];
+            if (Array.isArray(udl)) {
+                udl.push(underlying);
+                this.product["UNDERLYINGS_LIST"] = udl;
+            } else {
+                this.product["UNDERLYINGS_LIST"] = [udl, underlying];
+            }
+        } else {
+            this.product["UNDERLYINGS_LIST"] = [underlying];
         }
     }
 
@@ -218,11 +233,16 @@ export class CStructuredProduct extends CFinancialProduct {
         if (strikingDate.length > 0) {
             return new Date(Math.max(...strikingDate));
         } else {
-            return new Date(Date.now());
+            if (this.strikingDate != null && this.strikingDate !== "") {
+                return this.strikingDate;
+            } else {
+                return new Date(Date.now());
+            }
         }
         
     }
     setStrikingDate(strikingDate) {
+        this.strikingDate = strikingDate;
         if (this.product.hasOwnProperty("UNDERLYINGS")) {
             //on passe sur tous les sous-jacents
             Object.keys(this.product["UNDERLYINGS"]).forEach((udl) => { 
@@ -255,7 +275,7 @@ export class CStructuredProduct extends CFinancialProduct {
 
         return endIssuingdate;
     }
-    setEndIssuingDate(dateEndIssuing) {
+    setEndIssueDate(dateEndIssuing) {
         this.product['DATE_END_ISSUING'] = Moment(dateEndIssuing).format("YYYYMMDD");
     }
 

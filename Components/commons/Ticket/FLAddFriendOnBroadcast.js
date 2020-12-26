@@ -15,9 +15,6 @@ import { globalStyle, setFont, setColor} from '../../../Styles/globalStyle';
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant, getContentTypeIcon, getContentTypeColor, niceBytes } from '../../../Utils';
 import { createreply } from '../../../API/APIAWS';
 
-import { FLDatePicker } from '../FLDatePicker';
-import FLTemplateAutocall from '../Autocall/FLTemplateAutocall';
-import { FLUF } from "../Autocall/FLUF";
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
 

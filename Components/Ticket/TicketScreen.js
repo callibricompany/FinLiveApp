@@ -16,7 +16,6 @@ import { ifIphoneX, ifAndroid, isEqual , getConstant, isAndroid } from '../../Ut
 
 import { getAllTicketClosed } from '../../API/APIAWS';
 
-import { CBroadcastTicket } from "../../Classes/Tickets/CBroadcastTicket";
 import { CTicket } from '../../Classes/Tickets/CTicket';
 import { CWorkflowTicket } from  "../../Classes/Tickets/CWorkflowTicket";
 
@@ -68,8 +67,7 @@ class TicketScreen extends React.Component {
     //console.log(this.props.tickets.slice(1,2));
     this.allTickets = [];
     
-    //this.props.tickets.forEach((t) =>  t.type === "Produit structuré" ? this.allTickets.push(new CWorkflowTicket(t)) : null);
-    //this.props.broadcasts.forEach((t) => this.allTickets.push(new CBroadcastTicket(t)));
+
     this.allTickets = this.props.tickets;
     this.allTickets.sort(CTicket.compareLastUpdateDown);
 
@@ -389,8 +387,7 @@ class TicketScreen extends React.Component {
             }}
             renderItem={({item, index}) => {
               //let ticket = new CTicket(item);
-              //console.log("TICKET TYPE : " + item.getId() + "   :  " + item.getType() +  "   :  " + item.getTemplate());
-
+              
               //on verifie si la selection est les tickets non lus et on ne montre pas les lus
               if (this.state.filterSelected === 'UNREADTICKETS') {
                 let isNotified = this.props.isNotified('TICKET', item.getId());
@@ -399,38 +396,28 @@ class TicketScreen extends React.Component {
                 }
               }
 
-              switch(item.getType()) {
+              switch(item.getTicketType()) {
                   case "Broadcasting" :
-                      //let ticketB = new CBroadcastTicket(item);
-                      //console.log("TICKET BROADCAST : " + ticketB.getId() + "   :  " + ticketB.getType() +  "   :  " + ticketB.getTemplate()+":templ : ");
-                      //console.log(item);
-                      switch (item.getTemplate()) {
-                        case TEMPLATE_TYPE.PSBROADCAST :
+
                           return (
                             <View style={{marginBottom : 15}} >
                               <FLTemplatePSBroadcast ticket={item} templateType={TEMPLATE_TYPE.BROADCAST_PS_FULL_TEMPLATE} source={'Home'} screenWidth={0.95} />
                             </View>
                           );
-                        default:
-                          return null;
-                      };
-                      break;
+                      //  default:
+                      //    return null;
+                      //};
+                      //break;
                   case "Produit structuré" :
-                      //let ticketC = new CWorkflowTicket(item);
-                      //console.log("TICKET WORKFLOW : " + ticketC.getId() + "   :  " + ticketC.getType() +  "   :  " + ticketC.getTemplate());
-      
-                      switch (item.getTemplate()) {
-                        case TEMPLATE_TYPE.PSAPE : 
-                          return null;
-                        case TEMPLATE_TYPE.PSPP :         
+    
                           return (
                             <View style={{ marginBottom : 15 }} >
                                 <FLTemplatePP ticket={item} templateType={this.templateType} source={'Ticket'} screenWidth={0.95} />
                             </View>
                           );
-                        default : return null;
-                      };
-                      break;
+                       // default : return null;
+                      //};
+                      //break;
                   default : return null;  
                 }
             }}
@@ -500,7 +487,8 @@ class TicketScreen extends React.Component {
                                         toValue: 0,
                                         duration : 1000,
                                         easing: Easing.elastic(),
-                                        speed : 1
+                                        speed : 1,
+                                        useNativeDriver: true,
                                       }
                                 ),
                                   /*Animated.timing(
@@ -539,7 +527,8 @@ class TicketScreen extends React.Component {
                                                     toValue: getConstant('width'),
                                                     duration : 1000,
                                                     easing: Easing.elastic(),
-                                                    speed : 1
+                                                    speed : 1,
+                                                    useNativeDriver: true,
                                                   }
                                             ),
                                               /*Animated.timing(

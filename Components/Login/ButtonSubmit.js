@@ -48,6 +48,7 @@ export default class ButtonSubmit extends Component {
         toValue: 1,
         duration: 300,
         easing: Easing.linear,
+        useNativeDriver: true,
       }).start();
 
       //setTimeout(() => {
@@ -77,6 +78,7 @@ export default class ButtonSubmit extends Component {
       toValue: 1,
       duration: 2000,
       easing: Easing.linear,
+      useNativeDriver: true,
     }).start();
   }
 

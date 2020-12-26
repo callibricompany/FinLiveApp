@@ -5,6 +5,7 @@ import { CWorkflowTicket } from "../Classes/Tickets/CWorkflowTicket";
 import NavigationService from '../Navigation/NavigationService';
 import { setColor, setFont } from '../Styles/globalStyle';
 import { Notifications } from 'expo';
+//import * as Notifications from 'expo-notifications';
 import { getTicket , deleteNotification } from "../API/APIAWS";
 import { withFirebase } from '../Database/';
 import { isAndroid, getConstant } from "../Utils";
@@ -142,7 +143,8 @@ class NotificationProvider extends Component {
                 toValue: getConstant('height') - 200,
                 duration : 1500,
                 //easing: Easing.elastic(),
-                speed : 1
+                speed : 1,
+                useNativeDriver : true,
               }
           ).start();
           setTimeout(() => {

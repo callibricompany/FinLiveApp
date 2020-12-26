@@ -26,7 +26,7 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
-import { updateUser } from '../../API/APIAWS';
+import FLModalDropdown from '../commons/FLModalDropdown';
 
 import { CUser } from '../../Classes/CUser';
 import { Row } from 'native-base';
@@ -127,13 +127,14 @@ class ProfileScreen extends React.Component {
 
 
   render() {
+    var dataOptions = ['amend', 'disconnect'];
     return (
       <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
       <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
 
-          <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'center', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15}}>
-                            {/* <View /> */}
-                            <TouchableOpacity style={{borderWidth: 0}}
+          <View style={{flexDirection : 'row', borderWidth : 0, alignItems : 'center', justifyContent: 'space-around', backgroundColor : setColor(''), padding : 5, }}>
+                            <View style={{ flex: 0.2}}/>
+                            <TouchableOpacity style={{flex : 0.6, alignItems : 'center', justifyContent: 'center'}}
                                               onPress={() => {
                                                 this.props.navigation.navigate('ProfileScreenDetail');
                                               }}
@@ -142,13 +143,72 @@ class ProfileScreen extends React.Component {
                                 Profil
                               </Text>
                             </TouchableOpacity>
-                            {/* <TouchableOpacity style={{ alignItems : 'center', justifyContent : 'center'}}
-                                  onPress={() => {
-                                    this.props.navigation.navigate('ProfileScreenDetail');
-                                  }}
-                            >
-                                <Ionicons name={'ios-options'} size={30} color={'white'}/>
-                            </TouchableOpacity> */}
+                            <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'flex-end', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
+                                    <FLModalDropdown
+                                    //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+                                    //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
+                                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                                    dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
+                                    onDropdownWillShow={() => this.setState({ showModalDropdown : true })}
+                                    onDropdownWillHide={() => this.setState({ showModalDropdown : false })}
+
+                                    adjustFrame={(f) => {
+                                      return {
+                                        width: getConstant('width')/2,
+                                        height: Math.min(getConstant('height')/3, dataOptions.length * 40),
+                                        left : f.left,
+                                        right : f.right,
+                                        top: f.top,
+                                        borderWidth : 1,
+                                        borderColor : 'gray',
+                                        borderRadius : 3
+                                      }
+                                    }}
+                                    renderRow={(option, index, isSelected) => {
+                                      switch(option) {
+                                        case 'amend' :
+                                              return (
+                                                    <TouchableOpacity style={{height: 40 , paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+                                                                        onPress={() => {
+                                                                          this._dropdownMenuOption.hide();
+                                                                          this.props.navigation.navigate('ProfileScreenDetail');
+                                                                        }}
+                                                      >
+
+                                                          <Text style={setFont('500', 14, 'black', 'Regular')}>Modifier</Text>
+                                                      </TouchableOpacity>
+                                              );
+                                  
+                                        case 'disconnect' :
+                                              return (
+                                                    <TouchableOpacity style={{height: 40 , paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+                                                                        onPress={() => {
+                                                                          //this._dropdownMenuOption.hide();
+                                                                          this._signOutAlert();
+                                                                        }}
+                                                      >
+
+                                                          <Text style={setFont('500', 14, 'black', 'Regular')}>Déconnexion</Text>
+                                                      </TouchableOpacity>
+                                              );
+                                        default : 
+                                                return (
+                                                 <View />
+                                              );
+                                      }
+          
+                                    }}
+                                    //defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
+                                    options={dataOptions}
+                                    ref={component => this._dropdownMenuOption = component}
+                                    disabled={false}
+                                >
+                                    <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
+                                      <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
+                                    </View>
+                                </FLModalDropdown>
+                   
+                  </View>
           </View>
 
 

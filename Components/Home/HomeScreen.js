@@ -61,7 +61,7 @@ const initialLayout = {
             //{ key: 'tabNews', title: 'Actualités' }
           ],
 
-          filterText : '',
+          filters : '',
           searchTextForNews : ''
         }
         //this.props.navigation.setParams({ hideBottomTabBar : true });
@@ -124,10 +124,13 @@ const initialLayout = {
       filters["subcategory"] = subCategory;
       filters["filterText"] = filterText;
 
+      console.log (filters);
+
+      this.props.setFilters(filters);
 
       //this.setState({searchTextForNews : filterText === '' ? subCatName : filterText});
-      console.log (filters);
-      this.props.setFiltersHomePage(filters);
+      
+      
 
       //test pour supprimer le menu du bas
       if (filterText === 'Test'){
@@ -196,7 +199,7 @@ const initialLayout = {
           return <TabHome   route={route} 
                             jumpTo={jumpTo} 
                             marginSearch={this.state.marginSearch} 
-                            filters={this.props.filtersHomePage}
+                            filters={this.state.filters}
                   />;
         //case 'tabNews':
         //  return  <TabNews  route={route} jumpTo={jumpTo} filterNews={this.state.searchTextForNews} />;
@@ -221,16 +224,7 @@ const initialLayout = {
         );
       }
       return null;
-      return (
-           <TouchableOpacity style={{height : 200, width: 200}}
-                             onPress={() => {
-                               this.countTicket = this.countTicket +1;
-                              NavigationService.handleBadges('Tickets', this.countTicket);
-                             }}
-           >
-               <Text>Test badge</Text>
-          </TouchableOpacity>
-      )
+
     }
     
 

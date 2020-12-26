@@ -106,6 +106,9 @@ export default class SearchBarAnimation {
       }), 
       this.minClamp,
       this.maxClamp,
+      {
+        useNativeDriver : true,
+      }
     );
   }
 
@@ -258,12 +261,17 @@ export default class SearchBarAnimation {
           inputRange: [-this.topPartHeight, 0],
           outputRange: [toValue, clampMinValue], //c'est la qu'on bloque le min clamp
           extrapolate: 'clamp',
-        })
+        }),
+        {
+          useNativeDriver : true,
+        }
       );
 
       return {
         transform: [{
-          translateY: Animated.add(byScroll, this.actionAnimated)
+          translateY: Animated.add(byScroll, this.actionAnimated,   {
+            useNativeDriver : true
+          })
         }]
       };
 
@@ -302,7 +310,10 @@ export default class SearchBarAnimation {
           inputRange: [0, this.topPartHeight],
           outputRange: [0, 0],
           extrapolate: 'clamp',
-        })
+        }),
+        {
+          useNativeDriver : true
+        }
        )
       }]
     };
@@ -324,7 +335,10 @@ export default class SearchBarAnimation {
           inputRange: [0, this.topPartHeight],
           outputRange: [0, this.topPartHeight - this.arrowHeight],
           extrapolate: 'clamp',
-        })
+        }),
+        {
+          useNativeDriver : true,
+        }
        )
       }]
     };
@@ -354,7 +368,10 @@ export default class SearchBarAnimation {
           inputRange: [0, this.topPartHeight],
           outputRange: [1, 0],
           extrapolate: 'clamp',
-        })
+        }),
+        {
+          useNativeDriver : true,
+        }
       )
     };
   }
@@ -372,7 +389,10 @@ export default class SearchBarAnimation {
             inputRange: [0, this.topPartHeight],
             outputRange: [0, this.topPartHeight],
             extrapolate: 'clamp',
-          })
+          }),
+          {
+            useNativeDriver : true,
+          }
         )
       }],
       opacity: Animated.add(
@@ -385,7 +405,10 @@ export default class SearchBarAnimation {
           inputRange: [0, this.topPartHeight],
           outputRange: [1, 0],
           extrapolate: 'clamp',
-        })
+        }),
+        {
+          useNativeDriver : true,
+        }
       )
     };
   }
@@ -407,7 +430,10 @@ export default class SearchBarAnimation {
           inputRange: [-this.topPartHeight, 0],
           outputRange: [0, 1],
           extrapolate: 'clamp'
-        })
+        }),
+        {
+          useNativeDriver : true
+        }
       ),
       transform: [{
         translateY: Animated.add(
@@ -420,7 +446,10 @@ export default class SearchBarAnimation {
             inputRange: [-this.topPartHeight, 0],
             outputRange: [this.topPartHeight, this.wrapperHeight + ifIphoneX(11, 0)],
             extrapolate: 'clamp'
-          })
+          }),
+          {
+            useNativeDriver : true
+          }
         )
       }]
     };

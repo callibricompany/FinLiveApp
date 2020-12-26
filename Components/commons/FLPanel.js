@@ -28,8 +28,10 @@ class FLPanel extends React.Component{
         Animated.spring(
             this.state.animation,
             {
-                toValue: finalValue
-            }
+                toValue: finalValue,
+                useNativeDriver : true,
+            },
+            
         ).start();
     }
 

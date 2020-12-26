@@ -87,16 +87,18 @@ class SearchBarHome extends Component {
       bgInputTextColor : new Animated.Value(0),
 
       //relatifs au modal de filtre
-      leftPositionCategory : new Animated.Value(0),
+      leftPositionCategory : new Animated.Value(-getConstant('width')/2),
       showModalCategory: false,
       selectedCategory : selectedCategory,
 
       showModalSubCategory : false,
       selectedSubCategory : selectedCategory.subCategory[0],
+
+      searchText : '',
     }
 
     //texte de la barre de filtre
-    this.searchText = '';
+    //this.searchText = '';
     
     //console.log(this.categories);
   }
@@ -138,8 +140,9 @@ class SearchBarHome extends Component {
     const arrowMinimizeStyle = animation.getArrowMinimizeStyle();
   
     let subCategories = this.state.selectedCategory.subCategory;
+  
+    //console.log("TRANSFORMSEARCHBAR : "+ this.state.selectedCategory.codeCategory);
 
-    //console.log("TRANSFORMSEARCHBAR : "+ this.state.showModalTitle);
     return (
       <Animated.View style={[styles.wrapper, this.state.showModalTitle ? transformWrapper : transformSearchBar]}>
         <Modal
@@ -150,14 +153,16 @@ class SearchBarHome extends Component {
               console.log('Modal has been closed');
             }}
             onShow={() => {
-              console.log("showsjhdjshd");
+              //console.log("showsjhdjshd");
               Animated.timing(
                     this.state.leftPositionCategory,
                       {
-                        toValue: getConstant('width')*0.5,
-                        duration : 1000,
+                        //toValue: getConstant('width')*0.5,
+                        toValue: 0,
+                        duration : 500,
                         easing: Easing.elastic(),
-                        speed : 1
+                        speed : 1,
+                        useNativeDriver: true,
                       }
               ).start();
             }}
@@ -183,7 +188,8 @@ class SearchBarHome extends Component {
                         toValue: 0,
                         duration : 500,
                         //easing: Easing.elastic(),
-                        speed : 1
+                        speed : 1,
+                        useNativeDriver: true,
                       }
                    ).start();
                    this.setState({showModalCategory : false});
@@ -199,7 +205,10 @@ class SearchBarHome extends Component {
                         borderWidth :1,
                         borderColor : setColor('darkBlue'),
                         //borderRadius:10,
-                        width: this.state.leftPositionCategory,
+                        //width: this.state.leftPositionCategory,
+                        width : getConstant('width')/2, 
+                        //transform: [{ scaleX: this.state.leftPositionCategory },],
+                        transform: [{ translateX: this.state.leftPositionCategory }],
                         height: Math.min(getConstant('height')*0.7, Object.keys(this.categories).length*40+5),
                         top:  animation.stateBar === animation.stateBarTypes.EXPANDED  ? sizeByDevice(125, 125-23, 80) -30-4: 
                                   animation.stateBar === animation.stateBarTypes.NORMAL ? sizeByDevice(115, 115-23, 70) - 30-4 : sizeByDevice(86, 86-23, 1)-4,
@@ -211,6 +220,7 @@ class SearchBarHome extends Component {
                   >
                   <ScrollView>
                   {
+                   
                     this.categories.map((value, index) => {
                       return (
                         <TouchableOpacity key={index} onPress={() => {
@@ -233,8 +243,8 @@ class SearchBarHome extends Component {
                                 selectedSubCategory : this.categories.filter(({codeCategory}) => codeCategory === filter)[0].subCategory[0],
                                 showModalCategory : false
                               }, () => {
-    
-                                this.props.filterUpdated(value, this.state.selectedSubCategory, this.searchText);
+                                //console.log("ON  ACTIVE LA CATEGORIE : " + value.codeCategory);
+                                this.props.filterUpdated(value, this.state.selectedSubCategory, this.state.searchText);
                               });
                           }
   
@@ -322,7 +332,7 @@ class SearchBarHome extends Component {
                                   selectedSubCategory : subValue,
                                   showModalSubCategory : false
                                 }, () => {
-                                  this.props.filterUpdated(this.state.selectedCategory, subValue, this.searchText);
+                                  this.props.filterUpdated(this.state.selectedCategory, subValue, this.state.searchText);
                                 });
                               //}
                             }}>
@@ -383,6 +393,12 @@ class SearchBarHome extends Component {
                     </TouchableOpacity>
                     <View style={{flex:0.6, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{paddingLeft : 5,fontFamily: 'FLFont' , fontWeight:'200', fontSize : 24, color: 'white'}}>F i n L i v e</Text>    
+                        {(this.props.filters != null && this.props.filters !== [] && this.props.filters['category'] === 'PSFAVORITES')
+                          ?
+                           <Text style={{paddingLeft : 5, fontWeight:'400', fontSize : 14, color: 'white'}}>Mes favoris</Text>  
+                           : null
+                        }
+                        
                     </View>   
                     <View style={{ flex : 0.2, borderWidth : 4,borderColor : 'red',  flexDirection: 'row', height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}>
                       <TouchableOpacity style={{  height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
@@ -402,7 +418,8 @@ class SearchBarHome extends Component {
                                         toValue: 0,
                                         duration : 1000,
                                         easing: Easing.elastic(),
-                                        speed : 1
+                                        speed : 1,
+                                        useNativeDriver: true,
                                       }
                                 ),
                                   /*Animated.timing(
@@ -445,7 +462,13 @@ class SearchBarHome extends Component {
                         </TouchableOpacity>
                     </View>
                   </View>
-                  <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
+                  <Animated.View style={{ flexDirection:'row', 
+                                          top: 0, 
+                                          width: getConstant('width'), 
+                                          backgroundColor: 'white',
+                                          //left: this.state.positionLeft,
+                                          transform: [{ translateX: this.state.positionLeft }], 
+                                          height: 45}}>
                       <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                           <TouchableOpacity onPress={() => {
                                        //this.setState ({ showModalTitle : !this.state.showModalTitle });
@@ -459,27 +482,20 @@ class SearchBarHome extends Component {
                                                   toValue: getConstant('width'),
                                                   duration : 1000,
                                                   easing: Easing.elastic(),
-                                                  speed : 1
+                                                  speed : 1,
+                                                  useNativeDriver: true,
                                                 }
                                           ),
-                                            /*Animated.timing(
-                                              this.state.categoryHeight,
-                                              {
-                                                toValue: 45,
-                                                duration : 1000,
-                                                easing: Easing.elastic(),
-                                                speed : 1
-                                              }
-                                            ) */ 
                                         ]).start(() => {
                                               //force le render avec un changement de state dont on se fiche 
                                               this.setState ({ showModalTitle : !this.state.showModalTitle });
                                               this.props.manageVisibilityTabBar(false);
                                         });
-
+                                        
                                         if (this.inputSearch !== null && this.inputSearch !== undefined) {
                                           this.inputSearch.blur();
                                         }
+                                        this.setState({ searchText : "" });
                                         this.searchText = '';
                                         this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, '');
                               }}>  
@@ -501,7 +517,7 @@ class SearchBarHome extends Component {
                               //editable={false}
                               onSubmitEditing={() => {
                                 this.props.manageVisibilityTabBar(false);
-                                this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
+                                this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.state.searchText);
                               }}
                               ref={(inputSearch) => {
                                 //if (this.inputSearch !== null && this.inputSearch !== undefined) {
@@ -509,7 +525,9 @@ class SearchBarHome extends Component {
                                   //inputSearch.focus();
                               //  }
                               }}
-                              onChangeText={(text) => this.searchText = text}
+                              //onChangeText={(text) => this.searchText = text}
+                              onChangeText={(text) => this.setState({ searchText : text})}
+                              value={this.state.searchText}
                             />
                           </View>
                   </Animated.View>                    

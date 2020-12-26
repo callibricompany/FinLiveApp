@@ -2,10 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, Platform, Modal} from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-
-
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
+import  FLModalDropdown  from '../commons/FLModalDropdown';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -34,7 +31,7 @@ export function FLDatePicker (props) {
                                     }}
                                     activeOpacity={isEditable ? 0.2 : 1}
                 >
-                    <ModalDropdown
+                    <FLModalDropdown
                             onDropdownWillHide={() => props.onChange(date)}
                             renderRow={(rowData,index,isSelected) => {
                                 return (
@@ -54,6 +51,7 @@ export function FLDatePicker (props) {
                                             props.onChange(currentDate);
                                         }}
                                     />
+                
                                 )
                             }}
                             adjustFrame={(f) => {
@@ -78,7 +76,7 @@ export function FLDatePicker (props) {
                             <Text style={[setFont('300', 16, setColor(''), 'Regular'), {textAlign: 'left'}]}>
                             {Moment(date).format('ll')}
                             </Text>                
-                        </ModalDropdown>
+                        </FLModalDropdown>
                         { isEditable 
                             ?
                                 <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center', padding : 2}}>

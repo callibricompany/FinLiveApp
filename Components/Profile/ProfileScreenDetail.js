@@ -862,6 +862,7 @@ componentWillUnmount() {
                                                 shadowOffset: { width: 0, height: 2 },
                                                 shadowOpacity: 0.3
                                               }}
+                        touchableComponent={(props) => <TouchableOpacity {...props} />}
                     />
                 </View>
                 <View style={{height : 200}} />

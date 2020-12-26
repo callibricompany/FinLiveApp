@@ -17,13 +17,12 @@ import { CUsers } from '../CUsers';
 const urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
 //classe mere de tous les objets tickets
-export class CTicket extends CObject { 
+export class CTicket  { 
 
     
     constructor(ticket) {
-      super(ticket);
-      //console.log(ticket);
-      this.ticket = this.object['data'];
+      //super(ticket);
+      this.ticket = ticket;
       
       //statut FD
       this.status = CTicket.STATUS().filter(({id}) => id === this.ticket.status)[0];
@@ -36,9 +35,31 @@ export class CTicket extends CObject {
 
       //fichiers
       this.files = [];
-    }
-   
 
+      this.type = "TICKET";
+    }
+
+    getType() {
+      return this.type;
+    }
+    setType(type) {
+      this.type = type;
+    }
+    
+   
+    //renvoie tout un texte qui sera filtré avec le search 
+    getFilterText() {
+
+      var textToFilter =  this.product != null ? this.product.getFilterText() : '' +
+                          this.getAllIssuer().toString() +
+                          this.getCampaign() +
+                          this.getSubject() +
+                          this.getDescription() +
+                          this.getStatus() + 
+                          this.getPriority() +
+                          this.getType();
+      return textToFilter.toLowerCase();
+    }
 
 
     /**
@@ -69,9 +90,9 @@ export class CTicket extends CObject {
     getAllIssuer() {
       issuersList = [];
 
-      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('issuersSelected')){
+      if (this.ticket.hasOwnProperty('quoteRequest') && this.ticket['quoteRequest'].hasOwnProperty('issuersSelected')){
 
-        issuersList =this.object['data'].quoteRequest.issuersSelected;
+        issuersList =this.ticket.quoteRequest.issuersSelected;
       }
 
       return issuersList;
@@ -82,8 +103,8 @@ export class CTicket extends CObject {
     //renvoie le nombre d'issuer qui quote
     getQuoteRequestsIssuersCount() {
       let nb = 0;
-      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('issuersSelected')){
-          nb = this.object['data'].quoteRequest.issuersSelected.length;
+      if (this.ticket.hasOwnProperty('quoteRequest') && this.ticket['quoteRequest'].hasOwnProperty('issuersSelected')){
+          nb = this.ticket.quoteRequest.issuersSelected.length;
       }
       return nb;
     }
@@ -91,8 +112,8 @@ export class CTicket extends CObject {
     //verifie si le prix est en cours
     isIssuerProcessing(index) {
       let isProcessing = true;
-      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('processing') && this.object['data'].quoteRequest.processing.length >= index){
-        isProcessing = this.object['data'].quoteRequest.processing[index];
+      if (this.ticket.hasOwnProperty('quoteRequest') && this.ticket['quoteRequest'].hasOwnProperty('processing') && this.ticket.quoteRequest.processing.length >= index){
+        isProcessing = this.ticket.quoteRequest.processing[index];
       }
       return isProcessing;
     }
@@ -100,8 +121,8 @@ export class CTicket extends CObject {
     //renvoie le code de l'issuer
     getIssuerCode(index) {
       let code = "";
-      if (this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('issuersSelected') && this.object['data'].quoteRequest.issuersSelected.length >= index){
-          code = this.object['data'].quoteRequest.issuersSelected[index];
+      if (this.ticket.hasOwnProperty('quoteRequest') && this.ticket['quoteRequest'].hasOwnProperty('issuersSelected') && this.ticket.quoteRequest.issuersSelected.length >= index){
+          code = this.ticket.quoteRequest.issuersSelected[index];
       }
       return code;
     }
@@ -140,13 +161,13 @@ export class CTicket extends CObject {
     }
     
     // getResponseIssuerCode(position) {
-    //   return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersCode.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersCode[position] : []: [];
+    //   return this.ticket.hasOwnProperty('quoteRequest') ? (this.ticket.quoteRequest.responseIssuersCode.length >= (position +1)) ? this.ticket.quoteRequest.responseIssuersCode[position] : []: [];
     // }
     // getResponseIssuerTermSheet(position) {
-    //   return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersTermSheet.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersTermSheet[position] : []: [];
+    //   return this.ticket.hasOwnProperty('quoteRequest') ? (this.ticket.quoteRequest.responseIssuersTermSheet.length >= (position +1)) ? this.ticket.quoteRequest.responseIssuersTermSheet[position] : []: [];
     // }
     // getResponseIssuerQuote(position) {
-    //   return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersQuote.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersQuote[position].quote : []: [];
+    //   return this.ticket.hasOwnProperty('quoteRequest') ? (this.ticket.quoteRequest.responseIssuersQuote.length >= (position +1)) ? this.ticket.quoteRequest.responseIssuersQuote[position].quote : []: [];
     // }
 
     //reponse du premier issuer
@@ -154,16 +175,16 @@ export class CTicket extends CObject {
       let resp = null;
       let code = this.getIssuerCode(index);
       
-      if (code !== '' && this.object['data'].hasOwnProperty('quoteRequest') && this.object['data']['quoteRequest'].hasOwnProperty('responseIssuersCode')) {
-        let lastIndexOfIssuer = this.object['data']['quoteRequest'].responseIssuersCode.lastIndexOf(code);
+      if (code !== '' && this.ticket.hasOwnProperty('quoteRequest') && this.ticket['quoteRequest'].hasOwnProperty('responseIssuersCode')) {
+        let lastIndexOfIssuer = this.ticket['quoteRequest'].responseIssuersCode.lastIndexOf(code);
         if (lastIndexOfIssuer !== -1) {
-          if (this.object['data']['quoteRequest'].hasOwnProperty(field)) {
-              resp = this.object['data']['quoteRequest'][field][lastIndexOfIssuer];
+          if (this.ticket['quoteRequest'].hasOwnProperty(field)) {
+              resp = this.ticket['quoteRequest'][field][lastIndexOfIssuer];
           }
         }
       }
       return resp;
-      //return this.object['data'].hasOwnProperty('quoteRequest') ? (this.object['data'].quoteRequest.responseIssuersExpiryDate.length >= (position +1)) ? this.object['data'].quoteRequest.responseIssuersExpiryDate[position] : 0 : 0;
+      //return this.ticket.hasOwnProperty('quoteRequest') ? (this.ticket.quoteRequest.responseIssuersExpiryDate.length >= (position +1)) ? this.ticket.quoteRequest.responseIssuersExpiryDate[position] : 0 : 0;
     }
 
     /**
@@ -445,7 +466,7 @@ export class CTicket extends CObject {
     }
 
 
-    getType() {
+    getTicketType() {
       return this.ticket.type;
     }
 
@@ -468,9 +489,20 @@ export class CTicket extends CObject {
       return agentEmail;
     }
 
+    getProductCode() {
+      let code = '';
+      if (this.ticket.hasOwnProperty('custom_fields') && this.ticket['custom_fields'].hasOwnProperty('cf_product_code')) {
+        code = this.ticket['custom_fields']['cf_product_code'];
+      }
+      return code;
+    }
     getProduct() {
 
       return this.product;
+    }
+    setProduct(product) {
+
+      this.product = product;
     }
 
 

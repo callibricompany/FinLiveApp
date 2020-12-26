@@ -297,7 +297,8 @@ class FollowingScreen extends React.Component {
                                       toValue: 0,
                                       duration : 1000,
                                       easing: Easing.elastic(),
-                                      speed : 1
+                                      speed : 1,
+                                      useNativeDriver: true,
                                     }
                               ),
                                 /*Animated.timing(
@@ -355,7 +356,8 @@ class FollowingScreen extends React.Component {
                                                   toValue: getConstant('width'),
                                                   duration : 1000,
                                                   easing: Easing.elastic(),
-                                                  speed : 1
+                                                  speed : 1,
+                                                  useNativeDriver: true,
                                                 }
                                           ),
                                             /*Animated.timing(

@@ -2,16 +2,46 @@ import Moment from 'moment';
 
 
 
+
 //classe mere de tous les objets financiers, immos, arts, etc...
 export class CProduct2 { 
-    constructor(product) {
-      this.product = product;
 
-      this.typeAuction = this.getFromPricing("TYPE_AUCTION");
-      this.UFAssoc = this.getFromPricing("UFAssoc");
-      this.UF = this.getFromPricing("UF");
-      this.nominal = this.getFromPricing("NOMINAL");
-      //super(product);
+    constructor(product, source='products') {
+      this.product = product;
+      this.product['DB_TABLE_NAME'] = source;
+      this.source = source;
+   
+      if (this.source === 'products')  {
+        this.typeAuction = this.getFromPricing("TYPE_AUCTION");
+        this.UFAssoc = this.getFromPricing("UFAssoc");
+        this.UF = this.getFromPricing("UF");
+        this.nominal = this.getFromPricing("NOMINAL");
+        this.targetNominal = this.getFromPricing("NOMINAL_TARGET") === -1 ? this.nominal : this.getFromPricing("NOMINAL_TARGET");
+      } else if (this.source === 'structuredproducts') {
+        this.product['TYPE'] = 'STRUCTURED_PRODUCT_SRP';
+      }
+    
+      this.description_1 = "";
+      this.description_2 = "";
+
+      //necessary for sharing product
+      this.friends = [];
+      this.endSharingDate = null;
+    }
+
+    //renvoie tout un texte qui sera filtré avec le search 
+    getFilterText() {
+      var textToFilter = "";
+      var textToFilter =  this.getUniqueId() +
+                          this.getShortName() +
+                          this.getNominal() +
+                          this.getProductCode() +
+                          this.getProductType() +
+                          this.getAuctionType() +
+                          this.getProductName() +
+                          this.getDistributor() +
+                          this.getIssuer()
+      return textToFilter.toLowerCase();
     }
     
     //renvoie l'identifiant unique du produit
@@ -19,9 +49,17 @@ export class CProduct2 {
       return this.product.hasOwnProperty("UNIQUE_ID") ? this.product["UNIQUE_ID"] : 10000000*Math.random();
     }
 
+    setUniqueId(id) {
+      this.product["UNIQUE_ID"]  = id;
+    }
+
     
     getShortName() {
       return this.product.hasOwnProperty("SHORT_NAME") ? this.product["SHORT_NAME"] : "[UNKNOWN NAME]";
+    }
+
+    setShortName(name) {
+      this.product["SHORT_NAME"]= name;
     }
 
 
@@ -33,6 +71,16 @@ export class CProduct2 {
       this.nominal = nominal;
       this.setToPricing("NOMINAL", nominal);
     }
+    
+    getTargetNominal() {
+      return this.targetNominal;
+    }
+
+    setTargetNominal(nominal) {
+      this.targetNominal = nominal;
+      this.setToPricing("NOMINAL_TARGET", nominal);
+    }
+
 
     //verifie si le prix du produit est valide ou a expiré
     isPriceValid() {
@@ -138,6 +186,9 @@ export class CProduct2 {
     getProductType() {
       return this.product.hasOwnProperty("TYPE") ? this.product["TYPE"] : 'UNKNOWN';
     }
+    getType() {
+      return this.getProductType();
+    }
 
     //retourne le nom commercial du produit
     getProductCode() {
@@ -202,7 +253,11 @@ export class CProduct2 {
           name = "Réverse convertible";
           break;
         default : 
-          name = "UNKNOWN";
+          if (this.getProductType() === 'STRUCTURED_PRODUCT_SRP') {
+            name = this.getShortName();
+          } else {
+            name = "UNKNOWN";
+          }
           break;
       }
 
@@ -229,11 +284,77 @@ export class CProduct2 {
           name = "Réverse convertible";
           break;
         default : 
-          name = "UNKNOWN";
+          if (this.getProductType() === 'STRUCTURED_PRODUCT_SRP') {
+            name = this.getShortName();
+          } else {
+            name = "UNKNOWN";
+          }
           break;
       }
 
       return name;
   }
+
+  getDescription(nb=1) {
+    return nb === 1 ? this.getDescription_1() : this.getDescription_2();
+  }
+  getDescription_1() {
+    return this.description_1;
+  }
+  setDescription_1(desc) {
+    this.description_1 = desc;
+  }
+  getDescription_2() {
+    return this.description_2;
+  }
+  setDescription_2(desc) {
+    this.description_2 = desc;
+  }
+
+     /////////////////////////
+
+    //      SHARING DATA
+
+    /////////////////////////
+
+    setFriends(friends) {
+      this.friends = friends;
+    }
+
+    getFriends() {
+      return this.friends;
+    }
+
+ 
+
+    setEndSharingDate(endSharingDate) {
+      this.endSharingDate = endSharingDate;
+    }
+
+    getEndSharingDate() {
+      return this.endSharingDate === null ? new Date(Date.now()) : this.endSharingDate;
+    }
+
+
+     /////////////////////////
+
+    //     ISSUER AND DISTRIBUTOR
+
+    /////////////////////////
+    setIssuer(issuer) {
+      this.product["ISSUER"] = issuer;
+    }
+
+    getIssuer() {
+      return this.product.hasOwnProperty("ISSUER") ? this.product["ISSUER"] : "";
+    }
+
+    setDistributor(distributor) {
+      this.product["DISTRIBUTOR"] = distributor;
+    }
+
+    getDistributor() {
+      return this.product.hasOwnProperty("DISTRIBUTOR") ? this.product["DISTRIBUTOR"] : "";
+    }
 
 }

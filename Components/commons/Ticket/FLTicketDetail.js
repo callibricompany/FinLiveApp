@@ -15,7 +15,7 @@ import Lightbox from 'react-native-lightbox';
 
 import Timeline from 'react-native-timeline-flatlist';
 
-import { getBroadcastAmount, ssModifyTicket, getConversation, getConversations, getTicket, createreply, getRepricing} from '../../../API/APIAWS';
+import { getBroadcastAmount, ssModifyTicket, getConversation, getConversations, getTicket, createreply, getRepricing, getProduct} from '../../../API/APIAWS';
 
 import { setFont, setColor  } from '../../../Styles/globalStyle';
 
@@ -44,11 +44,10 @@ import * as WebBrowser from 'expo-web-browser';
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
+import FLModalDropdown from '../FLModalDropdown';
 
-import { CAutocall } from '../../../Classes/Products/CAutocall';
-import { CPSRequest } from '../../../Classes/Products/CPSRequest';
+import { CAutocall2 } from '../../../Classes/Products/CAutocall2';
+
 import { ScrollView } from 'react-native-gesture-handler';
 import { CTicket } from '../../../Classes/Tickets/CTicket';
 
@@ -68,8 +67,8 @@ class FLTicketDetail extends React.Component {
 
 
     this.ticket= this.props.ticket;
-    console.log(this.ticket);
-    this.autocall = this.ticket.getProduct();
+    
+    this.autocall = null;
     //console.log("Constructeur ticket");
     this.props._removeToast();
     this.state = {
@@ -147,6 +146,12 @@ class FLTicketDetail extends React.Component {
     Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
 
+    //chargement du produit structuré
+    var productJSON = await getProduct(this.props.firebase, this.ticket.getProductCode());
+    this.autocall = new CAutocall2(productJSON);
+    this.ticket.setProduct(this.autocall);
+
+
     //chargement des conversations
     await this._loadTicket();
 
@@ -219,6 +224,7 @@ class FLTicketDetail extends React.Component {
               let isShared = this.ticket.isShared();
               // console.log("process ticket : isShared : "+ isShared);
               this.ticket = isShared ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket);
+              this.ticket.setProduct(this.autocall);
               this.dealineTicket = Moment(this.ticket.getFrDueBy()).fromNow();
               
               //on supprime la notification
@@ -783,19 +789,22 @@ class FLTicketDetail extends React.Component {
                     showSlider={false}
             />
           </View>
-          <TouchableOpacity style={{alignItems: 'center', marginTop : 20, borderWidth : 0, borderColor : 'black', borderRadius : 5, width : getConstant('width')*0.95, marginLeft : 0.025*getConstant('width')}}
-                            onPress={() => {
-                              
-                              this.autocall.setFinalNominal(this.ticket.getNominal());
-                              this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLAutocallDetailHome' : 'FLAutocallDetailTicket', {
-                                autocall: this.autocall,
-                                isEditable : false,
-                                //ticketType: TICKET_TYPE.PSCREATION
-                              })
-                            }}
-          >
-              <FLTemplateAutocall autocall={this.autocall} screenWidth={0.95} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} showUF={false} source={this.props.source}  nominal={this.ticket.getNominal()} />
-          </TouchableOpacity>
+          {this.autocall != null
+           ?   <TouchableOpacity style={{alignItems: 'center', marginTop : 20, borderWidth : 0, borderColor : 'black', borderRadius : 5, width : getConstant('width')*0.95, marginLeft : 0.025*getConstant('width')}}
+                                onPress={() => {
+                                  
+                                  //this.autocall.setFinalNominal(this.ticket.getNominal());
+                                  this.props.navigation.navigate('FLAutocallDetail' , {
+                                    autocall: this.autocall,
+                                    isEditable : false,
+                                    //ticketType: TICKET_TYPE.PSCREATION
+                                  })
+                                }}
+                >
+                    <FLTemplateAutocall autocall={this.autocall} screenWidth={0.95} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} showUF={false} nominal={this.ticket.getNominal()} />
+                </TouchableOpacity>
+            : null
+          }
         {this._renderFooter()}
         <View style={{height : 100}} />           
       </ScrollView> 
@@ -1425,12 +1434,12 @@ class FLTicketDetail extends React.Component {
                       </TouchableOpacity>
                       <View style={{flex: 0.7, justifyContent: 'center', alignItems: 'center'}}>
                            <Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()} {this.ticket.isShared() ? 'partagé' : null}</Text>
-                           <Text style={setFont('300', 12, 'white' )} numberOfLines={1}>{this.ticket.getType()} - {this.ticket.isShared() ? (currencyFormatDE(this.sharedAmount) + " / " + currencyFormatDE(this.ticket.getBroadcastAmount())) : currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()}</Text>
+                           <Text style={setFont('300', 12, 'white' )} numberOfLines={1}>{this.ticket.getTicketType()} - {this.ticket.isShared() ? (currencyFormatDE(this.sharedAmount) + " / " + currencyFormatDE(this.ticket.getBroadcastAmount())) : currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()}</Text>
                            
                       </View>
                       <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.025*getConstant('width')}}>
 
-                                  <ModalDropdown
+                                  <FLModalDropdown
                                                 //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                                 //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
                                                 dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
@@ -1556,7 +1565,7 @@ class FLTicketDetail extends React.Component {
                                                   }
                       
                                                 }}
-                                                //defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
+                                              
                                                 options={dataOptions}
                                                 ref={component => this._dropdownOptionMenu = component}
                                                 disabled={false}
@@ -1564,7 +1573,7 @@ class FLTicketDetail extends React.Component {
                                   <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
                                     <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
                                   </View>
-                              </ModalDropdown>
+                              </FLModalDropdown>
                       </View>
               </View>
               <View style={{ paddingRight : 10, paddingLeft : 10, paddingBottom : 10,backgroundColor: setColor('granny'), alignItems: 'center',justifyContent: 'center'}}>

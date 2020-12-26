@@ -1,81 +1,7 @@
 // API/TMDBApi.js
 import axios from 'axios';
 
-
-const API_TOKEN_FAKEJSON = "9kWuAz8WSP2ClCzzmsFJjg";
-const URL_FAKE_JSON ="";
 export const URL_AWS = "http://99.80.211.255:8080"
-
-export function getFilmsFromApiWithSearchedText (text) {
-  const url = 'http://34.245.143.173:8080'
-  return fetch(url)
-    .then((response) => response.json())
-    .catch((error) => console.error(error))
-}
-
-export function getOpenTickets () {
-    let payload = {
-    token: API_TOKEN_FAKEJSON,
-    data: {
-      name: "nameFirst",
-      email: "internetEmail",
-      phone: "phoneHome",
-      avatar: "personAvatar",
-      resume: "stringShort",
-      header: "numberInt|0,1",
-      date: "date",
-      _repeat: 2
-    }
-  };
-
-
-  return axios({
-  method: "post",
-  url: "https://app.fakejson.com/q",
-  data: payload
-  }).then(resp => {
-  // Do something with fake data
-    return resp.data;
-  })
-  .catch((error) => console.error(error))
-  
-
-  /*const url = 'https://app.fakejson.com/q'
-  var details = {
-    token: "9kWuAz8WSP2ClCzzmsFJjg",
-    data: {
-      name: "nameFirst",
-      email: "internetEmail",
-      phone: "phoneHome",
-      _repeat: 3
-    }
-  };
-  
-  var formBody = [];
-  for (var property in details) {
-    var encodedKey = encodeURIComponent(property);
-    var encodedValue = encodeURIComponent(details[property]);
-    formBody.push(encodedKey + "=" + encodedValue);
-  }
-  formBody = formBody.join("&");
-  //console.log(formBody)
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      //'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-      'Content-Type': 'application/json'
-    },
-    body: formBody
-  })
-  .then((response) => {
-    console.log('Reponse POST : ' + JSON.stringify(response));
-      }
-    )
-  .catch((error) => {
-      console.error('Erreur requete POST : ' + error);
-    }
-  );*/
-}
 
 ///////////////////////////
 //    USER
@@ -720,85 +646,59 @@ export function getUserAllInfoAPI (idToken, device) {
 
 
 
+///////////////////////////
+//    FAVORITES
+//    retourne tous les favoris du user
+///////////////////////////
 
-export function getUserFavorites (idToken) {
-  var axiosConfig = {
-    headers :{
-      //'Content-Type': 'application/x-www-form-urlencoded',
-      //'Content-Type': 'application/json; charset=utf-8',
-      //'Accept'      : 'application/json',
-      'bearer'      : idToken
-    }
-  };
-  
-  return new Promise(
-    (resolve, reject) => {
-      axios.get(URL_AWS + '/getUserFavorites', axiosConfig)
-      .then((response) => {
-        //console.log("Succes : " + JSON.stringify(response["data"]));
-        resolve(response.data);
-        //res.render('pages/register',{email: email, isConnected: isConnected});
-      })
-      .catch(function (error) {
-        console.log("Erreur requete aws : " + error);
-        reject(error)
-      });
-    });
+export async function getUserFavorites (firebase, type) {
+
+  try {
+      var token = await firebase.doGetIdToken();
+
+      var axiosConfig = {
+        headers :{
+          'bearer'      : token
+        }
+      };
+
+      var response = await axios.get(URL_AWS + '/getFavorites/' + type, axiosConfig);
+      if (response.data === "Error") {
+        return Promise.reject("Error");
+      }
+      
+      return Promise.resolve(response.data);
+  } catch(error) {
+    return Promise.reject(error);
+  }
 }
 
-export function setFavoriteAPI (idToken, obj) {
+///////////////////////////
+//    FAVORITES
+//    met ou supprime un produit des favoris
+///////////////////////////
+export async function setFavorite (firebase, productJSON) {
 
+  //return new Promise((resolve, reject) => {
+  try {
+      var token = await firebase.doGetIdToken();
 
-  var axiosConfig = {
-    headers :{
-      //'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Type': 'application/json; charset=utf-8',
-      //'Accept'      : 'application/json',
-      'bearer'      : idToken
-    }
-  };
-  
-  return new Promise(
-    (resolve, reject) => {
-      axios.post(URL_AWS + '/switchfavorite', obj, axiosConfig)
-      .then((response) => {
-        console.log("Succes : " + JSON.stringify(response["data"]));
-        resolve(response.data);
-        //res.render('pages/register',{email: email, isConnected: isConnected});
-      })
-      .catch(function (error) {
-        console.log("Erreur requete prix : " + error);
-        reject(error)
-      });
-    });
-}
+      var axiosConfig = {
+        headers :{
+          'bearer'      : token
+        }
+      };
 
-export function setFavorite (firebase, idProduct) {
+      var response = await axios.post(URL_AWS + '/switchfavorite', productJSON, axiosConfig)
+      if (response.data === "Error") {
+        return Promise.reject("Error");
+      }
+      
+      return Promise.resolve(response.data);
+  } catch(error) {
+    return Promise.reject(error);
+  }
 
-  return new Promise((resolve, reject) => {
-      firebase.doGetIdToken()
-      .then(token => {
-          var axiosConfig = {
-            headers :{
-              //'Content-Type': 'application/x-www-form-urlencoded',
-              //'Content-Type': 'application/json; charset=utf-8',
-              //'Accept'      : 'application/json',
-              'bearer'      : token
-            }
-          };
-          console.log(idProduct);
-          axios.get(URL_AWS + '/switchfavorite2/' + idProduct,  axiosConfig)
-          .then((response) => {
-            //console.log("Succes : " + JSON.stringify(response["data"]));
-            resolve(response.data);
-            //res.render('pages/register',{email: email, isConnected: isConnected});
-          })
-          .catch(function (error) {
-            console.log("Erreur requete prix : " + error);
-            reject(error)
-          });
-    });
-  });
 }
 
 
@@ -852,8 +752,9 @@ export function searchProducts (firebase, criteria, toSave=true) {
     });
   }
 
-
-  //reprice un autocall avec de bouveaux criteres
+/**************************************
+   PRODUIT STRUCTURE REPRICE
+*/
   export async function reprice (firebase, product, productOrigin) {
 
     try {
@@ -882,7 +783,40 @@ export function searchProducts (firebase, criteria, toSave=true) {
     
   }
 
-  //recupere le r-tableau des produits les plus prices
+/**************************************
+   PRODUIT STRUCTURE SAUVE LE PRODUIT 
+*/
+export async function saveProduct (firebase, product) {
+
+  try {
+    var token = await firebase.doGetIdToken();
+
+    var axiosConfig = {
+      headers :{
+        //'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json; charset=utf-8',
+        //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+        'Accept'      : 'application/json',
+        'bearer'      : token,
+      }
+    };
+
+    var response = await axios.post(URL_AWS + '/saveProduct', product, axiosConfig);
+    console.log("SAVE PRODUCT OK ");
+    //console.log(response.data);
+    return await Promise.resolve(response.data);
+  }
+  catch(err) {
+    // catches errors both in fetch and response.json
+    console.log("ERREUR SAVEPRODUCT : " + err);
+    return await Promise.reject(err);
+  }
+  
+}
+
+/**************************************
+   PRODUIT STRUCTURE : RECUPERE LES PLUS DEMANDES
+*/
   export async function getMostPricedPS (firebase) {
 
     try {
@@ -901,7 +835,7 @@ export function searchProducts (firebase, criteria, toSave=true) {
       criteria['nbOfPricings'] = 2;
       
       var response = await axios.post(URL_AWS + '/getMostPricedPS', criteria, axiosConfig);
-
+console.log("NBRE DE GESTMOSTPRICED : " + response.data.length);
       return await Promise.resolve(response.data);
     }
     catch(err) {
@@ -910,6 +844,31 @@ export function searchProducts (firebase, criteria, toSave=true) {
     }
     
   }
+
+/**************************************
+   PRODUIT : lecture
+*/
+export async function getProduct (firebase, idProduct) {
+
+  try {
+    var token = await firebase.doGetIdToken();
+
+    var axiosConfig = {
+      headers :{
+        'bearer'      : token,
+      }
+    };
+    var token = await firebase.doGetIdToken();
+    var response = await axios.get(URL_AWS + '/ProductDescription/' + idProduct, axiosConfig)
+
+    return await Promise.resolve(response.data);
+  }
+  catch(err) {
+    // catches errors both in fetch and response.json
+    return await Promise.reject(err);
+  }
+  
+}
 
 /**************************************
          NOTIFICATIONS

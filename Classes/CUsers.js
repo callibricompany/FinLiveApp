@@ -61,12 +61,13 @@ export class CUsers {
     getUserListFromUid(uidArray) {
      
         let usersFriend = [];
-        
-        this.users.forEach((u) => {
-            if (uidArray.indexOf(u.getId()) !== -1) {
-                usersFriend.push(u);
-            }
-        });
+        if (uidArray != null && uidArray.length > 0) {
+            this.users.forEach((u) => {
+                if (uidArray.indexOf(u.getId()) !== -1) {
+                    usersFriend.push(u);
+                }
+            });
+        }
 
         return usersFriend;
       }

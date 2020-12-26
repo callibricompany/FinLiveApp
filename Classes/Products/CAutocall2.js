@@ -9,67 +9,73 @@ import { DeckSwiper } from "native-base";
 
 
 export class CAutocall2 extends CStructuredProduct {
-  constructor(autocall) {
-    super(autocall); // appelle le constructeur parent avec le paramètre
 
-    //M:8Y_U:CAC_BPDI:0.6_S:1.0_LA:1.0_FA:1Y_DS:0.0_NNCP:12_AL:1.0_PDIUS:False_GP:-1.0_FP:1Y_BP:1.0_IM:True_UF:0.03_UFA:0.002_TA:PP_IP:1
-    let code = this.getProductCodeDetail();
-    var res = code.split("_");
-    res.forEach((r) => {
-      var u = r.split(":");
-      switch(u[0]) {
-        case 'M' :
-          this.maturity = u[1];
-          break;
-        case 'U' :
-          this.underlying = u[1];
-          break;
-        case 'BPDI' :
-          this.barrierPDI = Number(u[1]);
-          break;
-        case 'S' :
-          this.strike = Number(u[1]);
-          break;
-        case 'LA' :
-          this.levelAutocall = Number(u[1]);
-          break;
-        case 'FA' :
-          this.freqAutocall = u[1];
-          break;
-        case 'DS' :
-          this.degressiveStep = Number(u[1]);
-          break;          
-        case 'NNCP' :
-          this.noCallNbPeriod = u[1];
-          break;
-        case 'AL' :
-          this.airbagLevel = Number(u[1]);
-          break;
-        case 'PSIUS' :
-          this.isPDIUS = u[1];
-          break;
-        case 'GP' :
-          this.gearingPut = u[1];
-          break;
-        case 'FP' :
-          this.freqPhoenix = u[1];
-          break;
-        case 'BP' :
-          this.barrierPhoenix = Number(u[1]);
-          break;
-        case 'IM' :
-          this.isMemoryBool = u[1] === 'True' ? true : false;
-          break;
-        default :
-          break;
-      }
-    });
-    
-    //initialisation d'autres variables
-    console.log(this.getShortName());
+  static AUTOCALL_TYPE =  ['AUTOCALL_CLASSIC', 'AUTOCALL_INCREMENTAL','PHOENIX','PHOENIX_MEMORY','REVERSE'];
 
-    this.probability = {};
-    this.calculateProbabilities();
+
+  constructor(autocall, source='products') {
+    super(autocall, source); // appelle le constructeur parent avec le paramètre
+
+    if (source === 'products') {
+        //M:8Y_U:CAC_BPDI:0.6_S:1.0_LA:1.0_FA:1Y_DS:0.0_NNCP:12_AL:1.0_PDIUS:False_GP:-1.0_FP:1Y_BP:1.0_IM:True_UF:0.03_UFA:0.002_TA:PP_IP:1
+        let code = this.getProductCodeDetail();
+        var res = code.split("_");
+        res.forEach((r) => {
+          var u = r.split(":");
+          switch(u[0]) {
+            case 'M' :
+              this.maturity = u[1];
+              break;
+            case 'U' :
+              this.underlying = u[1];
+              break;
+            case 'BPDI' :
+              this.barrierPDI = Number(u[1]);
+              break;
+            case 'S' :
+              this.strike = Number(u[1]);
+              break;
+            case 'LA' :
+              this.levelAutocall = Number(u[1]);
+              break;
+            case 'FA' :
+              this.freqAutocall = u[1];
+              break;
+            case 'DS' :
+              this.degressiveStep = Number(u[1]);
+              break;          
+            case 'NNCP' :
+              this.noCallNbPeriod = Number(u[1]); //en mois
+              break;
+            case 'AL' :
+              this.airbagLevel = Number(u[1]);
+              break;
+            case 'PSIUS' :
+              this.isPDIUS = u[1];
+              break;
+            case 'GP' :
+              this.gearingPut = u[1];
+              break;
+            case 'FP' :
+              this.freqPhoenix = u[1];
+              break;
+            case 'BP' :
+              this.barrierPhoenix = Number(u[1]);
+              break;
+            case 'IM' :
+              this.isMemoryBool = u[1] === 'True' ? true : false;
+              break;
+            default :
+              break;
+          }
+        });
+        
+        //initialisation d'autres variables
+        console.log(this.getShortName());
+
+        this.probability = {};
+        this.calculateProbabilities();
+    }
   }
 
 
@@ -94,22 +100,22 @@ export class CAutocall2 extends CStructuredProduct {
 
 
 
-  getDescription() {
-    let desc =
-      this.getProductName() +
-      this.getFrequencyAutocallTitle() +
-      this.getFullUnderlyingName() +
-      this.getUnderlyingTickers() +
-      this.getMaturityName() +
-      this.getBarrierPDI() +
-      this.getBarrierPhoenix() +
-      (this.isAirbag() ? "airbag" : '') +
-      this.getDegressiveStep() +
-      this.getDegressivity() ;
-      //(this.product.hasOwnProperty('code') ? this.product["code"] : '');
+  // getDescription() {
+  //   let desc =
+  //     this.getProductName() +
+  //     this.getFrequencyAutocallTitle() +
+  //     this.getFullUnderlyingName() +
+  //     this.getUnderlyingTickers() +
+  //     this.getMaturityName() +
+  //     this.getBarrierPDI() +
+  //     this.getBarrierPhoenix() +
+  //     (this.isAirbag() ? "airbag" : '') +
+  //     this.getDegressiveStep() +
+  //     this.getDegressivity() ;
+  //     //(this.product.hasOwnProperty('code') ? this.product["code"] : '');
 
-    return desc;
-  }
+  //   return desc;
+  // }
 
 
 

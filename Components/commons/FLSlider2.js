@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet,Text,View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
-import Slider from "react-native-slider";
+//import Slider from "react-native-slider";
+import Slider from '@react-native-community/slider';
 //import { CustomMarker } from './CustomMarker';
 import { FLItemSlider } from './FLItemSlider';
 

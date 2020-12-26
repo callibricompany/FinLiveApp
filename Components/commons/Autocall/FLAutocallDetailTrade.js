@@ -9,7 +9,7 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-import FLTemplateAutocall2 from "./FLTemplateAutocall2";
+import FLTemplateAutocall from "./FLTemplateAutocall";
 import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 
 import { ssCreateStructuredProduct } from '../../../API/APIAWS';
@@ -20,8 +20,8 @@ import FLAnimatedSVG from '../FLAnimatedSVG';
 import StepIndicator from 'react-native-step-indicator';
 import Accordion from 'react-native-collapsible/Accordion';
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
+import FLModalDropdown 
+ from '../FLModalDropdown';
 
 import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
@@ -41,15 +41,6 @@ import logo from '../../../assets/LogoWithoutText.png';
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
 import { CWorkflowTicket } from "../../../Classes/Tickets/CWorkflowTicket";
-
-import { FLIssuer } from "./FLIssuer";
-import { FLStrike } from "./FLStrike";
-import { FLUF } from "./FLUF";
-import { FLCallable } from "./FLCallable";
-import { FLCoupons } from "./FLCoupons";
-import { FLPDI } from "./FLPDI";
-
-
 
 
 class FLAutocallDetailTrade extends React.Component {
@@ -176,7 +167,7 @@ class FLAutocallDetailTrade extends React.Component {
                               </Text>
                             </View>
                             <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
-                                    <ModalDropdown
+                                    <FLModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
                                     dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
@@ -250,7 +241,7 @@ class FLAutocallDetailTrade extends React.Component {
                       <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
                         <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
                       </View>
-                  </ModalDropdown>
+                  </FLModalDropdown>
                    
                 </View>
             </View>
@@ -295,7 +286,7 @@ class FLAutocallDetailTrade extends React.Component {
 
             </View>
             <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', borderWidth: 0}}>
-                <FLTemplateAutocall2 autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={false} screenWidth={0.9} />
+                <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={false} screenWidth={0.9} />
             </View>
 
             <View style={{backgroundColor: setColor(''), alignItems:'center', justifyContent: 'center', padding: 10}}>
@@ -336,13 +327,15 @@ class FLAutocallDetailTrade extends React.Component {
                                         this.setState({ isLoadingCreationTicket : true ,  messageToShow : String("création d'une demande de cotation").toUpperCase()});
                                  
                                         
-                                        let productToSend = {}; //this.autocall.getProduct();
+                                        let productToSend = {}; 
                                         productToSend['subject'] = this.autocall.getShortName();//this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.autocall.getFrequencyAutocallTitle().toLowerCase();
                                         productToSend['description'] = this.state.description ==='' ? "Aucune instruction particulière" : this.state.description;
                                         productToSend['type'] = 'Produit structuré';
                                         productToSend['department'] = 'FIN';
                                         productToSend['nominal'] = this.autocall.getNominal();
                                         productToSend['cf_ps_shared'] = false;
+                                        productToSend['currency'] = this.autocall.getCurrency();
+                                        
                                         
                                         if (this.autocall.getAuctionType() === 'PP') {
                                           productToSend['cf_cpg_choice'] = "Placement Privé";

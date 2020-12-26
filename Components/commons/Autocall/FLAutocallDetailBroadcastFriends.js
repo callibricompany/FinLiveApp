@@ -19,8 +19,6 @@ import FLAnimatedSVG from '../FLAnimatedSVG';
 import StepIndicator from 'react-native-step-indicator';
 import Accordion from 'react-native-collapsible/Accordion';
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
 
 import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
@@ -37,14 +35,6 @@ import Numeral from 'numeral'
 import 'numeral/locales/fr'
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
-
-import logo_white from '../../../assets/LogoWithoutTex_white.png';
-import logo from '../../../assets/LogoWithoutText.png';
-
-import * as TEMPLATE_TYPE from '../../../constants/template';
-import { CWorkflowTicket } from "../../../Classes/Tickets/CWorkflowTicket";
-
-import { FLDatePicker } from '../FLDatePicker';
 
 
 
@@ -292,6 +282,7 @@ class FLAutocallDetailBroadcastFriends extends React.Component {
                                               borderColor : 'white', 
                                               borderRadius : 10,
                                             }}
+                      touchableComponent={(props) => <TouchableOpacity {...props} />}
                   />
                 </View>
 

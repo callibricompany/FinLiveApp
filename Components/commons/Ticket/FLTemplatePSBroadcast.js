@@ -5,7 +5,6 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import AnimatedProgressWheel from 'react-native-progress-wheel';
 
 import RobotBlink from "../../../assets/svg/robotBlink.svg";
 import banniere from '../../../assets/yourTeam.png';
@@ -22,8 +21,8 @@ import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 
-import * as Progress from 'react-native-progress';
-
+//import * as Progress from 'react-native-progress';
+import ProgressBar from 'react-native-progress/Bar';
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
@@ -36,18 +35,6 @@ import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
 import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
 
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
-
-
-import { CAutocall } from '../../../Classes/Products/CAutocall';
-import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
-
-
-
-
-
-
-
 
 
 class FLTemplatePSBroadcast extends React.Component {
@@ -75,7 +62,6 @@ class FLTemplatePSBroadcast extends React.Component {
 
           
     //gestion des classes autocall et ticket broadcast
-    //this.broadcast = new CBroadcastTicket(this.props.object);
     this.broadcast = this.props.ticket;
     this.autocall = this.broadcast.getProduct();
 
@@ -326,7 +312,7 @@ render () {
                                      <Ionicons name="ios-podium" size={20} style={{color: setColor('gray')}}/> 
                                 </View>
                                 <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                  <Progress.Bar progress={0.3} width={(getConstant('width')/2)} color={setColor('')}/>
+                                  <ProgressBar progress={0.3} width={(getConstant('width')/2)} color={setColor('')}/>
                                </View>
                                <View style={{padding: 5, justifyContent: 'center', alignItems: 'flex-start'}}>
                                   <Text style={setFont('300', 10)}>{Moment(this.broadcast.getEndDate()).format("ll")}</Text>

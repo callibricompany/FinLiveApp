@@ -11,7 +11,6 @@ import { ifIphoneX, ifAndroid, sizeByDevice, isAndroid, isIphoneX, getConstant }
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 
-import * as Progress from 'react-native-progress';
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
@@ -25,7 +24,7 @@ import 'numeral/locales/fr'
 
 import {  globalStyle, setFont, setColor } from '../../Styles/globalStyle';
 
-import FLTemplateAutocall2 from '../commons/Autocall/FLTemplateAutocall2';
+import FLTemplateAutocall from '../commons/Autocall/FLTemplateAutocall';
 
 
 import * as TEMPLATE_TYPE from '../../constants/template'
@@ -82,7 +81,7 @@ class FLResultPricer extends React.PureComponent {
       //console.log('id : ' +id);
       return (
             <View style={{marginTop: 20, alignItems: 'center', justifyContent:'center', borderWidth: 0, marginLeft : 0, paddingLeft : 0, paddingRight: 2}}>
-              <FLTemplateAutocall2 autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} optimizer={this.optimizer}/>
+              <FLTemplateAutocall autocall={item} templateType={TEMPLATE_TYPE.AUTOCALL_FULL_TEMPLATE} isEditable={true} optimizer={this.optimizer}/>
             </View>
       );
     }

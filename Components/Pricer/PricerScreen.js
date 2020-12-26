@@ -5,8 +5,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import AnimatedProgressWheel from 'react-native-progress-wheel';
-
 import { globalStyle, setColor, setFont } from '../../Styles/globalStyle'
 
 import RobotBlink from "../../assets/svg/robotBlink.svg";
@@ -20,10 +18,7 @@ import { URL_AWS } from '../../API/APIAWS';
 
 import { CPSRequest } from '../../Classes/Products/CPSRequest';
 
-
-
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
+import FLModalDropdown from '../commons/FLModalDropdown';
 
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import SwitchSelector from "react-native-switch-selector";
@@ -116,12 +111,12 @@ class PricerScreen extends React.Component {
     //recuperation eventuelle des cataracteristiques de l'autocall
     this.request = new CPSRequest() 
 
-    //console.log(this.request.getProduct());
+ 
 
     //recuperation de la liste des sous-jacents
     this.underlyings = this.props.categories.filter(({codeCategory}) => codeCategory === 'PS')[0].subCategory;
 
-    //this.parameterProductUpdated(this.product);
+
     this.bestProducts = [];
     
 
@@ -375,7 +370,7 @@ _renderProductTile() {
                           </TouchableOpacity>
                     </View>
                     <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <ModalDropdown
+                          <FLModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : setColor('lightBlue'), 'Bold'), {textAlign: 'center'}]}
                                     dropdownTextStyle={setFont('500', 16, setColor(''), 'Regular')}
@@ -435,7 +430,7 @@ _renderProductTile() {
                                   <Text style={[setFont('300', 14, setColor('')), {textAlign: 'left'}]}>
                                     {this.request.getValueLabel('type')}
                                   </Text>
-                                </ModalDropdown>
+                                </FLModalDropdown>
                     </View>
                 </TouchableOpacity>
                 <View style={{height: 35, borderTopWidth : 1, borderTopColor : 'lightgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
@@ -517,7 +512,7 @@ _renderGenericTile=(criteria) => {
 
 //choix de la fréquence et du no call périod
 _renderPhoenixTile=() => {
-  console.log("TOTO : " + this.request.getValue('type').includes('PHOENIX'));
+  //console.log("TOTO : " + this.request.getValue('type').includes('PHOENIX'));
   let dataMemoryAutocall = ['Effet mémoire','Non mémoire'];
   //console.log("PHOENIX ACTIVE : "+ this.request.isActivated('barrierPhoenix') + "    :     " +this.request.getValue('barrierPhoenix'));
   //determination de la couleur backgound
@@ -611,7 +606,7 @@ _renderPhoenixTile=() => {
                               </TouchableOpacity>
                         </View>
                         <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
-                              <ModalDropdown
+                              <FLModalDropdown
                                         //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                         //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : setColor('lightBlue'), 'Bold'), {textAlign: 'center'}]}
                                         dropdownTextStyle={setFont('500', 16, setColor(''), 'Regular')}
@@ -638,7 +633,7 @@ _renderPhoenixTile=() => {
                                       <Text style={[setFont('300', 14, setColor('')), {textAlign: 'left'}]}>
                                         {this.request.getValueLabel('isMemory')}
                                       </Text>
-                                </ModalDropdown>
+                                </FLModalDropdown>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -905,7 +900,7 @@ _renderAuctionTile() {
                           </View>
                     </View>
                     <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <ModalDropdown
+                          <FLModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : setColor('lightBlue'), 'Bold'), {textAlign: 'center'}]}
                                     dropdownTextStyle={setFont('500', 16, setColor(''), 'Regular')}
@@ -932,7 +927,7 @@ _renderAuctionTile() {
                                   <Text style={[setFont('300', 14, setColor('')), {textAlign: 'left'}]}>
                                     {this.request.getValueLabel('typeAuction')}
                                   </Text>
-                                </ModalDropdown>
+                                </FLModalDropdown>
                     </View>
                 </TouchableOpacity>
                 <View style={{height: 35, borderTopWidth : 1, borderTopColor : 'lightgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
@@ -989,7 +984,7 @@ _renderMemoryTile=() => {
                           </TouchableOpacity>
                     </View>
                     <View style={{flex: 1, borderWidth: 0, justifyContent: 'center', alignItems: 'flex-start'}}>
-                              <ModalDropdown
+                              <FLModalDropdown
                                         //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                         //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : setColor('lightBlue'), 'Bold'), {textAlign: 'center'}]}
                                         dropdownTextStyle={setFont('500', 16, setColor(''), 'Regular')}
@@ -1016,7 +1011,7 @@ _renderMemoryTile=() => {
                                       <Text style={[setFont('300', 14, setColor('')), {textAlign: 'left'}]}>
                                         {this.request.getValueLabel('isMemory')}
                                       </Text>
-                                    </ModalDropdown>
+                                    </FLModalDropdown>
                         </View>
                 </TouchableOpacity>
                 <View style={{height: 35, borderTopWidth : this.request.isActivated('isMemory') ? 1 : 0, borderTopColor : 'lioghtgray', padding: 2, justifyContent: 'center', alignItems: 'center'}}>
@@ -1229,7 +1224,7 @@ render() {
                               }}
                       />
                   </View>
-                  <ModalDropdown
+                  <FLModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
                                     dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
@@ -1313,7 +1308,7 @@ render() {
                           <MaterialCommunityIcons name={'dots-vertical'} size={25} style={{color: setColor('')}}/>
                           {/* <FontAwesome name={'navicon'}  size={25} style={{color: setColor('')}}/>  */}
                       </View>
-                  </ModalDropdown>
+                  </FLModalDropdown>
 
               
 

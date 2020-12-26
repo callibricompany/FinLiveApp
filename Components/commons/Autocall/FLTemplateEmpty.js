@@ -1,13 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, Modal, Animated} from 'react-native';
 import { NavigationActions } from 'react-navigation';
-import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Ionicons from "react-native-vector-icons/Ionicons";
 
-import AnimatedProgressWheel from 'react-native-progress-wheel';
-
-import RobotBlink from "../../../assets/svg/robotBlink.svg";
 
 import {  globalStyle, setFont,setColor} from '../../../Styles/globalStyle'
 
@@ -24,12 +18,7 @@ import * as TEMPLATE_TYPE from '../../../constants/template'
 
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 
-import { CAutocall } from '../../../Classes/Products/CAutocall';
-import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 
-
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
 import { VictoryPie, VictoryLabel, VictoryLegend } from "victory-native";
 
 
@@ -76,6 +65,7 @@ _fadeOut() {
   Animated.timing(this.state.animatedValue, {
     toValue: 1,
     duration: 1500,
+    useNativeDriver: true,
   }).start(() => this._fadeIn());
 }
 
@@ -84,6 +74,7 @@ _fadeIn() {
     Animated.timing(this.state.animatedValue, {
       toValue: 0.5,
       duration: 1500,
+      useNativeDriver: true,
     }).start(() => this._fadeOut());
 }
 
@@ -359,7 +350,7 @@ _renderAutocallFullTemplate() {
                                   //origin={{ x: 20, y: 20 }}
                                   width={150} 
                                   height={150} 
-                                  colorScale={['lightgray', 'lightgray', 'lightgray']} 
+                                  colorScale={['snow', 'snow', 'snow']} 
                                   labelComponent={<VictoryLabel  style={{fontSize : 10, fill : 'lightgray'}} />}
                                   innerRadius={10}  
                                   animate={{ easing: 'exp' }}

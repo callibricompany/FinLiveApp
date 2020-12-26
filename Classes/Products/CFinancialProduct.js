@@ -3,8 +3,11 @@ import moment from 'moment';
 
 
 export class CFinancialProduct extends CProduct2 {
-  constructor(financialproduct) {
-    super(financialproduct); 
+  constructor(financialproduct, source='products') {
+    super(financialproduct, source); 
+    this.isinCode = '';
+    this.issuer = '';
+    this.distributor = '';
   }
 
   //verifie si les dates ont été fixé ou s'il d'agit de dates flottantes
@@ -26,7 +29,13 @@ export class CFinancialProduct extends CProduct2 {
   }
 
     //renvoie la monnaie
-    getCurrency() {
-        return this.product.hasOwnProperty("CURRENCY") ? this.product["CURRENCY"] : 'EUR';
-    }
+  getCurrency() {
+      return this.product.hasOwnProperty("CURRENCY") ? this.product["CURRENCY"] : 'EUR';
+  }
+  
+  //revoie l'isin
+  getISIN() {
+    return this.isinCode;
+  }
+
 }

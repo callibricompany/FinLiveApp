@@ -10,13 +10,12 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
-import { getUserAllInfoAPI, setFavoriteAPI, getUserFavorites, getTicket, getAllUsers, setFavorite } from "../API/APIAWS";
+import { getUserAllInfoAPI, getTicket, getAllUsers, setFavorite } from "../API/APIAWS";
 
 
 import { isAndroid , isEqual } from '../Utils'; 
 
 import { CObject } from "../Classes/CObject";
-import { CBroadcastTicket } from "../Classes/Tickets/CBroadcastTicket";
 import { CTicket } from '../Classes/Tickets/CTicket';
 import { CWorkflowTicket } from  "../Classes/Tickets/CWorkflowTicket";
 import { CSouscriptionTicket } from '../Classes/Tickets/CSouscriptionTicket';
@@ -26,7 +25,9 @@ import { CUsers } from '../Classes/CUsers';
 import * as TEMPLATE_TYPE from '../constants/template';
 
 import { withNotification } from './NotificationProvider'; 
-import { CAutocall } from "../Classes/Products/CAutocall";
+import { CAutocall2 } from "../Classes/Products/CAutocall2";
+import { CAutocallSRP } from '../Classes/Products/CAutocallSRP';
+import { CProduct2 } from "../Classes/Products/CProduct2";
 
 
 const withAuthentication = Component => {
@@ -74,7 +75,7 @@ const withAuthentication = Component => {
         getUserAllInfo: () => this.getUserAllInfo(),
 
         //la homepage
-        featured: [],
+        //featured: [],
         userOrg: [],
 
         //gestion des categories
@@ -84,11 +85,13 @@ const withAuthentication = Component => {
         //toFavorites
         favorites: [],
         setFavorite: obj => this.setFavorite(obj),
-        setFavorite2: obj => this.setFavorite2(obj),
 
         //les filtres a appliquer sur la home page
-        filtersHomePage: [],
-        setFiltersHomePage: filters => this.setFiltersHomePage(filters)
+        filters: [],
+        setFilters: filters => this.setFilters(filters),
+        favoriteProducts : [],
+        setFavoriteProducts : favoritesProducts => this.setFavoriteProducts(favoritesProducts)
+        
       };
     }
 
@@ -233,38 +236,37 @@ const withAuthentication = Component => {
       let souscriptionTickets = [];
 
       tickets.forEach((t) => {
-        //let tempTicket = new CTicket(t);
-        //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
-        
-        //switch (tempTicket.getType()) {
+
         switch(t.type) {
           case "Broadcasting" :
             console.log("Broadcast : "+t.id);
             console.log(t);
-            //let ticketB = new CBroadcastTicket(t);
-            //this.tickets.push(ticketB);
+    
             break;
           case "Produit structuré" :
-            console.log("Workflow : "+t.id);
-            //console.log(t);
-            let ticketC = new CWorkflowTicket(t);
-            if (ticketC.getId() === 399) {
-              let productsFollowed = this.state.productsFollowed;
-              productsFollowed.push(ticketC.getProduct());
-              this.setState({ productsFollowed });
-            }
-            productTickets.push(ticketC);
-            break;
+              if (typeTicket === 'PRODUCT') {
+                    console.log("Workflow : "+t.id);
+                    //console.log(t);
+                    let ticketC = new CWorkflowTicket(t);
+                    if (ticketC.getId() === 399) {
+                      let productsFollowed = this.state.productsFollowed;
+                      productsFollowed.push(ticketC.getProduct());
+                      this.setState({ productsFollowed });
+                    }
+                    productTickets.push(ticketC);
+              }
+              break;
           case "Souscription" :
             console.log("Souscription : "+t.id);
             let souscriptionTicket = new CSouscriptionTicket(t);
             //console.log(souscriptionTicket.getRequester().codeTS + "   " + this.state.user.getCodeTS());
             
             //check si c'est mon ticket 
-            if (souscriptionTicket.getRequester().codeTS === this.state.user.getCodeTS()) {
+            if (souscriptionTicket.getRequester().codeTS === this.state.user.getCodeTS() && typeTicket === 'PRODUCT') {
                 //let ticketC = new CWorkflowTicket(t.product); //on crée juste le produit
                 productTickets.push(souscriptionTicket);
-            } else {
+            } 
+            if (souscriptionTicket.getRequester().codeTS !== this.state.user.getCodeTS() && typeTicket === 'SOUSCRIPTION') {
               //console.log(souscriptionTicket);
                 souscriptionTickets.push(souscriptionTicket);
             }
@@ -302,32 +304,21 @@ const withAuthentication = Component => {
       let token = await Notifications.getExpoPushTokenAsync();
 
       return token;
-      //console.log("TOKEN : "+ token);
-      //let device = this.state.device;
-      //device['TOKEN'] = token;
-      //this.setState( { device });
-      // POST the token to your backend server from where you can retrieve it to send push notifications.
-      /*return fetch(PUSH_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token: {
-            value: token,
-          },
-          user: {
-            username: 'Brent',
-          },
-        }),
-      });*/
+
     }
 
     //enregistre les filtres
-    setFiltersHomePage(filters) {
+    setFilters(filters=[]) {
+      //console.log("with Authentication : setFilters");
       //console.log(filters);
-      this.setState({ filtersHomePage: filters });
+      this.setState({ filters });
+    
+    }
+
+    //enregistre les produits favoris
+    setFavoriteProducts(favoriteProducts=[]) {
+      this.setState({ favoriteProducts });
+    
     }
 
     //chargement des donnees de départ deopuis le serveur
@@ -407,69 +398,14 @@ const withAuthentication = Component => {
                 //on va crer les objets tickets 
                 let tickets = this.classifyTickets(userDatas.userTickets);
                 let souscriptionTickets = this.classifyTickets(userDatas.userTickets, 'SOUSCRIPTION');
-
-
-                // userDatas.userTickets.forEach((t) => {
-                //   //let tempTicket = new CTicket(t);
-                //   //console.log(tempTicket.getType()+ "  :  "+tempTicket.getId());
-                  
-                //   //switch (tempTicket.getType()) {
-                //   switch(t.type) {
-                //     case "Broadcasting" :
-                //       console.log("Broadcast : "+t.id);
-                //       console.log(t);
-                //       //let ticketB = new CBroadcastTicket(t);
-                //       //this.tickets.push(ticketB);
-                //       break;
-                //     case "Produit structuré" :
-                //       console.log("Workflow : "+t.id);
-                //       //console.log(t);
-                //       let ticketC = new CWorkflowTicket(t);
-                //       tickets.push(ticketC);
-                //       break;
-                //     case "Souscription" :
-                //       console.log("Souscription : "+t.id);
-                //       let souscriptionTicket = new CSouscriptionTicket(t);
-                //       //console.log(souscriptionTicket.getRequester().codeTS + "   " + this.state.user.getCodeTS());
-                      
-                //       //check si c'est mon ticket 
-                //       if (souscriptionTicket.getRequester().codeTS === this.state.user.getCodeTS()) {
-                //           //let ticketC = new CWorkflowTicket(t.product); //on crée juste le produit
-                //           tickets.push(souscriptionTicket);
-                //       } else {
-                //         //console.log(souscriptionTicket);
-                //           souscriptionTickets.push(souscriptionTicket);
-                //       }
-                      
-                //       break;
-                      
-                //     default : 
-                //       console.log("On sait pas  : "+t.type + " : " +t.id);
-                //       //this.tickets.push(t);
-                //       break;
-                //   }
-                // });
-                // tickets.sort(CTicket.compareLastUpdateDown);
-
-
-                //on cree les objets autocalls
-                
-                userDatas.startPage.bestCoupon.forEach((t) => {            
-                  switch (t.template) {
-                    case TEMPLATE_TYPE.PSLIST :
-                      let featuredAutocall = new CAutocall(t);
-                      //console.log(t)
-                      featuredAutocalls.push(featuredAutocall);
-                      break;
-                    default : 
-                      break;
-                  }
-                });
         
-
+                //on créé une liste des APE SRP
+                let arraySRP = [];
+                userDatas.startPage.srp.forEach((autocall) => arraySRP.push(new CAutocallSRP(autocall)));
+                
                 this.setState({
                   //featured : userDatas.startPage.bestCoupon,
-                  featured : featuredAutocalls,
+                  //featured : featuredAutocalls,
                   categories: userDatas.categories,
                   userOrg: userDatas.userOrg,
                   // user : new CUser(userDatas.userInfo),
@@ -480,7 +416,7 @@ const withAuthentication = Component => {
                   //tickets: userDatas.userTickets.slice(0,1),
 
                   apeTickets: userDatas.startPage.ape,
-                  apeSRP : userDatas.startPage.srp,
+                  apeSRP : arraySRP,
 
 
                   issuers : userDatas.issuers,
@@ -536,93 +472,53 @@ const withAuthentication = Component => {
 
     }
 
-    //chargement des favoris depuis le serveur
-    getUserFavorites = () => {
-      return new Promise((resolve, reject) => {
-        this.props.firebase
-          .doGetIdToken()
-          .then(token => {
-            getUserFavorites(token)
-              .then(data => {
-                //console.log("reception : " + JSON.stringify(userDatas.categories));
-                console.log("Nombre de favoris : " + data.length);
-                this.setState({ favorites: data }, () => resolve("ok"));
-              })
-              .catch(error => {
-                //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
-                alert("ERREUR CONNEXION AU SERVEUR : ", "" + error);
-                reject(error);
-              });
-          })
-          .catch(error => {
-            //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
-            alert("ERREUR RECUPERATION DES FAVORITES USER : ", "" + error);
-            reject(error);
-          });
-      });
-    };
-
     //on met en favori un objet passé
-    async setFavorite2(codeProduct) {
-      return new Promise((resolve, reject) => {
+    async setFavorite(productJSON) {
+      //props.filters['category'] === 'PSFAVORITES'
+      try {
+        var data = await setFavorite(this.props.firebase, productJSON)
+        
+        console.log("Mis en favori ok " + data['IS_FAVORITE']);
+        if (this.state.filters != null && this.state.filters !== [] && this.state.filters['category'] === 'PSFAVORITES') {
+          //il faut  donc supprimer ou ajouter le produit de la liste  des  favoris
+          //en effet ca ne sera pas  rechargé puisque UNSAFE_componentWillReceiveProps  de TabHome.js ne sera pas rappalé
+          if (data['IS_FAVORITE']) { //il faut l'ajouter
+              //if (CAutocall2.AUTOCALL_TYPE.includes(data['TYPE'])) {
+                let favArray = this.state.favoriteProducts;
+                switch(data['TYPE']) {
+                  case 'STRUCTURED_PRODUCT' :
+                    favArray.unshift(new CAutocall2(data));
+                    break;
+                  case 'STRUCTURED_PRODUCT_SRP' :
+                    favArray.unshift(new CAutocallSRP(data));
+                    break;
+                  default : break;
+                }
+                this.setState({ favoriteProducts  : favArray });
+              //}
+          } else { //il faut l'enlever du tableau
 
-            setFavorite(this.props.firebase, codeProduct)
-              .then(data => {
-                console.log("Mis en favori ok : " + data);
-                resolve("ok");
-               
-              })
-              .catch(error => {
-                console.log("Echec mis en favori : " + JSON.stringify(obj));
-                reject(error);
-              });
-          });
+            let favArray = this.state.favoriteProducts;
+            let idxToRemove = -1;
+            favArray.forEach((product, index)  => {
+              if (product.getUniqueId() === data['UNIQUE_ID']) {
+                idxToRemove = index;
+              }
+            });
+            console.log("Index to remove : " + idxToRemove);
+            if (idxToRemove !== -1) {
+              favArray.splice(idxToRemove, 1);
+              this.setState({ favoriteProducts  :  favArray });
+            }
+          }
+        }
+        return new Promise.resolve(data);
+      } catch(error) {
+        console.log("Echec mis en favori : " + productJSON);
+        return new Promise.reject(error);
+      }
     }
-    async setFavorite(obj) {
-      return new Promise((resolve, reject) => {
-        console.log("Doit etre mis en favori : " + !obj.isFavorite);
 
-        //check if it's in favorites object
-        //console.log(obj);
-
-        //console.log(this.item.data);
-        let favoriteToSend = JSON.parse(JSON.stringify(obj));
-        favoriteToSend.toFavorites.active = !favoriteToSend.toFavorites.active;
-        favoriteToSend.isFavorite = !favoriteToSend.isFavorite;
-
-        this.props.firebase
-          .doGetIdToken()
-          .then(token => {
-            setFavoriteAPI(token, favoriteToSend)
-              .then(data => {
-                console.log("Mis en favori ok : " + data.isFavorite);
-
-                this.getUserFavorites()
-                  .then(() => resolve(data))
-                  .catch(error => reject(error));
-                //this.manageFavoriteList(data);
-                //on va l'ajoueter ou l'enlever de laliste des favoris
-                //this.getUserFavorites()
-                //.then(() => resolve(data))
-                //.catch((error) => reject(error));
-                //this.setState({ toto : !this.state.toto });
-                //resolve(data);
-              })
-              .catch(error => {
-                console.log("Echec mis en favori : " + JSON.stringify(obj));
-                reject(error);
-              });
-          })
-          .catch(error => {
-            //console.log("ERREUR RECUPERATION DES INFOS USER " + error);
-            alert(
-              "ERREUR RECUPERATION DES INFOS USER DE LA BASE: ",
-              "" + error
-            );
-            reject(error);
-          });
-      });
-    }
 
     //retourne tous les sous-jacents d'une categories
     getAllUndelyings(type = "PS") {

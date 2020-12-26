@@ -17,13 +17,6 @@ import logo from '../../assets/LogoWithoutText.png';
 import logo_gray from '../../assets/LogoWithoutTex_gray.png';
 
 
-
-
-
-
-
-
-
 const HEADER_HEIGHT = 20;
 //export const SNAP_POINTS_FROM_TOP = [30, getConstant('height') * 0.3, sizeByDevice(getConstant('height') -260 , getConstant('height') - 200 , getConstant('height') - 215) ];
 export const SNAP_POINTS_FROM_TOP = [isIphoneX() ? 80 : 50, getConstant('height') * 0.4, getConstant('height') - 10 ];
@@ -87,14 +80,17 @@ class FLBottomPanel extends React.Component {
       this.setState({ lastSnap : props.position });
     }
     _onHeaderHandlerStateChange = ({ nativeEvent }) => {
+
       if (nativeEvent.oldState === State.BEGAN) {
         this._lastScrollY.setValue(0);
       }
       this._onHandlerStateChange({ nativeEvent });
     };
     _onHandlerStateChange = ({ nativeEvent }) => {
+      
       if (nativeEvent.oldState === State.ACTIVE) {
         let { velocityY, translationY } = nativeEvent;
+        
         translationY -= this._lastScrollYValue;
         const dragToss = 0.05;
         const endOffsetY =
@@ -104,10 +100,12 @@ class FLBottomPanel extends React.Component {
         for (let i = 0; i < SNAP_POINTS_FROM_TOP.length; i++) {
           const snapPoint = SNAP_POINTS_FROM_TOP[i];
           const distFromSnap = Math.abs(snapPoint - endOffsetY);
+          //console.log(distFromSnap + " : " + snapPoint + " : " +endOffsetY);
           if (distFromSnap < Math.abs(destSnapPoint - endOffsetY)) {
             destSnapPoint = snapPoint;
           }
         }
+        //console.log("DESTINATION SNAP : " + destSnapPoint);
         this.setState({ lastSnap: destSnapPoint }, () => this.props.snapChange(destSnapPoint));
 
         this._translateYOffset.extractOffset();
@@ -170,6 +168,7 @@ class FLBottomPanel extends React.Component {
                       { marginBottom: SNAP_POINTS_FROM_TOP[0] },
                     ]}
                     bounces={false}
+                    useNativeDriver={true}
                     onScrollBeginDrag={this._onRegisterLastScroll}
                     scrollEventThrottle={1}>
   

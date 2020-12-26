@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, ActivityIndicator, TouchableOpacity, Text, Dimensions} from 'react-native'; 
+import { View, ActivityIndicator, TouchableOpacity, Text, FlatList} from 'react-native'; 
 import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 
-import { FLFlatList } from '../SearchBar/searchBarAnimation';
+
 import { getNews } from '../../API/APINews';
 
 import { withNavigation } from 'react-navigation';
@@ -141,7 +141,7 @@ class TabNews extends React.PureComponent {
     return (
         <View style={{justifyContent:'flex-start', alignItems: 'center'}}>
         
-        <FLFlatList
+        <FlatList
             data={this.state.news}
             renderItem={this._displayNews}
             style={{width : getConstant('width')*0.95}}

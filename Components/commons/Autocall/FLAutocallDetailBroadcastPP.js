@@ -20,8 +20,7 @@ import FLAnimatedSVG from '../FLAnimatedSVG';
 import StepIndicator from 'react-native-step-indicator';
 import Accordion from 'react-native-collapsible/Accordion';
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
+
 
 import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
@@ -46,7 +45,7 @@ import logo from '../../../assets/LogoWithoutText.png';
 import * as TEMPLATE_TYPE from '../../../constants/template';
 import { CWorkflowTicket } from "../../../Classes/Tickets/CWorkflowTicket";
 
-import { FLDatePicker } from '../FLDatePicker';
+import  { FLDatePicker } from  '../FLDatePicker';
 
 
 
@@ -80,6 +79,7 @@ class FLAutocallDetailBroadcastPP extends React.Component {
         //friends
         friends : this.autocall.getFriends(),
 
+
         //gestion du clavier
         keyboardHeight: 0,
         isKeyboardVisible: false,
@@ -107,7 +107,10 @@ class FLAutocallDetailBroadcastPP extends React.Component {
 
 
     //liste des users ticket partagé
+    console.log("pass ici 1");
     this.usersList = this.users.getUserListFromUid(this.state.friends);
+
+    console.log("pass ici 2");
 
   }
 
@@ -160,7 +163,7 @@ _setFriends(friends) {
 
   this.setState({ friends }, () => {
     this.usersList = this.users.getUserListFromUid(this.state.friends);
-    this.autocall.setFriends(friends);
+    //this.autocall.setFriends(friends);
     this.setState({ toto : !this.state.toto });
   });
 }
@@ -258,6 +261,7 @@ _setFriends(friends) {
                                             alignItems: 'center', 
                                             borderWidth : 0
                                           }}
+                    touchableComponent={(props) => <TouchableOpacity {...props} />}
                 />
             </View>
 
@@ -379,7 +383,7 @@ _setFriends(friends) {
                             <View style={{marginTop : 15}}>
                                 <Text style={setFont('200', 16, 'gray')}>Demander jusqu'au :</Text>
                             </View>
-                            <FLDatePicker date={this.autocall.getEndBroadcastDate()} minimumDate={new Date(Date.now())} onChange={(d) =>  this.autocall.setEndBroadcastDate(d)} isEditable={true} />
+                            <FLDatePicker date={this.autocall.getEndSharingDate()} minimumDate={new Date(Date.now())} onChange={(d) =>  this.autocall.setEndSharingDate(d)} isEditable={true} />
                             <KeyboardAvoidingView behavior={'padding'} style={{ marginTop : 5}}>
                                   <View style={{marginTop : 15}}>
                                       <Text style={setFont('200', 16, 'gray')}>Rajoutez une description au produit :</Text>
@@ -465,6 +469,7 @@ _setFriends(friends) {
                                                                               let friends = this.state.friends;
                                                                     
                                                                               let index = friends.indexOf(u.getId());
+                                                                
                                                                               if (index !== -1) {
                                                                                 friends.splice(index, 1);
                                                                               }
@@ -505,21 +510,25 @@ _setFriends(friends) {
                                       alert("Veuiller indiquer avec qui partager ce produit !");
                                       return;
                                     }
-                                    this.setState( {isLoadingCreationTicket : true });
-                                    let productToSend = {};
-                                    this.autocall.setStepPP('PPRIR');
-                                    this.autocall.setSubject(this.autocall.getProductName()  + " " + this.autocall.getMaturityName() + " sur " + this.autocall.getFullUnderlyingName() + " / "  + this.autocall.getFrequencyAutocallTitle().toLowerCase());
-                                    this.autocall.setDescription(this.state.description ==='' ? "Aucune instruction particulière" : this.state.description);
-                                    this.autocall.setDepartment('FIN');
 
-                                    productToSend['product'] = this.autocall.getProduct();
+                                    this.setState( {isLoadingCreationTicket : true });
+
+                                    let product = {};
+                                    product['subject'] = this.autocall.getShortName();
+                                    product['description'] = this.state.description ==='' ? "Aucune instruction particulière" : this.state.description;
+                                    product['department'] = 'FIN';
+                                    product['cf_step_pp']  = 'PPRIR';
+                                    
+                                    let productToSend = {};
+                                    productToSend['product'] = product;
                                     productToSend['cf_message'] = this.state.message === '' ? "Pas de message" : this.state.message;
-                                    //productToSend['broad_enddate'] = Moment.utc(Moment(this.autocall.getEndBroadcastDate()).toDate()).format();
+                                    //productToSend['broad_enddate'] = Moment.utc(Moment(this.autocall.getEndSharingDate()).toDate()).format();
                                     let due_byDate = Moment(Date.now()).add(1, 'days').set({"hour": 17, "minute": 30, "second" : 0}).toDate();
                                     productToSend['due_by'] = Moment.utc(due_byDate).format();
                                     let fr_due_byDate = Moment(Date.now()).add(1, 'days').set({"hour": 17, "minute": 15, "second" : 0}).toDate();
                                     productToSend['fr_due_by'] = Moment.utc(fr_due_byDate).format();
                                     productToSend['friends'] = this.state.friends;
+                                    productToSend['codeOperation'] = 'pp';
                                     productToSend['ps_num_ticket_broadcast'] = this.state.targetNorminal;
                                     productToSend['ps_num_ticket'] = this.state.nominal;
                                     productToSend['type'] = 'Produit structuré';
@@ -530,7 +539,7 @@ _setFriends(friends) {
                                     productToSend['cf_ps_shared'] = true;
                                     productToSend['cf_cpg_choice'] = "Placement Privé";
 
-                                    console.log(productToSend);
+                                    //console.log(productToSend);
 
                                    //"due_by": 2020-05-03T15:30:00.912Z,
                                    console.log("++++++++++++");

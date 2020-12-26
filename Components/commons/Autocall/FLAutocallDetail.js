@@ -10,18 +10,17 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-import FLTemplateAutocall2 from "./FLTemplateAutocall2";
+import FLTemplateAutocall from "./FLTemplateAutocall";
 import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant } from '../../../Utils';
 import { interpolateColorFromGradient } from '../../../Utils/color';
 
 import FLAnimatedSVG from '../FLAnimatedSVG';
-import StepIndicator from 'react-native-step-indicator';
 import Accordion from 'react-native-collapsible/Accordion';
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
+
+import FLModalDropdown from '../FLModalDropdown';
 
 import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
@@ -30,8 +29,8 @@ import { compose, hoistStatics } from 'recompose';
 
 import { CAutocall2 } from '../../../Classes/Products/CAutocall2';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { reprice } from '../../../API/APIAWS';
-import { interpolateBestProducts } from '../../../Utils/interpolatePrices';
+import { reprice , saveProduct } from '../../../API/APIAWS';
+
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -42,7 +41,6 @@ import logo_white from '../../../assets/LogoWithoutTex_white.png';
 import logo from '../../../assets/LogoWithoutText.png';
 
 import * as TEMPLATE_TYPE from '../../../constants/template';
-import { CWorkflowTicket } from "../../../Classes/Tickets/CWorkflowTicket";
 
 import { FLIssuer } from "./FLIssuer";
 import { FLStrike } from "./FLStrike";
@@ -50,6 +48,7 @@ import { FLUF } from "./FLUF";
 import { FLCallable } from "./FLCallable";
 import { FLCoupons } from "./FLCoupons";
 import { FLPDI } from "./FLPDI";
+import { FLDocuments } from "./FLDocuments";
 
 
 
@@ -60,11 +59,12 @@ class FLAutocallDetail extends React.Component {
     super(props);   
 
     //recuperation de l'autocall
-   // this.autocall =  this.props.navigation.getParam('autocall', '...');
-   //this.autocall = this.props.autocall;
-   //this.isEditable = typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : true,
-   this.autocall =  this.props.navigation.getParam('autocall', '...');
-   this.isEditable =  this.props.navigation.getParam('isEditable', true);
+    // this.autocall =  this.props.navigation.getParam('autocall', '...');
+    //this.autocall = this.props.autocall;
+    //this.isEditable = typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : true,
+    this.autocall =  this.props.navigation.getParam('autocall', '...');
+    this.isEditable =  this.props.navigation.getParam('isEditable', true);
+    console.log("UNIQUE ID : " + this.autocall.getUniqueId());
     
     this.state = { 
 
@@ -114,90 +114,97 @@ class FLAutocallDetail extends React.Component {
  _constructMenu() {
 
     this.descProduct = [];
-    this.descProduct.push(
-      {
-        key : 'ISSUER',
-        iconName : 'bank-transfer-out', //'handshake-o',
-        iconFamily : 'MaterialCommunityIcons',
-        level : 1, 
-        title: 'Emission',
-        body: ''
-      });
+    this.descProduct.push({
+      key : 'ISSUER',
+      iconName : 'bank-transfer-out', //'handshake-o',
+      iconFamily : 'MaterialCommunityIcons',
+      level : 1, 
+      title: 'Emission',
+      body: ''
+    });
 
-      if (!this.state.hideCC) { 
-        this.descProduct.push(
-          {
-            key : 'CC',
-            iconName : 'margin',
-            iconFamily : 'MaterialCommunityIcons',
-            level : 2, 
-            title: 'Rémunération',
-            body: ''
-          });
-      }
-
-      this.descProduct.push(
-      {
-        key : 'PAYOFF',
-        iconName : 'calculator',
-        iconFamily : 'SimpleLineIcons',
-        level : 1, 
-        title: 'Payoff',
-        body: "Découvrez le comportement de votre produit en fonction de l'évoltion du sous-jacent. "
-      });
-      this.descProduct.push(
-        {
-          key : 'STRIKE',
-          iconName : 'md-calendar', //'strikethrough',
-          iconFamily : 'Ionicons',
-          // iconName : 'dot-circle-o',
-          // iconFamily : 'FontAwesome',
-          level : 2, 
-          title: 'Détermination des dates de constations initiales',
-          body: ''
-        });
-      this.descProduct.push(
-      {
-        key : 'CALLABLE',
-        iconName : 'gavel',
-        iconFamily : 'MaterialCommunityIcons',
-        level : 2, 
-        title: 'Rappels du produit',
-        body: ''
-      });
-      
-      if (this.autocall.isPhoenix()) {
-        this.descProduct.push({
-          key : 'COUPON',
-          iconName : 'ticket-percent',
+    if (!this.state.hideCC) { 
+      this.descProduct.push({
+          key : 'CC',
+          iconName : 'margin',
           iconFamily : 'MaterialCommunityIcons',
           level : 2, 
-          title: 'Coupons',
+          title: 'Rémunération',
           body: ''
         });
-      }
+    }
 
-
-      this.descProduct.push(
-      {
-        key : 'CAPITAL',
-        iconName : 'shield',
+    this.descProduct.push({
+      key : 'PAYOFF',
+      iconName : 'calculator',
+      iconFamily : 'SimpleLineIcons',
+      level : 1, 
+      title: 'Payoff',
+      body: "Découvrez le comportement de votre produit en fonction de l'évoltion du sous-jacent. "
+    });
+    this.descProduct.push({
+        key : 'STRIKE',
+        iconName : 'md-calendar', //'strikethrough',
+        iconFamily : 'Ionicons',
+        // iconName : 'dot-circle-o',
+        // iconFamily : 'FontAwesome',
+        level : 2, 
+        title: 'Détermination des dates de constations initiales',
+        body: ''
+    });
+    if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT') {
+          this.descProduct.push({
+            key : 'CALLABLE',
+            iconName : 'gavel',
+            iconFamily : 'MaterialCommunityIcons',
+            level : 2, 
+            title: 'Rappels du produit',
+            body: ''
+          });
+    }
+    if (this.autocall.isPhoenix()) {
+      this.descProduct.push({
+        key : 'COUPON',
+        iconName : 'ticket-percent',
         iconFamily : 'MaterialCommunityIcons',
-        level : 1, 
-        title: 'Protection du capital',
+        level : 2, 
+        title: 'Coupons',
         body: ''
       });
+    }
 
-      this.descProduct.push(
-        {
-          key : 'EMPTY_SECTION',
-          iconName : '',
-          iconFamily : '',
-          level : 1, 
-          title: '',
-          body: ''
-        });
- 
+
+    this.descProduct.push({
+      key : 'CAPITAL',
+      iconName : 'shield',
+      iconFamily : 'MaterialCommunityIcons',
+      level : 1, 
+      title: 'Protection du capital',
+      body: ''
+    });
+
+    if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT_SRP') {
+      this.descProduct.push( {
+        key : 'DOCUMENTS',
+        iconName : 'md-document',
+        iconFamily : 'Ionicons',
+        level : 1, 
+        title: 'Documents',
+        body: ''
+      });
+    }
+
+    this.descProduct.push( {
+      key : 'EMPTY_SECTION',
+      iconName : '',
+      iconFamily : '',
+      level : 1, 
+      title: '',
+      body: ''
+    });
+
+
+
  }
 
 
@@ -217,7 +224,11 @@ class FLAutocallDetail extends React.Component {
     Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
 
-
+    //on enregistre le produit au cas ou il ne le soit pas
+    if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT') {
+      var resp = await saveProduct(this.props.firebase, this.autocall.getProductJSON());
+      this.autocall = new CAutocall2(resp);
+    }
 
   }
   componentWillUnmount() {
@@ -296,7 +307,7 @@ class FLAutocallDetail extends React.Component {
             this.autocall.setIssuingDate(value);
           break;
         case 'endIssuingDate' : 
-            this.autocall.setEndIssuingDate(value);
+            this.autocall.setEndIssueDate(value);
           break;
         case 'strikingDate' : 
             this.autocall.setStrikingDate(value);
@@ -312,7 +323,15 @@ class FLAutocallDetail extends React.Component {
   //render des sections de la flatlist
   renderPage = rowData => {
     const item = rowData.item;
-    let body = null;
+    //console.log(item);
+    let body = <Text style={{
+                  flex: 1,
+                  fontSize: 15,
+                  color: '#606060',
+                  lineHeight: 24,
+                }}>
+                  {item.body}
+                </Text>;
     switch(item.key) {
       case 'ISSUER' : 
           body = <FLIssuer  codeAuction={this.autocall.getAuctionType()} 
@@ -322,6 +341,7 @@ class FLAutocallDetail extends React.Component {
                             notionnal={this.autocall.getNominal()}
                             updateProduct={this._updateProduct} 
                             currency={this.autocall.getCurrency()}
+                            typeProduct={this.autocall.getProductType()}
                   />;
           break;
       case 'CC' : 
@@ -335,7 +355,7 @@ class FLAutocallDetail extends React.Component {
                   />;
           break;
       case 'STRIKE' : 
-          body = <FLStrike  isEditable={this.isEditable} 
+          body = <FLStrike  isEditable={(this.isEditable && this.autocall.getProductType() === 'STRUCTURED_PRODUCT')} 
                             strikedate={this.autocall.getStrikingDate()}
                             updateProduct={this._updateProduct}
                             maximumDate={this.autocall.getIssueDate()}
@@ -358,6 +378,14 @@ class FLAutocallDetail extends React.Component {
                               isPDIUS={this.autocall.isPDIUS()}
                               updateProduct={this._updateProduct} 
                   />;
+          break;  
+      case 'DOCUMENTS' : 
+          body = <FLDocuments autocall = {this.autocall}/>;
+          break;  
+      case 'PAYOFF' : 
+          if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT_SRP') {
+            body = <View style={{padding : 5}}><Text>{this.autocall.getDescription_2()}</Text></View>;
+          }
           break;  
       case 'EMPTY_SECTION' : 
           body = <View style={{ height: 150}}/>;
@@ -650,7 +678,11 @@ class FLAutocallDetail extends React.Component {
       <Animated.View style={{position : 'absolute',top: getConstant('height')-110-this.state.keyboardHeight - (isAndroid() ? 30 : 0) , right : 20,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent', transform: [{ translateY: this.state.scrollOffset }]}}>
             <TouchableOpacity style ={{  flexDirection: 'column',  borderWidth : 1, height: 70, width: 70, borderColor: setColor('subscribeBlue'), borderRadius: 35, marginLeft : 10, padding : 10, backgroundColor: setColor('subscribeBlue')}}
                             onPress={() => {
+                              if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT_SRP') {
+                                alert("Fonctionnalité disponible dans une prochaine version");
+                              } else {
                                 this.setState({ showButtonsToTrade : !this.state.showButtonsToTrade });
+                              }
                             }}  
             >
                 <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
@@ -666,7 +698,7 @@ class FLAutocallDetail extends React.Component {
   }
 
   render() {
-    let dataOptions = ['Clone', 'Shadow'];
+    let dataOptions = ['Clone', 'Shadow', 'Favorite'];
     return (
       <View  style={{ flex: 1, backgroundColor: "white" , opacity: (this.state.showModalDescription) ? 0.3 : (this.state.isLoadingCreationTicket || this.state.isLoadingUpdatePrice) ? 0.2 : 1}} 
                         onStartShouldSetResponder={evt => {
@@ -704,13 +736,13 @@ class FLAutocallDetail extends React.Component {
                               </Text>
                             </View>
                             <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'flex-end', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
-                                    <ModalDropdown
+                                    <FLModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
                                     dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
                                     dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
                                     onSelect={(index, value) => {
-                                                      if(value === 'Clone') {
+                                                      if(value === 'Clone' && this.autocall.getProductType() === 'STRUCTURED_PRODUCT') {
                                                           let r = new CPSRequest();
                                                             r.setRequestFromCAutocall(this.autocall);
                                                             this.props.navigation.dispatch(NavigationActions.navigate({
@@ -736,6 +768,7 @@ class FLAutocallDetail extends React.Component {
                                     renderRow={(option, index, isSelected) => {
                                       switch(option) {
                                         case 'Shadow' :
+                                              
                                               return (
                                                   <View style={{flexDirection : 'row', height: 40}}>
                                                       <View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
@@ -755,11 +788,40 @@ class FLAutocallDetail extends React.Component {
                                                   </View>
                                               );
                                         case 'Clone' :
-                                              return (
-                                                    <View style={{height: 40, flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                        <Text style={setFont('500', 14, 'black', 'Regular')}>Cloner</Text>
-                                                    </View>
+                                              let color = this.autocall.getProductType() === 'STRUCTURED_PRODUCT' ? 'black' : 'lightgray';
+                                                return (
+                                                      <View style={{height: 40, flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                          <Text style={setFont('500', 14, color, 'Regular')}>Cloner</Text>
+                                                      </View>
 
+                                                );
+                                  
+                                        case 'Favorite' :
+                                              return (
+                                                  <View style={{flexDirection : 'row', height: 40}}>
+                                                    <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+                                                                        onPress={() => {
+                                                                          this.autocall.setFavorite(!this.autocall.isFavorite());
+                                                                          this.setState({ toto : !this.autocall.toto });                   
+                                                                          this.props.setFavorite(this.autocall.getProductJSON())
+                                                                          .then((autocall) => {          
+                                                                            this.autocall = new CAutocall2(autocall);
+                                                                            //this.setState({ toto : !this.state.toto });
+                                                                          })
+                                                                          .catch((error) => {
+                                                                            this.autocall.setFavorite(!this.autocall.isFavorite());       
+                                                                            this.setState({ toto : !this.autocall.toto });     
+                                                                            console.log("Erreur de mise en favori : " + error);
+                                                                          });             
+ 
+                                                                        }}
+                                                      >
+                                                         <MaterialCommunityIcons name={!this.autocall.isFavorite() ? "heart-outline" : "heart"} size={20} color={setColor('light')}/>
+                                                      </TouchableOpacity>
+                                                      <View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                                          <Text style={setFont('500', 14, 'black', 'Regular')}>Favori</Text>
+                                                      </View>
+                                                  </View>
                                               );
                                         default : 
                                                 return (
@@ -778,12 +840,12 @@ class FLAutocallDetail extends React.Component {
                       <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
                         <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
                       </View>
-                  </ModalDropdown>
+                  </FLModalDropdown>
                    
                             </View>
             </View>
             <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', marginLeft : 0}}>
-                <FLTemplateAutocall2 autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false/*this.isEditable*/} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
+                <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false/*this.isEditable*/} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
             </View>
             {/* <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center'}}>
                 <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={this.isEditable} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
@@ -808,6 +870,7 @@ class FLAutocallDetail extends React.Component {
                           }}
                           sectionContainerStyle={{marginTop : 10 }}
                           keyExtractor={item => item.title}
+                          touchableComponent={(props) => <TouchableOpacity {...props} />}
                       />
 
 

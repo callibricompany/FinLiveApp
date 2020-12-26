@@ -69,7 +69,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    YellowBox.ignoreWarnings(['Setting a timer']);
+    YellowBox.ignoreWarnings(['Setting a timer', 'Animated: `useNativeDriver` was not specified. This is a required option and must be explicitly set to `true` or `false`']);
     console.ignoredYellowBox = [
       'Setting a timer'
     ];

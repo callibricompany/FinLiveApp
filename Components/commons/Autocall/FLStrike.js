@@ -6,13 +6,11 @@ import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
 
 import { globalStyle, setFont, setColor} from '../../../Styles/globalStyle'
 import { getConstant, currencyFormatDE } from '../../../Utils';
 
-import { FLDatePicker } from '../FLDatePicker';
+import  { FLDatePicker } from  '../FLDatePicker';
 
 import Numeral from 'numeral';
 import Moment from 'moment';

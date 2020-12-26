@@ -5,12 +5,9 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import AnimatedProgressWheel from 'react-native-progress-wheel';
+
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-
-import * as Progress from 'react-native-progress';
-
 
 import RobotBlink from "../../../assets/svg/robotBlink.svg";
 import banniere from '../../../assets/yourTeam.png';
@@ -18,6 +15,7 @@ import YourTeam_SVG from "../../../assets/svg/yourTeam.svg";
 
 import { globalStyle, setFont, setColor } from '../../../Styles/globalStyle'
 
+import FLModalDropdown from '../FLModalDropdown';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -27,29 +25,18 @@ import { withAuthorization } from '../../../Session';
 import { withNavigation } from 'react-navigation';
 import { compose, hoistStatics } from 'recompose';
 
+import * as WebBrowser from 'expo-web-browser';
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
 import * as TEMPLATE_TYPE from '../../../constants/template'
 
-import { FLPDIDetail } from '../../Pricer/description/FLPDIDetail';
-import { FLPhoenixBarrierDetail } from '../../Pricer/description/FLPhoenixBarrierDetail';
-import { FLFreqDetail } from '../../Pricer/description/FLFreqDetail';
-import { FLUFDetail } from '../../Pricer/description/FLUFDetail';
-import { FLAirbagDetail} from '../../Pricer/description/FLAirbagDetail';
-
 import { ifIphoneX, ifAndroid, sizeByDevice, currencyFormatDE, isAndroid , getConstant } from '../../../Utils';
 
 
 import { CAutocallSRP } from '../../../Classes/Products/CAutocallSRP';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { CBroadcastTicket } from '../../../Classes/Tickets/CBroadcastTicket';
-
-
-
-
-
 
 
 
@@ -78,86 +65,12 @@ class FLTemplatePSPublicAPE extends React.Component {
     this.screenWidth = 0.9 * getConstant('width');
 
 
-    this.autocall = new CAutocallSRP(this.props.object);    
+    this.autocall = this.props.product;    
 
     // console.log("Title : " + this.autocall.getFrequencyAutocallTitle());
     // console.log("getUnderlying : " + this.autocall.getUnderlying());
   
   }
-
-
-
- 
-
-
-
-
-
-
-
-
-
-_renderHeaderFullTemplate() {
-  
-  return (
-    <View>
-          <View style={{flexDirection : 'row'}}>
-                <View style={{
-                              flex : 0.6, 
-                              flexDirection : 'column', 
-                              paddingLeft : 20,  
-                              backgroundColor: setColor(''), 
-                              borderTopLeftRadius: 10, 
-                              //borderRadius: 14,
-                              borderBottomWidth :  0,
-
-                              }}
-                >                                                    
-                  <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
-                  <View style={{flexDirection: 'row', borderWidth: 0}}>
-                    <View style={{ borderWidth: 0}}>
-           
-                          <Text style={setFont('400', 14, 'white', 'Regular')}>
-                              {this.autocall.getProductTile()} 
-                          </Text>
-          
-                        </View>
-
-                    </View>
-                    <View style={{flexDirection: 'row'}}>
-                            <Text style={setFont('400', 12,  'white')} numberOfLines={1}>
-                                {this.autocall.getUnderlying()} <Text style={setFont('400', 18, 'white')}>{''}</Text>
-                            </Text>
-                    </View>
-                  </View>
-
-                </View>
-                <View style={{flex : 0.4, flexDirection : 'column', borderWidth: 0,  borderTopRightRadius: 10}}>
-                  <View style={{flex : 0.5, backgroundColor: 'white',justifyContent: 'center', alignItems: 'center', paddingRigth : 5, borderWidth: 0, marginTop:0, borderWidth: 0, borderColor: 'white', borderTopRightRadius :10}}>
-                    <Text style={setFont('400', 24, 'green')} numberOfLines={1}>
-                        { Numeral(this.autocall.getCoupon() == null ? 0 : this.autocall.getCoupon()).format('0.00%')}
-                        <Text style={setFont('200', 12)}> { 'p.a.'}</Text>   
-                    </Text>  
-                  </View> 
-                  <TouchableOpacity style={{flex : 0.5, paddingTop: 5, paddingBottom: 5, backgroundColor:  setColor('subscribeBlue'), justifyContent: 'center', alignItems: 'center',  borderWidth: 0, }}
-                                    onPress={() => {
-                                          this.props.navigation.navigate('FLSRPDetail', {
-                                            autocall: this.autocall,
-                                            //ticketType: TICKET_TYPE.PSCREATION
-                                          })
-                                        }}
-                  >
-                    <Text style={setFont('400', 14, 'white')}>
-                   VOIR >
-                    </Text>   
-                  </TouchableOpacity>
-                </View>
-
-              </View>
-
-      </View>
-  );
-}
 
 _renderHeaderFullTemplate2() {
   let isCouponNull = true;
@@ -166,19 +79,19 @@ _renderHeaderFullTemplate2() {
   }
  
   return (
-          <View style={{flex : 0.35, flexDirection : 'row'}}>
-                <View style={{ flex : isCouponNull ? 1 : 0.7, flexDirection : 'column', justifyContent: 'center' , paddingLeft : 15,   backgroundColor: 'white',  borderTopLeftRadius: 10, borderBottomWidth :  0,}} >                                                    
+          <View style={{flex : 0.35, flexDirection : 'row', justifyContent  : 'space-between'}}>
+                <View style={{ flexDirection : 'column', flex : 1, justifyContent: 'center' , paddingLeft : 15,   backgroundColor: 'white',  borderTopLeftRadius: 5, borderBottomWidth :  0,borderTopRightRadius: isCouponNull ? 5 : 0,}} >                                                    
  
                     <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems : 'center', paddingTop : 5}}>
           
-                        <Text style={setFont('400', 16,  setColor('darkBlue'), 'Bold')}>
-                        {this.autocall.getProductTile()} 
+                        <Text style={setFont('400', 16,  setColor('darkBlue'), 'Bold')} numberOfLines={1}>
+                        {this.autocall.getShortName()} 
                         </Text>
                     </View>
                     <View style={{flexDirection: 'row', paddingTop : 0, borderWidth: 0, justifyContent: 'flex-start', alignItems : 'center'}}>
                    
-                            <Text style={setFont('400',  12, setColor('darkBlue'), 'Regular')}>
-                            {this.autocall.getUnderlying()} 
+                            <Text style={setFont('400',  12, setColor('darkBlue'), 'Regular')} numberOfLines={1}>
+                            {this.autocall.getFullUnderlyingName()} 
                             </Text>
              
            
@@ -186,12 +99,12 @@ _renderHeaderFullTemplate2() {
                   </View>
                   {!isCouponNull
                     ?
-                      <View style={{flex : isCouponNull ? 0 : 0.3,  borderWidth: 0,  borderTopRightRadius: 10, backgroundColor : 'white', alignItems: 'center', justifyContent : 'flex-start', borderColor: 'white', paddingTop : 5}}>
+                      <View style={{ padding : 3, borderWidth: 3, borderTopRightRadius: 10, backgroundColor : 'white', alignItems: 'flex-end', justifyContent : 'flex-start', borderColor: 'white'}}>
                   
-                            <Text style={setFont('400', 20,  setColor('FLGreen'), 'Bold')} numberOfLines={1}>
+                            <Text style={setFont('400', 18,  setColor('FLGreen'), 'Bold')} numberOfLines={1}>
                                 { Numeral(this.autocall.getCoupon() == null ? 0 : this.autocall.getCoupon()).format('0.00%')}
-                                </Text>
-                                <Text style={setFont('300', 12, setColor('FLGreen') )}> {' p.a.'}</Text>  
+                                
+                                <Text style={setFont('300', 12, setColor('FLGreen') )}> {' p.a.'}</Text>  </Text>
                       </View>
                     : null
                   }
@@ -207,7 +120,7 @@ _renderHeaderMediumTemplate() {
                 <View style={{flexDirection : 'row',paddingLeft : 20,  backgroundColor: 'white', borderTopLeftRadius: 10,  borderTopRightRadius: 10,borderBottomWidth :  0}}>                                                    
                         <View style={{flex : 0.6, flexDirection: 'column', justifyContent: 'center' }}>
                                 <Text style={setFont('400', 16, setColor(''), 'Regular')}>
-                                    {this.autocall.getProductTile()} 
+                                    {this.autocall.getShortName()} 
                                 </Text>
                                 <Text style={setFont('300', 14, setColor(''))}>
                                     {this.autocall.getFullUnderlyingName()} 
@@ -401,50 +314,78 @@ _renderAutocallMediumTemplate() {
 
 
 _renderFooterFullTemplate(isFavorite) {
-
+  var dataUF = [this.autocall.getUF()  !== 0 ? Numeral(this.autocall.getUF()).format('0.00%') : "Inconnue"];
   return (
-    <View style={{flex : 0.10, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
+    <View style={{flex : 0.1, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', backgroundColor: 'white', borderBottomRightRadius: 5, borderBottomLeftRadius: 5}}>
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
                                   onPress={() => {
-             
-                                    
-                                    this.props.setFavorite(this.autocall.getObject())
-                                    .then((fav) => {    
-                                      console.log("=================================");
-                                      console.log(fav);                             
-                                      this.autocall.setFavorite(fav);
-                                      this.setState({ toto: !this.state.toto })
+                                    this.autocall.setFavorite(!this.autocall.isFavorite());
+                                    this.setState({ isFavorite : this.autocall.isFavorite() });                   
+                                    this.props.setFavorite(this.autocall.getProductJSON())
+                                    .then((autocall) => {          
+                                      //this.autocall = new CAutocall2(autocall);
+                                      //this.setState({ toto : !this.state.toto });
                                     })
-                                    .catch((error) => console.log("Erreur de mise en favori : " + error));
+                                    .catch((error) => {
+                                      this.autocall.setFavorite(!this.autocall.isFavorite());       
+                                      this.setState({ isFavorite : this.autocall.isFavorite() });                
+                                      console.log("Erreur de mise en favori : " + error);
+                                    }); 
                                   }}
                 >
-                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor('lightBlue')}/>
+                  <MaterialCommunityIconsIcon name={!isFavorite ? "heart-outline" : "heart"} size={20} color={setColor('light')}/>
                 </TouchableOpacity>
 
+                <View style={[{flex : 0.2}, globalStyle.templateIcon]}>              
+                  <FLModalDropdown
+                    ref={'UF'}
+                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+                    dropdownTextHighlightStyle={setFont('500', 16, setColor(''), 'Bold')}
+                      onSelect={(index, value) => {
+              
 
-                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]}>
-                 
-                </TouchableOpacity>
-                <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
-                                                onPress={() => {
-        
-                                                }}
-                 >
-                 
-                   <Ionicons name="md-help" size={20} style={{color: setColor('lightBlue')}}/>
-                </TouchableOpacity>   
+                      }}
+                      adjustFrame={(f) => {
+                        return {
+                          width: getConstant('width')/3,
+                          height: 40,
+                          left : f.left,
+                          //right : f.right,
+                          top: f.top + (f.height  - 40),
+                        }
+                      }}
+                      onDropdownWillShow={() => {
+                        // let idx = dataUF.indexOf(Numeral(this.request.getValue('UF')).format('0.00%'));
+                        // this.refs['UF'].select(idx);
+                        //this.refs['UF'].scrollTo({animated: true}, 100);
+                      }}
+                      defaultIndex={0}
+                      //defaultValue={Numeral(this.request.getValue('UF') - 1).format('0%')}
+                      //defaultValue={''}
+
+                      options={dataUF}
+                    >
+                      <MaterialCommunityIcons name={"margin"} size={20} style={{color: setColor('light')}}/>
+                    </FLModalDropdown>
+                </View>
+
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
                                                 onPress={() => {
                                                   //this.props.navigation.navigate('FLSRPPdfReader', {urLPDF: this.autocall.getURIDescription()});
-                                                  Linking.openURL(this.autocall.getURIDescription()).catch((err) => console.error('An error occurred', err));
+                                                  //Linking.openURL(this.autocall.getURIDescription()).catch((err) => console.error('An error occurred', err));
+                                                  WebBrowser.openBrowserAsync(this.autocall.getURIDescription(), { enableBarCollapsing: true, showTitle: false });
                                                 }}
                  >
                  
                   <FontAwesome name={"file-text-o"}  size={20} style={{color: setColor('lightBlue')}}/> 
                 </TouchableOpacity>   
+
+                <View style={[{flex : 0.2}, globalStyle.templateIcon]} />
+
                 <TouchableOpacity style={[{flex : 0.2, backgroundColor : setColor(''), borderBottomRightRadius: 10,}, globalStyle.templateIcon]}
                                   onPress={() => {
-                                    this.props.navigation.navigate('FLSRPDetail', {
+                                    //this.props.navigation.navigate('FLSRPDetail', {
+                                      this.props.navigation.navigate('FLAutocallDetail' , {
                                       autocall: this.autocall,
                                       //ticketType: TICKET_TYPE.PSCREATION
                                     })
@@ -506,6 +447,7 @@ render () {
       return (
             <View style={{flexDirection : 'column', 
                           width: this.screenWidth, 
+      
                           //marginLeft : 0.025*getConstant('width'),
                           shadowColor: 'rgb(75, 89, 101)',
                           shadowOffset: { width: 0, height: 2 },
@@ -516,6 +458,7 @@ render () {
                           borderRadius: 10,
                           //overflow: "hidden",
                           backgroundColor: 'gray',
+                  
                           //elevation: 3
                         }}
             >

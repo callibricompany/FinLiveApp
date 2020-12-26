@@ -15,7 +15,7 @@ import {
   Image,
   Dimensions
 } from 'react-native';
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from '@expo/vector-icons';
 
 import React, {Component} from 'react';
 
@@ -161,8 +161,8 @@ class LoginFormBase extends Component {
           <KeyboardAvoidingView behavior={'padding'} style={{ flex: 0.65 , width: 0.9*getConstant('width')}} enabled={true}>  
             <ScrollView keyboardShouldPersistTaps={"always"}>
                 <View style={{flexDirection: 'row', marginTop: 25, borderBottomWidth: 1, borderBottomColor : setColor('gray')}} >
-                  <View style={{padding : 5}}>
-                        <Ionicons name="ios-mail" style={{color : setColor('lightBlue')}} size={25}/>
+                  <View style={{padding : 5, width : 35}}>
+                        <Ionicons name="ios-mail"  style={{color : setColor('lightBlue')}} size={25}/>
                   </View>
                   <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft : 5}}>
                         <TextInput
@@ -197,7 +197,7 @@ class LoginFormBase extends Component {
                   </View>
                 </View>
                 <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
-                  <View style={{padding : 5}}>
+                  <View style={{padding : 5, width : 35}}>
                         <Ionicons name="ios-unlock" style={{color : setColor('lightBlue')}} size={25}/>
                   </View>
                   <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>

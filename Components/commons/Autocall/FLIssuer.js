@@ -6,13 +6,13 @@ import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
+
+import FLModalDropdown from '../FLModalDropdown';
 
 import { globalStyle, setFont, setColor} from '../../../Styles/globalStyle'
 import { getConstant, currencyFormatDE } from '../../../Utils';
 
-import { FLDatePicker } from '../FLDatePicker';
+import  { FLDatePicker }  from  '../FLDatePicker';
 
 import Numeral from 'numeral';
 import 'numeral/locales/fr';
@@ -22,8 +22,8 @@ import Moment from 'moment';
 
 
 
-export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIssueDate, updateProduct, currency }) {
 
+export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIssueDate, updateProduct, currency, typeProduct }) {
 
         const dataAuction = [
                     {   key : 'PP',
@@ -60,11 +60,11 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                     </View>
                     <TouchableOpacity   style={{flex : 1, flexDirection : 'row', borderWidth : 0}}
                                         onPress={() => {
-                                            isEditable ? refAuctionDropDown.current.show() : null;
+                                            (isEditable && typeProduct === 'STRUCTURED_PRODUCT') ? refAuctionDropDown.current.show() : null;
                                         }}
                                         activeOpacity={isEditable ? 0.2 : 1}
                     >
-                        <ModalDropdown      
+                        <FLModalDropdown      
                             //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                             //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : setColor('lightBlue'), 'Bold'), {textAlign: 'center'}]}
                             dropdownTextStyle={setFont('500', 16, setColor(''), 'Regular')}
@@ -89,13 +89,13 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                             }}
                             renderRow={(rowData,index,isSelected) => {
                             return (
-                                <TouchableHighlight underlayColor={setColor('')}>
+   
                                 <View style={{height : 35, alignItems : 'flex-start', justifyContent : 'center', paddingHorizontal : 5}}>
                                     <Text style={setFont('400', 16, setColor('darkBlue'), isSelected ? 'Bold' : 'Light')} numberOfLines={1} ellipsizeMode={'tail'}>
                                     {rowData}
                                     </Text>
                                 </View>
-                                </TouchableHighlight>
+
                             )
                             }}
                             defaultIndex={dataAuctionLabels.indexOf(typeAuction)}
@@ -103,13 +103,13 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                             options={dataAuctionLabels}
                             //ref={component => this._dropdown['typeAuction'] = component}
                             ref={refAuctionDropDown}
-                            disabled={!isEditable}
+                            disabled={!(isEditable && typeProduct === 'STRUCTURED_PRODUCT')}
                         >
                             <Text style={[setFont('300', 16, setColor('')), {textAlign: 'left'}]}>
                                 {typeAuction}
                             </Text>                
-                        </ModalDropdown>
-                        { isEditable 
+                        </FLModalDropdown>
+                        { (isEditable && typeProduct === 'STRUCTURED_PRODUCT')
                             ?
                                 <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center', padding : 2}}>
                                     <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: setColor('subscribeBlue')}}/> 
@@ -128,7 +128,7 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                     </View>
                     <FLDatePicker   date={issueDate} 
                                     onChange={(d) =>  updateProduct('issuingDate', d, "Date issuing : "+d, false)} 
-                                    isEditable={isEditable} 
+                                    isEditable={(isEditable && typeProduct === 'STRUCTURED_PRODUCT')} 
                                     maximumDate={Moment(Date.now()).add(3, 'months').toDate()}
                                     minimumDate={Moment(Date.now()).toDate()}
                                     />
@@ -140,7 +140,7 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
                     </View>
                     <FLDatePicker   date={endIssueDate} 
                                     onChange={(d) =>  updateProduct('endIssuingDate', d, "Date issuing : "+d, false)} 
-                                    isEditable={isEditable} 
+                                    isEditable={(isEditable && typeProduct === 'STRUCTURED_PRODUCT')} 
                                     maximumDate={Moment(endIssueDate).add(3, 'months').toDate()}
                                     minimumDate={Moment(endIssueDate).add(-2, 'months').toDate()}
                                     />

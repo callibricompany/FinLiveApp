@@ -8,7 +8,6 @@ import NewsDetail from '../Components/Home/NewsDetail';
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb';
 import FLTicketDetailHome from '../Components/Home/FLTicketDetailHome';
 import FLAutocallDetail from '../Components/commons/Autocall/FLAutocallDetail';
-import FLAutocallDetailHome from '../Components/Home/FLAutocallDetailHome';
 import FLAutocallDetailTrade from '../Components/commons/Autocall/FLAutocallDetailTrade';
 import FLAutocallDetailBroadcastPP from '../Components/commons/Autocall/FLAutocallDetailBroadcastPP';
 import FLAutocallDetailBroadcastFriends from '../Components/commons/Autocall/FLAutocallDetailBroadcastFriends';
@@ -71,7 +70,7 @@ function labelStyle (focused, tintColor) {
       justifyContent: 'center',
       alignItems: 'center',
       color: couleur,
-      fontFamily : 'Regular'
+      //fontFamily : 'Regular'
     }
   }
 
@@ -91,9 +90,6 @@ function labelStyle (focused, tintColor) {
     },
     NewsDetailWeb : {
       screen: NewsDetailWeb
-    },
-    FLAutocallDetailHome : {
-      screen : FLAutocallDetailHome
     },
     FLAutocallDetail : {
       screen : FLAutocallDetail
@@ -329,7 +325,7 @@ function labelStyle (focused, tintColor) {
     //console.log("PASSE PAR ROUTE HOME");
     //console.log(navigation);
     //console.log(routes[index].routeName);
-    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLAutocallDetailHome'  || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'
+    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'
     || routes[index].routeName === 'FLAutocallDetail'  || routes[index].routeName === 'FLAutocallDetailTrade'   || routes[index].routeName === 'FLAutocallDetailBroadcastPP'
     || routes[index].routeName === 'FLAutocallDetailBroadcastFriends') {
       if (typeof routes[index].params !== 'undefined') {

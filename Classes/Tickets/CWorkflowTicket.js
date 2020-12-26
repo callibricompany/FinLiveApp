@@ -1,5 +1,5 @@
 import { CTicket } from './CTicket';
-import { CAutocall } from '../Products/CAutocall';
+
 import { convertFresh } from '../../Utils/convertFresh';
 import * as TEMPLATE_TYPE from '../../constants/template';
 
@@ -14,19 +14,17 @@ export class  CWorkflowTicket extends CTicket {
     switch(ticket.type) {
       case "Produit structuré": 
         //on remet le bon template
-        this.setTemplate(TEMPLATE_TYPE.TICKET);
+        //this.setTemplate(TEMPLATE_TYPE.TICKET);
         //console.log(this.ticket);
         if (this.getCampaign()=== "Placement Privé") {
-          this.setTemplate(TEMPLATE_TYPE.PSPP);
+          //this.setTemplate(TEMPLATE_TYPE.PSPP);
           this.steps = JSON.parse(JSON.stringify(CWorkflowTicket.WORKFLOW.filter(({codeOperation}) => codeOperation === 'pp')));
-          let isShared = this.isShared();
-          this.steps = this.steps.filter(({Shared}) => Shared === (isShared ? '1' : '0'));
-          let isAutomatic = this.isAutomatic();
-          this.steps = this.steps.filter(({specific}) => specific === (isAutomatic ? '0' : '1'));        
+          this.steps = this.steps.filter(({Shared}) => Shared === (this.isShared() ? '1' : '0'));
+          this.steps = this.steps.filter(({specific}) => specific === (this.isAutomatic() ? '0' : '1'));        
         }
 
         //convertFresh(this.ticket['custom_fields']);
-        this.product = new CAutocall(convertFresh(ticket['custom_fields']));
+        //this.product = new CAutocall2(convertFresh(ticket['custom_fields']));
         //this.product = new CAutocall2('2020-12-02T17:58:38.973Z262523912');
         
         break;
@@ -39,7 +37,7 @@ export class  CWorkflowTicket extends CTicket {
     this.currentStep = ticket.currentStep[0];
     //console.log(this.currentStep);
     //console.log(this.steps);
-
+    this.setType("WORKFLOW_TYCKET");
  
   }
 

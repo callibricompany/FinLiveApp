@@ -6,15 +6,12 @@ import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
 
-import { Dropdown } from 'react-native-material-dropdown';
-import ModalDropdown from 'react-native-modal-dropdown';
-
 import { globalStyle, setFont, setColor} from '../../../Styles/globalStyle'
 import { getConstant, currencyFormatDE } from '../../../Utils';
 
-import Slider from 'react-native-slider';
+//import Slider from 'react-native-slider';
+import Slider from '@react-native-community/slider';
 
-import { FLDatePicker } from '../FLDatePicker';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
@@ -24,9 +21,11 @@ import 'numeral/locales/fr'
 
 
 
+
 export function FLUF (props) {
 
         const totalUF = props.UF + props.UFAssoc;
+
         const [UF, setUF] = useState(() => props.hasOwnProperty('UF') ? props.UF : 0);
         const [UFAssoc, setUFAssoc] = useState(() => props.hasOwnProperty('UFAssoc') ? props.UFAssoc : 0);
         const [splitValue, setSplitValue] = useState(() => {
@@ -35,6 +34,7 @@ export function FLUF (props) {
         });
         const [isLocked, setIsLocked] = useState(() => props.hasOwnProperty('locked') ? props.locked : false);
         const [ showSlider, setShowSlider ] = useState(() => props.hasOwnProperty('showSlider') ? props.showSlider : true);
+
 
         useEffect(() => {
             setIsLocked(props.hasOwnProperty('locked') ? props.locked : false);

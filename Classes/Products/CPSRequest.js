@@ -324,6 +324,9 @@ export class CPSRequest extends CRequest {
       this._fillCriteria('coupon', autocall.getCoupon(), autocall.getCoupon());
       this._fillCriteria('UFAssoc', autocall.getUFAssoc(), autocall.getUFAssoc());
       this._fillCriteria('nominal', autocall.getNominal(), autocall.getNominal());
+ 
+
+      
       /*
       p = {
         'typeAuction': {
@@ -562,9 +565,9 @@ export class CPSRequest extends CRequest {
         if (this.product.barrierPhoenix.isActivated) {
           let bp = this.product.barrierPhoenix.value;
           let bp_array = [0.5, 0.7, 0.9];
-          if (bp_array.indexOf(bp) !== -1) {
+          //if (bp_array.indexOf(bp) !== -1) {
             criteria['barrierPhoenix'] =  this.product.barrierPhoenix.value;
-          }
+          //}
         } else { //on prend le max des barrieres phoenix
           criteria['barrierPhoenix'] =  0.9;
         }
