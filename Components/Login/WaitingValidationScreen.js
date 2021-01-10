@@ -13,7 +13,7 @@ import {
   Dimensions
 } from 'react-native';
 import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
-import React, {Component} from 'react';
+import React from 'react';
 import { sendEmail } from '../../Utils/sendEmail';
 import { getConstant } from '../../Utils';
 import splashImage from '../../assets/LogoWithoutText.png';
@@ -29,7 +29,7 @@ import splashImage from '../../assets/LogoWithoutText.png';
 
 
 
-class WaitingValidationScreen extends Component {
+class WaitingValidationScreen extends React.Component {
 
   constructor(props){
     super(props);

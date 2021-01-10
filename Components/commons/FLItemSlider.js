@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-export class FLItemSlider extends Component {   
+export class FLItemSlider extends React.Component {   
     render() {
         return (
             <View style={{flex: 1, borderWidth:0, alignItems: 'flex-start', justifyContent:'flex-start'}}>

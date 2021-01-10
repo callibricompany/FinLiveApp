@@ -515,7 +515,7 @@ class TicketScreen extends React.Component {
           
                       
                     </View>
-                    <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
+                    <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',transform: [{ translateX: this.state.positionLeft }], height: 45}}>
                         <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                             <TouchableOpacity onPress={() => {
                                         this.filterOnAir = false;

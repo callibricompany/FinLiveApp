@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Dimensions, 
         StyleSheet, Easing, View, Text, FlatList, SafeAreaView } from 'react-native';
 import { Icon } from 'native-base';
@@ -275,11 +275,12 @@ class FollowingScreen extends React.Component {
                   alignItems: 'center'
                 }}> 
                   <View style={{flex: 1, height: 45, borderWidth: 0, width: getConstant('width')*0.925,flexDirection: 'row'}}>   
-                    <View style={{flex:0.8, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
+                  <View style={{flex:0.2}} />
+                    <View style={{flex:0.6, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'flex-start'}}>
                       <TouchableOpacity onPress={() => {
                                   console.log("qsjhfjhdfjd");
                       }}>
-                        <Text style={setFont('200', 18, 'white')}>
+                        <Text style={setFont('400', 18, 'white', 'Regular')}>
                             Vos produits suivis
                         </Text>    
                       </TouchableOpacity>
@@ -301,21 +302,9 @@ class FollowingScreen extends React.Component {
                                       useNativeDriver: true,
                                     }
                               ),
-                                /*Animated.timing(
-                                  this.state.categoryHeight,
-                                  {
-                                    toValue: 0,
-                                    duration : 1000,
-                                    easing: Easing.elastic(),
-                                    speed : 1
-                                  }
-                                )  */
                             ]).start(() => {
                               //force le render avec un changement de state dont on se fiche 
                               //this.setState ({ showModalTitle : !this.state.showModalTitle });
-                              
-  
-                              
                           });
                             
                             if (this.inputSearch !== null && this.inputSearch !== undefined) {
@@ -342,7 +331,7 @@ class FollowingScreen extends React.Component {
                       </TouchableOpacity>
                     
                   </View>
-                  <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',left: this.state.positionLeft, height: 45}}>
+                  <Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',transform: [{ translateX: this.state.positionLeft }], height: 45}}>
                       <View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
                           <TouchableOpacity onPress={() => {
                                        //this.setState ({ showModalTitle : !this.state.showModalTitle });

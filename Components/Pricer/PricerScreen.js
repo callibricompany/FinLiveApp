@@ -95,7 +95,7 @@ class PricerScreen extends React.Component {
 
       showModalDropdown : false,
  
-
+      positionOptimizer : 1,
 
       nominal : 1000000,
       toto : true,
@@ -206,6 +206,7 @@ class PricerScreen extends React.Component {
     //this.setState({ isLoading : true }, () => {
     this.bestProducts = [];
 
+    this.request.setCriteria('optimizer', optimizer, optimizer) ;
     //chagrgement des prix depuis le serveur
     console.log(this.request.getCriteria());
     
@@ -1327,10 +1328,15 @@ render() {
                   
                       <View>
                         <SwitchSelector
-                          initial={1}
+                          initial={this.state.positionOptimizer}
                           onPress={obj => {
                             this.setState({ optimizer : obj.value });
-                            
+                            //console.log(obj);
+                            if (obj.value === 'CPN') {
+                              this.setState({ positionOptimizer : 1 });
+                            } else if (obj.value === 'CC') {
+                              this.setState({ positionOptimizer : 0 });
+                            }
                             //this._updateValue("typeAuction", obj.value, obj.label);
                             //this.setState({ gender: value });
                           }}

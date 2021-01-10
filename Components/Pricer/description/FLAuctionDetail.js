@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
@@ -11,7 +11,7 @@ import { getConstant } from '../../../Utils';
 
 
 
-export class FLAuctionDetail extends Component{
+export class FLAuctionDetail extends React.Component{
 
     constructor(props) {
         super(props);

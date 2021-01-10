@@ -105,7 +105,7 @@ class FLTemplateAutocall extends React.Component {
     
     
     if (this.optimizer === 'CC') {
-      this.autocall.setUF(-this.autocall.getPrice());
+      //this.autocall.setUF(-this.autocall.getPrice());
     }
 
     //this.autocallResult = new CAutocall2(this.autocall.getProductJSON());

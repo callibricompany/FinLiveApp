@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons  from "react-native-vector-icons/Ionicons";
@@ -34,7 +34,7 @@ import {  globalSyle, setFont, setColor } from '../../Styles/globalStyle';
 
 
 
-class SearchBarHome extends Component {
+class SearchBarHome extends React.Component {
 
   constructor(props) {
     super(props);

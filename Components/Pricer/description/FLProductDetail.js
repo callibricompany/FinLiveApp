@@ -10,7 +10,7 @@ import { getConstant } from '../../../Utils';
 
 
 
-export class FLProductDetail extends Component{
+export class FLProductDetail extends React.Component{
 
     constructor(props) {
         super(props);

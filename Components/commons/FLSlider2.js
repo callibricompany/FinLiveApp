@@ -9,7 +9,7 @@ import { FLItemSlider } from './FLItemSlider';
 
 import { setColor } from '../../Styles/globalStyle';
 
-export class FLSlider2 extends Component{
+export class FLSlider2 extends React.Component{
 
     constructor(props) {
         super(props);

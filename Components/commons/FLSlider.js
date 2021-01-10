@@ -6,7 +6,7 @@ import { FLItemSlider } from './FLItemSlider';
 
 
 
-export class FLSlider extends Component{
+export class FLSlider extends React.Component{
 
     constructor(props) {
         super(props);

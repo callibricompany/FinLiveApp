@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 
 
 import {
@@ -23,7 +23,7 @@ import { getConstant } from '../../Utils';
 //const MARGIN = 0.2*getConstant('width');
 const MARGIN = 40;
 
-export default class ButtonSubmit extends Component {
+export default class ButtonSubmit extends React.Component {
   constructor() {
     super();
 

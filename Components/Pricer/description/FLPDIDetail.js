@@ -14,7 +14,7 @@ import 'numeral/locales/fr'
 
 
 
-export class FLPDIDetail extends Component{
+export class FLPDIDetail extends React.Component{
 
     constructor(props) {
         super(props);

@@ -14,7 +14,7 @@ import 'numeral/locales/fr'
 
 
 
-export class FLUFDetail extends Component{
+export class FLUFDetail extends React.Component{
 
     constructor(props) {
         super(props);

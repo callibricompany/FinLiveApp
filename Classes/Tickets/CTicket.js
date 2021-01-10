@@ -598,10 +598,7 @@ export class CTicket  {
       return this.ticket['custom_fields']['cf_ps_nominal'] === null ? 0 : this.ticket['custom_fields']['cf_ps_nominal'];
     }
 
-    getFinalNominal() {
-      //return this.finalNominal;
-      return super.getFinalNominal();
-    }
+
        
    static STATUS () {
     let data = [

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
 
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -22,7 +22,7 @@ import 'numeral/locales/fr'
 
 
 
-export default class FLCouponMinDetailAndroid extends Component{
+export default class FLCouponMinDetailAndroid extends React.Component{
 
     constructor(props) {
         super(props);

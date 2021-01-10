@@ -13,7 +13,7 @@ import 'numeral/locales/fr'
 
 
 
-export class FLMemoryDetail extends Component{
+export class FLMemoryDetail extends React.Component{
 
     constructor(props) {
         super(props);

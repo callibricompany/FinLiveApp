@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 
 
-export default class SwipeGesture extends Component {
+export default class SwipeGesture extends React.Component {
 
   UNSAFE_componentWillMount = () => {
     this.PanResponder = PanResponder.create({

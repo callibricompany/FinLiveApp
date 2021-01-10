@@ -201,6 +201,13 @@ export class CPSRequest extends CRequest {
           'valueLabel': "",
           'isMandatory': false,
         },
+        'optimizer': {
+          'value': "CPN",
+          'isActivated': true,
+          'defaultValueLabel': "CPN",
+          'valueLabel': "CPN",
+          'isMandatory': true,
+        },
       };
 
       this.updateProduct(p);
@@ -533,10 +540,11 @@ export class CPSRequest extends CRequest {
       let criteria = {};
 
       this.product.underlying.isActivated ? criteria['underlying'] = this.product.underlying.value : null;
+      criteria['optimizer'] = this.product.optimizer.value;
       criteria['levelAutocall'] =   this.product.autocallLevel.value;
       criteria['freqAutocall'] =  this.product.freq.isActivated ? this.product.freq.value : "3M";
       criteria['noCallNbPeriod'] =  this.product.freq.isActivated ? this.product.nncp.value : 12;
-
+      criteria['coupon'] =  this.product.coupon.value;
       criteria['maturity'] =  this.product.maturity.isActivated ? this.product.maturity.value : ['10Y'];
       
       //type de placement

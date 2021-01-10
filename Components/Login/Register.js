@@ -17,7 +17,7 @@ import {
   Dimensions
 } from 'react-native';
 import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
-import React, {Component} from 'react';
+import React from 'react';
 import ButtonSubmit from './ButtonSubmit'
 
 import { setColor, setFont } from '../../Styles/globalStyle';
@@ -47,7 +47,7 @@ const Register = () => (
 
 );
 
-class RegisterFormBase extends Component {
+class RegisterFormBase extends React.Component {
 
   constructor(props){
     super(props);

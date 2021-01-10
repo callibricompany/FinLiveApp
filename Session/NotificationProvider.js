@@ -34,7 +34,7 @@ export const NotificationContext = createContext({
  * dans le composant éponyme. De cette façon, ses values
  * seront accessible de manière globale via le `Consumer`
  */
-class NotificationProvider extends Component {
+class NotificationProvider extends React.Component {
 
 
     constructor(props) {

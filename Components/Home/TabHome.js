@@ -96,7 +96,13 @@ class TabHome extends React.PureComponent {
     // } else {
     //   console.log(" ATTENTION TICKETS sont  EGAUX  ---------------------------------------------");
     // }
-    this.setState({ tickets : this.props.tickets, souscriptionTickets : this.props.souscriptionTickets });
+    if (!isEqual(props.tickets, this.state.tickets)) {
+      this.setState({ tickets : props.tickets, });
+    }
+    if (!isEqual(props.souscriptionTickets, this.state.souscriptionTickets)) {
+      this.setState({ souscriptionTickets : props.souscriptionTickets });
+    }
+    
     this.setState({ allNotificationsCount :props.allNotificationsCount });
     this.setState({ scrollTo: props.marginSearch, refreshing: false });
     if (!isEqual(props.filters, this.props.filters)) {
@@ -284,7 +290,6 @@ class TabHome extends React.PureComponent {
       apeSRP = this.props.apeSRP;
     }
 
-    
     if (this.state.refreshing) {
       return (
             <View style={{flex : 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -369,9 +374,7 @@ class TabHome extends React.PureComponent {
                     extraData={this.state.searchText}
                     horizontal={true}
                     renderItem={({ item, index }) => {
-                      
                       //let isNotified = this.props.isNotified('TICKET', item.getId());
-                      
                       switch(item.getTicketType()) {
                          case "Produit structuré" :
                             //switch (item.getTemplate()) {
@@ -386,11 +389,11 @@ class TabHome extends React.PureComponent {
                                 );
                               //default : return null;
                             //}
-                         default : return null;
+                         default : return <View />;
                       }
                     }}
                     keyExtractor={(item) => {
-                      item.getId().toString();
+                      return item.getId().toString();
                     }}
                   />
               </View>

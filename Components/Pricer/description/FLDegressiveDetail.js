@@ -13,7 +13,7 @@ import 'numeral/locales/fr'
 
 
 
-export class FLDegressiveDetail extends Component{
+export class FLDegressiveDetail extends React.Component{
 
     constructor(props) {
         super(props);

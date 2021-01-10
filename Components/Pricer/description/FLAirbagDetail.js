@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React  from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
@@ -16,7 +16,7 @@ import 'numeral/locales/fr'
 
 
 
-export class FLAirbagDetail extends Component{
+export class FLAirbagDetail extends React.Component{
 
     constructor(props) {
         super(props);

@@ -261,81 +261,73 @@ class ProfileScreen extends React.Component {
           <ScrollView style={{flex : 1}}>
  
                 <View style={{flexDirection : 'row', marginTop : 30, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
-                      <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}>
-                          <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5,}}>
-                              <Text style={setFont('200', 18, 'gray')}>
-                                Placements Privés
-                              </Text>
-                          </View>
-                          <View style={{paddingLeft : 5, paddingRight : 5, paddingBottom : 5, borderWidth :0}}>
-                              <Text style={setFont('200', 22, setColor('granny'), 'Regular')}>
-                                8
-                              </Text>
-                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
-                                2 300 400 €
-                              </Text>
-                          </View>
-
-                      </View>
-                      <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}>
-                        <View style={{padding : 5}}>
-                              <Text style={setFont('200', 18, 'gray')}>
-                                A.P.E.
-                              </Text>
-                          </View>
-                          <View style={{padding : 5, borderWidth :0}}>
-                              <Text style={setFont('200', 22, 'red', 'Regular')}>
-                                2
-                              </Text>
-                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
-                                900 000 €
-                              </Text>
-                          </View>
-                      </View>
-                      <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}>
-                          <View style={{padding : 5}}>
-                              <Text style={setFont('200', 18, 'gray')}>
-                                Pricings
-                              </Text>
-                          </View>
-                          <View style={{padding : 5, borderWidth :0}}>
-                              <Text style={setFont('200', 22, 'black', 'Regular')}>
-                                542
-                              </Text>
-                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
-                                
-                              </Text>
-                          </View>
-
-                      </View>
-                </View>
-
-                <View style={{flexDirection : 'row', marginTop : 10, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
-                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10}}
                                         onPress={() => {
-                                          this.props.navigation.navigate('ProfileScreenDetail',{option :  'ISSUER'});
+                                          this.props.navigation.navigate('ProfileScreenDashboard');
                                         }}
                       >
-                          <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5,}}>
+                          <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5, borderWidth : 0}}>
                               <Text style={setFont('200', 18, 'gray')}>
-                                Emetteurs Autorisés
+                                Tableau de bord
                               </Text>
                           </View>
+                          <View style={{ flex : 1, borderWidth :0, justifyContent : 'flex-start', alignItems : 'center'}}>
+                              <FontAwesome name={'dashboard'} size={60} color={setColor('lightBlue')} />
+                          </View>
+
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}
+                                        onPress={() => this.props.navigation.navigate('ProfileScreenIssuer', {
+                                          firebase : this.props.firebase,
+                                          user : this.user,
+                                          issuers : this.props.issuers
+                                        })}
+                      >
+                          <View style={{padding : 5}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                               Emetteurs
+                              </Text>
+                          </View>
+                 
                           <View style={{paddingLeft : 5, paddingRight : 5, paddingBottom : 5, borderWidth :0}}>
                               <Text style={setFont('200', 22, 'black', 'Regular')}>
                                 {this.props.issuers.length - this.user.getIssuersRejectedCount()}
                               </Text>
   
                           </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}
+                                                 onPress={() => {
+                                                  this.props.navigation.navigate('ProfileScreenClientsList', {
+                                                    firebase : this.props.firebase
+                                                  });
+                                                }}
+                      >
+                          <View style={{padding : 5}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                                Clients
+                              </Text>
+                          </View>
+                          <View style={{padding : 5, borderWidth :0}}>
+                              <Text style={setFont('200', 22, 'black', 'Regular')}>
+                                12
+                              </Text>
+                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
+                                450 00 €
+                              </Text>
+                          </View>
 
                       </TouchableOpacity>
+                </View>
 
-                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}
+                <View style={{flexDirection : 'row', marginTop : 10, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}
                                                               onPress={() => {
-                                                                this.props.navigation.navigate('ProfileScreenDetail',{option :  'FRIEND'});
+                                                                //this.props.navigation.navigate('ProfileScreenDetail',{option :  'FRIEND'});
+                                                                this.props.navigation.navigate('ProfileScreenFriends');
                                                               }}
                       >
-                        <View style={{padding : 5}}>
+                         <View style={{padding : 5,}}>
                               {/* <Text style={setFont('200', 18, 'gray')}>
                                 Mes contacts
                               </Text> */}
@@ -367,18 +359,11 @@ class ProfileScreen extends React.Component {
                                   </View>                                
                               </View>
                           </View>
+
                       </TouchableOpacity>
+
+               
                 </View>      
-
-
-                {/* <TouchableOpacity style={{alignSelf : 'center', marginTop : 65, marginBottom : 5,width : getConstant('width')/2, padding : 5, alignItems : 'center',  borderWidth : 1, borderColor : 'white', borderRadius : 20, backgroundColor :setColor('red')}}
-                                  onPress={() => this._signOutAlert()}
-                >
-                    <Text style={setFont('400', 12, 'white', 'Regular')}>
-                      DECONNEXION
-                    </Text>
-                </TouchableOpacity> */}
-
           </ScrollView>
 
       </View>

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
 import FLRuler from '../../commons/FLRuler';
@@ -14,7 +14,7 @@ import 'numeral/locales/fr'
 
 
 
-export class FLCouponMinDetail extends Component{
+export class FLCouponMinDetail extends React.Component{
 
     constructor(props) {
         super(props);

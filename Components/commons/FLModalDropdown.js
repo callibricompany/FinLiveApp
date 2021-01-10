@@ -4,9 +4,7 @@
 
 
 
-import React, {
-  Component,
-} from 'react';
+import React from 'react';
 
 import {
   FlatList,
@@ -33,7 +31,7 @@ const TOUCHABLE_ELEMENTS = [
   'TouchableNativeFeedback'
 ];
 
-export default class FLModalDropdown extends Component {
+export default class FLModalDropdown extends React.Component {
   static propTypes = {
     disabled: PropTypes.bool,
     scrollEnabled: PropTypes.bool,

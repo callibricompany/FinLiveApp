@@ -24,7 +24,11 @@ import FLCouponMinDetailAndroid from '../Components/Pricer/description/FLCouponM
 
 import ProfileScreen from '../Components/Profile/ProfileScreen';
 import ProfileScreenDetail from '../Components/Profile/ProfileScreenDetail';
-
+import ProfileScreenIssuer from '../Components/Profile/ProfileScreenIssuer';
+import ProfileScreenFriends from '../Components/Profile/ProfileScreenFriends';
+import ProfileScreenDashboard from '../Components/Profile/ProfileScreenDashboard';
+import ProfileScreenClientsList from '../Components/Profile/ProfileScreenClientsList';
+import ProfileClientDetail from '../Components/Profile/ProfileClientDetail';
 
 import TicketScreen from '../Components/Ticket/TicketScreen';
 import FLTicketDetail from '../Components/commons/Ticket/FLTicketDetail';
@@ -179,6 +183,7 @@ function labelStyle (focused, tintColor) {
         screen : FLAddFriendOnBroadcast
       },
 
+
     })
 
   //Ecran suivi de produits
@@ -203,6 +208,36 @@ function labelStyle (focused, tintColor) {
       },
       ProfileScreenDetail: {
         screen: ProfileScreenDetail,
+      },
+      ProfileScreenIssuer : {
+        screen: ProfileScreenIssuer,
+        navigationOptions: {
+            header : null
+        }
+      },
+      ProfileScreenFriends : {
+        screen: ProfileScreenFriends,
+        navigationOptions: {
+            header : null
+        }
+      },
+      ProfileScreenDashboard : {
+        screen: ProfileScreenDashboard,
+        navigationOptions: {
+            header : null
+        }
+      },
+      ProfileScreenClientsList: {
+        screen : ProfileScreenClientsList,
+        navigationOptions: {
+          header : null
+       },
+      },
+      ProfileClientDetail: {
+        screen : ProfileClientDetail,
+        navigationOptions: {
+          header : null
+       },
       },
 
   })
@@ -522,7 +557,7 @@ function labelStyle (focused, tintColor) {
       }
     }
     return {
- 
+
         tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
           return (
           //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 

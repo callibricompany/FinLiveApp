@@ -4,7 +4,6 @@ import { View, ScrollView, StatusBar, Image, FlatList, ActivityIndicator, Toucha
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import { FLScrollView } from '../SearchBar/searchBarAnimation';
 
 import { ifIphoneX, ifAndroid, sizeByDevice, isAndroid, isIphoneX, getConstant } from '../../Utils';
 
@@ -31,12 +30,6 @@ import * as TEMPLATE_TYPE from '../../constants/template'
 import { CAutocall2 } from '../../Classes/Products/CAutocall2';
 
 
-
-
-
-
-
-
 class FLResultPricer extends React.PureComponent {
   
     constructor(props) {
@@ -46,10 +39,12 @@ class FLResultPricer extends React.PureComponent {
       
       this.bestProducts = [];
       let bestProducts =  this.props.navigation.getParam('bestProducts', '...');
-      
-      bestProducts.forEach((p) => {
-        this.bestProducts.push(new CAutocall2(p));
-      })
+
+      if (bestProducts != null && bestProducts !== 'Error') {
+        bestProducts.forEach((p) => {
+          this.bestProducts.push(new CAutocall2(p));
+        })
+      }
       this.optimizer = this.props.navigation.getParam('optimizer', 'CPN');
       // console.log(this.bestProducts);
       // console.log(this.optimizer);

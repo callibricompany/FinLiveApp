@@ -13,7 +13,7 @@ import 'numeral/locales/fr'
 
 
 
-export class FLPhoenixBarrierDetail extends Component{
+export class FLPhoenixBarrierDetail extends React.Component{
 
     constructor(props) {
         super(props);

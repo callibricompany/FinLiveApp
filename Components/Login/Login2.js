@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import React, {Component} from 'react';
+import React from 'react';
 
 
 import { withFirebase } from '../../Database';
@@ -45,7 +45,7 @@ const Login2 = () => (
  
 );
 
-class LoginFormBase extends Component {
+class LoginFormBase extends React.Component {
 
   constructor(props){
     super(props);

@@ -12,7 +12,7 @@ import { getConstant } from '../../../Utils';
 
 
 
-export class FLMaturityDetail extends Component{
+export class FLMaturityDetail extends React.Component{
 
     constructor(props) {
         super(props);

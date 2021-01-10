@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-export default class SearchBar extends Component {
+export default class SearchBar extends React.Component {
   blurInputs() {
     //this.inputSearch.blur();
     //this.inputLocation.blur();

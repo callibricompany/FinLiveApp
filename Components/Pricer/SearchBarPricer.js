@@ -21,7 +21,7 @@ import {  globalSyle, setColor, setFont } from '../../Styles/globalStyle';
 
 
 
-export default class SearchBarPricer extends Component {
+export default class SearchBarPricer extends React.Component {
 
   constructor(props) {
     super(props);

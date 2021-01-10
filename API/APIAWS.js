@@ -225,7 +225,7 @@ export function getBroadcastAmount (firebase, idBroadcast) {
 
 ///////////////////////////
 //    TICKET
-//    get broadcast amount
+//    get all ticket closed
 ///////////////////////////
 export function getAllTicketClosed (firebase) {
 
@@ -900,6 +900,66 @@ export function deleteNotification (firebase, type, id) {
     });
   }
 
+
+  //////////////////////////////
+  //
+  //   CLIENTS
+  //
+  //////////////////////////////
+  export async function fetchDataClient(firebase) {
+
+    try {
+      var token = await firebase.doGetIdToken();
   
+      var axiosConfig = {
+        headers :{
+          'bearer'      : token,
+        }
+      };
+      var token = await firebase.doGetIdToken();
+      var response = await axios.get(URL_AWS + '/clients/id001' , axiosConfig)
+  
+      return await Promise.resolve(response.data);
+    }
+    catch(err) {
+      // catches errors both in fetch and response.json
+      return await Promise.reject(err);
+    }
+
+}
+
+export async function manageClientData(firebase, data, action) {
+
+    try {
+      var token = await firebase.doGetIdToken();
+
+      var axiosConfig = {
+        headers :{
+          //'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json; charset=utf-8',
+          //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+          'Accept'      : 'application/json',
+          'bearer'      : token,
+        }
+      };
+      if (action === 'create') {
+        var response = await axios.post(URL_AWS + '/createclient', data, axiosConfig);
+      } else if  (action === 'delete') {
+        var response = await axios.delete(URL_AWS + '/client/client/' + data.id);
+      } else {
+        await axios.put(URL_AWS + '/client/' + data.id,  data);
+      }
+
+      
+
+      return await Promise.resolve(response.data);
+    }
+    catch(err) {
+      // catches errors both in fetch and response.json
+      return await Promise.reject(err);
+    }
+    
+  }
+
 
 

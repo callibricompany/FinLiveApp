@@ -4,8 +4,6 @@ import { View, ScrollView, StatusBar, Image, FlatList, ActivityIndicator, Toucha
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import { FLScrollView } from '../SearchBar/searchBarAnimation';
-
 import { ifIphoneX, ifAndroid, sizeByDevice, isAndroid, isIphoneX, getConstant } from '../../Utils';
 import { getTicket } from '../../API/APIAWS';
 

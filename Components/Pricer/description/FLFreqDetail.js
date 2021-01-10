@@ -17,7 +17,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 
-export class FLFreqDetail extends Component{
+export class FLFreqDetail extends React.Component{
 
     constructor(props) {
         super(props);
