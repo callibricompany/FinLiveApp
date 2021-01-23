@@ -88,7 +88,7 @@ export class CProduct extends CObject {
 
 
     getCurrency() {
-      return this.product.currency;
+      return this.product.getCurrency();
     }
 
     getUF() {

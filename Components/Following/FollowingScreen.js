@@ -12,12 +12,17 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { ifIphoneX, ifAndroid, currencyFormatDE , getConstant } from '../../Utils';
+import { isAndroid, ifAndroid, currencyFormatDE , getConstant } from '../../Utils';
+import { URL_AWS, getProduct } from '../../API/APIAWS';
+
+import { CAutocall2 } from '../../Classes/Products/CAutocall2';
 
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 
 import Moment from 'moment';
+
+import { WebView } from 'react-native-webview';
 
 const NAVBAR_HEIGHT = 45;
 
@@ -41,6 +46,9 @@ class FollowingScreen extends React.Component {
       //animation barre de recherche
       positionLeft: new Animated.Value(getConstant('width')), //indicateur si recherche ou pas 
 
+      isLoading : true,
+      productsFollowed : [],
+
       scrollAnim,
       offsetAnim,
       clampedScroll: Animated.diffClamp(
@@ -56,7 +64,7 @@ class FollowingScreen extends React.Component {
         NAVBAR_HEIGHT ,
       ),
     };
-    console.log(this.props.productsFollowed.length);
+   
   }
 
   
@@ -72,7 +80,7 @@ class FollowingScreen extends React.Component {
       );
   }
 
-  componentDidMount() {
+  async componentDidMount() {
 
     //StatusBarManager.getHeight(({height}) => console.log("HAUTEUR STATUS BAR : " + height));
     this.state.scrollAnim.addListener(({ value }) => {
@@ -86,6 +94,17 @@ class FollowingScreen extends React.Component {
     this.state.offsetAnim.addListener(({ value }) => {
       this._offsetValue = value;
     });
+
+
+    //chargement de tous les tickets a suivre
+
+    let productsFollowed = this.state.productsFollowed;
+
+    var productJSON = await getProduct(this.props.firebase, '20201222T145436135Z424849009');
+    autocall = new CAutocall2(productJSON);
+    productsFollowed.push(autocall);
+    this.setState({ productsFollowed , isLoading : false});
+    
   }
 
   componentWillUnmount() {
@@ -223,8 +242,26 @@ class FollowingScreen extends React.Component {
       outputRange: [0, -getConstant('statusBar')],
       extrapolate: 'clamp',
     });
+
+
+    if (this.state.isLoading) {
+      return (
+
+
+        <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 300}}>
+          <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} scalesPageToFit={false}
+            startInLoadingState={true}
+            //renderLoading={() => <RobotBlink width={120} height={120} />}
+            />
+          
+          <Text>Chargement</Text>
+        </View>
+      );
+    }
+
 // <Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
     return (
+
       <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
 
       <View style={{flex :1, height: getConstant('height'), WIDTH: getConstant('width')}}>
@@ -232,7 +269,8 @@ class FollowingScreen extends React.Component {
         <AnimatedFlatList
             style={{  backgroundColor: setColor('background')}}
             contentContainerStyle={{alignItems : 'center', marginTop :   NAVBAR_HEIGHT}}
-            data={this.props.productsFollowed}
+            data={this.state.productsFollowed}
+            extraData={this.state.productsFollowed}
             keyExtractor={(item) => Math.random()+""}
             //tabRoute={this.props.route.key}
             //numColumns={3}

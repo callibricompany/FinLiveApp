@@ -59,21 +59,20 @@ class ProfileScreen extends React.Component {
 }
 
  async componentDidMount() {
-  if (!isAndroid()) {
+
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content' );
+      console.log("Je suis focusé");
+      this.props.updateClientCount();
     });
-  }
-
 
 }
   componentWillUnmount() {
-    if (!isAndroid()) {
+
       this._navListener.remove();
-    }
+
 
   }
-
 
 
 
@@ -299,7 +298,7 @@ class ProfileScreen extends React.Component {
                       <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}
                                                  onPress={() => {
                                                   this.props.navigation.navigate('ProfileScreenClientsList', {
-                                                    firebase : this.props.firebase
+                                                    firebase : this.props.firebase,
                                                   });
                                                 }}
                       >
@@ -310,10 +309,7 @@ class ProfileScreen extends React.Component {
                           </View>
                           <View style={{padding : 5, borderWidth :0}}>
                               <Text style={setFont('200', 22, 'black', 'Regular')}>
-                                12
-                              </Text>
-                              <Text style={setFont('200', 14, 'gray', 'Regular')}>
-                                450 00 €
+                                {this.props.clientCount}
                               </Text>
                           </View>
 

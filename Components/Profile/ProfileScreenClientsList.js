@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import {
     StyleSheet,
@@ -15,7 +15,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { setColor, setFont } from '../../Styles/globalStyle';
 import { getConstant } from '../../Utils/';
-import { fetchDataClient } from '../../API/APIAWS';
+import { fetchDataClient, manageClientData } from '../../API/APIAWS';
 
 import FLHeaderSearch from '../commons/FLHeaderSearch';
 
@@ -83,6 +83,9 @@ export default function ProfileScreenClientsList({ navigation }) {
     //const [refresh, setRefresh] = useState(route.params.refresh);
     const [refresh, setRefresh] = useState(true);
 
+    const [, updateState] = useState();
+    const forceUpdate = useCallback(() => updateState({}), []);
+
     useEffect(() => {
         if (refresh === true) {
         async function fetchData() {
@@ -105,6 +108,24 @@ export default function ProfileScreenClientsList({ navigation }) {
         }
     }, [ refresh ]);
 
+
+    const updateClient = (data) => {
+
+        let found = false;
+        var list = listData;
+        list.forEach((client) => {
+            if (client.key === data.key) {
+                found = true;
+                Object.keys(data).forEach((key) => client[key] = data[key]);
+            }
+        })
+        if (!found) {
+            list.push(data);
+        }
+  
+        setListData(list);
+        forceUpdate();
+    }
     const filterListData = (arrayList) => {
         if (search != '') {
             var res = arrayList.filter(el => {
@@ -146,9 +167,10 @@ export default function ProfileScreenClientsList({ navigation }) {
                     paddingLeft: 15,
                     borderBottomWidth: 1,
                     justifyContent: 'center',
-                    height: 24
+                    height: 30,
+                    marginTop : 0,
                 }}>
-                     {/* <Text style={styles.textItem2}>Group</Text>  */}
+                     <Text style={styles.textItem2}>{data.item.fullName}</Text> 
              
                 </View>);
         } else {
@@ -168,15 +190,17 @@ export default function ProfileScreenClientsList({ navigation }) {
                     underlayColor={'#FFF'}
                 >
                     <View style={{flex : 0.8, flexDirection : 'column', justifyContent : 'flex-start', alignItems : 'flex-start',}}>
-                        <TouchableOpacity style={{justifyContent : 'flex-start', alignItems : 'flex-start', paddingTop : 5}}
+                        <TouchableOpacity style={{flex : 1, justifyContent : 'center', alignItems : 'flex-start'}}
                                             onPress={() => {
                                             closeRow(rowMap, data.item.key);
-                                            navigation.navigate('ProfileClientDetail', { name: 'Modifier', isModify: true, data: data.item, firebase, isEditable : false });
+                                            navigation.navigate('ProfileClientDetail', { updateClient , isModify: true, data: data.item, firebase, isEditable : false });
+                                            // this.props.navigation.state.params.updateValue("coupon", this.state.couponMin, Numeral(this.state.couponMin).format('0.00%'));
+                                            // this.props.navigation.goBack();
                                         }}                       
                         >
                             <Text style={setFont('300', 14, 'black', 'Regular')}>{data.item.fullName}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{borderWidth : 0, justifyContent : 'flex-start', alignItems : 'flex-start', }}
+                        <TouchableOpacity style={{flex : 1, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'flex-start', }}
                         
                                         onPress={() => {
                                             Linking.openURL(`mailto:${data.item.email}`);
@@ -197,25 +221,30 @@ export default function ProfileScreenClientsList({ navigation }) {
     }
 
     const renderHiddenItem = (data, rowMap) => {
-        if (data.item.isGroup === true) {
-            return (
-                <View style={{
-                    flex: 1,
-                    justifyContent: 'space-between',
-                    borderBottomColor: '#D3D3D3',
-                    paddingLeft: 15,
-                    borderBottomWidth: 1,
-                    justifyContent: 'center',
-                    height: 50
-                }}>
-                    <Text style={setFont('300', 16, 'red', 'Bold')}>{data.item.fullName}</Text>
-                </View>);
-        } else {
+        if (data.item.isGroup === false) {
+        //     return (
+        //         <View style={{
+        //             flex: 1,
+        //             justifyContent: 'space-between',
+        //             borderBottomColor: '#D3D3D3',
+        //             paddingLeft: 15,
+        //             borderBottomWidth: 1,
+        //             justifyContent: 'center',
+        //             height: 195,
+        //             marginTop : 5
+        //         }}>
+        //             <Text style={setFont('300', 30, 'black', 'Bold')}>{data.item.fullName}</Text>
+        //         </View>);
+        // } else {
             return (
                 <View style={styles.rowBack}>
                     <TouchableOpacity
                         style={[styles.backLeftBtn, styles.backLeftBtnLeft]}
-                        onPress={() => deleteRow(rowMap, data.item.key)}
+                        onPress={() => {
+                            manageClientData(firebase, data.item, 'delete')
+                            deleteRow(rowMap, data.item.key);
+                        }}
+
                     >
                         <Text style={styles.backTextWhite}>Supprimer</Text>
                     </TouchableOpacity>
@@ -223,7 +252,7 @@ export default function ProfileScreenClientsList({ navigation }) {
                         style={[styles.backRightBtn, styles.backRightBtnLeft]}
                         onPress={() => {
                             closeRow(rowMap, data.item.key);
-                            navigation.navigate('ProfileClientDetail', { name: 'Modifier', isModify: true, data: data.item, firebase });
+                            navigation.navigate('ProfileClientDetail', { updateClient,  name: 'Modifier', isModify: true, data: data.item, firebase });
                         }}
                     >
                         <Text style={styles.backTextWhite}>Modifier</Text>
@@ -244,7 +273,9 @@ export default function ProfileScreenClientsList({ navigation }) {
         <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
             <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''),  paddingRight : 15, paddingLeft : 15}}>
                               <TouchableOpacity style={{ flex : 0.2, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
-                                                onPress={() => navigation.goBack()}
+                                                onPress={() => {
+                                                    navigation.goBack();
+                                                }}
                               >
                                   
                                       <Ionicons name={'ios-arrow-round-back'} size={25} color={'white'}/>
@@ -263,7 +294,7 @@ export default function ProfileScreenClientsList({ navigation }) {
                                                     let emptyData = {};
                                                     emptyData['id'] = null;
                                                     emptyData['item'] = null;
-                                                    navigation.navigate('ProfileClientDetail', { name: 'Modifier', isModify: false, data: emptyData, firebase, isEditable : true });
+                                                    navigation.navigate('ProfileClientDetail', { updateClient, name: 'Modifier', isModify: false, data: emptyData, firebase, isEditable : true });
                                                 }}
                               >
                                     <MaterialCommunityIcons name='plus' size={25}  style={{color : 'white'}}/>
@@ -272,6 +303,7 @@ export default function ProfileScreenClientsList({ navigation }) {
 
             <SwipeListView
                 data={groupList(filterListData(listData))}
+                extraData={listData}
                 renderItem={renderItem}
                 renderHiddenItem={renderHiddenItem}
                 leftOpenValue={100}

@@ -858,7 +858,7 @@ export async function getProduct (firebase, idProduct) {
         'bearer'      : token,
       }
     };
-    var token = await firebase.doGetIdToken();
+
     var response = await axios.get(URL_AWS + '/ProductDescription/' + idProduct, axiosConfig)
 
     return await Promise.resolve(response.data);
@@ -916,8 +916,8 @@ export function deleteNotification (firebase, type, id) {
           'bearer'      : token,
         }
       };
-      var token = await firebase.doGetIdToken();
-      var response = await axios.get(URL_AWS + '/clients/id001' , axiosConfig)
+
+      var response = await axios.get(URL_AWS + '/client' , axiosConfig)
   
       return await Promise.resolve(response.data);
     }
@@ -925,6 +925,28 @@ export function deleteNotification (firebase, type, id) {
       // catches errors both in fetch and response.json
       return await Promise.reject(err);
     }
+
+}
+
+export async function getClientCount(firebase) {
+
+  try {
+    var token = await firebase.doGetIdToken();
+
+    var axiosConfig = {
+      headers :{
+        'bearer'      : token,
+      }
+    };
+
+    var response = await axios.get(URL_AWS + '/countclient' , axiosConfig)
+
+    return await Promise.resolve(response.data);
+  }
+  catch(err) {
+    // catches errors both in fetch and response.json
+    return await Promise.reject(err);
+  }
 
 }
 
@@ -943,11 +965,11 @@ export async function manageClientData(firebase, data, action) {
         }
       };
       if (action === 'create') {
-        var response = await axios.post(URL_AWS + '/createclient', data, axiosConfig);
+        var response = await axios.post(URL_AWS + '/client', data, axiosConfig);
       } else if  (action === 'delete') {
-        var response = await axios.delete(URL_AWS + '/client/client/' + data.id);
-      } else {
-        await axios.put(URL_AWS + '/client/' + data.id,  data);
+        var response = await axios.delete(URL_AWS + '/client/' + data.key, axiosConfig);
+      } else {//update client
+        var response  = await axios.put(URL_AWS + '/client/' + data.key,  data, axiosConfig);
       }
 
       

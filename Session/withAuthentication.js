@@ -10,7 +10,7 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
-import { getUserAllInfoAPI, getTicket, getAllUsers, setFavorite } from "../API/APIAWS";
+import { getUserAllInfoAPI, getTicket, getAllUsers, setFavorite, getClientCount} from "../API/APIAWS";
 
 
 import { isAndroid , isEqual } from '../Utils'; 
@@ -57,7 +57,6 @@ const withAuthentication = Component => {
 
         //tickets
         tickets: [],
-        productsFollowed : [],
         closedTickets : [],
         souscriptionTickets : [],
         apeTickets : [],
@@ -85,6 +84,10 @@ const withAuthentication = Component => {
         //toFavorites
         favorites: [],
         setFavorite: obj => this.setFavorite(obj),
+
+        //clients
+        clientCount : 0,
+        updateClientCount: () => this.updateClientCount(),
 
         //les filtres a appliquer sur la home page
         filters: [],
@@ -235,7 +238,7 @@ const withAuthentication = Component => {
       let productTickets = [];
       let souscriptionTickets = [];
 
-      tickets.forEach((t) => {
+      tickets.forEach(async (t) => {
 
         switch(t.type) {
           case "Broadcasting" :
@@ -248,11 +251,6 @@ const withAuthentication = Component => {
                     console.log("Workflow : "+t.id);
                     //console.log(t);
                     let ticketC = new CWorkflowTicket(t);
-                    if (ticketC.getId() === 399) {
-                      let productsFollowed = this.state.productsFollowed;
-                      productsFollowed.push(ticketC.getProduct());
-                      this.setState({ productsFollowed });
-                    }
                     productTickets.push(ticketC);
               }
               break;
@@ -321,6 +319,13 @@ const withAuthentication = Component => {
     
     }
 
+    //compte le nombre de clients
+    async updateClientCount() {
+      var clientCount = await getClientCount(this.props.firebase);
+      this.setState({ clientCount });
+      console.log("Nb clients : "+clientCount);
+    } 
+
     //chargement des donnees de départ deopuis le serveur
     async getUserAllInfo() {
       let ip = ''; //await Network.getIpAddressAsync();
@@ -376,6 +381,9 @@ const withAuthentication = Component => {
       //chargement de tous les users
       this.setState({ users : new CUsers( await getAllUsers(this.props.firebase), this.state.authUser.uid) });
       
+      //chargement du nombre de clients
+      this.updateClientCount();
+
 
       //load all infos at ignition
       return new Promise((resolve, reject) => {

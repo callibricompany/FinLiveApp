@@ -2,7 +2,6 @@ import Moment from 'moment';
 
 
 
-
 //classe mere de tous les objets financiers, immos, arts, etc...
 export class CProduct2 { 
 
@@ -266,6 +265,7 @@ export class CProduct2 {
     
   //retourne le nom  du produit
   getProductName() {
+
       let name = "";
       switch(this.getProductCode()) {
         case 'AUTOCALL_CLASSIC' :

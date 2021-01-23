@@ -590,7 +590,8 @@ export class CTicket  {
     }
 
     getCurrency() {
-      return this.product.getCurrency();
+      return this.ticket['custom_fields']['cf_devise'] === null ? 0 : this.ticket['custom_fields']['cf_devise'];
+      
     }
 
     getNominal() {

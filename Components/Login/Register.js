@@ -338,7 +338,7 @@ class RegisterFormBase extends React.Component {
                   
           
              
-            <KeyboardAvoidingView behavior={'position'} style={{ flex: 1 }}>  
+            <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
                <Text style={styles.text2}>Créer votre compte</Text>
             </View>
@@ -357,6 +357,7 @@ class RegisterFormBase extends React.Component {
                         onSubmitEditing={() => {
                           this.focusNextField('firstName');
                         }}
+                        autoCompleteType={'name'}
                         returnKeyType={ "next" }
                         style={styles.textInput}
                         ref={ input => {
@@ -374,8 +375,9 @@ class RegisterFormBase extends React.Component {
                         clearButtonMode="always"
                         placeholder={"Prénom"} 
                         style={styles.textInput}
-                        dataDetectorTypes={'phoneNumber'}
+                        //dataDetectorTypes={'all'}
                         blurOnSubmit={ false }
+                        autoCompleteType={'name'}
                         onSubmitEditing={() => {
                           this.focusNextField('phone');
                         }}
@@ -400,6 +402,7 @@ class RegisterFormBase extends React.Component {
                         clearButtonMode="always"
                         placeholder={"Téléphone"} 
                         blurOnSubmit={ false }
+                        autoCompleteType={'tel'}
                         onSubmitEditing={() => {
                           this.focusNextField('company');
                         }}
@@ -447,6 +450,8 @@ class RegisterFormBase extends React.Component {
                         clearButtonMode="always"
                         placeholder={"Adresse mail"} 
                         blurOnSubmit={ false }
+                        autoCapitalize={'none'}
+                        autoCompleteType={'email'}
                         onSubmitEditing={() => {
                           this.focusNextField('password');
                         }}
@@ -468,6 +473,8 @@ class RegisterFormBase extends React.Component {
                         clearButtonMode="always"
                         placeholder={"Mot de passe"} 
                         blurOnSubmit={ false }
+                        autoCapitalize={'none'}
+                        autoCompleteType={'password'}
                         onSubmitEditing={() => {
                           this.focusNextField('passwordVerif');
                         }}
@@ -488,6 +495,8 @@ class RegisterFormBase extends React.Component {
                         clearButtonMode="always"
                         placeholder={"Confirmez votre mot de passe"}
                         blurOnSubmit={ true }
+                        autoCapitalize={'none'}
+                        autoCompleteType={'password'}
                         returnKeyType={ "done" }
                         ref={ input => {
                           this.inputs['passwordVerif'] = input;
@@ -515,7 +524,7 @@ class RegisterFormBase extends React.Component {
                     {this.renderIsIndepenadant()}
 
                       <TouchableOpacity  
-                            style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}
+                            style={{width : getConstant('width')*0.9, height : 50, backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}
                             onPress={this.register.bind(this)}
                       >
                               <Text style={[setFont('600', 22, 'white', 'Bold'), {padding: 5}]}>CREER SON COMPTE</Text>

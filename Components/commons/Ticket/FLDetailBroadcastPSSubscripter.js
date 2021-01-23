@@ -13,7 +13,7 @@ import ProgressBar from 'react-native-progress/Bar';
 import { globalStyle, setFont, setColor} from '../../../Styles/globalStyle'
 import { getConstant, currencyFormatDE } from '../../../Utils';
 
-import { updateSouscriptionTicket } from '../../../API/APIAWS';
+import { updateSouscriptionTicket , getProduct } from '../../../API/APIAWS';
 
 import FLTemplateAutocall from '../Autocall/FLTemplateAutocall';
 import { FLUF } from "../Autocall/FLUF";
@@ -23,6 +23,7 @@ import * as TEMPLATE_TYPE from '../../../constants/template';
 import Numeral from 'numeral'
 import 'numeral/locales/fr'
 import { CUser } from '../../../Classes/CUser';
+import { CAutocall2 } from '../../../Classes/Products/CAutocall2';
 import { PropTypes } from 'victory-native';
 
 
@@ -43,6 +44,15 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
             return (subscripters === null || subscripters === 'undefined' || !subscripters.hasOwnProperty('subscription')) ? 0 : subscripters.subscription.reduce((a, b) => a + b, 0);
          });
 
+         //initalisation du produit (autocall, ...)
+         const [autocall, setAutocall ] = useState(null);
+
+         useEffect(() => {
+            (async () => {
+                var productJSON = await getProduct(firebase, ticket.getProductCode());
+                setAutocall(new CAutocall2(productJSON));
+            })();
+          }, []);
 
         useEffect(() => {
             //retreive broadcast amount 
@@ -192,7 +202,7 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                 UF={UF}
                                 UFAssoc={UFAssoc}
                                 nominal={nominal}
-                                currency={ticket.getProduct().getCurrency()}
+                                currency={ticket.getCurrency()}
                                 company={user.getCompany()}
                                 updateProduct={(id, value, valueLabel) => {
                                     (id === 'UF') ? setUF(value) : setUFAssoc(value);
@@ -305,7 +315,11 @@ export function FLDetailBroadcastPSSubscripter ({ ticket, user, requester, reque
                                         });
                                     }}
                     >
-                        <FLTemplateAutocall autocall={ticket.getProduct()} screenWidth={0.95} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} nominal={ticket.getNominal()} />
+                    {autocall != null
+                    ?
+                       <FLTemplateAutocall autocall={autocall} screenWidth={0.95} templateType={TEMPLATE_TYPE.AUTOCALL_TICKET_TEMPLATE} isEditable={false} nominal={ticket.getNominal()} />
+                    : null
+                    }
                     </TouchableOpacity>
                     {footer}
                     <View style={{height : 100}} />           

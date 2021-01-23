@@ -184,6 +184,8 @@ class LoginFormBase extends React.Component {
                             this.setState({ isOnFocus : true });
                             //console.log("focus");
                           }}
+                          autoCapitalize={'none'}
+                          autoCompleteType={'email'}
                           onSubmitEditing={() => {
                             this.inputs['password'].focus();
                           }}
@@ -213,6 +215,8 @@ class LoginFormBase extends React.Component {
                         secureTextEntry={true}
                         clearButtonMode={"always"}
                         placeholder={"Mot de passe"} 
+                        autoCapitalize={'none'}
+                        autoCompleteType={'password'}
                         //onSubmitEditing={() => this.login()}
                         blurOnSubmit={ true }
                         returnKeyType={ "done" }

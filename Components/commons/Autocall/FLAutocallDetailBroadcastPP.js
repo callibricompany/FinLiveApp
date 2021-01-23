@@ -107,10 +107,7 @@ class FLAutocallDetailBroadcastPP extends React.Component {
 
 
     //liste des users ticket partagé
-    console.log("pass ici 1");
     this.usersList = this.users.getUserListFromUid(this.state.friends);
-
-    console.log("pass ici 2");
 
   }
 
@@ -538,7 +535,7 @@ _setFriends(friends) {
                                     productToSend['UFAsso'] = this.autocall.getUFAssoc();
                                     productToSend['cf_ps_shared'] = true;
                                     productToSend['cf_cpg_choice'] = "Placement Privé";
-
+                                    productToSend['productcode'] = this.autocall.getUniqueId();
                                     //console.log(productToSend);
 
                                    //"due_by": 2020-05-03T15:30:00.912Z,
@@ -551,12 +548,12 @@ _setFriends(friends) {
                                           
                                           console.log("SUCCES CREATION TICKET BROADCAST");
                                           
-                                          // let t = new CWorkflowTicket(data.data);
-                                          // this.props.addTicket(t);
-                                          // console.log("TICKET AJOUTE");
-                                          // this.setState({ isLoadingCreationTicket : false }, () => {
-                                          //   this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
-                                          // })
+                                          let t = new CWorkflowTicket(data.data);
+                                          this.props.addTicket(t);
+                                          console.log("TICKET AJOUTE");
+                                          this.setState({ isLoadingCreationTicket : false }, () => {
+                                            this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
+                                          })
                                       } else {
                                         console.log("ERREUR CREATION TICKET: " + error);
                                         this.setState({ isLoadingCreationTicket : false }, () => alert('ERREUR ' + error));

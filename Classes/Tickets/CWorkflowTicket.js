@@ -147,10 +147,7 @@ export class  CWorkflowTicket extends CTicket {
   return this.getUFAssoc()*this.getNominal()/100;
 }
 
-  getCurrency() {
-    return this.ticket['custom_fields']['cf_devise'] === null ? 0 : this.ticket['custom_fields']['cf_devise'];
-    
-  }
+
   
 
 }

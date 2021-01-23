@@ -44,13 +44,20 @@ const ProfileClientDetail = ({ navigation }) => {
 
     async function submitForm() {
         try {
-            console.log(INITIAL_STATE)
-            console.log(isModify);
-            console.log(values.uid)
-            console.log(values);
-            isModify
-                ? await manageClientData(firebase, values, 'update')
-                : await manageClientData(firebase, values, 'create');
+            // console.log(INITIAL_STATE)
+            // console.log(isModify);
+            // console.log(values.uid)
+            // console.log(values);
+            values.fullName = values.surname + " " + values.name;
+            if (isModify) {
+                await manageClientData(firebase, values, 'update');
+                navigation.state.params.updateClient(values);
+                navigation.goBack();
+            } else {
+                await manageClientData(firebase, values, 'create');
+                navigation.state.params.updateClient(values);
+                navigation.goBack();
+            }
             //navigation.navigate('Clients', { userId: item.userId, refresh: true, message: 'Changements pris en compte' });
         } catch (err) {
             console.error("Communication Error", err);
@@ -99,6 +106,7 @@ const ProfileClientDetail = ({ navigation }) => {
                         style={styles.input}
                         onChangeText={(val) => handleChange(val,'email')}
                         value={values.email}
+                        autoCapitalize={'none'}
                     />
                     <Text style={styles.textItem}>Téléphone</Text>
                     <TextInput
