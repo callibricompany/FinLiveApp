@@ -89,7 +89,9 @@
     "yarn": "^1.17.3"
   },
   "devDependencies": {
-    "babel-preset-expo": "8.3.0"
+    "@types/react-native": "~0.63.2",
+    "babel-preset-expo": "8.3.0",
+    "typescript": "~3.9.2"
   },
   "private": true
 }

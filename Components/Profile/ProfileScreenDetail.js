@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Image, Alert, Modal, ClippingRectangle, TextInput, KeyboardAvoidingView } from 'react-native';
+import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView, Keyboard, TouchableOpacity, StyleSheet, StatusBar, Image, Alert, Modal, ClippingRectangle, TextInput, KeyboardAvoidingView } from 'react-native';
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -30,8 +30,9 @@ import * as Permissions from 'expo-permissions';
 import { Asset } from "expo-asset";
 import * as ImageManipulator from "expo-image-manipulator";
 
+import logo_white from '../../assets/LogoWithoutTex_white.png';
 
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 import { updateUser, changeAvatar } from '../../API/APIAWS';
 
@@ -51,9 +52,9 @@ class ProfileScreenDetail extends React.Component {
   constructor(props) {
     super(props)
 
-    this.option = this.props.navigation.getParam('option', 'USER');
+    
     this.user = this.props.user;
-    this.users = this.props.users;
+    //this.users = this.props.users;
 
     this.state = { 
       //gestion de la photo de profil
@@ -63,6 +64,8 @@ class ProfileScreenDetail extends React.Component {
       isCameraReady : false,
       hasCameraPermission: false,
  
+      //gestion du change de pwd et email
+      showModalChangePwd : false,
 
       //gestion des sections
       activeSections: [0, 1],
@@ -71,10 +74,22 @@ class ProfileScreenDetail extends React.Component {
       isSearchingFriends : false,
       friendName : '',
 
+      lastName : this.user.getLastName(),
+      firstName : this.user.getFirstName(),
+      phone : this.user.getPhone().length === 0 ? "" : parsePhoneNumberFromString(this.user.getPhone(),'FR').formatInternational(),
+      company : this.user.getCompany(),
+      currentPwd : '',
+      newPwd : '',
+      newPwdConfirm : '', 
+      showCurrentPwd : false,
+      showNewPwd : false,
+      showNewPwdConfirm : false,
+
+
       toto : true,
     }
 
-    
+
 
     this.title = "Modifier";
     this.SECTIONS = [            
@@ -87,10 +102,10 @@ class ProfileScreenDetail extends React.Component {
         title: 'coordonnées',
         code: 'USERDATA',
       }, 
-      {
-        title: 'déconnexion',
-        code: 'DISCONNECT',
-      }
+      // {
+      //   title: 'déconnexion',
+      //   code: 'DISCONNECT',
+      // }
     ]
 
   }
@@ -127,7 +142,8 @@ componentWillUnmount() {
       this._navListener = null;
       //this._navListener.remove();
   }
-
+  Keyboard.removeListener('keyboardDidShow');
+  Keyboard.removeListener('keyboardDidHide');
 
 }
 
@@ -381,6 +397,195 @@ componentWillUnmount() {
 
   ////////////////////////////
   //
+  //      CHGE PWD et EMAIL
+  ////////////////////////////
+  _renderModalChangePassword=()=> {
+
+    return (
+
+      <Modal
+          animationType='slide'
+          transparent={true}
+          visible={this.state.showModalChangePwd}
+      >
+      
+          <View 
+            style={{flex:1, backgroundColor:'transparent'}} 
+            onStartShouldSetResponder={() => true}
+            //onStartShouldSetResponderCapture={() => true}
+            //onMoveShouldSetResponderCapture={() => true}
+            //onMoveShouldSetResponder={() => true}
+            onResponderRelease={(evt) =>{
+              let x = evt.nativeEvent.pageX;
+              let y = evt.nativeEvent.pageY;
+              //si on a clické en dehors du module view cidessous on ferme le modal
+              let verifX = x < getConstant('width')*0.1  || x > getConstant('width')*0.9 ? true : false;
+              let verifY = y < getConstant('height')*0.275  || y > getConstant('height')*0.725 ? true : false;
+              if (verifX || verifY) {
+                this.setState({showModalChangePwd : false});
+              }
+            }}
+
+          >
+            
+                <View 
+                  //directionalLockEnabled={true} 
+                  //contentContainerStyle={{
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius : 10,
+                      shadowColor: setColor('shadow'),
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.3,
+                      borderWidth : 1,
+                      borderColor : isAndroid() ? 'lightgray' :  'white',
+                      //borderRadius:10,
+                      //width: this.state.leftPositionCategory,
+                      width : getConstant('width')*0.8, 
+                      height: getConstant('height')*0.45,
+                      top:  getConstant('height')*0.2,
+                      left : getConstant('width')*0.1,
+                      //marginTop:getConstant('height')*0.15,                       
+                      //borderRadius: getConstant('height')*0.03,
+                      //alignItems: 'absolute'
+                      padding : 10
+                  }}
+                >
+                    <View style={{backgroundColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 3, padding : 5, borderColor: setColor('subscribeBlue'), justifyContent : 'center', alignItems : 'center'}}>
+                        <Text style={setFont('400', 18, 'white', 'Bold')}>Changement du mot de passe</Text> 
+                    </View>
+                    <View style={{padding : 5, justifyContent : 'center', alignItems : 'flex-start', marginTop : 20}}>
+                        <Text style={setFont('400', 16, 'black', 'Regular')}>Mot de passe actuel :</Text> 
+                    </View>
+                    <View style={{flexDirection: 'row', borderWidth : 1, borderRadius : 3, padding : 5, borderColor: setColor('borderFL'), justifyContent : 'center', alignItems : 'flex-start'}}>
+                            <TextInput
+                                        style={[setFont('200', 16, 'black', 'Regular'), {flex : 1}]}
+                                        placeholder={'Mot de passe actuel'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                        //keyboardType={''}
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        secureTextEntry={!this.state.showCurrentPwd}
+                                        onBlur={async () => {
+
+                                        }}
+                                        textContentType={'password'}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={this.state.currentPwd}
+                                        onChangeText={e => {
+                                              this.setState({ currentPwd : e });
+                                        }}
+                                      />
+                            <TouchableOpacity onPress={() => this.setState({ showCurrentPwd : !this.state.showCurrentPwd })}>
+                                <MaterialCommunityIcons name={this.state.showCurrentPwd ? 'eye-outline' : 'eye-off'} size={20} />
+                            </TouchableOpacity>
+                    </View>
+
+
+                    <View style={{padding : 5, justifyContent : 'center', alignItems : 'flex-start', marginTop : 20}}>
+                        <Text style={setFont('400', 16, 'black', 'Regular')}>Nouveau mot de passe :</Text> 
+                    </View>
+                    <View style={{flexDirection: 'row', borderWidth : 1, borderRadius : 3, padding : 5, borderColor: setColor('borderFL'), justifyContent : 'center', alignItems : 'flex-start'}}>
+                            <TextInput
+                                        style={[setFont('200', 16, 'black', 'Regular'), {flex : 1}]}
+                                        placeholder={'Nouveau mot de passe'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                        //keyboardType={''}
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        secureTextEntry={!this.state.showNewPwd}
+                                        onBlur={async () => {
+
+                                        }}
+                                        textContentType={'password'}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={this.state.newPwd}
+                                        onChangeText={e => {
+                                              this.setState({ newPwd : e });
+                                        }}
+                                      />
+                            <TouchableOpacity onPress={() => this.setState({ showNewPwd : !this.state.showNewPwd })}>
+                                <MaterialCommunityIcons name={this.state.showNewPwd ? 'eye-outline' : 'eye-off'} size={20} />
+                            </TouchableOpacity>
+                    </View>
+
+
+                    <View style={{padding : 5, justifyContent : 'center', alignItems : 'flex-start', marginTop : 20}}>
+                        <Text style={setFont('400', 16, 'black', 'Regular')}>Confirmez votre nouveau mot de passe :</Text> 
+                    </View>
+                    <View style={{flexDirection: 'row', borderWidth : 1, borderRadius : 3, padding : 5, borderColor: setColor('borderFL'), justifyContent : 'center', alignItems : 'flex-start'}}>
+                            <TextInput
+                                        style={[setFont('200', 16, 'black', 'Regular'), {flex : 1}]}
+                                        placeholder={'Confirmez votre nouveau mot de passe'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                        //keyboardType={''}
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        secureTextEntry={!this.state.showNewPwdConfirm}
+                                        onBlur={async () => {
+
+                                        }}
+                                        textContentType={'password'}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={this.state.newPwdConfirm}
+                                        onChangeText={e => {
+                                              this.setState({ newPwdConfirm : e });
+                                        }}
+                                      />
+                            <TouchableOpacity onPress={() => this.setState({ showNewPwdConfirm : !this.state.showNewPwdConfirm })}>
+                                <MaterialCommunityIcons name={this.state.showNewPwdConfirm ? 'eye-outline' : 'eye-off'} size={20} />
+                            </TouchableOpacity>
+                    </View>
+                    <View style={{borderWidth : 0, marginTop : 20, alignItems: 'center', justifyContent : 'center'}}>
+                      <TouchableOpacity style ={{height: 70, width: 70, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius: 35, padding : 10, backgroundColor: setColor('subscribeBlue')}}
+                          onPress={() => {
+                            //check if password ok
+                            if (this.state.currentPwd.length <= 6 || this.state.newPwd.length <= 6 || this.state.newPwdConfirm.length <= 6 ) {
+                              alert("Vos mots de passes sont trop courts");
+                            }
+                            else if (this.state.newPwd !== this.state.newPwdConfirm) {
+                              alert("Vous navez rentrés 2 mots de passe différents");
+                            }
+                            else {
+                              this.props.firebase.doChangePassword(this.state.currentPwd, this.state.newPwd)
+                              .then((result) => {
+                                
+                                alert("Mot de passe changé avec succès");
+                                this.setState({ showModalChangePwd : false });
+                                
+                              })
+                              .catch((error) => {
+                                alert("Erreur : impossible de changer  le mot de passe");
+                                
+                              });
+                            }
+                          }}  
+                      >
+                          <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
+                              <Image style={{width: 40, height: 40}} source={logo_white} />
+                          </View>
+                          <View style={{ alignItems: 'center', justifyContent: 'center'}}>
+                              <Text style={setFont('400', 10, 'white', 'Regular')}>{String('modifier').toUpperCase()}</Text>
+                          </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+           
+          </View>
+          
+        </Modal>
+
+    );
+  }
+
+  ////////////////////////////
+  //
   //      DECONNEXION
   ////////////////////////////
   _signOutAsync = async () => {
@@ -436,11 +641,11 @@ componentWillUnmount() {
       case 'DISCONNECT' :
           return (
             <View style={{flexDirection : 'row', justifyContent: "space-between", alignItems: 'center', borderWidth : 0, backgroundColor : setColor('background'), margin : -10, paddingTop : 15, paddingLeft : 10}}>
-              <TouchableOpacity style={{marginTop : 5, marginBottom : 5, marginLeft : 15, padding : 5, paddingLeft : 20, paddingRight : 20,  borderWidth : 1, borderColor : 'white', borderRadius : 20, backgroundColor : interpolateColorFromGradient(gradientColorName, percentColor)}}
+              <TouchableOpacity style={{marginTop : 5, marginBottom : 5, marginLeft : 15, padding : 8, paddingLeft : 20, paddingRight : 20,  borderWidth : 1, borderColor : 'white', borderRadius : 5, backgroundColor : interpolateColorFromGradient(gradientColorName, percentColor)}}
                                 onPress={() => this._signOutAlert()}
               >
-                  <Text style={setFont('400', 12, 'white', 'Regular')}>
-                    {content.title.toUpperCase()}
+                  <Text style={setFont('400', 16, 'white', 'Regular')}>
+                    fff{content.title.toUpperCase()}
                   </Text>
               </TouchableOpacity>
  
@@ -449,82 +654,287 @@ componentWillUnmount() {
           );
           break;
       default :
-            return (
-              <View style={{justifyContent: "space-between", alignItems: 'flex-start', marginTop : 5, marginBottom : 5, marginLeft : 0, padding : 5, paddingLeft : 20, paddingRight : 20,  borderWidth : 1, borderColor : 'white', borderRadius : 20}}>
-                    <Text style={setFont('400', 12, 'black', 'Regular')}>
-                      {content.title.toUpperCase()}
-                    </Text>
-              </View>
-            );
+            // return (
+            //   <View style={{
+            //     borderBottomColor: setColor('borderFL'),
+            //     paddingLeft: 15,
+            //     borderBottomWidth: 1,
+            //     //height: 145,
+            //     marginTop : 0,
+            //     borderWidth : 0,
+            //     paddingTop : 15,
+            //     paddingBottom : 4,
+            //     flexDirection : 'row',
+            //     backgroundColor : setColor('background')
+            // }}>
+            //     <View style={{padding : 5, backgroundColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 10, borderColor: setColor('subscribeBlue'), justifyContent : 'center', alignItems : 'center'}}>
+            //     <Text style={setFont('400', 18, 'white', 'Bold')}>{content.title.toUpperCase()}</Text> 
+            //     </View>
+            // </View>
+   
+            // );
     }
   };
 
-  _renderContentUnderlying = (content, index, isActive, sections) => {
+   _renderContentUnderlying =  (content, index, isActive, sections) => {
     //console.log("EST ACTIF : " + isActive);
     switch(content.code) {
         case 'USERDATA' :
               return (
                 <View style={{borderWidth : 0}}>
 
-                          <View style={{flexDirection : 'row', marginTop : index === 0 ? 10 : 5, marginBottom : 5, marginLeft : 20, marginRight : 10, borderWidth : 0, borderRadius : 10, borderColor : setColor('background'), backgroundColor : setColor('background'), padding : 5, justifyContent : 'space-between'}}>
-                              <View style={{flexDirection : 'column', flex : 0.6, marginLeft : 10, borderWidth : 0}}>
-                                  <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12)}>
-                                        Téléphone
+                          <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1, borderTopColor: setColor('borderFL'),borderTopWidth: 1}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 16)}>
+                                        Nom
                                       </Text>
-                                  </View>
+ 
                    
                               </View>
-                              <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12, 'black', 'Regular')}>
-                                        {parsePhoneNumberFromString(this.user.getPhone(),'FR').formatInternational()}
-                                      </Text>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <TextInput
+                                        style={setFont('200', 14, 'black', 'Regular')}
+
+                
+   
+                                        placeholder={'Nom'}
+                                        placeholderTextColor={'lightgray'}
+                                        underlineColorAndroid={'#fff'}
+                                        autoCorrect={false}
+                                        textContentType={'familyName'}
+                                        //keyboardType={''}
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        onBlur={async () => {
+                                          if (this.state.lastName === '') {
+                                            this.setState({ lastName : this.user.getLastName() });
+                                          } 
+                                          else {
+                                              let lastNameBeforeUpdate = this.user.getLastName();
+                                              try {
+                                                this.user.setLastName(this.state.lastName );
+                                                await updateUser(this.props.firebase, this.user);
+                                                this.setState({ toto : !this.state.toto });
+                                              }
+                                              catch(error) {
+                                                this.user.setLastName(lastNameBeforeUpdate);
+                                                Alert('Echec changement de nom');
+                                                console.log(error);
+                                              }
+                                      
+                                          }
+                                        }}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={this.state.lastName}
+                                        onChangeText={e => {
+                                              this.setState({ lastName : e });
+                                        }}
+                                      />
+                            
                               </View>   
                           </View>
-                          <View style={{flexDirection : 'row', marginTop : index === 0 ? 10 : 5, marginBottom : 5, marginLeft : 20, marginRight : 10, borderWidth : 0, borderRadius : 10, borderColor : setColor('background'), backgroundColor : setColor('background'), padding : 5, justifyContent : 'space-between'}}>
-                              <View style={{flexDirection : 'column', flex : 0.6, marginLeft : 10, borderWidth : 0}}>
-                                  <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12)}>
+                          <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1,}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 16)}>
+                                        Prénom
+                                      </Text>
+ 
+                   
+                              </View>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                              <TextInput
+                                        style={setFont('200', 14, 'black', 'Regular')}
+
+                
+   
+                                        placeholder={'Nom'}
+                                        placeholderTextColor={'lightgray'}
+                                        underlineColorAndroid={'#fff'}
+                                        autoCorrect={false}
+                                        //keyboardType={''}
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        onBlur={async () => {
+                                          if (this.state.firstName === '') {
+                                            this.setState({ firstName : this.user.getFirstName() });
+                                          } 
+                                          else {
+                                              let firstNameBeforeUpdate = this.user.getLastName();
+                                              try {
+                                                this.user.setFirstName(this.state.firstName );
+                                                await updateUser(this.props.firebase, this.user);
+                                                this.setState({ toto : !this.state.toto });
+                                              }
+                                              catch(error) {
+                                                this.user.setFirstName(firstNameBeforeUpdate);
+                                                Alert('Echec changement de nom');
+                                                console.log(error);
+                                              }
+                                      
+                                          }
+                                        }}
+                                        textContentType={'name'}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={this.state.firstName}
+                                        onChangeText={e => {
+                                              this.setState({ firstName : e });
+                                        }}
+                                      />
+                              </View>   
+                          </View>
+                          <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1,}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 16)}>
                                         Email
                                       </Text>
-                                  </View>
-                  
+ 
+                   
                               </View>
-                              <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12, 'black', 'Regular')}>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <Text style={setFont('200', 14, 'black', 'Regular')}>
                                         {this.user.getEmail()}
                                       </Text>
                               </View>   
                           </View>
-                          <View style={{flexDirection : 'row', marginTop : index === 0 ? 10 : 5, marginBottom : 5, marginLeft : 20, marginRight : 10, borderWidth : 0, borderRadius : 10, borderColor : setColor('background'), backgroundColor : setColor('background'), padding : 5, justifyContent : 'space-between'}}>
-                              <View style={{flexDirection : 'column', flex : 0.6, marginLeft : 10, borderWidth : 0}}>
-                                  <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12)}>
-                                        Société
+                          <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1,}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 16)}>
+                                        Téléphone
                                       </Text>
-                                  </View>
-                  
+ 
+                   
                               </View>
-                              <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12, 'black', 'Regular')}>
-                                        {this.user.getCompany()}
-                                      </Text>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                        <TextInput
+                                            style={setFont('200', 14, 'black', 'Regular')}
+                                            placeholder={'Téléphone'}
+                                            placeholderTextColor={'lightgray'}
+     
+                                            value={this.state.phone}
+                                            //mask={"+1 ([000]) [000] [00] [00]"}
+                                            keyboardType='phone-pad'
+                                            textContentType='telephoneNumber'
+                                            editable={true}
+                                            onBlur={async () => {
+                                              if (this.state.phone === '') {
+                                                this.setState({ phone : parsePhoneNumberFromString(this.user.getPhone(),'FR').formatInternational() });
+                                              } 
+                                              else {
+                                                  let telBeforeUpdate = this.user.getPhone();
+                                                  try {
+                                                    this.user.setPhone(this.state.phone );
+                                                    await updateUser(this.props.firebase, this.user);
+                                                    this.setState({ toto : !this.state.toto });
+                                                  }
+                                                  catch(error) {
+                                                    this.user.setPhone(telBeforeUpdate);
+                                                    Alert('Echec changement de nom');
+                                                    console.log(error);
+                                                  }
+                                          
+                                              }
+                                            }}
+                                            autoCompleteType={'tel'}
+                                            returnKeyType={'done'}
+                                            onChangeText={e => {
+                                              //console.log(e);
+                                              if (e.length > 5) {
+                                                e = parsePhoneNumberFromString(e,'FR').formatInternational()
+                                              }
+                                              this.setState({ phone : e });
+                                            }}
+                                        />
+                         
                               </View>   
                           </View>
-                          <View style={{flexDirection : 'row', marginTop : index === 0 ? 10 : 5, marginBottom : 5, marginLeft : 20, marginRight : 10, borderWidth : 0, borderRadius : 10, borderColor : setColor('background'), backgroundColor : setColor('background'), padding : 5, justifyContent : 'space-between'}}>
-                              <View style={{flexDirection : 'column', flex : 0.6, marginLeft : 10, borderWidth : 0}}>
-                                  <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12)}>
-                                        Société de rattachement
+                          <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1,}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 16)}>
+                                      Société
                                       </Text>
-                                  </View>
-                  
+ 
+                   
                               </View>
-                              <View style={{ borderWidth : 0}}>
-                                      <Text style={setFont('200', 12, 'black', 'Regular')}>
-                                        {this.user.getOrganization()}
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                    <TextInput
+                                              style={setFont('200', 14, 'black', 'Regular')}
+
+                      
+        
+                                              placeholder={'Nom'}
+                                              placeholderTextColor={'lightgray'}
+                                              autoCorrect={false}
+                                              //keyboardType={''}
+                                              returnKeyType={'done'}
+                                              textContentType={'organizationName'}
+                                              editable={true}
+                                              onBlur={async () => {
+                                                if (this.state.company === '') {
+                                                  this.setState({ company : this.user.getCompany() });
+                                                } 
+                                                else {
+                                                    let companyBeforeUpdate = this.user.getCompany();
+                                                    try {
+                                                      this.user.setCompany(this.state.company );
+                                                      await updateUser(this.props.firebase, this.user);
+                                                      this.setState({ toto : !this.state.toto });
+                                                    }
+                                                    catch(error) {
+                                                      this.user.setCompany(companyBeforeUpdate);
+                                                      Alert('Echec changement de nom');
+                                                      console.log(error);
+                                                    }
+                                            
+                                                }
+                                              }}
+                                              //onFocus={() =>  this.setState({ nominal : '' })}
+                                              //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                              value={this.state.company}
+                                              onChangeText={e => {
+                                                    this.setState({ company : e });
+                                              }}
+                                      />
+                     
+                              </View>   
+                          </View>
+                          {/* <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1,}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 16)}>
+                                      Affiliation
+                                      </Text>
+ 
+                   
+                              </View>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <Text style={setFont('200', 14, 'black', 'Regular')}>
+                                      {this.user.getOrganization()}
                                       </Text>
                               </View>   
+                          </View> */}
+                          <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1,}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 16)}>
+                                      Mot de passe
+                                      </Text>
+ 
+                   
+                              </View>
+                              <TouchableOpacity style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}
+                                                onPress={() => this.setState({ showModalChangePwd : true })}
+                              >
+                                      <Text style={setFont('200', 14, 'black', 'Regular')}>
+                                      *************
+                                      </Text>
+                              </TouchableOpacity>   
                           </View>
 
                 </View>
@@ -540,8 +950,8 @@ componentWillUnmount() {
     return (
       <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
       {this._renderModalCamera()}
-      <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
-          <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15}}>
+      <View style={{height: getConstant('height')  , backgroundColor : 'white' }}> 
+          <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15, height : 45}}>
                             <TouchableOpacity style={{ flex : 0.3, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
                                               onPress={() => this.props.navigation.goBack()}
                             >
@@ -550,7 +960,7 @@ componentWillUnmount() {
                 
                             </TouchableOpacity>
                             <View style={{flex : 0.4, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>
-                              <Text style={setFont('400', 22, 'white', 'Regular')}>
+                              <Text style={setFont('400', 18, 'white', 'Regular')}>
                                 {this.title}
                               </Text>
                             </View>
@@ -558,40 +968,38 @@ componentWillUnmount() {
          
                             </View>
           </View>
-          { this.option ==='USER'
-            ?
-              <View style={{borderWidth : 0, justifyContent : 'center', alignItems: 'center'}}>
-  
-                    <TouchableOpacity style={{height : 90, width : 90, borderWith : 0, borderColor : 'white', borderRadius : 45, backgroundColor : setColor(''),  marginTop : 20, marginBottom : 10, alignItems : 'center', justifyContent : 'center'}} 
-                                                onPress={() => {
-                                                  this._pickImageOrTakePicture();
-                                                }}
-                              >
-                                {this.state.profileImage == null 
-                                  ?
-                                    <Text style={setFont('400', 24, 'white', 'Regular')}>{this.user.getFirstName().charAt(0)}.{this.user.getLastName().charAt(0)}.</Text>
-                                    : 
-                                    <Image style={{width: 90, height: 90, borderWidth : 0, borderRadius : 45, borderColor : 'white'}} source={{uri : this.state.profileImage}} />
-                                }
-                                
-                                <View style={{position : 'absolute', top : 70, right : 0}}>
-                                      <Feather name={'camera'} size={20} color={setColor('subscribeBlue')}/>
-                                 </View>
-                    </TouchableOpacity>
-                
-                    <View>
-                        <Text>{this.user.getName()}</Text>
-                    </View>
+        
+          <View style={{borderWidth : 0, justifyContent : 'center', alignItems: 'center', marginBottom : 20, opacity : this.state.showModalChangePwd ? 0.1 : 1}}>
 
-            </View>
-            : null
-          }
+                <TouchableOpacity style={{height : 90, width : 90, borderWith : 0, borderColor : 'black', borderRadius : 45, backgroundColor : setColor(''),  marginTop : 20, marginBottom : 10, alignItems : 'center', justifyContent : 'center'}} 
+                                            onPress={() => {
+                                              this._pickImageOrTakePicture();
+                                            }}
+                          >
+                            {this.state.profileImage == null 
+                              ?
+                                <Text style={setFont('400', 24, 'white', 'Regular')}>{this.user.getFirstName().charAt(0)}.{this.user.getLastName().charAt(0)}.</Text>
+                                : 
+                                <Image style={{width: 90, height: 90, borderWidth : 0, borderRadius : 45, borderColor : setColor('')}} source={{uri : this.state.profileImage}} />
+                            }
+                            
+                            <View style={{position : 'absolute', top : 70, right : 0}}>
+                                  <Feather name={'camera'} size={20} color={setColor('subscribeBlue')}/>
+                              </View>
+                </TouchableOpacity>
+            
+                <View>
+                    <Text style={setFont('400', 18, 'black', 'Bold')}>{this.user.getName()}</Text>
+                </View>
+
+        </View>
+      
 
 
 
 
-         <ScrollView style={{flex : 1}}>
-            <View style={{marginBottom : 20,  marginTop : 15, marginLeft : getConstant('width')*0.025 }}>
+         <ScrollView style={{flex : 1,  backgroundColor :  setColor('background'), opacity : this.state.showModalChangePwd ? 0.1 : 1}}>
+         
                     <Accordion
                         sections={this.SECTIONS}
                         underlayColor={'transparent'}
@@ -605,25 +1013,26 @@ componentWillUnmount() {
                             this.setState( { activeSections : activeSections })  
                         }}
                         sectionContainerStyle={{
-                                                width : 0.95*getConstant('width'),
+                                                //width : 0.95*getConstant('width'),
                                                 backgroundColor: 'white', 
                                                 //justifyContent: 'center', 
                                                 //alignItems: 'center', 
-                                                marginTop : 10,
-                                                borderWidth : 1,
-                                                borderColor : 'white', 
-                                                borderRadius : 10, 
-                                                shadowColor: 'rgb(75, 89, 101)', 
-                                                shadowOffset: { width: 0, height: 2 },
-                                                shadowOpacity: 0.3
+                                                //marginTop : 30,
+                                                //borderWidth : 1,
+                                                //borderColor : 'red', 
+                                                //borderRadius : 10, 
+                                                //shadowColor: 'rgb(75, 89, 101)', 
+                                                //shadowOffset: { width: 0, height: 2 },
+                                                //shadowOpacity: 0.3
                                               }}
                         touchableComponent={(props) => <TouchableOpacity {...props} />}
                     />
-                </View>
+    
                 <View style={{height : 200}} />
           </ScrollView>
 
       </View>
+      {this._renderModalChangePassword()}
       </SafeAreaView>
     );
   }

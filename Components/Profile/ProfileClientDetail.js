@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View, Text, TextInput, SafeAreaView, Linking } from 'react-native';
+import { StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View, Text, TextInput, SafeAreaView, Image } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 
 import useFormValidation from "./useFormValidation";
 import validateForm from "./validateForm";
@@ -9,6 +10,11 @@ import validateForm from "./validateForm";
 import { manageClientData } from '../../API/APIAWS';
 import { setColor, setFont } from '../../Styles/globalStyle';
 import { getConstant } from '../../Utils/';
+
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+import logo_white from '../../assets/LogoWithoutTex_white.png';
+
 
 const ProfileClientDetail = ({ navigation }) => {
 
@@ -40,7 +46,8 @@ const ProfileClientDetail = ({ navigation }) => {
 
     // const [modify, setModify] = useState(isModify);
     const [serverError, setServerError] = useState(null);
-    const [isEditable, setIsEditable ] = useState(navigation.getParam('isEditable', true));
+    //const [isEditable, setIsEditable ] = useState(navigation.getParam('isEditable', true));
+    const [isUpdatable, setIsUpdatable] = useState(false)
 
     async function submitForm() {
         try {
@@ -68,129 +75,265 @@ const ProfileClientDetail = ({ navigation }) => {
     return (
         <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
         <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
-            <View style={{flexDirection : 'row',height : 45,  borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''),  paddingRight : 15, paddingLeft : 15}}>
-                              <TouchableOpacity style={{ flex : 0.2, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
+            <TouchableOpacity style={{flexDirection : 'row',height : 45,  borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''),  paddingRight : 15, paddingLeft : 15, height : 45}}
                                                 onPress={() => navigation.goBack()}
                               >
+                              <View style={{ flex : 0.2, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}>
                                   
                                       <Ionicons name={'ios-arrow-round-back'} size={25} color={'white'}/>
                   
-                              </TouchableOpacity>
+                              </View>
                               <View style={{flex : 0.6, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>
-                                <Text style={setFont('400', 20, 'white', 'Regular')}>
+                                <Text style={setFont('400', 18, 'white', 'Regular')}>
                                  {(values.name == null || values.name === '' )? 'Nouveau client' : values.name} {values.surname}
                                 </Text>
                               </View>
                               <View style={{ flex : 0.2}} />
-            </View>
-            {isEditable
-            ?
-                <View style={styles.container}>
+            </TouchableOpacity>
+   
+                <View style={{flex : 1,}}>
                     {/* <Text style={styles.textItem}>id: {id}</Text>
                     <Text style={styles.textItem}>uid: {item.uid}</Text> */}
-                    <Text style={styles.textItem}>Nom</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => handleChange(val,'surname')}
-                        value={values.surname}
-                        editable={isEditable}
-                    />
-                    <Text style={styles.textItem}>Prénom</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => handleChange(val,'name')}
-                        value={values.name}
-                    />
-                    <Text style={styles.textItem}>email</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => handleChange(val,'email')}
-                        value={values.email}
-                        autoCapitalize={'none'}
-                    />
-                    <Text style={styles.textItem}>Téléphone</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => handleChange(val,'telephone')}
-                        value={values.telephone}
-                    />
-                    <Text style={styles.textItem}>Dépositaire</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => handleChange(val,'custodian_account')}
-                        value={values.custodian_account}
-                    />
-                    <View style={styles.fixToText}>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                            <Text style={styles.buttonLeft}>Annuler</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => {
-                            handleSubmit();
-                            }} disabled={isSubmitting} >
-                            <Text style={styles.buttonRight}>Enregistrer</Text>
-                        </TouchableOpacity>
+                    <View style={{borderWidth : 0, justifyContent : 'center', alignItems: 'center', marginBottom : 20}}>
+
+                            <TouchableOpacity style={{height : 90, width : 90, borderWith : 0, borderColor : 'black', borderRadius : 45, backgroundColor : setColor(''),  marginTop : 20, marginBottom : 10, alignItems : 'center', justifyContent : 'center'}} 
+                                                        onPress={() => {
+                                                        //this._pickImageOrTakePicture();
+                                                        }}
+                                    >
+                                        {/*this.state.profileImage == null 
+                                        ?
+                                            <Text style={setFont('400', 24, 'white', 'Regular')}>{this.user.getFirstName().charAt(0)}.{this.user.getLastName().charAt(0)}.</Text>
+                                            : 
+                                            <Image style={{width: 90, height: 90, borderWidth : 0, borderRadius : 45, borderColor : setColor('')}} source={{uri : this.state.profileImage}} />
+                                        */}
+                                        <Text style={setFont('400', 24, 'white', 'Regular')}>{values.name.charAt(0)}.{values.surname.charAt(0)}.</Text>
+                                        <View style={{position : 'absolute', top : 70, right : 0}}>
+                                            <Feather name={'camera'} size={20} color={setColor('subscribeBlue')}/>
+                                        </View>
+                            </TouchableOpacity>
+
+                            <View>
+                                <Text style={setFont('400', 18, 'black', 'Bold')}>{values.name} {values.surname}</Text>
+                            </View>
+
                     </View>
+                     <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1, borderTopColor: setColor('borderFL'),borderTopWidth: 1}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 18)}>
+                                        Nom
+                                      </Text>
+ 
+                   
+                              </View>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <TextInput
+                                        style={setFont('200', 16, 'black', 'Regular')}
+                                        placeholder={'Nom'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                        autoCompleteType={'name'}
+                                        textContentType={'familyName'}
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        onBlur={async () => {
+                    
+                                        }}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={values.surname}
+                                        onChangeText={(val) => {
+                                            if (val !== values.surname) {
+                                                setIsUpdatable(true);
+                                            }
+                                            handleChange(val,'surname');
+                                        }}
+                                      />
+                            
+                              </View>   
+                    </View>
+                    <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1, borderTopColor: setColor('borderFL')}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 18)}>
+                                        Prénom
+                                      </Text>
+ 
+                   
+                              </View>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <TextInput
+                                        style={setFont('200', 16, 'black', 'Regular')}
+                                        placeholder={'Prénom'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                        autoCompleteType={'name'}
+                                        textContentType={'name'}
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        onBlur={async () => {
+                    
+                                        }}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={values.name}
+                                        onChangeText={(val) => {
+                                            if (val !== values.name) {
+                                                setIsUpdatable(true);
+                                            }
+                                            handleChange(val,'name');
+                                        }}
+                                      />
+                            
+                              </View>   
+                    </View>
+                    <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1, borderTopColor: setColor('borderFL')}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 18)}>
+                                        Email
+                                      </Text>
+ 
+                   
+                              </View>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <TextInput
+                                        style={setFont('200', 16, 'black', 'Regular')}
+                                        placeholder={'Email'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                        autoCompleteType={'email'}
+                                        textContentType={'emailAddress'}
+                                        //keyboardType={''}
+                                        returnKeyType={'done'}
+                                        keyboardType={'email-address'}
+                                        editable={true}
+                                        onBlur={async () => {
+                    
+                                        }}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={values.email}
+                                        onChangeText={(val) => {
+                                            if (val !== values.email) {
+                                                setIsUpdatable(true);
+                                            }
+                                            handleChange(val,'email');
+                                        }}
+                                      />
+                            
+                              </View>   
+                    </View>
+
+                    <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1, borderTopColor: setColor('borderFL')}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 18)}>
+                                      Téléphone
+                                      </Text>
+ 
+                   
+                              </View>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <TextInput
+                                        style={setFont('200', 16, 'black', 'Regular')}
+                                        placeholder={'Téléphone'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                        autoCompleteType={'tel'}
+                                        textContentType={'telephoneNumber'}
+                                        returnKeyType={'done'}
+                                        keyboardType={'phone-pad'}
+                                        editable={true}
+                                        onBlur={async () => {
+                    
+                                        }}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={values.telephone}
+                                        onChangeText={(val) => {
+                                            if (val.length > 5) {
+                                                val = parsePhoneNumberFromString(val,'FR').formatInternational()
+                                            }
+                                            if (val !== values.telephone) {
+                                                setIsUpdatable(true);
+                                            }
+                                            handleChange(val,'telephone');
+                                        }}
+                                      />
+                            
+                              </View>   
+                    </View>
+    
+                    <View style={{flexDirection : 'row', padding : 5, justifyContent : 'space-between' , backgroundColor: 'white', borderBottomColor: setColor('borderFL'),borderBottomWidth: 1, borderTopColor: setColor('borderFL')}}>
+                              <View style={{flex : 0.4, marginLeft : 10, padding : 5}}>
+  
+                                      <Text style={setFont('200', 18)}>
+                                      Dépositaire
+                                      </Text>
+ 
+                   
+                              </View>
+                              <View style={{ flex : 0.6, borderWidth : 0, justifyContent : 'center'}}>
+                                      <TextInput
+                                        style={setFont('200', 16, 'black', 'Regular')}
+                                        placeholder={'Dépositaire'}
+                                        placeholderTextColor={'lightgray'}
+                                        autoCorrect={false}
+                                      
+                                        returnKeyType={'done'}
+                                        editable={true}
+                                        onBlur={async () => {
+                    
+                                        }}
+                                        //onFocus={() =>  this.setState({ nominal : '' })}
+                                        //value={currencyFormatDE(Number(this.state.nominal),0).toString()}
+                                        value={values.custodian_account}
+                                        onChangeText={(val) => {
+                                            if (val !== values.custodian_account) {
+                                                setIsUpdatable(true);
+                                            }
+                                            handleChange(val,'custodian_account');
+                                        }}
+                                      />
+                            
+                              </View>   
+                    </View>
+
+                    <View style={{borderWidth : 0, marginTop : 20, alignItems: 'center', justifyContent : 'center', opacity : isUpdatable ? 1 : 0.2}}>
+                      <TouchableOpacity style ={{height: 70, width: 70, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius: 35, padding : 10, backgroundColor: setColor('subscribeBlue')}}
+                          onPress={() => {
+                            handleSubmit();
+                            
+                          }}  
+                      >
+                          <View style={{marginTop: -5, alignItems: 'center', justifyContent: 'center'}}>
+                              <Image style={{width: 40, height: 40}} source={logo_white} />
+                          </View>
+                          <View style={{ alignItems: 'center', justifyContent: 'center'}}>
+                              <Text style={setFont('400', 10, 'white', 'Regular')}>{String('modifier').toUpperCase()}</Text>
+                          </View>
+                    </TouchableOpacity>
+                  </View>
+     
+   
                 </View>
-            :
-            <View style={styles.container}>
-                <Text style={styles.textItem}>Nom : {item.surname}</Text>
-                <Text style={styles.textItem}>Prénom : {item.name}</Text>
-                <Text style={styles.textItem}>email : {item.email}</Text>
-                <Text style={styles.textItem}>Téléphone : {item.telephone}</Text>
-                <Text style={styles.textItem}>Dépositaire : {item.custodian_account}</Text>
-                <View style={styles.fixToText}>
-                    <TouchableWithoutFeedback onPress={() => Linking.openURL(`tel:${item.telephone}`)}>
-                        <Text style={styles.buttonLeft}>Appeler</Text>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback onPress={() => setIsEditable(true)}>
-                        <Text style={styles.buttonRight}>Modifier</Text>
-                    </TouchableWithoutFeedback>
-                </View>
-            </View>
-            }
+          
         </View>
     </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFF'
-    },
-    title: {
-        textAlign: 'center',
-        marginVertical: 20,
-    },
-    fixToText: {
-        paddingTop: 30,
-        flexDirection: 'row',
-        justifyContent: 'space-around'
-    },
-    textItem: {
-        fontSize: 15,
-        paddingTop: 10,
-        paddingLeft: 15,
-    },
-    buttonLeft: {
-        fontSize: 20,
-        backgroundColor: '#CCC',
-        color: '#FFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20
-    },
+
+
     buttonRight: {
         fontSize: 20,
-        backgroundColor: 'rgb(34,97,165)',
-        color: '#FFF',
+        backgroundColor: setColor('subscribeBlue'),
+        color: 'white',
         paddingVertical: 10,
         paddingHorizontal: 20
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#CCC',
-        padding: 8,
-        margin: 10,
     }
 });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StatusBar, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Dimensions, Switch} from 'react-native'; 
+import { View, ScrollView, StatusBar, Image, FlatList, ActivityIndicator, TouchableOpacity, Text, Dimensions, SafeAreaView} from 'react-native'; 
 
 
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -84,25 +84,40 @@ class FLResultPricer extends React.PureComponent {
     render() {
       //console.log("RENDER TAB RESULTS");
       return (
-
-        <View style={{width: getConstant('width'), height: getConstant('height'), backgroundColor : setColor('background')}}> 
-            <View style={{height: 0+ (isAndroid() ? 45 :40+getConstant('statusBar')) , paddingLeft : 5, paddingRight: 10, backgroundColor: 'white', flexDirection : 'row', borderWidth: 0, backgroundColor: 'white', alignItems: 'center', borderBottomWidth : 1, borderBottomColor : 'lightgray'}}>
+        <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
+          <View style={{width: getConstant('width'), height: getConstant('height'), backgroundColor : setColor('background')}}> 
+            {/* <View style={{height: 0+ (isAndroid() ? 45 :40+getConstant('statusBar')) , paddingLeft : 5, paddingRight: 10, backgroundColor: setColor(''), flexDirection : 'row', borderWidth: 0, alignItems: 'center', height : 45}}>
                   <TouchableOpacity style={{flex : 0.25,flexDirection : 'row',  marginTop : isAndroid() ? 0 : 30, justifyContent: 'flex-start', alignItems: 'center', borderWidth: 0}}
                                     onPress={() => this.props.navigation.goBack()}
                   >
                           <View style={{justifyContent: 'center', alignItems: 'flex-start', borderWidth: 0, paddingLeft : 10}}>
-                              {/* <Ionicons name={'ios-arrow-back'}  size={25} style={{color: 'white'}}/> */}
+          
                               <Ionicons name={'md-arrow-back'}  size={25} style={{color: setColor('')}}/>
                           </View>
-                          {/* <View style={{justifyContent: 'center', alignItems: 'center', paddingLeft : 5, paddingRight : 5, borderWidth: 0}}>
-                              <Text style={setFont('300', 16, setColor(''), 'Regular')}>Retour</Text>
-                          </View> */}
+       
                   </TouchableOpacity>
 
                   <View style={{flex: 0.5, justifyContent: 'center', alignItems: 'center', paddingLeft : 5, paddingRight: 5, marginTop : isAndroid() ? 0 : isIphoneX() ? 40 : 25}}>
                         <Text style={setFont('300', 18, setColor(''), 'Regular')}>{String('résultats').toUpperCase()}</Text>
                   </View>
-            </View>
+            </View> */}
+            <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15, height : 45}}>
+                            <TouchableOpacity style={{ flex : 0.3, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
+                                              onPress={() => this.props.navigation.goBack()}
+                            >
+                                
+                                    <Ionicons name={'ios-arrow-round-back'} size={25} color={'white'}/>
+                
+                            </TouchableOpacity>
+                            <View style={{flex : 0.4, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>
+                              <Text style={setFont('400', 18, 'white', 'Regular')}>
+                                Résultats
+                              </Text>
+                            </View>
+                            <View style={{ flex : 0.3, alignItems : 'flex-end', justifyContent : 'center', borderWidth : 0}}>
+         
+                            </View>
+          </View>
 
            
     
@@ -132,7 +147,7 @@ class FLResultPricer extends React.PureComponent {
             
        
         </View>
-
+        </SafeAreaView>
       );
     }
   }

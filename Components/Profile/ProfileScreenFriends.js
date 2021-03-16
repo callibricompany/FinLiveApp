@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, Button, Text, AsyncStorage, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Image, Alert, Modal, ClippingRectangle, TextInput, KeyboardAvoidingView } from 'react-native';
+import { View, ScrollView, Linking, Text, AsyncStorage, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Image, Alert, Modal, ClippingRectangle, TextInput, KeyboardAvoidingView } from 'react-native';
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -152,25 +152,51 @@ componentWillUnmount() {
     let gradientColorName = "Finlive";
     switch(content.code) {
       case 'USERS_FRIENDS_OF_MINE' :
-        return (
-          <View style={{flexDirection : 'row', justifyContent: "space-between", alignItems: 'center', borderWidth : 0,}}>
-            <View opacity={1} style={{marginTop : 5, marginBottom : 5, marginLeft : 0, padding : 5, paddingLeft : 20, paddingRight : 20,  borderWidth : 1, borderColor : 'white', borderRadius : 20}}>
-                <Text style={setFont('400', 12, 'black', 'Regular')}>
-                {content.title.toUpperCase()}
-                </Text>
-            </View>
-
-
+        if (!this.state.isSearchingFriends) {
+          return (
+            // <View style={{flexDirection : 'row', justifyContent: "space-between", alignItems: 'center', borderWidth : 0,}}>
+            //   <View opacity={1} style={{marginTop : 5, marginBottom : 5, marginLeft : 0, padding : 5, paddingLeft : 20, paddingRight : 20,  borderWidth : 1, borderColor : 'white', borderRadius : 20}}>
+            //       <Text style={setFont('400', 12, 'black', 'Regular')}>
+            //       {content.title.toUpperCase()}
+            //       </Text>
+            //   </View>
+            // </View>
+          <View style={{
+              borderBottomColor: setColor('borderFL'),
+              paddingLeft: 15,
+              borderBottomWidth: 1,
+              //height: 145,
+              marginTop : 0,
+              borderWidth : 0,
+              paddingTop : 15,
+              paddingBottom : 4,
+              flexDirection : 'row'
+          }}>
+              <View style={{padding : 5, backgroundColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 10, borderColor: setColor('subscribeBlue'), justifyContent : 'center', alignItems : 'center'}}>
+              <Text style={setFont('400', 18, 'white', 'Bold')}>{content.title.toUpperCase()}</Text> 
+              </View>
           </View>
-        );   
+          );   
+        }
         break;   
       default :
             return (
-              <View style={{justifyContent: "space-between", alignItems: 'flex-start', marginTop : 5, marginBottom : 5, marginLeft : 0, padding : 5, paddingLeft : 20, paddingRight : 20,  borderWidth : 1, borderColor : 'white', borderRadius : 20}}>
-                    <Text style={setFont('400', 12, 'black', 'Regular')}>
-                      {content.title.toUpperCase()}
-                    </Text>
-              </View>
+              <View style={{
+                borderBottomColor: setColor('borderFL'),
+                paddingLeft: 15,
+                borderBottomWidth: 1,
+                //height: 145,
+                marginTop : 0,
+                borderWidth : 0,
+                paddingTop : 15,
+                paddingBottom : 4,
+                flexDirection : 'row'
+            }}>
+                <View style={{padding : 5, backgroundColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 10, borderColor: setColor('subscribeBlue'), justifyContent : 'center', alignItems : 'center'}}>
+                 <Text style={setFont('400', 18, 'white', 'Bold')}>{content.title.toUpperCase()}</Text> 
+                 </View>
+            </View>
+
             );
     }
   };
@@ -199,8 +225,8 @@ componentWillUnmount() {
 
               {content.code === 'USERS_FRIENDS_OF_MINE' && this.state.isSearchingFriends
               ?
-                  <View style={{flex : 1, marginBottom : 10}}>
-                        <TextInput  style={{borderWidth : 1, height : 30, width : getConstant('width')*0.95-20,marginRight : 10,  marginLeft : 10, borderColor : 'gray', borderRadius : 10, paddingLeft : 10}} 
+                  <View style={{flex : 1, marginBottom : 10, backgroundColor : 'white', marginTop : 20}}>
+                        <TextInput  style={{borderWidth : 1, height : 40, width : getConstant('width')*0.95-20,marginRight : 10,  marginLeft : 10, borderColor : 'gray', borderRadius : 10, paddingLeft : 10}} 
                                     onChangeText={text => this.setState({ friendName : text })}
                                     value={this.state.friendName}
                                     placeholder={'Recherchez des connaissances ...'}
@@ -217,35 +243,51 @@ componentWillUnmount() {
                 usersList.map((u, index) => {
                     let isFriend = this.user.isFriend(u.getId());
                     return (
-                      <View style={{flexDirection : 'row', marginTop : index === 0 ? 10 : 2, marginBottom : 2, marginLeft : 10, marginRight : 10, borderWidth : 0, borderRadius : 10, borderColor : setColor('background'), backgroundColor : setColor('background'), padding : 1, justifyContent : 'space-between'}} key={index}>
-                          <View style={{height : 40, width : 40, borderWith : 0, borderColor : 'white', borderRadius : 20, backgroundColor : setColor(''), marginLeft : 10,  marginTop :5, marginBottom : 5, alignItems : 'center', justifyContent : 'center'}}  >
+                      <View 
+                            //style={{flexDirection : 'row', marginTop : index === 0 ? 10 : 2, marginBottom : 2, marginLeft : 10, marginRight : 10, borderWidth : 0, borderRadius : 10, borderColor : setColor('background'), backgroundColor : setColor('background'), padding : 1, justifyContent : 'space-between'}} 
+                            style={{
+                                flexDirection : 'row', 
+                                alignItems: 'center',
+                                backgroundColor: 'white',
+                                borderBottomColor: setColor('borderFL'),
+                                borderBottomWidth: 1,
+                                //justifyContent: 'center',
+                                height: 80, //50
+                            }}
+                            key={index}
+                      >
+                          <View style={{height : 50, width : 50, borderWith : 0, borderColor : 'white', borderRadius : 25, backgroundColor : setColor(''), marginLeft : 15,  marginTop :5, marginBottom : 5, alignItems : 'center', justifyContent : 'center'}}  >
                           {u.getAvatar() == null 
                             ?
                               <Text style={setFont('400', 16, 'white', 'Regular')}>{u.getFirstName().charAt(0)}.{u.getLastName().charAt(0)}.</Text>
                               : 
-                              <Image style={{width: 40, height: 40, borderWidth : 0, borderRadius : 20, borderColor : 'white'}} source={{uri : u.getAvatar() }} />
+                              <Image style={{width: 50, height: 50, borderWidth : 0, borderRadius : 25, borderColor : 'white'}} source={{uri : u.getAvatar() }} />
                           }
                           </View>
-                          <View style={{flex : 1, borderWidth : 0, marginLeft : 10, marginTop : 3, marginRight : 5}}>
+                          <View style={{flex : 1, borderWidth : 0, marginLeft : 20, marginTop : 3, marginRight : 5}}>
                             <View>
-                              <Text style={setFont('300', 14, 'black', 'Regular')}>
+                              <Text style={setFont('300', 18, 'black', 'Regular')}>
                                 {u.getName()} {content.code !== 'USERS_OF_MY_ORG' && this.user.getOrganization() !== u.getOrganization() ? <Text style={setFont('200', 12)}> ({u.getCompany()})</Text>  : null}
                               </Text>
                             </View>
                             <View>
-                              <Text style={setFont('200', 12, 'gray')}>
+                              <Text style={setFont('200', 14, 'gray')}>
                                 {u.getEmail()}
                               </Text>
                             </View>
-                            <View>
-                              <Text style={setFont('200', 10, 'gray')}>
+                            <TouchableOpacity    onPress={() => {
+                                        if (u.getPhone != null && u.getPhone() !== '') {
+                                          Linking.openURL(`tel:${parsePhoneNumberFromString(u.getPhone(),'FR').formatInternational() }`);
+                                        }
+                                      }}>
+                              <Text style={setFont('200', 12, 'gray')}>
                                 {u.getPhone != null && u.getPhone() !== '' ? parsePhoneNumberFromString(u.getPhone(),'FR').formatInternational() : null}
                               </Text>
-                            </View>
+                            </TouchableOpacity>
                           </View>
                           { ((content.code === 'USERS_OF_MY_ORG'  && !isFriend) || (content.code === 'USERS_FRIENDS_OF_MINE'))
                             ?
-                                <TouchableOpacity style={{padding : 2,  justifyContent : 'center', alignItems : 'flex-end', borderWidth : 0}}
+                                <TouchableOpacity style={{flex : 0.2, padding : 2,  justifyContent : 'center', alignItems : 'flex-start', borderWidth : 0}}
                                                   onPress={() => {
                                                       isFriend ? this.user.removeFriend(u.getId()) : this.user.addFriend(u.getId());
                                                       updateUser(this.props.firebase, this.user);
@@ -276,7 +318,7 @@ componentWillUnmount() {
     return (
       <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
 
-          <TouchableOpacity style={{zIndex : 10, position :'absolute', top : getConstant('height') -sizeByDevice(220, 160, 170), right: 20,  justifyContent : 'center', alignItems : 'center', borderWidth : 1, borderColor: setColor(''), borderRadius : 25, width : 50, height : 50, backgroundColor: setColor('')}}
+          {/* <TouchableOpacity style={{zIndex : 10, position :'absolute', top : getConstant('height') -sizeByDevice(220, 160, 170), right: 20,  justifyContent : 'center', alignItems : 'center', borderWidth : 1, borderColor: setColor(''), borderRadius : 25, width : 50, height : 50, backgroundColor: setColor('')}}
                                   onPress={() => {
                                     this.setState({ isSearchingFriends : !this.state.isSearchingFriends }, () => {
                                       this.setFriendSections();
@@ -285,30 +327,46 @@ componentWillUnmount() {
                                   }}
                 >
                     <FontAwesome5 name={this.state.isSearchingFriends ? 'user-minus' : 'user-plus'} color={'white'} size={20} style={{paddingLeft : 5}}/>
-          </TouchableOpacity> 
+          </TouchableOpacity>  */}
 
       <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
-          <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15}}>
-                            <TouchableOpacity style={{ flex : 0.3, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
-                                              onPress={() => this.props.navigation.goBack()}
+          <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15, height : 45}}>
+                            <TouchableOpacity style={{ flex : 0.2, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
+                                              onPress={() => {
+                                                  if (this.state.isSearchingFriends) {
+                                                    this.setState({isSearchingFriends : false });
+                                                  } else {
+                                                    this.props.navigation.goBack();
+                                                  }
+                                                }}
                             >
                                 
                                     <Ionicons name={'ios-arrow-round-back'} size={25} color={'white'}/>
                 
                             </TouchableOpacity>
-                            <View style={{flex : 0.4, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>
-                              <Text style={setFont('400', 22, 'white', 'Regular')}>
-                                {this.title}
+                            <View style={{flex : 0.6, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>
+                              <Text style={setFont('400', 18, 'white', 'Regular')}>
+                                {this.state.isSearchingFriends 
+                                  ? "Recherche d'amis"
+                                  :  this.title
+                                }
                               </Text>
                             </View>
-                            <View style={{ flex : 0.3, alignItems : 'flex-end', justifyContent : 'center', borderWidth : 0}}>
-         
-                            </View>
+                            <TouchableOpacity style={{ flex : 0.2, alignItems : 'flex-end', justifyContent : 'center', borderWidth : 0}}
+                                                onPress={() => {
+                                                  this.setState({ isSearchingFriends : !this.state.isSearchingFriends }, () => {
+                                                    this.setFriendSections();
+                                                    this.setState({ toto : !this.state.toto });
+                                                  });
+                                             }}
+                              >
+                                    <MaterialCommunityIcons name='plus' size={25}  style={{color : 'white'}}/>
+                              </TouchableOpacity>
           </View>
 
 
          <ScrollView style={{flex : 1}}>
-            <View style={{marginBottom : 20,  marginTop : 15, marginLeft : getConstant('width')*0.025 }}>
+  
                     <Accordion
                         sections={this.SECTIONS}
                         underlayColor={'transparent'}
@@ -321,22 +379,10 @@ componentWillUnmount() {
                         onChange={(activeSections) => {
                             this.setState( { activeSections : activeSections })  
                         }}
-                        sectionContainerStyle={{
-                                                width : 0.95*getConstant('width'),
-                                                backgroundColor: 'white', 
-                                                //justifyContent: 'center', 
-                                                //alignItems: 'center', 
-                                                marginTop : 10,
-                                                borderWidth : 1,
-                                                borderColor : 'white', 
-                                                borderRadius : 10, 
-                                                shadowColor: 'rgb(75, 89, 101)', 
-                                                shadowOffset: { width: 0, height: 2 },
-                                                shadowOpacity: 0.3
-                                              }}
+    
                         touchableComponent={(props) => <TouchableOpacity {...props} />}
                     />
-                </View>
+
                 <View style={{height : 200}} />
           </ScrollView>
 

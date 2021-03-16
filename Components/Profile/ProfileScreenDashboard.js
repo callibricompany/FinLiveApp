@@ -1,7 +1,7 @@
 import React, { useState, useRef} from 'react';
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image, Alert } from 'react-native';
 import { globalStyle, setFont, setColor} from '../../Styles/globalStyle';
-import { getConstant } from '../../Utils/';
+import { getConstant, isAndroid } from '../../Utils/';
 
 import { updateUser } from '../../API/APIAWS';
 
@@ -19,7 +19,7 @@ export default function ProfileScreenDashboard ({navigation} ) {
         return (
             <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
             <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
-                <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15}}>
+                <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''), padding : 5, paddingRight : 15, paddingLeft : 15, height : 45}}>
                                   <TouchableOpacity style={{ flex : 0.2, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
                                                     onPress={() => navigation.goBack()}
                                   >
@@ -28,7 +28,7 @@ export default function ProfileScreenDashboard ({navigation} ) {
                       
                                   </TouchableOpacity>
                                   <View style={{flex : 0.6, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>
-                                    <Text style={setFont('400', 22, 'white', 'Regular')}>
+                                    <Text style={setFont('400', 18, 'white', 'Regular')}>
                                      Tableau de bord
                                     </Text>
                                   </View>
@@ -39,7 +39,18 @@ export default function ProfileScreenDashboard ({navigation} ) {
       
                 <ScrollView style={{flex : 1}}>              
                       <View style={{flexDirection : 'row', marginTop : 30, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
-                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}>
+                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}>
                                 <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5,}}>
                                     <Text style={setFont('200', 18, 'gray')}>
                                       Placements Privés
@@ -55,7 +66,18 @@ export default function ProfileScreenDashboard ({navigation} ) {
                                 </View>
 
                             </View>
-                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}>
+                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}>
                                 <TouchableOpacity style={{padding : 5}}
                         
                                 >
@@ -72,7 +94,18 @@ export default function ProfileScreenDashboard ({navigation} ) {
                                     </Text>
                                 </View>
                             </View>
-                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}>
+                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}>
                                 <View style={{padding : 5}}>
                                     <Text style={setFont('200', 18, 'gray')}>
                                       Pricings
@@ -91,7 +124,18 @@ export default function ProfileScreenDashboard ({navigation} ) {
                       </View>
 
                       <View style={{flexDirection : 'row', marginTop : 10, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
-                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}>
+                            <View style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}>
                                 <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5,}}>
                                     <Text style={setFont('200', 18, 'gray')}>
                                       Emetteurs Autorisés

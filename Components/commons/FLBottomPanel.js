@@ -17,6 +17,7 @@ import logo from '../../assets/LogoWithoutText.png';
 import logo_gray from '../../assets/LogoWithoutTex_gray.png';
 
 
+
 const HEADER_HEIGHT = 20;
 //export const SNAP_POINTS_FROM_TOP = [30, getConstant('height') * 0.3, sizeByDevice(getConstant('height') -260 , getConstant('height') - 200 , getConstant('height') - 215) ];
 export const SNAP_POINTS_FROM_TOP = [isIphoneX() ? 80 : 50, getConstant('height') * 0.4, getConstant('height') - 10 ];
@@ -80,14 +81,13 @@ class FLBottomPanel extends React.Component {
       this.setState({ lastSnap : props.position });
     }
     _onHeaderHandlerStateChange = ({ nativeEvent }) => {
-
+ 
       if (nativeEvent.oldState === State.BEGAN) {
         this._lastScrollY.setValue(0);
       }
       this._onHandlerStateChange({ nativeEvent });
     };
     _onHandlerStateChange = ({ nativeEvent }) => {
-      
       if (nativeEvent.oldState === State.ACTIVE) {
         let { velocityY, translationY } = nativeEvent;
         
@@ -107,7 +107,6 @@ class FLBottomPanel extends React.Component {
         }
         //console.log("DESTINATION SNAP : " + destSnapPoint);
         this.setState({ lastSnap: destSnapPoint }, () => this.props.snapChange(destSnapPoint));
-
         this._translateYOffset.extractOffset();
         this._translateYOffset.setValue(translationY);
         this._translateYOffset.flattenOffset();
@@ -155,6 +154,7 @@ class FLBottomPanel extends React.Component {
               ref={this.drawer}
               simultaneousHandlers={[this.scroll, this.masterdrawer]}
               shouldCancelWhenOutside={false}
+              minDeltaY={100}
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHandlerStateChange}>
               <Animated.View style={[styles.container, {backgroundColor : this.props.isActivated ? 'white' : 'white'}]} clickable={this.props.isActivated}>

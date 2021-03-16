@@ -18,6 +18,7 @@ import { getConstant } from '../../Utils/';
 import { fetchDataClient, manageClientData } from '../../API/APIAWS';
 
 import FLHeaderSearch from '../commons/FLHeaderSearch';
+import { FontAwesome } from '@expo/vector-icons';
 
 function fieldSorter(fields) {
 
@@ -162,16 +163,19 @@ export default function ProfileScreenClientsList({ navigation }) {
             return (
                 <View style={{
                     flex: 1,
-                    justifyContent: 'space-between',
-                    borderBottomColor: '#D3D3D3',
+                    justifyContent: 'flex-end',
+                    borderBottomColor: setColor('borderFL'),
                     paddingLeft: 15,
                     borderBottomWidth: 1,
-                    justifyContent: 'center',
-                    height: 30,
+                    height: 45,
                     marginTop : 0,
+                    borderWidth : 0,
+                    paddingTop : 15,
+                    paddingBottom : 4
                 }}>
-                     <Text style={styles.textItem2}>{data.item.fullName}</Text> 
-             
+                    <View style={{height : 25, width : 25, backgroundColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 13, borderColor: setColor('subscribeBlue'), justifyContent : 'center', alignItems : 'center'}}>
+                     <Text style={setFont('400', 18, 'white', 'Bold')}>{data.item.fullName}</Text> 
+                     </View>
                 </View>);
         } else {
             return (
@@ -179,18 +183,17 @@ export default function ProfileScreenClientsList({ navigation }) {
                     //onPress={() => navigation.navigate('ClientDetail', clientData)}
                     style={{
                         flexDirection : 'row', 
-                        alignItems: 'center',
-                        paddingLeft: 15,
-                        backgroundColor: '#FFFFFF',
-                        borderBottomColor: '#D3D3D3',
+                        //alignItems: 'center',
+                        backgroundColor: 'white',
+                        borderBottomColor: setColor('borderFL'),
                         borderBottomWidth: 1,
-                        justifyContent: 'center',
-                        height: 50, //50
+                        //justifyContent: 'center',
+                        height: 60, //50
                     }}
-                    underlayColor={'#FFF'}
+                    //underlayColor={'red'}
                 >
-                    <View style={{flex : 0.8, flexDirection : 'column', justifyContent : 'flex-start', alignItems : 'flex-start',}}>
-                        <TouchableOpacity style={{flex : 1, justifyContent : 'center', alignItems : 'flex-start'}}
+  
+                        <TouchableOpacity style={{flex : 0.8, justifyContent : 'center', alignItems : 'flex-start', paddingLeft : 20}}
                                             onPress={() => {
                                             closeRow(rowMap, data.item.key);
                                             navigation.navigate('ProfileClientDetail', { updateClient , isModify: true, data: data.item, firebase, isEditable : false });
@@ -198,23 +201,30 @@ export default function ProfileScreenClientsList({ navigation }) {
                                             // this.props.navigation.goBack();
                                         }}                       
                         >
-                            <Text style={setFont('300', 14, 'black', 'Regular')}>{data.item.fullName}</Text>
+                            <Text style={setFont('300', 18, 'black', 'Regular')}>{data.item.fullName}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{flex : 1, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'flex-start', }}
+                        {/* <TouchableOpacity style={{flex : 1, borderWidth : 0, justifyContent : 'flex-start', alignItems : 'flex-start', }}
                         
                                         onPress={() => {
                                             Linking.openURL(`mailto:${data.item.email}`);
                                         }}                
                         >
                             <Text style={setFont('300', 12, 'black', 'Light')}>{data.item.email}</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <TouchableOpacity style={{ justifyContent : 'center', alignItems : 'center', borderRadius : 13,  borderWidth : 0, borderColor : 'green', padding : 11}}
+                        </TouchableOpacity> */}
+            
+                    <TouchableOpacity style={{ flex : 0.2, justifyContent : 'center', alignItems : 'center', borderRadius : 13,  borderWidth : 0, borderColor : 'green', padding : 11}}
                                       onPress={() => {
                                         Linking.openURL(`tel:${data.item.telephone}`);
                                       }}
                     >
                         <Ionicons name={'md-call'} size={20} color={'green'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ justifyContent : 'center', alignItems : 'center', marginLeft : 0, marginRight : 15}}
+                                      onPress={() => {
+                                        //Linking.openURL(`tel:${data.item.telephone}`);
+                                      }}
+                    >
+                        <FontAwesome name={'arrows-h'} size={20} color={'lightgray'} />
                     </TouchableOpacity>
                 </View>)
         }
@@ -226,7 +236,7 @@ export default function ProfileScreenClientsList({ navigation }) {
         //         <View style={{
         //             flex: 1,
         //             justifyContent: 'space-between',
-        //             borderBottomColor: '#D3D3D3',
+        //             borderBottomColor: setColor('borderFL'),
         //             paddingLeft: 15,
         //             borderBottomWidth: 1,
         //             justifyContent: 'center',
@@ -271,7 +281,7 @@ export default function ProfileScreenClientsList({ navigation }) {
 
         <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
         <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
-            <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''),  paddingRight : 15, paddingLeft : 15}}>
+            <View style={{flexDirection : 'row', borderWidth : 0, alignItems: 'center', justifyContent : 'space-between', backgroundColor : setColor(''),  paddingRight : 15, paddingLeft : 15, height : 45}}>
                               <TouchableOpacity style={{ flex : 0.2, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}
                                                 onPress={() => {
                                                     navigation.goBack();
@@ -282,7 +292,7 @@ export default function ProfileScreenClientsList({ navigation }) {
                   
                               </TouchableOpacity>
                               <View style={{flex : 0.6, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>
-                                <Text style={setFont('400', 22, 'white', 'Regular')}>
+                                <Text style={setFont('400', 18, 'white', 'Regular')}>
                                  Mes clients
                                 </Text>
                               </View>
@@ -322,18 +332,14 @@ export default function ProfileScreenClientsList({ navigation }) {
 const styles = StyleSheet.create({
 
     backTextWhite: {
-        color: '#FFFFFF',
-    },
-    textItem2: {
-        fontSize: 20,
-        fontWeight: "bold",
+        color: 'white',
     },
     textItem: {
         fontSize: 20,
     },
     rowBack: {
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: 'white',
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',

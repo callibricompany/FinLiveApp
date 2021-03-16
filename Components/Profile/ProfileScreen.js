@@ -30,6 +30,7 @@ import FLModalDropdown from '../commons/FLModalDropdown';
 
 import { CUser } from '../../Classes/CUser';
 import { Row } from 'native-base';
+import { set } from 'react-native-reanimated';
 
 class ProfileScreen extends React.Component {
 
@@ -131,19 +132,19 @@ class ProfileScreen extends React.Component {
       <SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
       <View style={{height: getConstant('height')  , backgroundColor : setColor('background'), }}> 
 
-          <View style={{flexDirection : 'row', borderWidth : 0, alignItems : 'center', justifyContent: 'space-around', backgroundColor : setColor(''), padding : 5, }}>
+          <View style={{flexDirection : 'row', borderWidth : 0, alignItems : 'center', justifyContent: 'space-around', backgroundColor : setColor(''), height : 45 }}>
                             <View style={{ flex: 0.2}}/>
                             <TouchableOpacity style={{flex : 0.6, alignItems : 'center', justifyContent: 'center'}}
                                               onPress={() => {
                                                 this.props.navigation.navigate('ProfileScreenDetail');
                                               }}
                             >
-                              <Text style={setFont('400', 28, 'white', 'Regular')}>
+                              <Text style={setFont('400', 18, 'white', 'Regular')}>
                                 Profil
                               </Text>
                             </TouchableOpacity>
                             <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'flex-end', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
-                                    <FLModalDropdown
+                                    {/* <FLModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
                                     dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
@@ -202,16 +203,16 @@ class ProfileScreen extends React.Component {
                                     ref={component => this._dropdownMenuOption = component}
                                     disabled={false}
                                 >
-                                    <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
+                                    <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'flex-end'}}>
                                       <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
                                     </View>
-                                </FLModalDropdown>
+                                </FLModalDropdown> */}
                    
                   </View>
           </View>
 
 
-          <TouchableOpacity style={{flexDirection : 'row',  alignItems : 'center', justifyContent : 'space-between'}}
+          <TouchableOpacity style={{flexDirection : 'row',  alignItems : 'center', justifyContent : 'space-between', marginTop : 20}}
                             onPress={() => {
                               this.props.navigation.navigate('ProfileScreenDetail');
                             }}
@@ -227,9 +228,9 @@ class ProfileScreen extends React.Component {
 
                     </View>
               </View>
-              <View style={{flex : 0.7, borderWidth : 0, marginRight : 15, alignContent : 'flex-start', justifyContent : 'flex-start' }}>
-                  <View style={{borderWidth : 0, marginTop : 5, alignItems : 'flex-start', justifyContent : 'flex-start'}}>
-                        <Text style={setFont('500', 22, 'black', 'Regular')}>
+              <View style={{flex : 0.5, borderWidth : 0, marginRight : 15, alignContent : 'center', justifyContent : 'center' }}>
+
+                        <Text style={setFont('500', 22, 'black', 'Bold')}>
                           {this.user.getName()}
                         </Text>
                         {
@@ -240,27 +241,36 @@ class ProfileScreen extends React.Component {
                               </Text>
                           : null
                         }
-                  </View>
-                  <View style={{flex : 1, flexDirection : 'row', borderWidth : 0}} >
-                          <View style={{flex : 0.7, alignItems : 'flex-start', justifyContent : 'flex-start'}}>
                                 <Text style={setFont('500', 18, 'black', 'Regular')}>
                                   {this.user.getCompany()}
                               </Text>
-                          </View>
-                          <View style={{flex : 0.3, borderWidth : 0, marginTop : -20, justifyContent : 'center'}}>
-                             <Image style={{ borderWidth : 0, height : 35}} source={{uri : this.props.userOrg.logoUrl}} resizeMode={'contain'} />
-                          </View>
-                  </View>
+
                   
+              </View>
+              <View style={{flex : 0.2, borderWidth : 0, marginRight : 15, alignContent : 'flex-start', justifyContent : 'center' }}>
+                  <View style={{flex : 0.3, borderWidth : 0, justifyContent : 'center'}}>
+                    <Image style={{ borderWidth : 0, height : 35}} source={{uri : this.props.userOrg.logoUrl}} resizeMode={'contain'} />
+                  </View>
               </View>
 
 
           </TouchableOpacity>
   
           <ScrollView style={{flex : 1}}>
- 
+
                 <View style={{flexDirection : 'row', marginTop : 30, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
-                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10}}
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10,
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}
                                         onPress={() => {
                                           this.props.navigation.navigate('ProfileScreenDashboard');
                                         }}
@@ -270,12 +280,23 @@ class ProfileScreen extends React.Component {
                                 Tableau de bord
                               </Text>
                           </View>
-                          <View style={{ flex : 1, borderWidth :0, justifyContent : 'flex-start', alignItems : 'center'}}>
+                          <View style={{ flex : 1, borderWidth :0, justifyContent : 'flex-end', alignItems : 'flex-end', paddingRight : 15}}>
                               <FontAwesome name={'dashboard'} size={60} color={setColor('lightBlue')} />
                           </View>
 
                       </TouchableOpacity>
-                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}
                                         onPress={() => this.props.navigation.navigate('ProfileScreenIssuer', {
                                           firebase : this.props.firebase,
                                           user : this.user,
@@ -284,18 +305,29 @@ class ProfileScreen extends React.Component {
                       >
                           <View style={{padding : 5}}>
                               <Text style={setFont('200', 18, 'gray')}>
-                               Emetteurs
+                               Emetteurs autorisés
                               </Text>
                           </View>
                  
-                          <View style={{paddingLeft : 5, paddingRight : 5, paddingBottom : 5, borderWidth :0}}>
-                              <Text style={setFont('200', 22, 'black', 'Regular')}>
+                          <View style={{paddingLeft : 5, paddingRight : 20, paddingBottom : 5, alignItems : 'flex-end'}}>
+                              <Text style={setFont('200', 28, setColor(''), 'Regular')}>
                                 {this.props.issuers.length - this.user.getIssuersRejectedCount()}
                               </Text>
   
                           </View>
                       </TouchableOpacity>
-                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between'}}
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}
                                                  onPress={() => {
                                                   this.props.navigation.navigate('ProfileScreenClientsList', {
                                                     firebase : this.props.firebase,
@@ -307,8 +339,8 @@ class ProfileScreen extends React.Component {
                                 Clients
                               </Text>
                           </View>
-                          <View style={{padding : 5, borderWidth :0}}>
-                              <Text style={setFont('200', 22, 'black', 'Regular')}>
+                          <View style={{paddingLeft : 5, paddingRight : 20, paddingBottom : 5, alignItems : 'flex-end'}}>
+                              <Text style={setFont('200', 28, setColor(''), 'Regular')}>
                                 {this.props.clientCount}
                               </Text>
                           </View>
@@ -317,39 +349,50 @@ class ProfileScreen extends React.Component {
                 </View>
 
                 <View style={{flexDirection : 'row', marginTop : 10, marginLeft : getConstant('width')*0.025, marginRight : getConstant('width')*0.025, height : getConstant('width')*0.95/3 -10}}>
-                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between'}}
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}
                                                               onPress={() => {
                                                                 //this.props.navigation.navigate('ProfileScreenDetail',{option :  'FRIEND'});
                                                                 this.props.navigation.navigate('ProfileScreenFriends');
                                                               }}
                       >
                          <View style={{padding : 5,}}>
-                              {/* <Text style={setFont('200', 18, 'gray')}>
-                                Mes contacts
-                              </Text> */}
-                              <FontAwesome5 name={'users'} size={35} color={'gray'} />
+                            <Text style={setFont('200', 18, 'gray')}>
+                                Contacts
+                              </Text>
+                              {/* <FontAwesome5 name={'users'} size={35} color={'gray'} /> */}
                           </View>
                           <View style={{padding : 5, borderWidth :0}}>
                               <View style={{flexDirection : 'row', justifyContent : 'space-between'}}>
                                   <View style={{}}>
-                                      <Text style={setFont('200', 14, setColor(''), 'Regular')}>
+                                      <Text style={setFont('200', 16, setColor(''), 'Regular')}>
                                         {this.props.userOrg.name}
                                       </Text>
                                   </View>
                                   <View style={{}}>
-                                      <Text style={setFont('200', 14, setColor(''), 'Regular')}>
+                                      <Text style={setFont('200', 20, setColor(''), 'Regular')}>
                                         {this.props.users.getUsersFromMyOrg().length}
                                       </Text>
                                   </View>                                
                               </View>
                               <View style={{flexDirection : 'row', justifyContent : 'space-between'}}>
                                   <View style={{}}>
-                                      <Text style={setFont('200', 12, 'gray', 'Regular')}>
+                                      <Text style={setFont('200', 16, 'gray', 'Regular')}>
                                         Amis
                                       </Text>
                                   </View>
                                   <View style={{}}>
-                                      <Text style={setFont('200', 12, 'gray', 'Regular')}>
+                                      <Text style={setFont('200', 20, 'gray', 'Regular')}>
                                           {this.props.users.getUsersFriends(this.user).length}
                                       </Text>
                                   </View>                                
@@ -357,7 +400,58 @@ class ProfileScreen extends React.Component {
                           </View>
 
                       </TouchableOpacity>
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}
+                                        onPress={() => {
+                                          this.props.navigation.navigate('ProfileScreenDetail');
+                                        }}
+                      >
+                          <View style={{paddingLeft : 5, paddingRight : 5, paddingTop : 5, borderWidth : 0}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                                Editer profil
+                              </Text>
+                          </View>
+                          <View style={{ flex : 1, borderWidth :0, justifyContent : 'flex-end', alignItems : 'flex-end', paddingRight : 15}}>
+                              <FontAwesome name={'user'} size={60} color={setColor('lightBlue')} />
+                          </View>
 
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{borderWidth : 1, borderColor : 'white', borderRadius : 10, backgroundColor : 'white', width : getConstant('width')*0.95/3 -10, marginLeft : 10, justifyContent : 'space-between',
+                                              marginLeft : 5,  
+                                              //marginRight :0, 
+                                              marginBottom: 5, 
+                                              //backgroundColor:  this.request.isActivated('isMemory') ? 'white' : setColor('') ,
+                                              borderRadius : 10,
+                                              shadowColor: setColor('shadow'),
+                                              shadowOffset: { width: 0, height: 2 },
+                                              shadowOpacity: 0.3,
+                                              borderWidth : 1,
+                                              borderColor : isAndroid() ? 'lightgray' :  'white',        
+                                        }}
+                                                 onPress={() => {
+                                                  this._signOutAlert();
+                                                }}
+                      >
+                          <View style={{padding : 5}}>
+                              <Text style={setFont('200', 18, 'gray')}>
+                              Déconnexion
+                              </Text>
+                          </View>
+                          <View style={{ flex : 1, borderWidth :0, justifyContent : 'flex-end', alignItems : 'flex-end', paddingRight : 5}}>
+                              <MaterialCommunityIcons name={'logout'} size={60} color={setColor('lightBlue')} />
+                          </View>
+
+                      </TouchableOpacity>
                
                 </View>      
           </ScrollView>

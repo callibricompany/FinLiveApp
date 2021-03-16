@@ -65,6 +65,7 @@ const withAuthentication = Component => {
 
         //users
         users : [],
+    
 
 
         //ape publique issu de srp
@@ -116,6 +117,7 @@ const withAuthentication = Component => {
                   authUser.organization +
                   ")"
               );
+
              
               this.setState({ authUser });
 
@@ -146,6 +148,9 @@ const withAuthentication = Component => {
 
 
     UNSAFE_componentWillReceiveProps(props) {
+      if (!isEqual(props.authUser, this.props.authUser)) {
+        console.log("USERSSSSSSSSSS");
+      }
       
       if (props.notificationList.length !== this.state.allNotificationsCount) {
          this.setState({ allNotificationsCount : props.notificationList.length });
@@ -397,6 +402,11 @@ const withAuthentication = Component => {
                 //console.log(userDatas.userTickets.slice(0,1));
                 //console.log("Passage de withAuth");
                 //enregistrement de son user dans la Classes
+                // console.log('------------------DEBUT---------------');
+                // console.log(this.state.authUser);
+                // console.log('--------------------------------------');
+                // console.log(userDatas.userInfo);
+                // console.log('-----------------FIN------------------');
                 this.setState({user : new CUser(userDatas.userInfo)}, () => CUsers.ME = this.state.user);
                
                 //passage du workflow au ticket

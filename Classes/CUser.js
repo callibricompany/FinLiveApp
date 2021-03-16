@@ -20,8 +20,8 @@ export class CUser {
     constructor(user) {
 
         //object !== 'undefined' ? this._constructorProduct(object,  template) : null;
-
         this.user = user;
+ 
     }
 
     getId() {
@@ -48,15 +48,21 @@ export class CUser {
    getCompany() {
      return this.user.hasOwnProperty('company') ? this.user['company'] : "";
    }
+   setCompany(company) {
+    this.user['company'] = company;
+   }
    getPhone() {
     return this.user.hasOwnProperty('phone') ? this.user['phone'] : "";
   }
-   getOrganization() {
-     let org = 'FL';
-     if (this.user.hasOwnProperty('organization') && this.user['organization'] !== '' ) {
-       org = this.user['organization'];
-     }
-    return  org;
+  setPhone(phone) {
+    this.user['phone'] = phone
+  }
+  getOrganization() {
+    let org = 'FL';
+    if (this.user.hasOwnProperty('organization') && this.user['organization'] !== '' ) {
+      org = this.user['organization'];
+    }
+  return  org;
   }
 
   getCodeTS() {
@@ -66,14 +72,21 @@ export class CUser {
   getFirstName() {
     return this.user.hasOwnProperty('firstName') ? this.user['firstName'] : "";
   }
-
+  setFirstName(name) {
+    this.user['firstName'] = name
+  }
   getLastName() {
     return this.user.hasOwnProperty('lastName') ? this.user['lastName'] : "";
+  }
+  setLastName(name) {
+    this.user['lastName'] = name
   }
   getName() {
     return this.getFirstName() + ' ' + this.getLastName();
   }
+
   getEmail() {
+    //console.log(this.user);
     return this.user.hasOwnProperty('email') ? this.user['email'] : "";
   }
   
@@ -122,7 +135,7 @@ export class CUser {
   }
 
   removeIssuerAsRejected(issuer) {
-    console.log(this.user);
+    //console.log(this.user);
     if (this.user.hasOwnProperty('params')) {
       if (this.user['params'].hasOwnProperty('issuersReject')) {
         let index = this.user['params']['issuersReject'].indexOf(issuer);

@@ -35,6 +35,7 @@ export function setColor(color) {
     case 'granny' : return '#749B14';
     case 'subscribeticket' : return '#87B916';
     case 'background' : return 'whitesmoke';//'#edeef0';
+    case 'borderFL' : return '#D3D3D3';
     case 'shadow' : return "rgb(75, 89, 101)";
     case 'red' : return "#e53935";
     case 'FLGreen' : return 'forestgreen';

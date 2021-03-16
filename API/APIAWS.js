@@ -53,7 +53,8 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
 
             if (user.hasOwnProperty('user')) {
                     //console.log(user.user);
-
+                    let email = user.user['email'];
+                    let id = user.user['id'];
                     delete user.user['email'];
                     delete user.user['id'];
                     //console.log(user.user);
@@ -75,10 +76,14 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
                         .then((response) => {
                           console.log("Succes update user : ");
                           console.log(response.data);
+                          user.user['email'] = email;
+                          user.user['id'] = id;
                           resolve(response)
                           //res.render('pages/register',{email: email, isConnected: isConnected});
                         })
                         .catch(function (error) {
+                          user.user['email'] = email;
+                          user.user['id'] = id;
                           console.log("Erreur update user : " + error);
                           reject(error)
                         });

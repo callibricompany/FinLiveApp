@@ -139,16 +139,25 @@ class FollowingScreen extends React.Component {
     let valo = 0.94+ Math.random()/10;
     let alea = Math.random();
     return (
-      
-      <View style={{width : getConstant('width'), flexDirection: 'column', justifyContent: 'center', marginTop : 10, backgroundColor: 'white' }}>
+
+      <View style={{width : getConstant('width')*0.95, flexDirection: 'column', justifyContent: 'space-around', marginTop : 10, backgroundColor: 'white',
+                            shadowColor: 'rgb(75, 89, 101)',
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.9,
+                            borderWidth :  isAndroid() ? 1 : 1,
+                            borderColor : isAndroid ? 'lightgray' : 'white',
+                            //borderTopLeftRadius: 15,
+                            borderRadius: 10,
+                            height : 200
+      }}>
         <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems : 'center', marginTop : 5}} >
               <View style={{flex : 0.8, paddingLeft : 20}}>
-                  <Text style={setFont('400', 16,  setColor(''), 'Bold')}>
+                  <Text style={setFont('400', 18,  'black', 'Bold')}>
                      {item.getProductName()} {item.getFullUnderlyingName(this.props.categories).toUpperCase()} {item.getMaturityName()}
                   </Text>
               </View>
               <View style={{flex : 0.2, justifyContent : 'flex-start', alignItems: 'flex-start',   paddingRight : 20}}>
-                  <Text style={setFont('400', 16, valo >= 1 ? setColor('granny') : setColor('red'), 'Regular')}>
+                  <Text style={setFont('400', 16, valo >= 1 ? setColor('granny') : setColor('red'), 'Regular')} numberOfLines={1}>
                       {Numeral(valo).format('0.00%')}
                   </Text>
               </View>
@@ -157,7 +166,7 @@ class FollowingScreen extends React.Component {
 
           <View style={{flexDirection : 'row', marginLeft : 20, marginRight : 20, marginTop : 5}}>
                   <View style={{flex : 0.8}}>
-                      <Text style={setFont('200', 10, 'gray')}>ISIN :</Text>
+                      <Text style={setFont('200', 12, 'gray')}>ISIN :</Text>
                               <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
                                     <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
                                         <Text style={setFont('200', 12, setColor('darkBlue'), 'Regular')}>FR000456377829</Text>
@@ -166,50 +175,48 @@ class FollowingScreen extends React.Component {
                               </View>
                   </View>  
 
-                  <View style={{flex : 0.2, backgroundColor : setColor(''), justifyContent : 'center', alignItems: 'center', margin : 5, borderWidth : 1, borderColor : setColor(''), borderRadius : 2}}>
-                      <Text style={setFont('300', 12, 'white', 'Regular')}>Vendre</Text>
+                  <View style={{flex : 0.2, backgroundColor : setColor('subscribeBlue'), borderColor :  setColor('subscribeBlue'),  padding : 8, justifyContent : 'center',  alignItems: 'center', margin : 5, borderWidth : 1, borderRadius : 5}}>
+                      <Text style={setFont('300', 16, 'white', 'Regular')}>Vendre</Text>
                   </View>  
            
           </View>
 
-          <View style={{flexDirection : 'row', marginLeft : 20, marginRight : 20, marginTop : 5}}>
-                  <View style={{flex : 0.33}}>
-                      <Text style={setFont('200', 10, 'gray')}>Nominal :</Text>
-                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
-                                    <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
-                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Regular')}>{currencyFormatDE(item.getNominal())}  </Text>
-                                    </View>
-                                    <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
-                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Regular')}>{item.getCurrency()}</Text>
-                                    </View>
-                              </View>
+          <View style={{flexDirection : 'row', marginLeft : 0, marginRight : 0, marginTop : 5, height : 60, borderWidth : 0}}>
+                  <View style={{flex : 0.33, justifyContent : 'flex-start', alignItems : 'center',  borderWidth : 0}}>
+                      <View style={{borderWidth : 0, justifyContent : 'flex-start', height : 35}}>
+                        <Text style={setFont('200', 12, 'gray')}>Nominal</Text>
+                      </View>
+                      <View style={{borderWidth : 0, flexDirection : 'row'}}>
+                            <View style={{justifyContent : 'flex-start', alignItems : 'flex-start', padding : 0}}>  
+                                <Text style={setFont('200', 14, setColor('darkBlue'), 'Regular')}>{currencyFormatDE(item.getNominal())}  </Text>
+                            </View>
+                            <View style={{justifyContent : 'center', alignItems : 'center', paddingRight : 3}}>  
+                                <Text style={setFont('200', 14, setColor('darkBlue'), 'Regular')}>{item.getCurrency()}</Text>
+                            </View>
+                      </View>
                   </View>  
 
-                  <View style={{flex : 0.33}}>
-                      <Text style={setFont('200', 10, 'gray')}>Proch. obs. :</Text>
-                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
-          
-                                    <View style={{justifyContent : 'center', alignItems : 'flex-start',  paddingLeft : 0}}>  
-                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Bold')}> 24/12/2027 </Text>
-                                    </View>
-                         
-                              </View>
+                  <View style={{flex : 0.33, justifyContent : 'flex-start', alignItems : 'center',  borderWidth : 0}}>
+                      <View style={{borderWidth : 0, justifyContent : 'flex-start', height : 35}}>
+                        <Text style={[setFont('200', 12, 'gray'), {textAlign : 'center'}]} >Prochaine{'\n'}observation</Text>
+                      </View>
+                      <View style={{borderWidth : 0, flexDirection : 'row', justifyContent: 'center'}}>
+                                <Text style={setFont('200', 14, setColor('darkBlue'), 'Regular')}> 24/12/2027 </Text>
+                      </View>
                   </View>  
-                  <View style={{flex : 0.33}}>
-                      <Text style={setFont('200', 10, 'gray')}>Mat :</Text>
-                              <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'center', height : 19}}>
-          
-                                    <View style={{justifyContent : 'center', alignItems : 'flex-start',  paddingLeft : 0}}>  
-                                        <Text style={setFont('200', 12, setColor('darkBlue'), 'Bold')}>{Moment(item.getLastConstatDate()).format('DD/MM/YYYY')}</Text>
-                                    </View>
-                             
-                              </View>
+                  <View style={{flex : 0.33, justifyContent : 'flex-start', alignItems : 'center',  borderWidth : 0}}>
+                      <View style={{borderWidth : 0, justifyContent : 'flex-start', height : 35}}>
+                        <Text style={setFont('200', 12, 'gray')}>Maturité</Text>
+                      </View>
+                      <View style={{borderWidth : 0, flexDirection : 'row', justifyContent: 'center'}}>
+                                <Text style={setFont('200', 14, setColor('darkBlue'), 'Regular')}>{Moment(item.getLastConstatDate()).format('DD/MM/YYYY')}</Text>
+                      </View>
                   </View> 
           </View>
 
-          <View style={{margin : 5, justifyContent : 'center', alignItems : 'center', backgroundColor :  alea > 0.5 ? 'transparent' : 'green'}}>
+          <View style={{marginBottom : 10, padding : 5, borderRadius : 10, margin : 5, justifyContent : 'center', alignItems : 'center', borderWidth : alea > 0.5 ? 0 : 2, borderColor : 'green',  backgroundColor :  alea > 0.5 ? 'transparent' : 'white'}}>
            
-                      <Text style={setFont('200', alea > 0.5 ?  10 : 14,  alea > 0.5 ? 'gray' : 'white')}>{String( alea > 0.5 ? "pas d'évènement prévu" : "rappel imminent").toUpperCase()}</Text>
+                      <Text style={setFont('200', alea > 0.5 ?  10 : 14,  alea > 0.5 ? 'gray' : 'green', alea > 0.5 ? 'Regular' : 'Bold')}>{String( alea > 0.5 ? "pas d'évènement prévu" : "rappel imminent").toUpperCase()}</Text>
      
           </View>
 
@@ -249,7 +256,7 @@ class FollowingScreen extends React.Component {
 
 
         <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 300}}>
-          <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} scalesPageToFit={false}
+          <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} scalesPageToFit={true}
             startInLoadingState={true}
             //renderLoading={() => <RobotBlink width={120} height={120} />}
             />

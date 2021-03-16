@@ -491,7 +491,7 @@ class TabHome extends React.PureComponent {
                     }}
                   >
                     <Text style={setFont("400", 18)}>
-                      APE du marché 
+                      Offres publiques en cours
                     </Text>
                   </View>
                   <FlatList

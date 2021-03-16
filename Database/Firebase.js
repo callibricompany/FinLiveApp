@@ -104,12 +104,65 @@ class Firebase {
     this.auth.currentUser.updatePassword(password);
 
 
+  reauthenticate = (currentPassword) => {
+        var user = this.auth.currentUser;
+        var cred = firebase.auth.EmailAuthProvider.credential(
+            user.email, currentPassword);
+        return user.reauthenticateWithCredential(cred);
+  }
+  doChangePassword = (currentPassword, newPassword) => {
+    return new Promise(
+      (resolve, reject) => {
+        this.reauthenticate(currentPassword)
+        .then(() => {
+          var user = firebase.auth().currentUser;
+          user.updatePassword(newPassword)
+          .then(() => {
+            console.log("Password updated!");
+            resolve("Success");
+          })
+          .catch((error) => { 
+            console.log(error); 
+            reject(error);
+          });
+        })
+        .catch((error) => { 
+          console.log(error); 
+          reject(error);
+        });
+      });
+  }
+
+  doChangeEmail = (currentPassword, newEmail) => {
+    return new Promise(
+      (resolve, reject) => {
+        this.reauthenticate(currentPassword)
+        .then(() => {
+          var user = firebase.auth().currentUser;
+          user.updateEmail(newEmail)
+          .then(() => {
+            console.log("Email updated!");
+            resolve("Success");
+          })
+          .catch((error) => { 
+            console.log(error); 
+            reject(error);
+          });
+        })
+        .catch((error) => { 
+          console.log(error); 
+          reject(error);
+        });
+      });
+  }
+
+
   // retourne l'idToken du user connecte
   doGetIdToken = () => {
     //console.log("LE TOKE EST DEMANDE")
     return new Promise(
       (resolve, reject) => {
-        this.auth.currentUser?.getIdToken(true).then((idToken) => {
+        this.auth.currentUser.getIdToken(true).then((idToken) => {
           //console.log("IDTOKEN RESOLU :" +idToken);
           resolve(idToken);
         }).catch(function (error) {
@@ -136,12 +189,17 @@ class Firebase {
                       const roles = [];
                       let name = '';
                       let firstName= '';
+                      let email = '';
                       let codeTS = '';
                       let company = '';
                       let organization = '';
                       let phone = '';
                       //console.log(Object.keys(doc));
                       //table documents de user non vide
+                      // console.log("==============================================");
+                      // console.log("===================  BONJOUR  ================");
+                      // console.log(doc.data());
+                      // console.log("==============================================");
                       if (typeof doc.data() !== 'undefined') {
                         // ajoute les roles
                         if (doc.data().supervisor) {
@@ -162,6 +220,7 @@ class Firebase {
 
                         //check si les champs sont presents
                         name = (typeof doc.data().lastName !== 'undefined') ? doc.data().lastName : '';
+                        email = (typeof doc.data().email !== 'undefined') ? doc.data().email : '';
                         firstName = (typeof doc.data().firstName !== 'undefined') ? doc.data().firstName : '';
                         codeTS = (typeof doc.data().codeTS !== 'undefined') ? doc.data().codeTS : '';
                         company = (typeof doc.data().company !== 'undefined') ? doc.data().company : '';
@@ -173,7 +232,7 @@ class Firebase {
                       // merge auth and db user
                       authUser = {
                         uid: authUser.uid,
-                        email: authUser.email,
+                        email: email,
                         name: name,
                         firstName: firstName,
                         codeTS: codeTS,

@@ -378,6 +378,7 @@ class TicketScreen extends React.Component {
         {this._renderModalDrawner()}
  
         <View style={{height: getConstant('height'), WIDTH: getConstant('width'), backgroundColor: setColor('background'), opacity : this.state.showModalDrawner ? 0.3 : 1}}>
+
           <AnimatedFlatList
             contentContainerStyle={{alignItems : 'center', marginTop :  20 + NAVBAR_HEIGHT}}
             data={this.allTickets}
@@ -436,6 +437,10 @@ class TicketScreen extends React.Component {
                         Alert.alert("FinLive SAS","Copyright ©")
                     }}
                     style={{height : 250, justifyContent: 'center', alignItems: 'center'}}>
+                    {this.allTickets.length === 0
+                    ? <Text>Vos trades apparaitront ici</Text>
+                    : null
+                    }
                   <Text style={setFont('600', 12)}>F i n L i v e</Text>
                 </TouchableOpacity>
               );

@@ -80,7 +80,7 @@ _renderHeaderFullTemplate2() {
  
   return (
           <View style={{flex : 0.35, flexDirection : 'row', justifyContent  : 'space-between'}}>
-                <View style={{ flexDirection : 'column', flex : 1, justifyContent: 'center' , paddingLeft : 15,   backgroundColor: 'white',  borderTopLeftRadius: 5, borderBottomWidth :  0,borderTopRightRadius: isCouponNull ? 5 : 0,}} >                                                    
+                <View style={{ flexDirection : 'column', flex : 1, justifyContent: 'center' , paddingLeft : 15,   backgroundColor: 'white', borderTopLeftRadius : 10, borderTopRightRadius : 10}} >                                                    
  
                     <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems : 'center', paddingTop : 5}}>
           
@@ -316,7 +316,7 @@ _renderAutocallMediumTemplate() {
 _renderFooterFullTemplate(isFavorite) {
   var dataUF = [this.autocall.getUF()  !== 0 ? Numeral(this.autocall.getUF()).format('0.00%') : "Inconnue"];
   return (
-    <View style={{flex : 0.1, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', backgroundColor: 'white', borderBottomRightRadius: 5, borderBottomLeftRadius: 5}}>
+    <View style={{flex : 0.1, flexDirection : 'row', borderTopWidth : 1, borderTopColor: 'lightgray', backgroundColor: 'white', borderBottomRightRadius: 10, borderBottomLeftRadius: 10}}>
                 <TouchableOpacity style={[{flex : 0.2}, globalStyle.templateIcon]} 
                                   onPress={() => {
                                     this.autocall.setFavorite(!this.autocall.isFavorite());
@@ -457,7 +457,7 @@ render () {
                           //borderTopLeftRadius: 15,
                           borderRadius: 10,
                           //overflow: "hidden",
-                          backgroundColor: 'gray',
+                          backgroundColor: 'white',
                   
                           //elevation: 3
                         }}
