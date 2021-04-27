@@ -58,7 +58,7 @@ const bottomTabsAdmin = createBottomTabNavigator(AppFinLiveTabs(ROLES.ADMIN), TA
 
 
 
-const Navigation =  createAppContainer(createSwitchNavigator(
+const  Navigation =  createAppContainer(createSwitchNavigator(
   {
     AuthLoading: AuthLoadingScreen,
     App: bottomTabs,
@@ -72,8 +72,6 @@ const Navigation =  createAppContainer(createSwitchNavigator(
     initialRouteName: 'Splash',
   }
 ));
-
-
 
 
 export default Navigation;

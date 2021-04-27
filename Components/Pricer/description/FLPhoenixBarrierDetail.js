@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-import { FLSlider2 } from '../../commons/FLSlider2';
+import FLRuler from '../../commons/FLRuler';
 
 import { globalStyle, setFont } from '../../../Styles/globalStyle';
 import { getConstant } from '../../../Utils';
@@ -13,17 +13,21 @@ import 'numeral/locales/fr'
 
 
 
+
 export class FLPhoenixBarrierDetail extends React.Component{
 
     constructor(props) {
         super(props);
 
         this.state = { 
-            barrier : this.props.initialValueBP,
-            isMemory : this.props.initialValueIM,
+            barrier : this.props.initialValue,
+
         }
     }
 
+    UNSAFE_componentWillReceiveProps(props) {
+        this.setState({ barrier : props.initialValue });
+    }
 
     _getProtectionTitle=() => {
 
@@ -42,56 +46,57 @@ export class FLPhoenixBarrierDetail extends React.Component{
  
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
-                    <FLSlider2
-                          min={-70}
-                          max={-10}
-                          step={5}
-                          //value={this.state.product['UF'].value*100}
-                          value={(this.state.barrier-1)*100}
-                          isPercent={true}
-                          spreadScale={10}
-                          //activated={!this.state.product["UF"].isActivated}
-                          sliderLength={getConstant('width')*0.9}
-                          callback={(value) => {
-                              //console.log("MATS : "+ value);
-                              this.setState({ barrier : (value+100)/100 }, () => {
-                                this.props.updateValue("barrierPhoenix", this.state.barrier,"Protégé jusqu'à : " + Numeral(this.state.barrier - 1).format('0%'));
-                                
-                            });
-                            
-                          }}
-                          single={true}
+
+
+                        <FLRuler
+                            style={{ borderRadius: 10, elevation: 3 }}
+                            width={getConstant('width')*0.8}
+                            height={70}
+                            vertical={false}
+                            onChangeValue={(value) => {
+                                this.setState({ barrier : (value+100)/100 }, () => {
+                                    this.props.updateValue("barrierPhoenix", this.state.barrier,"Protégé jusqu'à : " + Numeral(this.state.barrier - 1).format('0%'));           
+                                });
+                            }}
+                    
+                            minimum={-70}
+                            maximum={0}
+                            segmentWidth={2}
+                            segmentSpacing={10}
+                            indicatorColor='#FF0000'
+                            indicatorWidth={100}
+                            indicatorHeight={40}
+                            indicatorBottom={20}
+                            step={10}
+                            stepColor='#333333'
+                            stepHeight={40}
+                            normalColor='#999999'
+                            normalHeight={20}
+                            backgroundColor='#FFFFFF'
+                            numberFontFamily='System'
+                            numberSize={40}
+                            numberColor='#000000'
+                            unit='%'
+                            unitBottom={5}
+                            unitFontFamily='System'
+                            unitColor='#888888'
+                            unitSize={0}
+                            defaultValue={100*(this.state.barrier-1)}
+                            //vertical={true}
                         />
                 </View>
                 <View style={{alignItems:'flex-start', justifyContents: 'center', borderWidth: 0, marginTop : 40}}>
-                  <Text style={setFont('400', 11)}>{text}</Text> 
+                  <Text style={setFont('400', 14, 'black', 'Regular')}>{text}</Text> 
                 </View>
   
-                {/*<TouchableWithoutFeedback style={{marginTop: 35}}
-                                    onPress={() => {
-                                        this.setState({ isMemory: !this.state.isMemory }, () => {
-                                          this.props.updateValue("isMemory", this.state.isMemory, this.state.isMemory ? 'Coupon mémoire' : '');
-                                        });
-                                    }}
-                >
-                    <View style={{flexDirection: 'row'}}>
-                    <View>
-                        <MaterialIcons name={this.state.isMemory ? 'check-box' : 'check-box-outline-blank'} size={20} />
-                    </View>
-                    <View style={{paddingLeft: 10, justifyContent: 'center'}}>
-                        <Text style={[setFont('500', 18)]}>
-                            {String('mémoire').toUpperCase()}
-                        </Text>
-                    </View>
-                    </View>
-                                </TouchableWithoutFeedback>*/}
+
 
                     <View style={{marginTop : 20, borderTopWidth : 1}}>
                             <Text style={setFont('400', 14, 'black', 'Regular')}>
                             {'\n'}Influence
                             </Text>
                             <Text style={setFont('300', 12)}>
-                            Choisissez un seuil de paiement de coupons inférieur à celui des rappels : cela augemente la probabilité de paiement des coupons; en contrepartie d'un niveau moins élevé.
+                            Si vous choisissez un seuil de paiement de coupons inférieur à celui des rappels : cela augemente la probabilité de paiement des coupons; en contrepartie d'un niveau moins élevé.
                             </Text>
                     </View>
                     <View style={{marginTop : 10, borderTopWidth : 0}}>

@@ -23,7 +23,7 @@ export class CPSRequest extends CRequest {
           'icon2' : 'ios-contacts',
         },
         'type': {
-          'value': 'athena',
+          'value': 'AUTOCALL_INCREMENTAL',
           'valueLabel': 'Athéna',
           'defaultValueLabel': 'Optimisé',
           'title': 'PRODUIT',
@@ -49,7 +49,7 @@ export class CPSRequest extends CRequest {
           'title': 'MATURITE',
           'isActivated': true,
           'isLocked': false,
-          'isMandatory': false,
+          'isMandatory': true,
           'icon' : 'calendar',
         },
         'barrierPDI': {
@@ -64,9 +64,9 @@ export class CPSRequest extends CRequest {
         },
         'freq': {
           'value': "1Y",
-          'isActivated': true,
+          'isActivated': false,
           'defaultValueLabel': 'Optimisé',
-          'title': 'FREQUENCE DE RAPPEL',
+          'title': 'FREQUENCE',
           'valueLabel': 'annuelle',
           'isLocked': false,
           'isMandatory': false,
@@ -84,28 +84,28 @@ export class CPSRequest extends CRequest {
         },
         
         'barrierPhoenix': {
-          'value': 0.8,
-          'isActivated': false,
+          'value': 1,
+          'isActivated': true,
           'defaultValueLabel': 'Optimisé',
-          'valueLabel': "Protégé jusqu'à : " + Numeral(-0.2).format('0%'),
+          'valueLabel': "Protégé jusqu'à : " + Numeral(0).format('0%'),
           'title': 'COUPONS',
           'isLocked': false,
           'isMandatory': false,
           'icon' : 'shield-half-full',
         },
-        'airbagLevel': {
+        'typeAirbag': {
           'value': "NA", //NA : pas d airbag   SA : semi-airbag   FA : full airbag
-          'isActivated': true,
+          'isActivated': false,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': 'Aucun airbag',
-          'title': 'NIVEAUX DE RAPPELS',
+          'title': 'AIRBAG',
           'isLocked': false,
           'isMandatory': false,
           'icon' : 'airbag',
         },
         'nncp': {
           'value': 12, //12 mois
-          'isActivated': true,
+          'isActivated': false,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': '1 an',
           'title': '1er RAPPEL',
@@ -127,7 +127,7 @@ export class CPSRequest extends CRequest {
         //pas encore d'ecran
         'degressiveStep': {
           'value': 0,
-          'isActivated': true,
+          'isActivated': false,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': 'Sans stepdown',
           'title': 'DEGRESSIVITE',
@@ -173,17 +173,17 @@ export class CPSRequest extends CRequest {
           'defaultValueLabel': 'Optimisé',
           'valueLabel': Numeral(0.03).format('0.00%'),
           'title': 'MARGE',
-          'isMandatory': true,
+          'isMandatory': false,
           'isLocked': false,
           'icon': 'margin',
         },
         'coupon': {
           'value': 0.03,
-          'isActivated': true,
+          'isActivated': false,
           'defaultValueLabel': 'Optimisé',
           'valueLabel': Numeral(0.03).format('0.00%'),
-          'title': 'COUPON MIN',
-          'isMandatory': true,
+          'title': 'COUPON P.A.',
+          'isMandatory': false,
           'isLocked': false,
           'icon': 'ticket-percent',
         },
@@ -323,7 +323,7 @@ export class CPSRequest extends CRequest {
       this._fillCriteria('barrierPDI', autocall.getBarrierPDI(), "Protégé jusqu'à " + Numeral(autocall.getBarrierPDI()-1).format('0%'));
       this._fillCriteria('freq', autocall.getFrequencyAutocall(), autocall.getFrequencyAutocallTitle());
       this._fillCriteria('barrierPhoenix', autocall.getBarrierPhoenix(), "Protégé jusqu'à : " + Numeral(autocall.getBarrierPhoenix() - 1).format('0%'));
-      this._fillCriteria('airbagLevel', autocall.getAirbagCode(), autocall.getAirbagTitle());
+      this._fillCriteria('typeAirbag', autocall.getAirbagCode(), autocall.getAirbagTitle());
       this._fillCriteria('nncp', autocall.getNNCP(), "1er rappel dans "+autocall.getNNCPLabel());
       this._fillCriteria('isMemory', autocall.isMemory(), autocall.isMemory() ? 'Effet mémoire' : 'Non mémoire');
       this._fillCriteria('degressiveStep', autocall.getDegressivity(), autocall.getDegressivity() === 0 ? '' : 'Stepdown ' + Numeral(autocall.getDegressivity()).format('0%') + " / an");
@@ -406,7 +406,7 @@ export class CPSRequest extends CRequest {
           'isMandatory': false,
           'isUpdated': false,
         },
-        'airbagLevel': {
+        'typeAirbag': {
           'value': autocall.getAirbagCode(), //NA : pas d airbag   SA : semi-airbag   FA : full airbag
           'isActivated': true,
           'defaultValueLabel': 'Optimisé',
@@ -526,11 +526,11 @@ export class CPSRequest extends CRequest {
 
       //on active ou desactive certains parametres 
       if (this.product['type'].value.includes('phoenix')){ //effet airbag, degressivite desactive
-        this.product['airbagLevel'].isLocked = true;
-        this.product['airbagLevel'].defaultValueLabel = 'Non compatible';
+        this.product['typeAirbag'].isLocked = true;
+        this.product['typeAirbag'].defaultValueLabel = 'NA';
       } else if (this.product['type'].value.includes('athena')) {
         this.product['barrierPhoenix'].isLocked = true;
-        this.product['barrierPhoenix'].defaultValueLabel = 'Non compatible';
+        this.product['barrierPhoenix'].defaultValueLabel = 'NA';
       }
     }
 
@@ -543,10 +543,10 @@ export class CPSRequest extends CRequest {
       criteria['optimizer'] = this.product.optimizer.value;
       criteria['levelAutocall'] =   this.product.autocallLevel.value;
       criteria['freqAutocall'] =  this.product.freq.isActivated ? this.product.freq.value : "3M";
-      criteria['noCallNbPeriod'] =  this.product.freq.isActivated ? this.product.nncp.value : 12;
+      criteria['noCallNbPeriod'] =  this.product.nncp.isActivated ? this.product.nncp.value : 12;
       criteria['coupon'] =  this.product.coupon.value;
       criteria['maturity'] =  this.product.maturity.isActivated ? this.product.maturity.value : ['10Y'];
-      
+      criteria['typeAirbag'] =  this.product.typeAirbag.value;
       //type de placement
       criteria['typeAuction'] =  this.product.typeAuction.value;
       criteria['nominal'] =  this.product.nominal.value;
@@ -565,9 +565,9 @@ export class CPSRequest extends CRequest {
       if (this.product.type.value === 'AUTOCALL_CLASSIC' || this.product.type.value === 'AUTOCALL_INCREMENTAL') {
         let ds = this.product.degressiveStep.value;
         let ds_array = [0, 2, 5];
-        if (ds_array.indexOf(ds) !== -1) {
+        //if (ds_array.indexOf(ds) !== -1) {
           criteria['degressiveStep'] =  this.product.degressiveStep.value;
-        }
+        //}
         criteria['barrierPhoenix'] =  1;
       } else if (this.product.type.value === 'PHOENIX' || this.product.type.value === 'PHOENIX_MEMORY') {
         if (this.product.barrierPhoenix.isActivated) {
@@ -581,49 +581,32 @@ export class CPSRequest extends CRequest {
         }
 
         criteria['degressiveStep'] =  0;
-        criteria['airbagLevel'] =  1;
+        criteria['typeAirbag'] =  'NA';
       }
 
       //airbag
-      criteria['airbagLevel'] =  1;
+      //criteria['typeAirbag'] =  1;
 
 
       //gestion du PDI : les barrieres testes sont 0.4 0.6 et 0.8
       if (this.product.barrierPDI.isActivated) {
-        let bpdi = this.product.barrierPDI.value;
-        let bdi_array = [0.4, 0.6, 0.8];
-        if (bdi_array.indexOf(bpdi) !== -1) {
           criteria['barrierPDI'] =  this.product.barrierPDI.value;
-          //on voit aussi si airbag est selectionne
-          if (this.product.airbagLevel.isActivated && this.product.type.value === 'athena' && this.product.airbagLevel.value !== 'NA') {
-            if (this.product.airbagLevel.value === 'FA') {
-              criteria['airbagLevel'] =  this.product.barrierPDI.value;
-            } else if (this.product.airbagLevel.value === 'SA') {
-              criteria['airbagLevel'] =  (1 + this.product.barrierPDI.value)/2;
-            }
-          }
-        } else {
-          //criteria.splice(criteria.indexOf('airbagLevel'), 1); //supprime le critere
-          if (this.product.airbagLevel.value !== 'NA') {
-            delete criteria['airbagLevel'];
-          }
-        }
       } else { //on prend le max des PDI max
         criteria['barrierPDI'] =  0.8;
-        if (this.product.airbagLevel.isActivated && this.product.type.value === 'athena' && this.product.airbagLevel.value !== 'NA') {
-          if (this.product.airbagLevel.value === 'FA') {
-            criteria['airbagLevel'] =  0.8;
-          } else if (this.product.airbagLevel.value === 'SA') {
-            criteria['airbagLevel'] =  0.9;
+        /*if (this.product.typeAirbag.isActivated && this.product.type.value === 'athena' && this.product.typeAirbag.value !== 'NA') {
+          if (this.product.typeAirbag.value === 'FA') {
+            criteria['typeAirbag'] =  0.8;
+          } else if (this.product.typeAirbag.value === 'SA') {
+            criteria['typeAirbag'] =  0.9;
           }
-        }
+        }*/
       }
       criteria['isPDIUS'] =  this.product.barrierPDI.isActivated  ? this.product.isPDIUS.value : false;
-      this.product.barrierPDI.isActivated ? criteria['barrierPDI'] =  this.product.barrierPDI.value : null;
+      //this.product.barrierPDI.isActivated ? criteria['barrierPDI'] =  this.product.barrierPDI.value : null;
       criteria['UF'] = this.product.UF.value;
       criteria['UFAssoc'] = this.product.UFAssoc.value;
       criteria['degressiveStep'] = this.product.degressiveStep.value;
-
+      this.product.isPDIUS.isActivated ? criteria['isPDIUS'] =  this.product.isPDIUS.value : false;
       //memoire phoenix
       //criteria['isMemory'] =  this.product.type.value === 'phoenix'  ? this.product.isMemory.value : false;
       criteria['isMemory'] =  this.product.isMemory.value;

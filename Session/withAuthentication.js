@@ -10,7 +10,7 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
-import { getUserAllInfoAPI, getTicket, getAllUsers, setFavorite, getClientCount} from "../API/APIAWS";
+import { getUserAllInfoAPI, getTicket, getAllUsers, setFavorite, getClientCount, getUnderlyings} from "../API/APIAWS";
 
 
 import { isAndroid , isEqual } from '../Utils'; 
@@ -80,7 +80,7 @@ const withAuthentication = Component => {
 
         //gestion des categories
         categories: [],
-        getAllUndelyings: filter => this.getAllUndelyings(filter),
+        getAllUndelyings: (filter, field) => this.getAllUndelyings(filter, field),
 
         //toFavorites
         favorites: [],
@@ -97,6 +97,13 @@ const withAuthentication = Component => {
         setFavoriteProducts : favoritesProducts => this.setFavoriteProducts(favoritesProducts)
         
       };
+
+
+      //gestion des sous-jacents dans le contexte
+      this.lastRequestDateUnderlyings = {};
+      this.underlyings = {};
+      
+
     }
 
    async componentDidMount() {
@@ -121,9 +128,6 @@ const withAuthentication = Component => {
              
               this.setState({ authUser });
 
-
-              
-              
               // Handle notifications that are received or selected while the app
               // is open. If the app was closed and then opened by tapping the
               // notification (rather than just tapping the app icon to open it),
@@ -138,6 +142,10 @@ const withAuthentication = Component => {
               //this.listener();
             }
           );
+
+          //recupération de tous les sous-jacents
+		  this.getAllUndelyings();
+		  this.getAllUndelyings("INTERPOLATED_PS");
       } 
       catch(error) {
         console.log("ERREUR RECUP DATABASE INFO USER : ");
@@ -538,10 +546,13 @@ const withAuthentication = Component => {
     }
 
 
-    //retourne tous les sous-jacents d'une categories
-    getAllUndelyings(type = "PS") {
+    ////////////////////////////////////////
+    //           TICKETS
+    //  ajoute un ticket des qu'il est crée 
+    ////////////////////////////////////////
+    async getAllUndelyings(type = "ALL", field='') {
    
-      let allCat = this.state.categories.filter(({ codeCategory }) => codeCategory === type )[0].subCategory;
+      /*let allCat = this.state.categories.filter(({ codeCategory }) => codeCategory === type )[0].subCategory;
       let result = [];
       
       allCat.forEach((u) => {
@@ -552,17 +563,64 @@ const withAuthentication = Component => {
             result.push(u.underlyingCode);
           }
         }
-      });
+      });*/
+	  	var results = [];
+		if (this.lastRequestDateUnderlyings.hasOwnProperty(type)) {
+			var date_last_request = this.lastRequestDateUnderlyings[type];
+			var date_now = new Date();
+			var hours = Math.abs(date_now - date_last_request) / 36e5;
+			if (hours < 1) { 
+				if (this.underlyings.hasOwnProperty(type)){
+					results = this.underlyings[type];
+					if (field !== '') {
+						var resultField = [];
+						results.forEach(udl => {
+							if (udl.hasOwnProperty(field)) {
+								if (!resultField.includes(udl[field])) {
+									resultField.push(udl[field]);
+								}
+							}
+						});
+						return resultField;
+					} else {
+						return results;
+					}
+				}
+			}
+		} 
+	
+		try  {
+			results = await getUnderlyings(this.props.firebase, type);
+			this.underlyings[type] = results;
+			this.lastRequestDateUnderlyings[type] = new Date();
+			if (field !== '') {
+				var resultField = [];
+				results.forEach(udl => {
 
-      return result;
+					if (udl.hasOwnProperty(field)) {
+						if (!resultField.includes(udl[field])) {
+							resultField.push(udl[field]);
+						}
+					}
+				});
+				return resultField;
+			} else {
+				return results;
+			}
+
+		} catch(error) {
+			console.log(error);
+			return [];
+		}
+
     }
 
     componentWillUnmount() {
-      console.log("withAUTHENTICATION : Appel this.listener() ");
+    	console.log("withAUTHENTICATION : Appel this.listener() ");
 
-      //this.ticketListener();
-      this.listener();
-      //this._notificationSubscription();
+		//this.ticketListener();
+		this.listener();
+		//this._notificationSubscription();
     }
 
     ////////////////////////////////////////

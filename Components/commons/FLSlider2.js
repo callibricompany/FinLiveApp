@@ -26,7 +26,8 @@ export class FLSlider2 extends React.Component{
         
          this.nbScales = 1+ (this.props.max - this.props.min)/this.props.spreadScale;
          this.scaleWidth = 10+ this.props.sliderLength*(this.nbScales -1)/this.nbScales;
-        
+         
+         this.minimumTrackTintColor = props.hasOwnProperty('minimumTrackTintColor') ? props.minimumTrackTintColor : 'lightgray';
     }
 
 
@@ -62,7 +63,7 @@ export class FLSlider2 extends React.Component{
                                 step={this.props.step}
                                 value={this.state.value}
                                 maximumTrackTintColor={setColor('')}
-                                minimumTrackTintColor={'lightgray'}
+                                minimumTrackTintColor={this.minimumTrackTintColor}
                                 thumbTintColor={setColor('')}
                                 onSlidingComplete={(value) => {
                                     //console.log("CHANGE : "+value);

@@ -185,14 +185,14 @@ class FLBottomPanel extends React.Component {
                                       </View>
                                       
                                       <View style={{marginTop: 2, alignItems: 'center', justifyContent: 'center'}}>
-                                        <Text style={setFont('400', isIphoneX() ? 10 : 12, this.props.isActivated ? 'gray' : setColor(''), 'Regular')}>{String('optimisé').toUpperCase()}</Text>
+                                        <Text style={setFont('400', isIphoneX() ? 10 : 12, this.props.isActivated ? 'gray' : setColor(''), 'Regular')}>{String('auto').toUpperCase()}</Text>
                                       </View>
                                   </TouchableOpacity>
                                 :  <View style ={{ flex: 0.2}}></View>
                             }
                             <View style={{flex : 0.6, justifyContent: 'center', alignItems: 'center', borderWidth: 0}}>
                                   <Text style={[setFont('600', 20), {textAlign: 'center'}]}>
-                                      {this.props.renderTitle}
+                                     {this.props.renderTitle}
                                   </Text>
                             </View>
                             <TouchableOpacity  style={{flex : 0.2, justifyContent: 'flex-start',alignItems: 'center', borderWidth: 0, paddingTop: 10, paddingBottom: 10}}
@@ -210,7 +210,12 @@ class FLBottomPanel extends React.Component {
                             </TouchableOpacity>
                         </View>
 
-                        {this.props.isActivated ? this.props.renderFLBottomPanel : null}
+                        {this.props.isActivated 
+                          ? this.props.renderFLBottomPanel 
+                          : 
+                          <View style={{flex : 1, marginLeft : 0.1*getConstant('width'), width : getConstant('width')*0.8,  justifyContent : 'center', alignItems : 'center', marginTop : 15}}>
+                              <Text style={[setFont('300', 14, 'black', 'Regular'), {textAlign : 'center'}]}>Cette caractéristique sera automatiquement calculée et optimisée par le moteur FinLive</Text>
+                          </View>}
                   </Animated.ScrollView>
                 </NativeViewGestureHandler>
               </Animated.View>

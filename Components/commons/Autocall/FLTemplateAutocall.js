@@ -59,6 +59,8 @@ class FLTemplateAutocall extends React.Component {
       //nominal : typeof this.props.nominal !== 'undefined' ? this.props.nominal  : 2020,
       isFavorite : false,
       toto : true,
+
+      isLoading : true,
     }
 
     //ensemble des modal dropdown
@@ -115,10 +117,16 @@ class FLTemplateAutocall extends React.Component {
 
     this.request = new CPSRequest();
     this.request.setRequestFromCAutocall(this.autocall);
+	
+	
+	this.availableUnderlyings = [];
+    
   }
 
-  componentDidMount() {
-    this.setState({  isFavorite : this.autocallResult.isFavorite()})
+  async componentDidMount() {
+    
+    this.availableUnderlyings = await this.props.getAllUndelyings("INTERPOLATED_PS", 'ticker');
+    this.setState({  isFavorite : this.autocallResult.isFavorite(), isLoading : false})
   }
 
   UNSAFE_componentWillReceiveProps (props) {
@@ -284,7 +292,7 @@ _recalculateProduct(){
   .catch(error => {
     console.log("ERREUR recup prix: " + error);
     alert('ERREUR calcul des prix', '' + error);
-    this.setState({ isLoading : false , messageLoading : ''});
+    this.setState({ messageLoading : ''});
   });
 }
 
@@ -309,7 +317,7 @@ _renderHeaderShortTemplate() {
                       <View style={{flexDirection: 'row'}}>
 
                           <Text style={setFont('400', 13, setColor('darkBlue'), 'Regular')} numberOfLines={1}>   
-                            {this.autocall.getFullUnderlyingName(this.props.categories).toUpperCase()}
+                            {this.autocall.getFullUnderlyingName().toUpperCase()}
                           </Text>   
                       </View>
                   </View>
@@ -331,7 +339,8 @@ _renderHeaderShortTemplate() {
 }
 
 _renderHeaderMediumTemplate(showArrow = true) {
-  let dataUnderlyingAutocall = this.props.getAllUndelyings();
+  
+  let dataUnderlyingAutocall = this.availableUnderlyings;
   let dataProductName = ['Athéna', 'Phoenix', 'Reverse convertible'];
   let dataAuction = ["Appel public à l'épargne",'Placement Privé'];
   //console.log("showArrow : " + showArrow);
@@ -364,7 +373,7 @@ _renderHeaderMediumTemplate(showArrow = true) {
                                             this._updateValue('type', 'phoenix', value);
                                             this._updateValue('isMemory', false, "non mémoire");
                                             this.autocallResult.getDegressiveStep() !== 0 ? this._updateValue('degressiveStep', 0, 'sans stepdown'): null;
-                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('airbagLevel', 'NA', 'Non airbag') : null;
+                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('typeAirbag', 'NA', 'Non airbag') : null;
                                             this.autocallResult.getBarrierPhoenix() === 1 ?  this._updateValue('barrierPhoenix', 0.9, "90%") : null;
                                             break;
                                          case 2 : 
@@ -374,7 +383,7 @@ _renderHeaderMediumTemplate(showArrow = true) {
                                             this._updateValue('isMemory', false, "non mémoire");
                                             this._updateValue('autocallLevel', 99.99, 'pas de rappel');
                                             this._updateValue('degressiveStep', 0, 'sans stepdown');
-                                            this._updateValue('airbagLevel', 'NA', 'Non airbag');
+                                            this._updateValue('typeAirbag', 'NA', 'Non airbag');
                                             this._updateValue('freq', '1M', "1 mois");
                                             this._updateValue('barrierPhoenix', 0, "0%");
                                             break;
@@ -443,7 +452,7 @@ _renderHeaderMediumTemplate(showArrow = true) {
                               disabled={!this.state.isEditable}
                           >
                             <Text style={setFont('400', 13, this.request.isUpdated('underlying') ? setColor('subscribeBlue') : setColor('darkBlue'), 'Regular')}>
-                                {this.autocallResult.getFullUnderlyingName(this.props.categories)}
+                                {this.autocallResult.getFullUnderlyingName()}
                             </Text>
                           </FLModalDropdown>
            
@@ -523,12 +532,12 @@ _renderHeaderMediumTemplate(showArrow = true) {
   );
 }
 
-_renderHeaderFullTemplate2() {
-  
-  let dataUnderlyingAutocall = this.props.getAllUndelyings();
+ _renderHeaderFullTemplate2() {
+
+  let dataUnderlyingAutocall = this.availableUnderlyings;
   //let dataProductName = STRUCTUREDPRODUCTS.map((p) => p.name);
   let dataProductName = ['Athéna', 'Phoenix', 'Reverse convertible'];
-  
+
 
   return (
           <View style={{flex : 0.35, flexDirection : 'row'}}>
@@ -560,7 +569,7 @@ _renderHeaderFullTemplate2() {
                                             this._updateValue('type', this.autocallResult.isMemory() ? 'PHOENIX_MEMORY' : 'PHOENIX', value);
                                             //this._updateValue('isMemory', false, "non mémoire");
                                             this.autocallResult.getDegressiveStep() !== 0 ? this._updateValue('degressiveStep', 0, 'sans stepdown'): null;
-                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('airbagLevel', 'NA', 'Non airbag') : null;
+                                            this.autocallResult.getAirbagCode() !== 'NA' ? this._updateValue('typeAirbag', 'NA', 'Non airbag') : null;
                                             this.autocallResult.getBarrierPhoenix() === 1 ?  this._updateValue('barrierPhoenix', 0.9, "90%") : null;
                                             break;
                                          case 2 : 
@@ -570,7 +579,7 @@ _renderHeaderFullTemplate2() {
                                             this._updateValue('isMemory', false, "non mémoire");
                                             this._updateValue('autocallLevel', 99.99, 'pas de rappel');
                                             this._updateValue('degressiveStep', 0, 'sans stepdown');
-                                            this._updateValue('airbagLevel', 'NA', 'Non airbag');
+                                            this._updateValue('typeAirbag', 'NA', 'Non airbag');
                                             this._updateValue('freq', '1M', "1 mois");
                                             this._updateValue('barrierPhoenix', 0, "0%");
                                             break;
@@ -667,7 +676,7 @@ _renderHeaderFullTemplate2() {
                               disabled={!this.state.isEditable}
                           >
                             <Text style={setFont('400',  14, this.request.isUpdated('underlying') ? setColor('subscribeBlue') : setColor('darkBlue'), 'Regular')}>
-                                {this.autocallResult.getFullUnderlyingName(this.props.categories).toUpperCase()}
+                                {this.autocallResult.getFullUnderlyingName().toUpperCase()}
                             </Text>
                           </FLModalDropdown>
            
@@ -1939,7 +1948,7 @@ _renderAutocallFullTemplate2() {
                                   > 
 
                                         <View style={{ borderLeftWidth: 1, borderLeftColor : setColor(''),  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
-                                          <MaterialCommunityIcons name={"airbag"}  size={18} style={{color: this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
+                                          <MaterialCommunityIcons name={"airbag"}  size={18} style={{color: this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
                                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
                                                 <FLModalDropdown
@@ -1954,7 +1963,7 @@ _renderAutocallFullTemplate2() {
                                                             case 1 : code = 'SA'; break;
                                                             case 2 : code = 'FA'; break;
                                                         }
-                                                        this._updateValue('airbagLevel', code, value);
+                                                        this._updateValue('typeAirbag', code, value);
                                                         this._recalculateProduct();
                                                     }}
                                                     adjustFrame={(f) => {
@@ -1985,14 +1994,14 @@ _renderAutocallFullTemplate2() {
                                                     ref={component => this._dropdown['airbag'] = component}
                                                     disabled={this.state.isEditable ? (this.autocallResult.getBarrierPhoenix() === 1 ? false : true) : true}
                                                 >
-                                                  <Text style={[setFont('200', 12, this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+                                                  <Text style={[setFont('200', 12, this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
                                                     {this.autocallResult.getAirbagTitle()}
                                                   </Text>
                                                 </FLModalDropdown>
                                         </View>
                                       
                                         <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
-                                          <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
+                                          <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                         </View>
 
                                   </TouchableOpacity>
@@ -2830,7 +2839,7 @@ _renderAutocallFullTemplateForDetail() {
                                     > 
 
                                           <View style={{ borderLeftWidth: 1, borderLeftColor : 'black',  width : 22, height : 20,  alignItems: 'center', justifyContent: 'center',marginLeft : 5, paddingLeft : 4}}>
-                                            <MaterialCommunityIcons name={"airbag"}  size={18} style={{color: this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
+                                            <MaterialCommunityIcons name={"airbag"}  size={18} style={{color: this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                           </View>
                                           <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start',  borderWidth: 0, paddingLeft : 5 }}>
                                                   <FLModalDropdown
@@ -2845,7 +2854,7 @@ _renderAutocallFullTemplateForDetail() {
                                                               case 1 : code = 'SA'; break;
                                                               case 2 : code = 'FA'; break;
                                                           }
-                                                          this._updateValue('airbagLevel', code, value);
+                                                          this._updateValue('typeAirbag', code, value);
                                                           this._recalculateProduct();
                                                       }}
                                                       adjustFrame={(f) => {
@@ -2876,14 +2885,14 @@ _renderAutocallFullTemplateForDetail() {
                                                       ref={component => this._dropdown['airbag'] = component}
                                                       disabled={this.state.isEditable ? (this.autocallResult.getBarrierPhoenix() === 1 ? false : true) : true}
                                                   >
-                                                    <Text style={[setFont('200', 12, this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+                                                    <Text style={[setFont('200', 12, this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
                                                       {this.autocallResult.getAirbagTitle()}
                                                     </Text>
                                                   </FLModalDropdown>
                                           </View>
                                         
                                           <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
-                                            <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
+                                            <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
                                           </View>
 
                                     </TouchableOpacity>
@@ -3543,7 +3552,7 @@ _renderAutocallMediumTemplate() {
             <View style={{ width: 25, borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}
 
             >
-              <MaterialCommunityIcons name={"airbag"}  size={18} style={{color: this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
+              <MaterialCommunityIcons name={"airbag"}  size={18} style={{color: this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
             </View>
             <View style={{borderWidth: 0,flex: 1, justifyContent: 'center', alignItems: 'flex-start', padding: 2}}>
                     <FLModalDropdown
@@ -3558,7 +3567,7 @@ _renderAutocallMediumTemplate() {
                                 case 1 : code = 'SA'; break;
                                 case 2 : code = 'FA'; break;
                             }
-                            this._updateValue('airbagLevel', code, value);
+                            this._updateValue('typeAirbag', code, value);
                             this._recalculateProduct();
                         }}
                         adjustFrame={(f) => {
@@ -3575,14 +3584,14 @@ _renderAutocallMediumTemplate() {
                         ref={component => this._dropdown['airbag'] = component}
                         disabled={this.state.isEditable ? (this.autocallResult.getBarrierPhoenix() === 1 ? false : true) : true}
                     >
-                      <Text style={[setFont('200', 11, this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
+                      <Text style={[setFont('200', 11, this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdColor,'Regular'), {textAlign: 'center'}]} numberOfLines={1}>
                         {this.autocallResult.getAirbagTitle()}
                       </Text>
                     </FLModalDropdown>
             </View>
           
             <View style={{ borderWidth: 0, alignItems: 'center', justifyContent: 'center',}}>
-              <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('airbagLevel') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
+              <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: this.request.isUpdated('typeAirbag') ? setColor('subscribeBlue') : this.stdLightColor}}/> 
             </View>
 
       </TouchableOpacity>
@@ -4155,7 +4164,19 @@ _renderFooterFullTemplate() {
 
 
 render () {
-      //check if it is in favorites
+      //check if loading
+	if (this.state.isLoading) {
+		return (
+			<View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 170}}>
+				<WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} scalesPageToFit={true}
+				startInLoadingState={true}
+				renderLoading={() => <RobotBlink width={120} height={120} />}
+				/>
+				
+			
+			</View>
+		);
+	}
 
       if (this.type === TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE) {
         return this._renderHeaderMediumTemplate(false);

@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'reac
 
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
+
 import { FLSlider2 } from '../../../Components/commons/FLSlider2';
 
 import { globalStyle, setFont, setColor } from '../../../Styles/globalStyle'
@@ -104,6 +105,7 @@ export class FLMaturityDetail extends React.Component{
                           single={true}
                         />
                 </View>
+
 
                 <View style={{marginTop : 20, borderTopWidth : 1}}>
                       <Text style={setFont('400', 14, 'black', 'Regular')}>

@@ -16,6 +16,7 @@ function navigate(routeName, params) {
   );
 }
 
+
 function handleBadges(key, count) {
 
   //console.log(_navigator);

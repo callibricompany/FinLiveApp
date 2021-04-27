@@ -12,7 +12,7 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FLTemplateAutocall from "./FLTemplateAutocall";
 import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 
-import { ssCreateStructuredProduct } from '../../../API/APIAWS';
+import { createTicket } from '../../../API/APIAWS';
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant } from '../../../Utils';
 import { interpolateColorFromGradient } from '../../../Utils/color';
 
@@ -365,7 +365,7 @@ class FLAutocallDetailTrade extends React.Component {
 
                                        //"due_by": 2020-05-03T15:30:00.912Z,
 
-                                        ssCreateStructuredProduct(this.props.firebase, productToSend)
+                                       createTicket(this.props.firebase, productToSend)
                                        .then((data) => {
                                           console.log("SUCCES CREATION TICKET");
                                           

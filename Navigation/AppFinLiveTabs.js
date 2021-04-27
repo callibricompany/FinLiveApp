@@ -402,8 +402,8 @@ function labelStyle (focused, tintColor) {
           );
           },
         //tabBarVisible: false,
-   
-      tabBarVisible
+        keyboardHidesTabBar: true,
+        tabBarVisible
     }
   }
   TABS['Tickets'].navigationOptions = ({ navigation }) => {
@@ -490,8 +490,8 @@ function labelStyle (focused, tintColor) {
           );
           },
         //tabBarVisible: false,
-   
-      tabBarVisible
+        keyboardHidesTabBar: true,
+        tabBarVisible
     }
   }
 
@@ -540,8 +540,9 @@ function labelStyle (focused, tintColor) {
           );
           },
         //tabBarVisible: false,
-   
-      tabBarVisible
+          
+        keyboardHidesTabBar: true,
+        tabBarVisible
     }
   }
 
@@ -551,7 +552,8 @@ function labelStyle (focused, tintColor) {
     let tabBarVisible = true;
     //console.log("TOOOLLLLBAR : " + routes[index].routeName);
     //console.log(routes[index].params);
-    if(routes[index].routeName === 'ProfileScreenCamera'){
+    
+    if(routes[index].routeName === 'ProfileScreenCamera' || routes[index].routeName === 'ProfileClientDetail' || routes[index].routeName === 'ProfileScreenFriends'){
       if (typeof routes[index].params !== 'undefined') {
           tabBarVisible = !routes[index].params['hideBottomTabBar'];
       }
@@ -589,8 +591,8 @@ function labelStyle (focused, tintColor) {
           );
           },
         //tabBarVisible: false,
-   
-      tabBarVisible
+        keyboardHidesTabBar: true,
+        tabBarVisible
     }
   }
 

@@ -835,7 +835,7 @@ class FLTicketDetail extends React.Component {
                             }}
           >
                 <View style={{paddingLeft: 5, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={setFont('200', 12)}>{this.ticket.getStatus().name}{'\n'}
+                    <Text style={setFont('200', 12)}>{this.ticket.getStatusName()}{'\n'}
                     <Text style={setFont('200', 9)}>#{this.ticket.getId()}</Text> </Text>
                 </View>
           </TouchableOpacity>  
@@ -1486,11 +1486,11 @@ class FLTicketDetail extends React.Component {
                                                                   { text: 'Oui', onPress: () => {
                                                                         this.ticket.setStatus(5);
                                                                         var productcharacmodif = {
-                                                                          status: 5,
+                                                                          status: 5, //closed
                                                                           idTicket: this.ticket.getId()
                                                                         };
 
-                                                                        console.log(this.ticket.getStatus());
+                                                                        //console.log(this.ticket.getStatus());
                                                                         ssModifyTicket(this.props.firebase, productcharacmodif);
                                                                   } }
                                                                 ],
@@ -1502,7 +1502,7 @@ class FLTicketDetail extends React.Component {
        
    
                                                       break;
-                                                    deafult : break;
+                                                    default : break;
                                                   }
                                                 }}
                                                 adjustFrame={(f) => {

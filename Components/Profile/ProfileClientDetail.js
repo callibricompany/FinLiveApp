@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View, Text, TextInput, SafeAreaView, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, TouchableOpacity, Keyboard, View, Text, TextInput, SafeAreaView, Image, KeyboardAvoidingView } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -49,6 +49,27 @@ const ProfileClientDetail = ({ navigation }) => {
     //const [isEditable, setIsEditable ] = useState(navigation.getParam('isEditable', true));
     const [isUpdatable, setIsUpdatable] = useState(false)
 
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", _keyboardDidShow);
+        Keyboard.addListener("keyboardDidHide", _keyboardDidHide);
+    
+        // cleanup function
+        return () => {
+          Keyboard.removeListener("keyboardDidShow", _keyboardDidShow);
+          Keyboard.removeListener("keyboardDidHide", _keyboardDidHide);
+        };
+      }, []);
+    
+      const _keyboardDidShow = () => {
+        navigation.setParams({ hideBottomTabBar : true });
+        console.log("Keyboard Shown");
+      };
+    
+      const _keyboardDidHide = () => {
+        navigation.setParams({ hideBottomTabBar : false });
+        console.log("Keyboard Hidden");
+      };
+
     async function submitForm() {
         try {
             // console.log(INITIAL_STATE)
@@ -92,6 +113,7 @@ const ProfileClientDetail = ({ navigation }) => {
             </TouchableOpacity>
    
                 <View style={{flex : 1,}}>
+                <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
                     {/* <Text style={styles.textItem}>id: {id}</Text>
                     <Text style={styles.textItem}>uid: {item.uid}</Text> */}
                     <View style={{borderWidth : 0, justifyContent : 'center', alignItems: 'center', marginBottom : 20}}>
@@ -316,8 +338,8 @@ const ProfileClientDetail = ({ navigation }) => {
                           </View>
                     </TouchableOpacity>
                   </View>
-     
-   
+
+                </KeyboardAvoidingView>
                 </View>
           
         </View>

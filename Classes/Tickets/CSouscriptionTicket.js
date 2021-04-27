@@ -43,7 +43,7 @@ export class  CSouscriptionTicket extends CWorkflowTicket {
     // "created_at": "2020-07-05T14:55:42Z",
     // "status": 2,
 
-    this.setType("SOUSCRIPTION_TYCKET");
+    //this.setType("SOUSCRIPTION_TYCKET");
   }
 
   isMine(user){

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, Linking, Text, AsyncStorage, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Image, Alert, Modal, ClippingRectangle, TextInput, KeyboardAvoidingView } from 'react-native';
+import { View, ScrollView, Linking, Text, Keyboard, SafeAreaView, Animated, TouchableOpacity, StyleSheet, StatusBar, Image, Alert, Modal, ClippingRectangle, TextInput, KeyboardAvoidingView } from 'react-native';
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -75,6 +75,8 @@ class ProfileScreenFriends extends React.Component {
     }
 
     
+    this.keyboardDidHide = this.keyboardDidHide.bind(this);
+    this.keyboardDidShow = this.keyboardDidShow.bind(this);
 
     this.setFriendSections();
 }
@@ -125,9 +127,17 @@ async componentDidMount() {
       StatusBar.setBarStyle('light-content' );
     }
   });
+
+
 }
 
+keyboardDidHide() {
+  this.props.navigation.setParams({ hideBottomTabBar : false });
+}
 
+keyboardDidShow(e) {
+  this.props.navigation.setParams({ hideBottomTabBar : true });
+}
 
 componentWillUnmount() {
     //console.log("Composant demonté");
@@ -137,6 +147,10 @@ componentWillUnmount() {
       this._navListener = null;
       //this._navListener.remove();
   }
+  Keyboard.removeListener('keyboardDidShow');
+  Keyboard.removeListener('keyboardDidHide');
+  //this.keyboardDidHide.remove()
+  //this.keyboardDidShow.remove()
 }
 
 

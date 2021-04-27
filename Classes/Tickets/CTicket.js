@@ -11,7 +11,13 @@ import { getContentTypeFromExtension } from '../../Utils';
 
 import { CUsers } from '../CUsers';
 
-
+//       STATUS	VALUE
+//Open	                  2
+//Pending	                3
+//Resolved	              4
+//Closed	                5
+//Waiting for customer    6
+//Traded                  7
 
 
 const urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
@@ -25,7 +31,7 @@ export class CTicket  {
       this.ticket = ticket;
       
       //statut FD
-      this.status = CTicket.STATUS().filter(({id}) => id === this.ticket.status)[0];
+      //this.status = CTicket.STATUS().filter(({id}) => id === this.ticket.status)[0];
 
       //manage product on ticket 
       this.product = null;
@@ -40,11 +46,11 @@ export class CTicket  {
     }
 
     getType() {
-      return this.type;
+      return this.ticket['type'];
     }
-    setType(type) {
-      this.type = type;
-    }
+    // setType(type) {
+    //   this.type = type;
+    // }
     
    
     //renvoie tout un texte qui sera filtré avec le search 
@@ -557,14 +563,22 @@ export class CTicket  {
      * verifie si le ticket est fermé
      */
     isClosed() {
-      return this.status.id === 5;
+      return this.ticket.status === 5;
     }
     getStatus() {
-      return this.status;
+      //return this.status;
+     
+      return this.ticket.status;
     }
+    getStatusName() {
+      let statusNb = this.getStatus();
+      var statusArray = CTicket.STATUS().filter(({id}) => id === statusNb)[0];
+      return statusArray.name;
+    }
+
     setStatus(status) {
-      this.ticket['status'] = 5;
-      this.status = CTicket.STATUS().filter(({id}) => id === status)[0];
+      this.ticket['status'] = status;
+      //this.status = CTicket.STATUS().filter(({id}) => id === status)[0];
     }
 
     getPriority() {
@@ -609,7 +623,7 @@ export class CTicket  {
        "color" : "goldenrod"
      },
      {
-       "name": "En attent????",
+       "name": "????",
        "id": 1,
        "color" : "mediumaquamarine"
      },
@@ -631,6 +645,16 @@ export class CTicket  {
      {
        "name": "Fermé",
        "id": 5,
+       "color" : "linen"
+     },
+     {
+       "name": "Attente client",
+       "id": 6,
+       "color" : "linen"
+     },
+     {
+       "name": "Traded",
+       "id": 7,
        "color" : "linen"
      }
    ];

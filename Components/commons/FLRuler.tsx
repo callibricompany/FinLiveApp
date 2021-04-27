@@ -11,6 +11,8 @@ import {
 
 import Numeral from 'numeral';
 import 'numeral/locales/fr';
+import { getConstant } from '../../Utils';
+
 
 const { width } = Dimensions.get('screen');
 const { height } = Dimensions.get('screen');
@@ -158,7 +160,7 @@ class FLRuler extends React.Component<Props> {
 
         this.state = {
             scrollX: new Animated.Value(0),
-            value: 0
+            value: props.defaultValue
         };
 
         // References
@@ -172,23 +174,38 @@ class FLRuler extends React.Component<Props> {
             props.width -
             props.segmentWidth +
             (props.maximum - props.minimum) * this.snapSegment;
+        this.defaultValue = props.defaultValue;
+
+        this.divisor = 1000;
+        if (props.unit === '%') {
+            this.divisor = 100;
+        }
+
     }
 
     componentDidMount() {
-        const { minimum } = this.props;
+        const { minimum , unit } = this.props;
 
         // Create a listener
         this.scrollListener = this.state.scrollX.addListener(({ value }) => {
             if (this.textInputRef && this.textInputRef.current) {
                 this.textInputRef.current.setNativeProps({
-                    text: Numeral((Math.round(value / this.snapSegment) / 1000) + minimum).format('0.0%')
+                    //text: Numeral((Math.round(value / this.snapSegment) / 1000) + minimum).format('0.0%')
+                    text: Numeral(((Math.round(value / this.snapSegment) ) + minimum)/this.divisor).format('0.0%')
                 });
-
+                
                 this.setState({
                     value: Math.round(value / this.snapSegment) + minimum
                 });
             }
         });
+        setTimeout(() => {
+            let v = (this.defaultValue - minimum) * this.snapSegment;
+            //console.log("Default value : " + this.defaultValue + "    " + this.state.value +  "     " + v);
+            this.scrollViewRef.current.scrollTo({x: v, y: 0, animated: false});
+          }, 10)
+        
+        
     }
 
     componentWillUnmount() {
@@ -206,19 +223,21 @@ class FLRuler extends React.Component<Props> {
             stepColor,
             stepHeight,
             normalColor,
-            normalHeight
+            normalHeight,
+            defaultValue
         } = this.props;
 
         // Create an array to make a ruler
         const data = [...Array(maximum - minimum + 1).keys()].map(i => i + minimum);
-
+        
         return (
             <View
                 style={{
                     width: this.rulerWidth,
                     flexDirection: 'row',
                     justifyContent: 'flex-start',
-                    alignItems: 'flex-end'
+                    alignItems: 'flex-end',
+                    //borderWidth : 2
                 }}
             >
                 {/* Spacer */}
@@ -310,6 +329,7 @@ class FLRuler extends React.Component<Props> {
                         ],
                         { useNativeDriver: true }
                     )}
+                    
                     onMomentumScrollEnd={() => onChangeValue(this.state.value)}
                 >
                     {this.renderRuler()}
@@ -332,7 +352,8 @@ class FLRuler extends React.Component<Props> {
                             flexDirection: 'row',
                             justifyContent: 'center',
                             alignItems: 'flex-end',
-                            transform: vertical ? [{ rotate: '-90deg' }] : undefined
+                            transform: vertical ? [{ rotate: '-90deg' }] : undefined,
+                            width : getConstant('width') 
                         }}
                     >
                         {/* Number */}
@@ -400,7 +421,8 @@ FLRuler.defaultProps = {
     unitBottom: height * 0.027,
     unitFontFamily: 'System',
     unitColor: '#888888',
-    unitSize: 16
+    unitSize: 16,
+    defaultValue : 0
 };
 
 export default FLRuler;

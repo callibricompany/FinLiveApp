@@ -541,7 +541,7 @@ class FLAutocallDetail extends React.Component {
     );
   }
 
-  //gestion des icones a chauche (partie 2/2)
+  //gestion des icones a gauche (partie 2/2)
   _renderContentLeftMenu = (content, index, isActive, sections) => {
     //console.log(content);
     return null;

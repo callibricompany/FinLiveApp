@@ -295,6 +295,35 @@ export class CProduct2 {
       return name;
   }
 
+  //retourne le nom  du produit
+  static getNameFromCode(code) {
+
+    let name = "";
+    switch(code) {
+      case 'AUTOCALL_CLASSIC' :
+        name = "Athéna";
+        break;
+      case 'AUTOCALL_INCREMENTAL' :
+        name = "Athéna";
+        break;
+      case 'PHOENIX' :
+        name = "Phoenix";
+        break;
+      case 'PHOENIX_MEMORY' :
+        name = "Phoenix mémoire";
+        break;
+      case 'REVERSE' :
+        name = "Réverse convertible";
+        break;
+      default : 
+          name = "UNKNOWN";
+        break;
+    }
+
+    return name;
+}
+
+
   getDescription(nb=1) {
     return nb === 1 ? this.getDescription_1() : this.getDescription_2();
   }

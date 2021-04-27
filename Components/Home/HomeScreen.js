@@ -64,6 +64,8 @@ const initialLayout = {
           filters : '',
           searchTextForNews : ''
         }
+
+        this.props.navigation.setParams({ hideBottomTabBar : true });
         //this.props.navigation.setParams({ hideBottomTabBar : true });
         // console.log("PLATE-FORME : " + Platform.OS)
     }
@@ -108,6 +110,7 @@ const initialLayout = {
         await this.props.getUserAllInfo();
         //this.props.resetCurrentNotification();
         this.setState({ isServerOk : true, isLoading: false});
+        this.props.navigation.setParams({ hideBottomTabBar : false });
       } catch(error) {
         console.log("ERREUR RESEAU : "+error);
         this.setState({ isServerOk : false, isLoading: false});
@@ -285,6 +288,7 @@ const initialLayout = {
                                                   await this.props.getUserAllInfo();
                                               // //   //this.props.resetCurrentNotification();
                                                   this.setState({ isServerOk : true, isLoading: false});
+                                                  this.props.navigation.setParams({ hideBottomTabBar : false });
                                                 } catch(error) {
                                                   console.log("ERREUR RESEAU : "+error);
                                                   this.setState({ isServerOk : false, isLoading: false});

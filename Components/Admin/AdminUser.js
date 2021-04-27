@@ -7,7 +7,6 @@ import localization from 'moment/locale/fr'
 import { globalStyle } from '../../Styles/globalStyle'
 import { FontAwesome } from '@expo/vector-icons';
 
-import { ssCreateStructuredProduct } from '../../API/APIAWS';
 
 import { setColor, setFont } from '../../Styles/globalStyle';
 

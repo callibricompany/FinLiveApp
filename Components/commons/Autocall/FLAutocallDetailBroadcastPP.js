@@ -12,7 +12,6 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FLTemplateAutocall from "./FLTemplateAutocall";
 import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 
-import { ssCreateStructuredProduct } from '../../../API/APIAWS';
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant } from '../../../Utils';
 import { interpolateColorFromGradient } from '../../../Utils/color';
 

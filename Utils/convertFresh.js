@@ -100,7 +100,7 @@ var mappingFreshApp = [
   },
   {
     "code": "AL",
-    "app": "airbagLevel",
+    "app": "typeAirbag",
     "typeInApp": "N",
     "freshdesk": "cf_airbaglevel",
     "typeInFreshdesk": "N%"

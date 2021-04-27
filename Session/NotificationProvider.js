@@ -412,7 +412,7 @@ export const withNotification = Component => props => (
               </View>
               { (store.titleNotification != null && store.titleNotification !== '')
                 ?
-                  <Animated.View style={{position: 'absolute', top: store.positionTop, left : getConstant('width')/10, width :4*getConstant('width')/5, borderWidth : 0, borderColor: 'red', borderRadius : 20}}>
+                  <Animated.View style={{position: 'absolute', transform: [{ translateY: store.positionTop }] /*top: store.positionTop*/, left : getConstant('width')/10, width :4*getConstant('width')/5, borderWidth : 0, borderColor: 'red', borderRadius : 20}}>
                       <TouchableOpacity style={{ flexDirection : 'row'}}
                                           onPress={() => {
                                               if (store.typeNotification === 'TICKET') {

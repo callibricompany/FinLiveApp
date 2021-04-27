@@ -37,7 +37,7 @@ export class  CWorkflowTicket extends CTicket {
     this.currentStep = ticket.currentStep[0];
     //console.log(this.currentStep);
     //console.log(this.steps);
-    this.setType("WORKFLOW_TYCKET");
+    //this.setType("WORKFLOW_TICKET");
  
   }
 

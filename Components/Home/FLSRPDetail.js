@@ -10,7 +10,6 @@ import localization from 'moment/locale/fr'
 
 import Accordion from 'react-native-collapsible/Accordion';
 
-import { ssCreateStructuredProduct } from '../../API/APIAWS';
 
 import { setFont, setColor , globalStyle } from '../../Styles/globalStyle';
 

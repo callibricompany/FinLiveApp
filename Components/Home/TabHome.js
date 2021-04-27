@@ -22,7 +22,7 @@ import { withNavigation } from "react-navigation";
 import NavigationService from '../../Navigation/NavigationService';
 import { compose, hoistStatics } from "recompose";
 
-import { searchProducts, getMostPricedPS, getUserFavorites} from '../../API/APIAWS';
+import { searchProducts, getMostPricedPS, getUserFavorites } from '../../API/APIAWS';
 import { interpolateBestProducts } from '../../Utils/interpolatePrices';
 
 import RobotBlink from "../../assets/svg/robotBlink.svg";
@@ -78,7 +78,7 @@ class TabHome extends React.PureComponent {
 
     this.bestCoupons = [];
 
-
+    
 
 
 
@@ -148,10 +148,10 @@ class TabHome extends React.PureComponent {
   async componentDidMount(){
 
               //chargement des meilleurs coupons
-              let allUnderlyings = this.props.getAllUndelyings();
+              let allUnderlyings = this.props.getAllUndelyings("INTERPOLATED_PS");
 
               // allUnderlyings.forEach((u) => {
-              u = allUnderlyings[0];
+              //u = allUnderlyings[0];
               //console.log(u);
               let request = new CPSRequest();
               //request.setCriteria('type', autocall.getProductCode(), autocall.getProductName());
@@ -161,6 +161,7 @@ class TabHome extends React.PureComponent {
               request.setCriteria('barrierPDI', 0.6, "Protégé jusqu'à -40%");
               request.setCriteria('barrierPhoenix', 1, "Coupon payé au rappel");
               request.setCriteria('isMemory', true, "Mémoire");
+              //console.log(request.getCriteria());
 
               try {
                 var data = await searchProducts(this.props.firebase, request.getCriteria(), false)

@@ -1,7 +1,8 @@
 // API/TMDBApi.js
 import axios from 'axios';
-
 export const URL_AWS = "http://99.80.211.255:8080"
+//var fs = require('fs');
+
 
 ///////////////////////////
 //    USER
@@ -232,8 +233,18 @@ export function getBroadcastAmount (firebase, idBroadcast) {
 //    TICKET
 //    get all ticket closed
 ///////////////////////////
-export function getAllTicketClosed (firebase) {
-
+export function getAllTicket (firebase, filter='') {
+//getUserAllTicketFollowed
+  var pathToCall = 'getUserAllTicket';
+  switch (filter) {
+    case 'CLOSEDTICKETS' :
+      pathToCall = 'getUserAllTicketClosed';
+      break;
+    case 'FOLLOWEDTICKETS' :
+      pathToCall = 'getUserAllTicketFollowed';
+      break;
+    default : break;
+  }
   return new Promise(
     (resolve, reject) => {
 
@@ -247,7 +258,7 @@ export function getAllTicketClosed (firebase) {
             }
           };
           
-          axios.get(URL_AWS + '/getUserAllTicketClosed', axiosConfig)
+          axios.get(URL_AWS + '/' + pathToCall, axiosConfig)
           .then((response) => {
             
             resolve(response.data)
@@ -329,7 +340,7 @@ export function broadcastPP (firebase, product) {
 //    TICKET
 //    creation de ticket
 ///////////////////////////
-export function ssCreateStructuredProduct (firebase, product) {
+export function createTicket (firebase, product, files=[]) {
 
   var FormData = require('form-data');
   var form = new FormData();
@@ -337,7 +348,16 @@ export function ssCreateStructuredProduct (firebase, product) {
   Object.keys(product).forEach(key => {
     //console.log(key + "   -   " + product[key] + "   :  " + typeof product[key]);
     form.append(key, typeof product[key] != 'boolean' ? product[key] : product[key].toString());
+
   });
+
+  if (files.length > 0 ) {
+    for (var i = 0; i < files.length; i++) {
+        //formData.append('fileinput', fs.createReadStream(files[i].path),files[i].originalname);
+        form.append('fileinput', {uri: files[i].uri, name: files[i].name});
+      }
+  }
+
 
   //console.log("BOUNDARY : "+form._boundary);
   //var filesuploaded = req.files;
@@ -649,7 +669,37 @@ export function getUserAllInfoAPI (idToken, device) {
     });
 }
 
+///////////////////////////
+//    UNDERLYING
+//    retourne les underlying oen fonction du critere type
+///////////////////////////
 
+export async function getUnderlyings(firebase, type='ALL') {
+  console.log("getUnderlyings : " + type);
+  try {
+      var token = await firebase.doGetIdToken();
+
+      var axiosConfig = {
+        headers :{
+          'bearer'      : token,
+          'pass' : 'CALLIBRI'
+        }
+      };
+      if (type === 'INTERPOLATED_PS') {
+        var response = await axios.get(URL_AWS + '/optionchainfresh', axiosConfig);
+      } else {
+        var response = await axios.get(URL_AWS + '/underlyings', axiosConfig);
+      }
+      
+      if (response.data === "Error") {
+        return Promise.reject("Error");
+      }
+      
+      return Promise.resolve(response.data);
+  } catch(error) {
+    return Promise.reject(error);
+  }
+}
 
 ///////////////////////////
 //    FAVORITES

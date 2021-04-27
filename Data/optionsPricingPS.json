@@ -103,7 +103,7 @@
       ]
     },
     {
-      "name": "airbagLevel",
+      "name": "typeAirbag",
       "title" : "OPTIONS AUTOCALL",
       "icon" : "airbag",
       "description": [

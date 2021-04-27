@@ -10,7 +10,7 @@ import { DeckSwiper } from "native-base";
 
 export class CAutocall2 extends CStructuredProduct {
 
-  static AUTOCALL_TYPE =  ['AUTOCALL_CLASSIC', 'AUTOCALL_INCREMENTAL','PHOENIX','PHOENIX_MEMORY','REVERSE'];
+  static AUTOCALL_TYPE =  ['AUTOCALL_INCREMENTAL','PHOENIX','PHOENIX_MEMORY','REVERSE'];
 
 
   constructor(autocall, source='products') {
@@ -36,7 +36,7 @@ export class CAutocall2 extends CStructuredProduct {
               this.strike = Number(u[1]);
               break;
             case 'LA' :
-              this.levelAutocall = Number(u[1]);
+              this.autocallLevel = Number(u[1]);
               break;
             case 'FA' :
               this.freqAutocall = u[1];
@@ -47,8 +47,8 @@ export class CAutocall2 extends CStructuredProduct {
             case 'NNCP' :
               this.noCallNbPeriod = Number(u[1]); //en mois
               break;
-            case 'AL' :
-              this.airbagLevel = Number(u[1]);
+            case 'TA' :
+              this.typeAirbag = u[1]; //Number(u[1]);
               break;
             case 'PSIUS' :
               this.isPDIUS = u[1];
@@ -168,19 +168,17 @@ export class CAutocall2 extends CStructuredProduct {
 
   //renvoie le code airbag : NA, SA ou FA
   getAirbagCode() {
-    let name = "NA";
-    if (this.isAirbag()) {
-      name = "FA";
-    }
-    if (this.isSemiAirbag()) {
-      name = "SA";
-    }
-    return name;
+    return this.typeAirbag;
   }
 
   //renvoie le niveau airbag
   getAirbagLevel() {
-    return this.airbagLevel;
+    let airbagCode = this.getAirbagCode();
+    switch(airbagCode) {
+      case 'FA' : return this.getBarrierPDI();
+      case 'SA' : return this.getBarrierPDI();
+      default : return this.getAutocallLevel();
+    }
   }
 
   //renvoie la barriere Phoenix
@@ -285,14 +283,14 @@ export class CAutocall2 extends CStructuredProduct {
 
   //verifie s'il est full airbeg
   isFullAirbag() {
-
-    return this.barrierPDI === this.airbagLevel;
+    
+    return this.getAirbagCode() === 'FA';
   }
 
   //verifie s'il est semi-airbag
   isSemiAirbag() {
 
-    return ((this.barrierPDI + this.autocallLevel) / 2 ) === this.airbagLevel;
+    return this.getAirbagCode() === 'SA';
   }
 
   //verifie si c'est c'est un phoenix
@@ -348,6 +346,15 @@ export class CAutocall2 extends CStructuredProduct {
     }  
     
     return datas;
+  }
+
+  //retourne la prochaine date de d'évéenement
+  getNextEventDate() {
+
+  }
+
+  getNextAutocallDate() {
+    
   }
   
 }

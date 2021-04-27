@@ -14,7 +14,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import { ifIphoneX, ifAndroid, isEqual , getConstant, isAndroid } from '../../Utils';
 
-import { getAllTicketClosed } from '../../API/APIAWS';
+import { getAllTicket } from '../../API/APIAWS';
 
 import { CTicket } from '../../Classes/Tickets/CTicket';
 import { CWorkflowTicket } from  "../../Classes/Tickets/CWorkflowTicket";
@@ -218,7 +218,7 @@ class TicketScreen extends React.Component {
       case 'CLOSEDTICKETS' : 
         //on rappatrie les tickets 
         this.allTickets = [];
-        getAllTicketClosed(this.props.firebase)
+        getAllTicket(this.props.firebase, filterCode)
         .then((tickets) => {
           //console.log(tickets.userTickets);
           this.allTickets = this.props.classifyTickets(tickets.userTickets, 'PRODUCT');

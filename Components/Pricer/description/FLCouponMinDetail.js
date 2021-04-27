@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
 import FLRuler from '../../commons/FLRuler';
-import { FLSlider2 } from '../../commons/FLSlider2';
+
 
 import { setFont, setColor } from '../../../Styles/globalStyle'
 import { getConstant } from '../../../Utils';
@@ -23,7 +23,7 @@ export class FLCouponMinDetail extends React.Component{
             couponMin : this.props.initialValueCouponMin,
            
         }
-
+        console.log("Coupon min : " + 1000*this.state.couponMin);
         
     }
 
@@ -40,7 +40,7 @@ export class FLCouponMinDetail extends React.Component{
                 </View>
 
                 <View style={{alignItems:'center', justifyContents: 'center', marginTop: 20}}>  
-
+   
                 <FLRuler
                     style={{ borderRadius: 10, elevation: 3 }}
                     width={350}
@@ -53,10 +53,11 @@ export class FLCouponMinDetail extends React.Component{
                           
                        });
                     }}
+             
                     minimum={0}
                     maximum={200}
                     segmentWidth={2}
-                    segmentSpacing={20}
+                    segmentSpacing={10}
                     indicatorColor='#FF0000'
                     indicatorWidth={100}
                     indicatorHeight={40}
@@ -75,7 +76,7 @@ export class FLCouponMinDetail extends React.Component{
                     unitFontFamily='System'
                     unitColor='#888888'
                     unitSize={0}
-                    defaultValue={0.0}
+                    defaultValue={1000*this.state.couponMin}
                     //vertical={true}
                 />
 

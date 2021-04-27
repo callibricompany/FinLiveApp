@@ -6,6 +6,7 @@ import FREQUENCYLIST from "../../Data/frequencyList.json";
 
 
 
+
 export class CAutocall extends CProduct {
   constructor(autocall) {
     super(autocall); // appelle le constructeur parent avec le paramètre
@@ -54,21 +55,6 @@ export class CAutocall extends CProduct {
 
   //determination du nom du produit
   setProductName() {
-    // determination du nom du produit
-    /*
-    if(!this.product.hasOwnProperty('product')) {
-      //console.log("passe la ");
-      if (this.product['barrierPhoenix'] !== 1) { //phoenix
-        this.product['isMemory'] ? this.product['product'] = 'memoryPhoenix' : this.product['product'] = 'classicPhoenix';
-      } else { //c'est un autocall
-      this.product['isIncremental'] ?  
-                                (this.product['airbagLevel'] === this.product['barrierPDI'] || this.product['airbagLevel'] === (1 + this.product['barrierPDI'])/2) ?  this.product['product'] = 'airbagAutocall'
-                                                                        :  this.product['product'] = 'incrementalAutocall'
-                            : this.product['product'] = 'classicAutocall';
-      }
-    }
-    */
-
     if (!this.product.hasOwnProperty("product")) {
       //console.log("passe la ");
       if (this.product["barrierPhoenix"] !== 1) {
@@ -359,11 +345,13 @@ export class CAutocall extends CProduct {
 
   //renvoie le niveau airbag
   getAirbagLevel() {
-    let name = 1;
-    if (this.product.hasOwnProperty("airbagLevel")) {
-      name = this.product.airbagLevel;
+    let airbagCode = this.getAirbagCode();
+    switch(airbagCode) {
+      case 'FA' : return this.getBarrierPDI();
+      case 'SA' : return this.getBarrierPDI();
+      default : return this.getAutocallLevel();
     }
-    return name;
+
   }
 
   //renvoie la barriere Phoenix
@@ -507,7 +495,7 @@ export class CAutocall extends CProduct {
   //verifie si c'est airbag ou semi-airbag
   isAirbag() {
     let response = false;
-    if (
+    /*if (
       this.product.hasOwnProperty("airbagLevel") &&
       this.product.hasOwnProperty("levelAutocall") &&
       this.product.hasOwnProperty("barrierPDI")
@@ -521,14 +509,20 @@ export class CAutocall extends CProduct {
       if (autocallLevel !== airbag) {
         response = true;
       }
+    }*/
+    if (this.product.hasOwnProperty("airbagLevel")) {
+      if (this.product['airbagLevel'] === 'FA' || this.product['airbagLevel'] === 'SA') {
+        response = true;
+      }
     }
+
 
     return response;
   }
 
   //verifie s'il est full airbeg
   isFullAirbag() {
-    let response = false;
+    /*let response = false;
     if (
       this.product.hasOwnProperty("airbagLevel") &&
       this.product.hasOwnProperty("levelAutocall") &&
@@ -542,12 +536,13 @@ export class CAutocall extends CProduct {
         response = true;
       }
     }
-    return response;
+    return response;*/
+    return this.getAirbagCode() === 'FA';
   }
 
   //verifie s'il est semi-airbag
   isSemiAirbag() {
-    let response = false;
+    /*let response = false;
     if (
       this.product.hasOwnProperty("airbagLevel") &&
       this.product.hasOwnProperty("levelAutocall") &&
@@ -561,7 +556,8 @@ export class CAutocall extends CProduct {
         response = true;
       }
     }
-    return response;
+    return response;*/
+    return this.getAirbagCode() === 'SA';
   }
 
   //verifie si c'est c'est un phoenix
