@@ -24,6 +24,11 @@ export function FLCoupons ({phoenixDatas, isMemory, updateProduct}) {
 
     let alreadyBreaked = false;
 
+    var minDateConstatsArray = [...new Set(phoenixDatas.map(x => x.date))];
+    var minDateConstat = new Date(Math.min.apply(Math, minDateConstatsArray));
+    var today = new Date(Date.now());
+    var flewToApply = minDateConstat < today ? 0.25 : 0.333
+
     return (
       <View style={{marginRight : 10, borderWidth : 0}}>
         <View style={{flex: 1, justifyContent: 'flex-start', borderWidth: 0, marginTop : 5, marginBottom: 5}}>
@@ -36,17 +41,27 @@ export function FLCoupons ({phoenixDatas, isMemory, updateProduct}) {
         </View>
 
         <View style={{flexDirection: 'row', marginTop : 5}}>
-              <View style={{flex: 0.333, padding : 5}}>
+              <View style={{flex: flewToApply, padding : 5}}>
                  <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>Date de constatation</Text>
               </View>
-              <View style={{flex: 0.334, padding : 5}}>
+              <View style={{flex: flewToApply, padding : 5}}>
                 <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>
                   Barrière de coupon
                 </Text>
               </View>
-              <View style={{flex: 0.333, padding : 5}}>
+              {
+                    minDateConstat < today 
+                    ?
+                    <View style={{flex: flewToApply, padding : 5}}>
+                        <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>
+                        Perf
+                        </Text>
+                    </View>
+                    : null
+                }
+              <View style={{flex: flewToApply, padding : 5}}>
                 <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>
-                   Niveau de coupon
+                   Coupon
                 </Text>
               </View>
         </View>
@@ -62,17 +77,26 @@ export function FLCoupons ({phoenixDatas, isMemory, updateProduct}) {
                   alreadyBreaked = true;
                   return (
                     <View style={{flexDirection: 'row'}} key={i}>
-                        <View style={{flex: 0.333}}>
+                        <View style={{flex: flewToApply}}>
                           <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                               ...
                           </Text>
                         </View>
-                        <View style={{flex: 0.334}}>
+                        <View style={{flex: flewToApply}}>
                           <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                               ...
                           </Text>
                         </View>
-                        <View style={{flex: 0.333}}>
+                        { minDateConstat < today 
+                              ?
+                              <View style={{flex: flewToApply}}>
+                              <Text style={[setFont('400', 12, 'black','Regular'), {alignSelf: 'center'}]}>
+                                  ...
+                              </Text>
+                              </View>
+                          : null
+                          }
+                        <View style={{flex: flewToApply}}>
                           <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                               ...
                           </Text>
@@ -82,17 +106,26 @@ export function FLCoupons ({phoenixDatas, isMemory, updateProduct}) {
                 }
                 return (
                   <View style={{flexDirection: 'row'}} key={i}>
-                      <View style={{flex: 0.333}}>
+                      <View style={{flex: flewToApply}}>
                         <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                              {Moment(obj["date"]).format('DD/MM/YYYY')}
                         </Text>
                       </View>
-                      <View style={{flex: 0.334}}>
+                      <View style={{flex: flewToApply}}>
                         <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                             {Numeral(obj['level']).format('0%')}
                         </Text>
                       </View>
-                      <View style={{flex: 0.333}}>
+                      { minDateConstat < today 
+                        ?
+                                <View style={{flex: flewToApply, backgroundColor : obj['perf'] > obj['level']? 'green' : 'transparent'}}>
+                                <Text style={[setFont('400', 12, obj['perf'] > obj['level'] ? 'white' : 'black','Regular'), {alignSelf: 'center'}]}>
+                                    {Numeral(obj['perf']).format('0.00%')}
+                                </Text>
+                            </View>
+                        : null
+                        }
+                      <View style={{flex:flewToApply}}>
                         <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                             {Numeral(obj['coupon']).format('0.00%')}
                         </Text>

@@ -9,19 +9,21 @@ import {
   ActivityIndicator,
   StyleSheet,
   StatusBar,
-  Platform,
+  TextInput,
   Alert,
   Text,
   Image,
   Keyboard,
   Dimensions
 } from 'react-native';
-import { Header, Item, CheckBox, Body, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
+
+import { Ionicons } from '@expo/vector-icons';
+import logoImg from '../../assets/LogoWithoutText.png'
 import React from 'react';
 import ButtonSubmit from './ButtonSubmit'
 
 import { setColor, setFont } from '../../Styles/globalStyle';
-import { isAndroid, isIphoneX , getConstant } from '../../Utils';
+import { isAndroid, sizeByDevice , getConstant } from '../../Utils';
 
 import splashImage from '../../assets/LogoWithoutText.png';
 
@@ -54,7 +56,7 @@ class RegisterFormBase extends React.Component {
     // We have the same props as in our signup.js file and they serve the same purposes.
    
     this.state = {
-      loading: true,
+      loading: false,
       name:'',
       firstName:'',
       phone:'',
@@ -77,14 +79,14 @@ class RegisterFormBase extends React.Component {
 
   //focus next text input : putain de galere
   focusNextField = (id) => {
-    //this.inputs[id].focus();
-    this.inputs[id]._root.focus();
+    this.inputs[id].focus();
+    //this.inputs[id]._root.focus();
   }
 
 
   componentDidMount () {
 
-    this.attends();
+    //this.attends();
   }
   
   resolveAfter2Seconds(x) {
@@ -117,24 +119,24 @@ class RegisterFormBase extends React.Component {
       Alert.alert('VERIFIER VOTRE PRENOM', 'Vérifiez votre prénom');
       return false;
     }
-    if (this.state.organization.length < 2 && !this.state.isIndependant){
-      Alert.alert('VERIFIER VOTRE ORGANISME', 'Vérifiez votre organisme de rattachement');
-      return false;
-    }
+    // if (this.state.organization.length < 2 && !this.state.isIndependant){
+    //   Alert.alert('VERIFIER VOTRE ORGANISME', 'Vérifiez votre organisme de rattachement');
+    //   return false;
+    // }
 
-    if (phoneRegEx.test(this.state.phone) === false){
-      Alert.alert('VERIFIER VOTRE NUMERO DE TELEPHONE', 'Le format de votre numéro de téléphone est invalide');
-      return false;
-    }
+    // if (phoneRegEx.test(this.state.phone) === false){
+    //   Alert.alert('VERIFIER VOTRE NUMERO DE TELEPHONE', 'Le format de votre numéro de téléphone est invalide');
+    //   return false;
+    // }
     if (reg.test(this.state.email) === false){
       Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
       return false;
     }
 
-    if (this.state.company.length < 1 ){
-      Alert.alert('VERIFIER LE NOM DE VOTRE SOCIETE', 'Le nom de votre société est invalide');
-      return false;
-    }
+    // if (this.state.company.length < 1 ){
+    //   Alert.alert('VERIFIER LE NOM DE VOTRE SOCIETE', 'Le nom de votre société est invalide');
+    //   return false;
+    // }
 
     if (this.state.password !== this.state.passwordVerif){
       Alert.alert('VERIFIER VOTRE MOT DE PASSE', 'Vous avez tapé 2 mots de passe différents');
@@ -150,11 +152,15 @@ class RegisterFormBase extends React.Component {
   }
 
 
-  onRegisterFail =  () => {
+  onRegisterFail(error) {
 
-    Alert.alert('ERREUR CREATION DE COMPTE', 'error');
+    
     console.log("erreur creation compte : " + error)
     this.setState({loggedIn : false, loading: false});
+
+    setTimeout(() => {
+      Alert.alert('Erreur','ERREUR CREATION DE COMPTE');
+      }, 1000);
     this.creationUserOk = false;
     return false;
   }
@@ -162,36 +168,21 @@ class RegisterFormBase extends React.Component {
   onRegisterSuccess() {
     this.setState({loggedIn : true, loading: false});
     this.creationUserOk = true;
-    this.props.navigation.navigate('WaitingRoom');
+    this.props.navigation.navigate('Login');
     return true;
   }
 
 
   //creation nouvel utilisateur
-   register =  () => {
+   register () {
     
     this.setState({loading: true});
     //this.checkEmailValidity();
     //firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-    this.props.firebase
-    .doCreateUserWithEmailAndPassword(this.state.email, this.state.password)
+
+    this.props.firebase.doCreateUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(authUser => {
-      // Create a user in your Firebase realtime database
-      //console.log(this.props.firebase.user(authUser.user.uid));
-      /*return this.props.firebase
-        .user(authUser.user.uid)
-        .set({
-          zohocode : '',
-          email : this.state.email,
-          name : this.state.name,
-          firstName : this.state.firstName,
-          validated : false,
-          independant : this.state.isIndependant,
-          organization : this.state.isIndependant ? '' : this.state.organisme,
-          supervisor : false,
-          expert : false,
-          phone : this.state.phone
-        });*/
+
     })
     .then(() => {
       console.log("DEMANDE ID TOKEN");
@@ -212,27 +203,23 @@ class RegisterFormBase extends React.Component {
           //console.log("USER CREE AVEC SUCCES DANS ZOHO");
           
           console.log("SUCCES CREATION USER");
+
+  
+
           this.onRegisterSuccess();
         })
         .catch(error => {
-          console.log("ERREUR CREATION USER: " + error);
-          Alert.alert('ERREUR CREATION DE COMPTE', '' + error);
-          this.props.navigation.navigate('WaitingRoom');
+          this.onRegisterFail(error);
         }) 
 
 
 
       }).catch(function (error) {
-        console.log(error);
-        Alert.alert('ERREUR CREATION DE COMPTE', '' + error);
-        this.props.navigation.navigate('WaitingRoom');
+        this.onRegisterFail(error);
         });
     })
     .catch((error) =>{
-      
-      console.log("erreur creation compte : " + error);
-      Alert.alert('ERREUR CREATION DE COMPTE', '' + error);
-      this.props.navigation.navigate('WaitingRoom');
+      this.onRegisterFail(error);
     })
     
     return this.creationUserOk;
@@ -251,18 +238,19 @@ class RegisterFormBase extends React.Component {
           return <Text />;
       }
       return (
-        <InputGroup>
-        <Item style={{width: 0.9*getConstant('width')}} >
-        <Icon name="ios-people"  style={{color : setColor('')}}/>
-        <Input
-        onChangeText={e => {this.typingInputText('organization',e)}}
-        clearButtonMode="always"
-        placeholder={"Organisme de rattachement"} 
-        blurOnSubmit={ true }
-        returnKeyType={ "done" }
-        />
-       </Item>
-       </InputGroup>
+      //   <InputGroup>
+      //   <Item style={{width: 0.9*getConstant('width')}} >
+      //   <Icon name="ios-people"  style={{color : setColor('')}}/>
+      //   <Input
+      //   onChangeText={e => {this.typingInputText('organization',e)}}
+      //   clearButtonMode="always"
+      //   placeholder={"Organisme de rattachement"} 
+      //   blurOnSubmit={ true }
+      //   returnKeyType={ "done" }
+      //   />
+      //  </Item>
+      //  </InputGroup>
+      <View />
       );
   }
 
@@ -311,7 +299,8 @@ class RegisterFormBase extends React.Component {
   //button premettant d'eefacer l'input
   renderEraseOnButton = (whichInput) => {
     return(
-            <Icon name="close-circle" style={{color : setColor('')}} onPress={() =>this.eraseInputText(whichInput)} />
+            // <Icon name="close-circle" style={{color : setColor('')}} onPress={() =>this.eraseInputText(whichInput)} />
+            <View />
          );
     }
   render() {
@@ -320,19 +309,17 @@ class RegisterFormBase extends React.Component {
 
     // The content of the screen should be inputs for a username, password and submit button.
     // If we are loading then we display an ActivityIndicator.
-    const content = this.state.loading ?
-    <View style={styles.style_activityIndicator}>
-    <ActivityIndicator size="large"/>
-    </View> :
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    if (this.state.loading) {
+      return (
+        <View style={styles.style_activityIndicator}>
+          <ActivityIndicator size="large"/>
+        </View>
+      );
+    }
+    return (
+      <SafeAreaView style={{flex: 1,paddingTop : getConstant('statusBar')}}>
+        {/* <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{flexDirection :'column', flex: 1}}>
-
-            
-   
-         
-
-           
-            
                  
             <Image style={styles.picture}  source={splashImage} />
                   
@@ -524,10 +511,10 @@ class RegisterFormBase extends React.Component {
                     {this.renderIsIndepenadant()}
 
                       <TouchableOpacity  
-                            style={{width : getConstant('width')*0.9, height : 50, backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}
+                            style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 10}}
                             onPress={this.register.bind(this)}
                       >
-                              <Text style={[setFont('600', 22, 'white', 'Bold'), {padding: 5}]}>CREER SON COMPTE</Text>
+                              <Text style={[setFont('600', 18, 'white', 'Regular'), {padding: 5, paddingHorizontal : 20}]}>CREER SON COMPTE</Text>
                       </TouchableOpacity>
 
 
@@ -551,17 +538,211 @@ class RegisterFormBase extends React.Component {
            
         </View>
         </TouchableWithoutFeedback>
-        ;
+        */}
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={{width: getConstant('width')*0.9, marginLeft:0.05*getConstant('width'), height: getConstant('height'), flexDirection: 'column', justifyContent:'flex-start',alignItems: 'center', borderWidth: 0}}>
+          <View style={{ marginTop : sizeByDevice(25, 10, 0), zIndex: 99, borderWidth :0}}>
+            <Image
+              source={logoImg}
+              style={{  opacity: this.state.isOnFocus ? 0.1 : 0.3,
+                        //position: "absolute",
+                        width: getConstant('width'),
+                        height: getConstant('height')*0.25,
+                        resizeMode: 'contain'
+                }}
+              resizeMode="contain"
+            />
+          </View>
+          <KeyboardAvoidingView behavior={'padding'} style={{  width: 0.9*getConstant('width')}} enabled={true}>  
+            <ScrollView keyboardShouldPersistTaps={"always"}>
+            <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
+                  <View style={{padding : 5, width : 35}}>
+                        <Ionicons name="md-person" style={{color : setColor('lightBlue')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
+                    <TextInput
+                        onChangeText={e => {this.setState({ firstName: e })}}
+                        //value={this.state.password}
+                        onBlur={() => {
+                          this.setState({ isOnFocus: false });
+                        }}
+                        onFocus={() => {
+                          this.setState({ isOnFocus : true });
+                        }}
+                        clearButtonMode={'while-editing'}
+                        //secureTextEntry={true}
+                        clearButtonMode={"always"}
+                        placeholder={"Prénom"} 
+                        autoCapitalize={'none'}
+                        autoCompleteType={'name'}
+                        onSubmitEditing={() => this.focusNextField('name')}
+                        blurOnSubmit={ true }
+                        returnKeyType={ "next" }
+                        ref={ input => {
+                          this.inputs['firsname'] = input;
+                        }}
+                        />
+                  </View>
+                </View>
 
-        //console.log('statusBarHeight: ', StatusBar.currentHeight);
-        return (
-            <SafeAreaView style={{flex: 1,paddingTop : getConstant('statusBar')}}>
+                <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
+                  <View style={{padding : 5, width : 35}}>
+                        <Ionicons name="md-person" style={{color : setColor('lightBlue')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
+                    <TextInput
+                        onChangeText={e => {this.setState({ name: e })}}
+                        //value={this.state.password}
+                        onBlur={() => {
+                          this.setState({ isOnFocus: false });
+                        }}
+                        onFocus={() => {
+                          this.setState({ isOnFocus : true });
+                        }}
+                        clearButtonMode={'while-editing'}
+                        //secureTextEntry={true}
+                        clearButtonMode={"always"}
+                        placeholder={"Nom"} 
+                        autoCapitalize={'none'}
+                        autoCompleteType={'name'}
+                        onSubmitEditing={() => this.focusNextField('email')}
+                        blurOnSubmit={ true }
+                        returnKeyType={ "next" }
+                        ref={ input => {
+                          this.inputs['name'] = input;
+                        }}
+                        />
+                  </View>
+                </View>
 
-  
-                {content}
 
-            </SafeAreaView>
-        );
+                <View style={{flexDirection: 'row', marginTop: 25, borderBottomWidth: 1, borderBottomColor : setColor('gray')}} >
+                  <View style={{padding : 5, width : 35}}>
+                        <Ionicons name="ios-mail"  style={{color : setColor('lightBlue')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft : 5}}>
+                        <TextInput
+                          //onChangeText={(text) => this.setState({email: text})}
+                          onChangeText={e => {
+                            //let email = String(e).toLocaleLowerCase();
+                            this.setState({ email : e});
+                          }}
+                          value={this.state.email}
+                          keyboardType='email-address'
+                          placeholder={"Adresse mail"} 
+                          clearButtonMode={'while-editing'}
+                          blurOnSubmit={ false }
+                          onBlur={() => {
+                            //console.log(this.state.email);
+                            this.setState({ email: this.state.email.toLowerCase(), isOnFocus: false });
+                          }}
+                          onFocus={() => {
+                            this.setState({ isOnFocus : true });
+                            //console.log("focus");
+                          }}
+                          autoCapitalize={'none'}
+                          autoCompleteType={'email'}
+                          onSubmitEditing={() => {
+                            this.inputs['password'].focus();
+                          }}
+                          returnKeyType={ "next" }
+                          ref={ input => {
+                            this.inputs['email'] = input;
+                          }}
+                          //style={setFont('400', 14, 'black', 'Regular')}
+                        />
+                        
+                  </View>
+                </View>
+
+                <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
+                  <View style={{padding : 5, width : 35}}>
+                        <Ionicons name="ios-unlock" style={{color : setColor('lightBlue')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
+                    <TextInput
+                        onChangeText={e => {this.setState({ password: e })}}
+                        //value={this.state.password}
+                        onBlur={() => {
+                          this.setState({ isOnFocus: false });
+                        }}
+                        onFocus={() => {
+                          this.setState({ isOnFocus : true });
+                        }}
+                        clearButtonMode={'while-editing'}
+                        secureTextEntry={true}
+                        clearButtonMode={"always"}
+                        placeholder={"Mot de passe"} 
+                        autoCapitalize={'none'}
+                        autoCompleteType={'password'}
+                        onSubmitEditing={() => this.focusNextField('passwordVerif')}
+                        blurOnSubmit={ true }
+                        returnKeyType={ "done" }
+                        ref={ input => {
+                          this.inputs['password'] = input;
+                        }}
+                        />
+                  </View>
+                </View>
+
+                <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
+                  <View style={{padding : 5, width : 35}}>
+                        <Ionicons name="ios-unlock" style={{color : setColor('lightBlue')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
+                    <TextInput
+                        onChangeText={e => {this.setState({ passwordVerif: e })}}
+                        //value={this.state.password}
+                        onBlur={() => {
+                          this.setState({ isOnFocus: false });
+                        }}
+                        onFocus={() => {
+                          this.setState({ isOnFocus : true });
+                        }}
+                        clearButtonMode={'while-editing'}
+                        secureTextEntry={true}
+                        clearButtonMode={"always"}
+                        placeholder={"Confirmez votre mot de passe"} 
+                        autoCapitalize={'none'}
+                        autoCompleteType={'password'}
+                        //onSubmitEditing={() => this.login()}
+                        blurOnSubmit={ true }
+                        returnKeyType={ "done" }
+                        ref={ input => {
+                          this.inputs['passwordVerif'] = input;
+                        }}
+                        />
+                  </View>
+                </View>
+            
+                <TouchableOpacity  
+                  style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 10}}
+                  onPress={() => {
+                    if (!this.checkEmailValidity()) {
+                      return;
+                    }
+                    this.register();
+                  }}
+                  >
+                      <Text style={[setFont('600', 18, 'white', 'Regular'), {padding: 5}]}>Créer son compte</Text>
+                </TouchableOpacity>
+                <TouchableOpacity  
+                  style={{borderColor : setColor(''), justifyContent:'center', alignItems: 'center', marginTop: 15, borderRadius: 10, borderWidth : 1}}
+                  onPress={()  => this.props.navigation.navigate('Login')}
+                  >
+                      <Text style={[setFont('600', 18, setColor(''), 'Regular'), {padding: 5}]}>Retour</Text>
+                </TouchableOpacity>
+
+          
+
+            </ScrollView>
+            </KeyboardAvoidingView>
+        </View>
+        </TouchableWithoutFeedback>
+        </SafeAreaView> 
+    );
+
+
   }
 
 

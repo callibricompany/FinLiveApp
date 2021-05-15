@@ -3,7 +3,6 @@ import { object } from 'prop-types';
 import Moment from 'moment';
 
 
-
 export class CStructuredProduct extends CFinancialProduct {
     constructor(structuredproduct, source='products') {
       super(structuredproduct, source); 
@@ -87,10 +86,30 @@ export class CStructuredProduct extends CFinancialProduct {
     //renvoie true si le produit est déja striké
     isStruck () {
         //regarder si les dates sont fixes et si la dates de strike est passé 
-        struck = false;
+        var strikingLevels = this.getStrikingLevels();
+        var struck = false;
+        if (Object.keys(strikingLevels).length > 0) {
+            Object.keys(strikingLevels).forEach((udlCode) => {
+                let striking = strikingLevels[udlCode];
+                if (striking !== 1) {
+                    struck = true;
+                }
+            });
+        }
+
 
         return struck;
     }
+
+    //la derniere date est passé
+    isClosed(d =  '') {
+        if (d === '') {
+            d = new Date(Date.now());
+        }
+        return (this.getLastConstatDate() < d)
+    }
+
+
 
     //check si c'est mono ou multi
     isMono() {
@@ -199,7 +218,7 @@ export class CStructuredProduct extends CFinancialProduct {
                     var d = allDatesObsOfUdl[String(whichDateNumber)];
                     if ("DATES_STRING" in d) {
                         if (Array.isArray(d['DATES_STRING'])) {
-                            obsDate = Moment(d['DATES_STRING'][0], 'YYYYMMDD').toDate();
+                            obsDate = Moment(d['DATES_STRING'][d['DATES_STRING'].length - 1], 'YYYYMMDD').toDate();
                         } else {
                             obsDate = Moment(d['DATES_STRING'], 'YYYYMMDD').toDate();
                         }
@@ -252,10 +271,13 @@ export class CStructuredProduct extends CFinancialProduct {
                     let period = relativeDate.substring(relativeDate.length - 1, relativeDate.length);
                     period = period !== 'M' ? period.toLowerCase() : null;
                     dateIssuing =  Moment(dateIssuing).add(relativeDate.substring(0, relativeDate.length - 1), period).toDate();
+                    dateIssuing = Moment(dateIssuing).add(2,"weeks").toDate();
                 }
             } else {
                 //on prend la date effective
-                dateIssuing = Moment(this.product['DATE_EFFECTIVE_STRING'], "YYYYMMDD").toDate();
+    
+                    dateIssuing = Moment(this.product['DATE_EFFECTIVE_STRING'], "YYYYMMDD").add(2,"weeks").toDate();
+          
             }
         } 
         return dateIssuing;
@@ -440,6 +462,131 @@ export class CStructuredProduct extends CFinancialProduct {
         this.spots = spots;
     }
 
+    //renvoie la date de prochain evenement
+    getNextEvent(typeEvent='') {
+        var today = Date.now();
+        var spreadDates = -1;
+        let nextEvent = {};
+        //on recupere toutes les valeurs 
+        let obs = this.getObservationDatesAsDict();
+        
+        if (this.product.hasOwnProperty("PAYMENTS")) {
+            for (const [key, paiement] of Object.entries(this.product["PAYMENTS"])) {
+
+                if (paiement.hasOwnProperty('PAYOFF')) {
+                    paiement['PAYOFF'].forEach((p) => {
+                        if (p.hasOwnProperty('OBSERVATIONS')){
+                            
+                            var max = 0;
+                            var min = 9999;
+                            Object.keys(p['OBSERVATIONS']).forEach((num) => {
+                                if (Number(num) > max ){
+                                    max = Number(num)
+                                }
+                                if (Number(num) < min ){
+                                    min = Number(num)
+                                }
+                            });
+                            p['DATE'] =  obs[String(max)];
+                            let spd = obs[String(max)] - today;
+                            if (spd > 0 && (spd < spreadDates || spreadDates === -1)) {
+                                if (typeEvent === '') {
+                                    spreadDates = spd;
+                                    nextEvent = paiement['PAYOFF'];
+                                } else {
+                                    let events = paiement['PAYOFF'];
+                                    let found = false;
+                                    
+                                    events.forEach((evt) => {
+                                        if(evt['FORMULA'] === typeEvent) {
+                                            found = true;
+                                        }
+                                    });
+                                    if (found) {
+                                        spreadDates = spd;
+                                        nextEvent = paiement['PAYOFF'];
+                                    }
+                                }
+                            }
+
+        
+                        }
+                    });
+                }
+            }
+        }
+        return nextEvent; 
+    }
+
+    getNextEventByFormula(formula) {
+        var events = this.getNextEvent(formula);
+
+        if (Array.isArray(events)) {
+            var event = {};
+            // if (Array.isArray(events) && events.length === 1) {
+            //     event = events[0];
+            // }
+            // if (Object.keys(events).length > 1) {
+            //     events.forEach((evt) => {
+            //         if(evt['FORMULA'] === formula) {
+            //             event = evt;
+            //         }
+            //     });
+            // }
+            events.forEach((evt) => {
+                if(evt['FORMULA'] === formula) {
+                    event = evt;
+                }
+            });
+            return event;
+        } else {
+            return events;
+        }
+    }
+
+    //renvoie la performance entre 2 dates d'observatiosn
+    getPerformance(observation) {
+        var perf = {};
+        perf['GLOBAL_PERF'] = 1; 
+        if (Object.keys(observation).length > 0) {
+            var max = 0;
+            var min = 9999;
+            Object.keys(observation).forEach((num) => {
+                if (Number(num) > max ){
+                    max = Number(num)
+                }
+                if (Number(num) < min ){
+                    min = Number(num)
+                }
+            });
+
+            let minObs = this.getLevels(min, true);
+            let maxObs = this.getLevels(max, true);
+
+
+            var perfByUdl = {};
+            perf['GLOBAL_PERF'] = 1; 
+            Object.keys(minObs).forEach((udl) => {
+                perfByUdl[udl] = maxObs[udl] / minObs[udl];
+            });
+            switch(observation[max]) {
+                case 'BSK' :
+                    perf['GLOBAL_PERF'] = eval(Object.values(perfByUdl).join('+'))/Object.values(perfByUdl).length;   
+                    break;
+                case 'WO' :
+                    perf['GLOBAL_PERF'] = Math.min(Object.values(perfByUdl));
+                    break;
+                case 'BO' :
+                    perf['GLOBAL_PERF'] = Math.max(Object.values(perfByUdl));
+                    break;
+                default :
+                    break;
+            }
+            perf = Object.assign({}, perf, perfByUdl);
+
+        }
+        return perf;
+    }
     //renvoie la performance actuelle
     getPerformances() {
         //on verifie si les spots sont corrects et complets
@@ -489,49 +636,49 @@ export class CStructuredProduct extends CFinancialProduct {
                 }
             }
         } 
-        
+        return this.getPerformance(firstObsAfterToday);
         //on passe sur la prchaine perf et on voit  ce que ca donne en  terme  de performance
-        console.log(firstObsAfterToday );
-        if (Object.keys(firstObsAfterToday).length > 0) {
-            var max = 0;
-            var min = 9999;
-            Object.keys(firstObsAfterToday).forEach((num) => {
-                if (Number(num) > max ){
-                    max = Number(num)
-                }
-                if (Number(num) < min ){
-                    min = Number(num)
-                }
-            });
+        //console.log(firstObsAfterToday );
+        // if (Object.keys(firstObsAfterToday).length > 0) {
+        //     var max = 0;
+        //     var min = 9999;
+        //     Object.keys(firstObsAfterToday).forEach((num) => {
+        //         if (Number(num) > max ){
+        //             max = Number(num)
+        //         }
+        //         if (Number(num) < min ){
+        //             min = Number(num)
+        //         }
+        //     });
 
-            let minObs = this.getLevels(min, true);
-            let maxObs = this.getLevels(max, true);
+        //     let minObs = this.getLevels(min, true);
+        //     let maxObs = this.getLevels(max, true);
 
 
-            var perfByUdl = {};
-            perf['GLOBAL_PERF'] = 1; 
-            Object.keys(minObs).forEach((udl) => {
-                perfByUdl[udl] = maxObs[udl] / minObs[udl];
-            });
-            switch(firstObsAfterToday[max]) {
-                case 'BSK' :
-                    perf['GLOBAL_PERF'] = eval(Object.values(perfByUdl).join('+'))/Object.values(perfByUdl).length;   
-                    break;
-                case 'WO' :
-                    perf['GLOBAL_PERF'] = Math.min(Object.values(perfByUdl));
-                    break;
-                case 'BO' :
-                    perf['GLOBAL_PERF'] = Math.max(Object.values(perfByUdl));
-                    break;
-                default :
-                    break;
-            }
-            perf = Object.assign({}, perf, perfByUdl);
+        //     var perfByUdl = {};
+        //     perf['GLOBAL_PERF'] = 1; 
+        //     Object.keys(minObs).forEach((udl) => {
+        //         perfByUdl[udl] = maxObs[udl] / minObs[udl];
+        //     });
+        //     switch(firstObsAfterToday[max]) {
+        //         case 'BSK' :
+        //             perf['GLOBAL_PERF'] = eval(Object.values(perfByUdl).join('+'))/Object.values(perfByUdl).length;   
+        //             break;
+        //         case 'WO' :
+        //             perf['GLOBAL_PERF'] = Math.min(Object.values(perfByUdl));
+        //             break;
+        //         case 'BO' :
+        //             perf['GLOBAL_PERF'] = Math.max(Object.values(perfByUdl));
+        //             break;
+        //         default :
+        //             break;
+        //     }
+        //     perf = Object.assign({}, perf, perfByUdl);
 
-        }
+        // }
 
-        //console.log(obs);
-        return perf;
+        // //console.log(obs);
+        // return perf;
     }
 
 

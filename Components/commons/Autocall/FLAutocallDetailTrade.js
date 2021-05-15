@@ -373,7 +373,7 @@ class FLAutocallDetailTrade extends React.Component {
                                           this.props.addTicket(t);
                                           console.log("TICKET AJOUTE");
                                           this.setState({ isLoadingCreationTicket : false }, () => {
-                                            this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
+                                            this.props.navigation.navigate('FLTicketDetail', {ticket : t, isJustCreated : true});
                                           })
                                         })
                                         .catch(error => {
@@ -381,8 +381,16 @@ class FLAutocallDetailTrade extends React.Component {
                                            this.setState({ messageToShow : String('Erreur création demande de prix').toUpperCase()})
                                            setTimeout(()=> { 
                                               this.setState({ isLoadingCreationTicket : false, messageToShow : ''});
+                                              Alert.alert(
+                                                'Erreur',
+                                                'Demande non créée',
+                                                [{text: 'OK', onPress: () => console.log("ok")}],
+                                                {cancelable: false},
+                                              );
                                               this.props.navigation.goBack();
                                             }, 4000);
+
+                                  
                                            //this.setState({ isLoadingCreationTicket : false }, () => Alert.alert('ERREUR CREATION DE DEMANDE DE PRIX',  error));
                                       
                                           

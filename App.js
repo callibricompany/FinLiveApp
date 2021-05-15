@@ -87,6 +87,7 @@ class App extends React.Component {
       'FLFont': require('./assets/fonts/Typo_Round_Regular_Demo.otf'),
       'FLFontBold': require('./assets/fonts/Typo_Round_Bold_Demo.otf'),
       'Light' : require('./assets/fonts/roboto/Roboto-Light.ttf'),
+      'Italic' : require('./assets/fonts/roboto/Roboto-Italic.ttf'),
       'Regular' : require('./assets/fonts/roboto/Roboto-Regular.ttf'),
       'Thin' : require('./assets/fonts/roboto/Roboto-Thin.ttf'),
       'Bold' : require('./assets/fonts/roboto/Roboto-Bold.ttf'),

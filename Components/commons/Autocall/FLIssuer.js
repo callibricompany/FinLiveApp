@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import FLModalDropdown from '../FLModalDropdown';
 
@@ -19,11 +19,7 @@ import 'numeral/locales/fr';
 import Moment from 'moment';
 
 
-
-
-
-
-export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIssueDate, updateProduct, currency, typeProduct }) {
+export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIssueDate, updateProduct, currency, typeProduct, isin }) {
 
         const dataAuction = [
                     {   key : 'PP',
@@ -42,9 +38,6 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
             return auction[0].label;
         });
         const [nominal, setNominal] = useState(notionnal);
-
-        
-
 
 
         const refAuctionDropDown = useRef();
@@ -123,30 +116,68 @@ export function FLIssuer ({ codeAuction, isEditable, issueDate, notionnal, endIs
 
             <View style={{flexDirection : 'row', marginTop : 25}}>
                 <View style={{flex : 0.5}}>
-                    <View style={{marginBottom : 5}}>
+                    <View style={{marginBottom : 0}}>
                         <Text style={setFont('200', 12, 'gray')}>Date d'émission</Text>
                     </View>
                     <FLDatePicker   date={issueDate} 
                                     onChange={(d) =>  updateProduct('issuingDate', d, "Date issuing : "+d, false)} 
                                     isEditable={(isEditable && typeProduct === 'STRUCTURED_PRODUCT')} 
-                                    maximumDate={Moment(Date.now()).add(3, 'months').toDate()}
-                                    minimumDate={Moment(Date.now()).toDate()}
+                                    maximumDate={issueDate}
+                                    minimumDate={issueDate}
                                     />
+                </View>
+                <View>
+                {/* <DateTimePicker
+                                        testID="dateTimePicker"
+                                        value={date}
+                                        mode={'date'}
+                                        is24Hour={true}
+                                        display={"calendar"}
+                                        locale={'fr'}
+                                        maximumDate={Moment(Date.now()).add(3, 'months').toDate()}
+                                        minimumDate={Moment(Date.now()).toDate()}
+                                        onChange={(event, selectedDate) => {
+                                            //const currentDate = selectedDate || date;
+                                            //setDate(currentDate);
+                                            //props.onChange(currentDate);
+                                            console.log(selectedDate);
+                                        }}
+                                    /> */}
                 </View>
                
                 <View style={{flex : 0.5}}>
-                    <View style={{marginBottom : 5}}>
+                    <View style={{marginBottom : 0}}>
                         <Text style={setFont('200', 12, 'gray')}>Date de remboursement</Text>
                     </View>
                     <FLDatePicker   date={endIssueDate} 
                                     onChange={(d) =>  updateProduct('endIssuingDate', d, "Date issuing : "+d, false)} 
                                     isEditable={(isEditable && typeProduct === 'STRUCTURED_PRODUCT')} 
-                                    maximumDate={Moment(endIssueDate).add(3, 'months').toDate()}
-                                    minimumDate={Moment(endIssueDate).add(-2, 'months').toDate()}
+                                    maximumDate={endIssueDate}
+                                    minimumDate={endIssueDate}
+                                    //maximumDate={Moment(endIssueDate).add(3, 'months').toDate()}
+                                    //minimumDate={Moment(endIssueDate).add(-2, 'months').toDate()}
                                     />
                 </View>
             </View>
+
+
             
+            {isin !== 'UNKNOWN'
+            ?
+            <View>
+                <View style={{ marginTop : 25}}>
+                    <Text style={setFont('200', 12, 'gray')}>
+                        ISIN
+                    </Text>
+                </View>
+                <View style={{width : 0.2*getConstant('width'), borderWidth : 0, justifyContent : 'center', paddingLeft : 5}}>
+                    <Text style={setFont('400', 18, isEditable ? 'gray' : 'black', 'Regular')}>
+                            {isin}
+                        </Text>
+                </View>
+            </View>
+            : null
+            }
             <View style={{ marginTop : 25}}>
                 <Text style={setFont('200', 12, 'gray')}>
                      Nominal

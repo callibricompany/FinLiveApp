@@ -69,6 +69,9 @@ class NotificationProvider extends React.Component {
         //nouveaux tickets annulés
         newCancelledTickets : 0,
 
+        //ticket desuivi de produit de demande generale ou pautres
+        newFollowedTickets : 0,
+
         //chech if it is read
         isNotified : (type, id) => this.isNotified(type, id),
 
@@ -301,7 +304,7 @@ class NotificationProvider extends React.Component {
                                   console.log("ticket retrouvé en mode selected : " + notification.data.id);
                                   console.log("desactivation de la notification : "+ localnotificationId);
                                   isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
-                                  NavigationService.navigate('FLTicketDetailTicket', { ticket: ticket.type === "Souscription" ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket) });
+                                  NavigationService.navigate('FLTicketDetail', { ticket: ticket.type === "Souscription" ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket) });
                                   //this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
                                   // ticket: new CWorkflowTicket(ticket),
                                   //})
@@ -343,6 +346,29 @@ class NotificationProvider extends React.Component {
                         NavigationService.navigate('Accueil');
                   }                      
             break;
+        case 'FOLLOWED' : 
+            //console.log(notification.data);
+            this.addNotification([].concat(notification.data));                   
+            //NavigationService.handleBadges(this.ticketBadgesCount);
+        
+            //origin === received  -> l'appli est deja ouverte : on met une notification discrete et on incremente le badge
+            if (notification.origin == 'received') {
+                
+                //retourne un ticket donné
+                this.setState({newFollowedTickets : notification.data.id}, () => {
+                    this._showToast(notification.data, null);
+                    let localnotificationId = notification.notificationId;
+                    setTimeout(function () {
+                      console.log("desactivation de la notification : "+ localnotificationId);
+                      isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
+                    }, 100000);
+                });
+            } else if (notification.origin == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
+                let localnotificationId = notification.notificationId;
+                isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
+                NavigationService.navigate('Following');
+          }                      
+    break;
         case 'CANCEL' : 
             //console.log(notification.data);
             this.addNotification([].concat(notification.data));                   
@@ -421,7 +447,7 @@ export const withNotification = Component => props => (
                                                   //let t = store.object;
                                                   console.log("NAVIGATION VERS LE TICKET");
                                                   //store._removeToast();
-                                                  NavigationService.navigate('FLTicketDetailTicket' , {
+                                                  NavigationService.navigate('FLTicketDetail' , {
                                                     ticket: t,
                                                   });
                                                   //console.log(t.getDescription());

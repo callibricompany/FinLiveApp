@@ -22,10 +22,11 @@ const withAuthorization = condition => Component => {
     componentDidMount() {
         this.listener = this.props.firebase.onAuthUserListener(
           authUser => {
-            if (!condition(authUser)) {
+            //console.log("AUTHUSER EMAIL VERIF : " + authUser.emailVerified);
+            if (!condition(authUser) || !authUser.emailVerified) {
                 console.log("with AUTHORIZATION  : Attention user sans droit");
                 //this.props.navigation.push('Login');
-                this.props.navigation.navigate('Login');
+                this.props.navigation.navigate('Login', {emailVerified : authUser.emailVerified});
             } else {
                 //console.log("with AUTHORIZATION  : " + authUser.name);
                 if (!authUser.roles.includes(ROLES.VALIDATED)) {

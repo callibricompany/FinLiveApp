@@ -12,23 +12,43 @@ import getRandomInt from './function/getRandomInt'
 import NegativeScenario from './Scenario/NegativeScenario'
 import PositiveScenario from './Scenario/PositiveScenario'
 import MedianScenario from './Scenario/MedianScenario'
+import Numeral from 'numeral';
+import Moment from 'moment';
+import 'numeral/locales/fr';
 
-export default function TermSheetAutocallAirbag({request}) {
-  let coupon = 5;
+import { setFont, setColor } from '../../Styles/globalStyle';
+import { getConstant } from '../../Utils';
+
+
+export default function TermSheetAutocallAirbag({request, disable}) {
+
+  let coupon = request.getValue('coupon') === 0 ? 0.05 : request.getValue('coupon');
+  
   let ymin = 40;
   let ymax = 130;
   let xmax = 10;
 
-  airbag = 1;
-  disable = false;
-  let barr_capital = request.getValue('barrierPDI') * 100;
-  let barr_anticipe = request.getValue('autocallLevel') * 100;
+  let typeAirbag = request.getValue('typeAirbag');
+
+  let airbag = 0;
+  let airbagText = 'sans airbag';
+  if (typeAirbag === 'SA') {
+    airbag = 0.5;
+    airbagText = 'avec semi-airbag';
+  }
+  if (typeAirbag === 'FA') {
+    airbag = 1;
+    airbagText = 'avec airbag';
+  }
+  //disable = false;
+  let barr_capital = request.getValue('barrierPDI');
+  let barr_anticipe = request.getValue('autocallLevel') ;
 
   const [scenarioNegatif, setScenarioNegatif] = useState(getRandomInt(44, 58))
   const [scenarioNeutre, setScenarioNeutre] = useState(getRandomInt(61, 90))
   const [scenarioPositif, setScenarioPositif] = useState(getRandomInt(110, 121))
   const [switchAirbag, setSwitchAirbag] = useState(airbag)
-  
+
   function changeAirbag(value) {
     setSwitchAirbag(value);
     // console.log("airbag Changed to " + value)
@@ -47,23 +67,23 @@ export default function TermSheetAutocallAirbag({request}) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.container}>
-          <View style={styles.container}>
-            <Text style={{ fontSize: 30, paddingTop: 5 }}>Autocall Incremental</Text>
-            <Text style={{ fontSize: 26, paddingBottom: 5, fontStyle: 'italic' }}>avec ou sans airbag</Text>
+     <View>
+        <View style={{borderWidth : 0, marginRight : getConstant('width')*0.025}}>
+          <View style={{}}>
+            <Text style={setFont('400', 18, 'gray', 'Bold')}>Autocall Incremental</Text>
+            <Text style={{ fontSize: 16, paddingBottom: 5, fontStyle: 'italic', color : 'darkgray' }}>
+            {airbagText}
+            </Text>
           </View>
-          <View style={styles.container}>
-            <Text style={{ fontSize: 20, paddingVertical: 5 }}>Illustrations de scénarii de remboursement</Text>
+          <View style={{}}>
+            <Text style={setFont('300', 16, 'black')}>Illustrations de scénarii de remboursement</Text>
             <Text style={{ paddingVertical: 5, fontWeight: 'bold' }}>Les données utilisées dans ces exemples n’ont qu’une valeur indicative et informative, l’objectif étant de décrire le mécanisme
             du produit. Elles ne préjugent en rien de résultats futurs. L’ensemble des données est présenté hors fiscalité et/ou frais liés
             au cadre d’investissement.
             </Text>
             <Text style={{ paddingBottom: 15 }}>
-              Exemple avec un produit à maturité {xmax} ans, avec ou sans un mécanisme dit "airbag", une observation annuelle du sous-jacent, un coupon de {coupon}%, une barrière de rappel
-              automatique anticipé de {barr_anticipe}% du niveau initial du sous-jacent, et une barrière de protection (observée à l’échéance) de {barr_capital}%
-              du niveau initial du sous-jacent.
+              Produit à maturité {xmax} ans, {typeAirbag === 'NA' ? '' : typeAirbag  === "SA" ? "avec un mécanisme dit semi-airbag," : "avec un mécanisme dit airbag,"} une observation annuelle du sous-jacent, un coupon de {Numeral(coupon).format("0.00%")}, une barrière de rappel
+              automatique anticipé de {Numeral(barr_anticipe).format("0.00%")} du niveau initial du sous-jacent, et une barrière de protection (observée à l’échéance) de {Numeral(barr_capital).format("0.00%")} du niveau initial du sous-jacent.
             </Text>
           </View>
 
@@ -151,12 +171,7 @@ export default function TermSheetAutocallAirbag({request}) {
           </View>
 
         </View>
-      </ScrollView>
-    </SafeAreaView >
+      </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-  },
-});

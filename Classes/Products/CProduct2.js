@@ -1,7 +1,6 @@
 import Moment from 'moment';
 
 
-
 //classe mere de tous les objets financiers, immos, arts, etc...
 export class CProduct2 { 
 
@@ -45,6 +44,9 @@ export class CProduct2 {
     
     //renvoie l'identifiant unique du produit
     getUniqueId() {
+      //console.log(Object.keys(this.product));
+      //console.log(this.product.hasOwnProperty("UNIQUE_ID"));
+      //console.log(this.product["UNIQUE_ID"]);
       return this.product.hasOwnProperty("UNIQUE_ID") ? this.product["UNIQUE_ID"] : 10000000*Math.random();
     }
 
@@ -133,7 +135,8 @@ export class CProduct2 {
       }
 
       return lastDate;
-    }
+	}
+
 
     //renvoie un  element du pricing
     getFromPricing(field, whichPricing=-1) {
@@ -142,29 +145,66 @@ export class CProduct2 {
       if (this.product.hasOwnProperty("PRICINGS")) {
         //on prend le dernier pricing
         if (whichPricing === -1) {
-          whichPricing = this.product["PRICINGS"].length - 1;
-          
-        }
+		  var pricingCount = this.product["PRICINGS"].length ;
+          if (pricingCount > 0) {
+            var maxDatesArray = [...new Set(this.product["PRICINGS"].map(x => x['PRICING_DATE']))];
+            maxDatesArray.sort();
 
-        var pricing = this.product["PRICINGS"][whichPricing];
-        if (pricing.hasOwnProperty(field)) {
-          resp = pricing[field];
+            var pricing = this.product["PRICINGS"].filter(({ PRICING_DATE }) => PRICING_DATE === maxDatesArray[pricingCount - 1]);
+            if ((pricing  != null && (pricing.length === 1))) {
+              pricing = pricing[0];
+
+              if (pricing.hasOwnProperty(field)) {
+                  resp = pricing[field];
+              }
+            }
+          }
         }
       }
-      //console.log(field + " : " + resp);
+	  //console.log(field + " : " + resp);
+
       return resp;
+    }
+    getAllPricing() {
+      return this.product.hasOwnProperty("PRICINGS") ? this.product["PRICINGS"] : {};
+
+    }
+
+    getPricingCount() {
+      return this.product.hasOwnProperty("PRICINGS") ? this.product["PRICINGS"].length : 0;
+
     }
     setToPricing(field, value, whichPricing=-1) {
       if (this.product.hasOwnProperty("PRICINGS")) {
         //on prend le dernier pricing
         if (whichPricing === -1) { 
-            whichPricing = this.product["PRICINGS"].length - 1;
-          
+
+            var pricingCount = this.product["PRICINGS"].length;
+            if (pricingCount > 0) {
+              var maxDatesArray = [...new Set(this.product["PRICINGS"].map(x => x['PRICING_DATE']))];
+			  maxDatesArray.sort();
+			  var maxDate = maxDatesArray[pricingCount - 1]
+			  //console.log(maxDatesArray);
+			  var i = 0;
+              this.product["PRICINGS"].forEach((p) => {
+				  if (p['PRICING_DATE'] === maxDate) {
+					  whichPricing  = i;
+				  }
+				  i = i + 1;
+			  })
+            }
+
+
+            
         } 
-        var pricing = this.product["PRICINGS"][whichPricing];
-        if (pricing.hasOwnProperty(field)) {
-          pricing[field] = value;
-        }
+        //console.log("FIELD : " + field + "   value : " + value + "  whichPricing : " +whichPricing);
+
+        if (this.product["PRICINGS"][whichPricing].hasOwnProperty(field)) {
+          this.product["PRICINGS"][whichPricing][field] = value;
+        } else {
+			this.product["PRICINGS"][whichPricing][field] = value;
+		}
+        //console.log(this.product["PRICINGS"][whichPricing])
       }
     }
     
@@ -201,7 +241,8 @@ export class CProduct2 {
 
     //type de vente du produit : PP, APE, OTC, ....
     getAuctionType() {
-      return this.typeAuction;
+      
+      return this.typeAuction === -1 ? "PP" : this.typeAuction;
     }
     setAuctionType(auctionType) {
       this.typeAuction = auctionType;
@@ -216,16 +257,33 @@ export class CProduct2 {
     getUFAssoc() {
       return this.UFAssoc;
     }
-
-    setUF(UF) {
-      this.UF = UF;
-      this.setToPricing("UF", UF);
+    getTotalUF() {
+      return this.getUF() + this.getUFAssoc();
     }
 
     setUFAssoc(UFAssoc) {
       this.UFAssoc = UFAssoc;
       this.setToPricing("UFAssoc", UFAssoc);
-    }
+	}
+	
+	setUF(UF) {
+		this.UF = UF;
+		this.setToPricing("UF", UF);
+	  }
+
+    setCharity(UFAssoc) {
+      this.setToPricing("CHARITY_CODE", UFAssoc);
+	}
+
+	//returrn charity code from pricing
+	getCharity(whichPricing=-1) {
+		var charityCode = this.getFromPricing("CHARITY_CODE");
+		return charityCode === -1 ? "" : charityCode;
+	}
+
+	setUFAssocCode(UFAssoc) {
+		this.setToPricing("ASSOC_CODE", UFAssoc);
+	}
 
     //retroune l'ISIN
     getISIN() {

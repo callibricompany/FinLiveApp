@@ -18,8 +18,12 @@ import Moment from 'moment';
 
 
 
-export function FLCallable ({autocalldatas}) {
 
+export function FLCallable ({autocalldatas}) {
+    var minDateConstatsArray = [...new Set(autocalldatas.map(x => x.date))];
+    var minDateConstat = new Date(Math.min.apply(Math, minDateConstatsArray));
+    var today = new Date(Date.now());
+    var flewToApply = minDateConstat < today ? 0.25 : 0.333
     let alreadyBreaked = false;
     return (
                     <View style={{ marginRight : 10}}>
@@ -30,17 +34,27 @@ export function FLCallable ({autocalldatas}) {
                             </View>
 
                             <View style={{flexDirection: 'row', marginTop : 5}}>
-                                <View style={{flex: 0.333, padding : 5}}>
-                                    <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>Date de constatation</Text>
+                                <View style={{flex: flewToApply, padding : 5}}>
+                                    <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>Date de constatation</Text>
                                 </View>
-                                <View style={{flex: 0.334, padding : 5}}>
-                                    <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
+                                <View style={{flex: flewToApply, padding : 5}}>
+                                    <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>
                                     Niveau de rappel
                                     </Text>
                                 </View>
-                                <View style={{flex: 0.333, padding : 5}}>
-                                    <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
-                                    Remboursement
+                                {
+                                    minDateConstat < today 
+                                    ?
+                                    <View style={{flex: flewToApply, padding : 5}}>
+                                        <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>
+                                        Perf
+                                        </Text>
+                                    </View>
+                                    : null
+                                }
+                                <View style={{flex: flewToApply, padding : 5}}>
+                                    <Text style={[setFont('400', 12, 'black','Bold'), {textAlign: 'center'}]}>
+                                    Coupon
                                     </Text>
                                 </View>
                             </View>
@@ -56,17 +70,26 @@ export function FLCallable ({autocalldatas}) {
                                     alreadyBreaked = true;
                                     return (
                                         <View style={{flexDirection: 'row'}} key={i}>
-                                            <View style={{flex: 0.333}}>
+                                            <View style={{flex: flewToApply}}>
                                             <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                                                 ...
                                             </Text>
                                             </View>
-                                            <View style={{flex: 0.334}}>
+                                            <View style={{flex: flewToApply}}>
                                             <Text style={[setFont('400', 12, 'black','Regular'), {alignSelf: 'center'}]}>
                                                 ...
                                             </Text>
                                             </View>
-                                            <View style={{flex: 0.333}}>
+                                            { minDateConstat < today 
+                                                ?
+                                                <View style={{flex: flewToApply}}>
+                                                <Text style={[setFont('400', 12, 'black','Regular'), {alignSelf: 'center'}]}>
+                                                    ...
+                                                </Text>
+                                                </View>
+                                            : null
+                                            }
+                                            <View style={{flex: flewToApply}}>
                                             <Text style={[setFont('400', 12, 'black','Regular'), {alignSelf: 'center'}]}>
                                                 ...
                                             </Text>
@@ -76,17 +99,26 @@ export function FLCallable ({autocalldatas}) {
                                     }
                                     return (
                                     <View style={{flexDirection: 'row'}} key={i}>
-                                        <View style={{flex: 0.333}}>
+                                        <View style={{flex: flewToApply}}>
                                             <Text style={[setFont('400', 12, 'black','Regular'), {textAlign: 'center'}]}>
                                                 {Moment(obj["date"]).format('DD/MM/YYYY')}
                                             </Text>
                                         </View>
-                                        <View style={{flex: 0.334}}>
+                                        <View style={{flex: flewToApply}}>
                                             <Text style={[setFont('400', 12, 'black','Regular'), {alignSelf: 'center'}]}>
                                                 {Numeral(obj['level']).format('0%')}
                                             </Text>
                                         </View>
-                                        <View style={{flex: 0.333}}>
+                                        { minDateConstat < today 
+                                        ?
+                                                <View style={{flex: flewToApply, backgroundColor : obj['perf'] > obj['level']? 'green' : 'transparent'}}>
+                                                <Text style={[setFont('400', 12, obj['perf'] > obj['level'] ? 'white' : 'black','Regular'), {alignSelf: 'center'}]}>
+                                                    {Numeral(obj['perf']).format('0.00%')}
+                                                </Text>
+                                            </View>
+                                        : null
+                                        }
+                                        <View style={{flex: flewToApply}}>
                                             <Text style={[setFont('400', 12, 'black','Regular'), {alignSelf: 'center'}]}>
                                                 {Numeral(obj['coupon']).format('0.00%')}
                                             </Text>

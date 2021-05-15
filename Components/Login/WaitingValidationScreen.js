@@ -4,36 +4,38 @@ import {
   KeyboardAvoidingView,
   View,
   ScrollView,
-  ActivityIndicator,
+  TouchableWithoutFeedback,
   StyleSheet,
-  StatusBar,
-  Platform,
+  TextInput,
+  TouchableOpacity,
   Image,
   Text,
-  Dimensions
+  Alert,
+  Keyboard
 } from 'react-native';
-import { H1, Item,Body,Title, Content, List, ListItem, InputGroup, Input, Icon, Picker, Button } from 'native-base';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { sendEmail } from '../../Utils/sendEmail';
-import { getConstant } from '../../Utils';
+import { getConstant, sizeByDevice } from '../../Utils';
 import splashImage from '../../assets/LogoWithoutText.png';
-
-
-
-
-
-// import Signup from './Signup';
-//import Account from './Main'
-
-
-
-
+import logoImg from '../../assets/LogoWithoutText.png'
+import { setFont, setColor } from '../../Styles/globalStyle';
+import { compose, hoistStatics } from 'recompose';
+import { withNavigation } from 'react-navigation';
+import { withFirebase } from '../../Database';
 
 class WaitingValidationScreen extends React.Component {
 
   constructor(props){
     super(props);
+    
+    this.state = {
+      loading: false,
+      email: '',
+      isOnFocus : false
+    }
 
+    this.inputs = {};
     this.name = this.props.navigation.getParam('name', '');
     this.firstName = this.props.navigation.getParam('firstName', '');
   }
@@ -41,11 +43,6 @@ class WaitingValidationScreen extends React.Component {
 
 
 
-  // Go to the signup page
-  goToLogin = () => {
-    //this.props.navigator.push({component: Signup});
-    this.props.navigation.navigate('Login');
-  }
 
 
 
@@ -53,74 +50,105 @@ class WaitingValidationScreen extends React.Component {
 
   render() {
 
-    const content =    <View style={{flex: 1,justifyContent:'center',alignItems:'center'}}>
-            <Image style={styles.picture} source={splashImage} />
+    return (
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={{width: getConstant('width')*0.9, marginLeft:0.05*getConstant('width'), height: getConstant('height'), flexDirection: 'column', justifyContent:'center',alignItems: 'center', borderWidth: 0}}>
+          <View style={{flex :0.35, marginTop : sizeByDevice(45, 10, 0), zIndex: 99, borderWidth :0}}>
+            <Image
+              source={logoImg}
+              style={{  opacity: this.state.isOnFocus ? 0.1 : 0.3,
+                        //position: "absolute",
+                        width: getConstant('width'),
+                        height: getConstant('height')*0.35,
+                        resizeMode: 'contain'
+                }}
+              resizeMode="contain"
+            />
+          </View>
+          <KeyboardAvoidingView behavior={'padding'} style={{ flex: 0.65 , width: 0.9*getConstant('width')}} enabled={true}>  
+            <ScrollView keyboardShouldPersistTaps={"always"}>
+                <View style={{flexDirection: 'row', marginTop: 25, borderBottomWidth: 1, borderBottomColor : setColor('gray')}} >
+                  <View style={{padding : 5, width : 35}}>
+                        <Ionicons name="ios-mail"  style={{color : setColor('lightBlue')}} size={25}/>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft : 5}}>
+                        <TextInput
+                          //onChangeText={(text) => this.setState({email: text})}
+                          onChangeText={e => {
+                            //let email = String(e).toLocaleLowerCase();
+                            this.setState({ email : e});
+                          }}
+                          value={this.state.email}
+                          keyboardType='email-address'
+                          clearButtonMode="always"
+                          placeholder={"Adresse mail"} 
+                          blurOnSubmit={ false }
+                          onBlur={() => {
+                            //console.log(this.state.email);
+                            this.setState({ email: this.state.email.toLowerCase(), isOnFocus: false });
+                          }}
+                          onFocus={() => {
+                            this.setState({ isOnFocus : true });
+                            //console.log("focus");
+                          }}
+                          autoCapitalize={'none'}
+                          autoCompleteType={'email'}
+                          onSubmitEditing={() => {
+                            //this.inputs['password'].focus();
+                          }}
+                          returnKeyType={ "next" }
+                          ref={ input => {
+                            this.inputs['email'] = input;
+                          }}
+                          style={setFont('400', 14, 'black', 'Regular')}
+                        />
+                        
+                  </View>
+                </View>
+                
             
-     
-            <KeyboardAvoidingView behavior={'padding'} style={{ flex: 1 }}>  
-            <ScrollView keyboardShouldPersistTaps="always" >
- 
+                <TouchableOpacity  
+                  style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 10}}
+				  onPress={() => {
+					const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+					if (reg.test(this.state.email) === false){
+						Alert.alert('VERIFIER VOTRE EMAIL', 'Adresse mail non valide');
+						return false;
+					}
+					this.props.firebase.doPasswordReset(this.state.email)
+					.then((authUser) => {
+						Alert.alert('Email de réinitialisation de mot  de passe envoyé');
+						
+						this.props.navigation.navigate('Login');
+					
 
-            <View style={styles.container}>
-            <Button bordered warning  style={{flew:1, height: 60, width: 0.9*getConstant('width'),  marginBottom: 50, justifyContent:'center', alignItems:'center'}}>
-            <Text numberOfLines={3} >Bonjour {this.firstName} {this.name}{"\n\n\n"}Votre compte est en cours de validation</Text>
-          </Button>
-            
-                <Button 
-                    style={{backgroundColor : '#85B3D3', width: 0.9*getConstant('width'), justifyContent:'center', alignItems: 'center'}}
-                    onPress={() => {
-                        sendEmail(
-                          'pierre@finlive.eu;vincent@finlive.eu',
-                          'Activation de compte',
-                          'Bonjour,\nSuite à mon incription, je souhaite activer mon compte le plus rapidement possible.\nMerci de faire le nécessaire.\n\nCordialement,\n'
-                        ).then(() => {
-                            console.log('Email envoyé par appli par defaut');
-                        });
-                    }} 
-                >
-                  <Text style={{
-                                color: 'black',
-                                backgroundColor: 'transparent',
-                                alignItems:'center',
-                                justifyContent:'center',
-                                fontSize: 14,
-                              }}>
-                      RENVOYER LA DEMANDE
-                  </Text>
-                </Button>
-            </View>
-            <View style={styles.container_buttons}>
-            
-                <Button light  
-                    style={{flex:1, justifyContent:'center',alignItems:'center',  marginRight: 5}}
-                    onPress={this.goToLogin}
-                    >
-                    <Icon name="md-arrow-dropleft" style={{color : "#9A9A9A"}}/>   
-                        <Text style={styles.text_button}>Retour Connexion</Text>
-                </Button>
-                {/*<Button light rounded
-                    style={{flex:1, width: 0.45*getConstant('width'),  justifyContent:'center', alignItems:'center', marginLeft: 5}}
-                    //disabled={true}
-                    onPress={() => this.props.navigation.navigate('App')}
-                >
-                        <Text style={styles.text_button}>Contacter organisme</Text>
-                </Button>*/}
-            </View>
-           
+					})
+					.catch((error) => {
+							//console.log("erreur connexio n signIn : " + error);
+
+							Alert.alert('ERREUR DE DEMANDE DE REINITIALISATION',  ''+ error);
+	
+					});
+			  }}
+                  >
+                      <Text style={[setFont('600', 18, 'white', 'Regular'), {padding: 5}]}>Réinitialiser le mot de passe</Text>
+                </TouchableOpacity>
+                <TouchableOpacity  
+                      style={{borderColor : setColor(''), justifyContent:'center', alignItems: 'center', marginTop: 15, borderRadius: 10, borderWidth : 1}}
+					  onPress={() => {
+						this.props.navigation.navigate('Login');
+					  }}
+                  >
+                      <Text style={[setFont('600', 18, setColor(''), 'Regular'), {padding: 5}]}>Retour</Text>
+                </TouchableOpacity>
+
+          
+
             </ScrollView>
             </KeyboardAvoidingView>
         </View>
-        ;
-
-    
-        return (
-            //<SafeAreaView style={{flex: 1}}>
-            <View style={{flex: 1}}>
-                {content}
-                </View>
-           
-            //</SafeAreaView>
-        );
+        </TouchableWithoutFeedback>
+    );
   }
 
 
@@ -180,6 +208,16 @@ const styles = StyleSheet.create({
           },
   });
 
-//AppRegistry.registerComponent('Login', () => Login);
-export default WaitingValidationScreen;
+//const condition = authUser => !!authUser;
+
+const composedPricerScreen = compose(
+ //withAuthorization(condition),
+  //withUser,
+  withFirebase,
+  withNavigation,
+);
+
+//export default HomeScreen;
+export default hoistStatics(composedPricerScreen)(WaitingValidationScreen);
+
 

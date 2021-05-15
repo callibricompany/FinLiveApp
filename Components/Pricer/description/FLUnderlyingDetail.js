@@ -22,6 +22,8 @@ export default function FLUnderlyingDetail({initialValue, getAllUndelyings, upda
 
     const [sectors, setSectors] = useState([]);
 
+    const [sectorSelectedList, setSectorSelectedList] = useState([]);
+
     useEffect(() => {
         async function fetchData() {
             let udls = await getAllUndelyings("INTERPOLATED_PS");
@@ -145,12 +147,12 @@ export default function FLUnderlyingDetail({initialValue, getAllUndelyings, upda
                                                 }
                                             </Text>
                                             {item.hasOwnProperty('perf1y')
-                                            ?  
-                                                <View style={{backgroundColor : perf >= 0 ? setColor('subscribeticket') : setColor('red'), paddingHorizontal : 3, paddingVertical : 1, borderWidth : 1, borderColor : setColor('subscribeticket'), borderRadius : 4}}>
-                                                    <Text style={setFont('300', 13, 'white', 'Light')}>
-                                                        {Numeral(perf).format('0.00%')}
-                                                    </Text>
-                                                </View>
+                                            ?  null
+                                                // <View style={{backgroundColor : perf >= 0 ? setColor('subscribeticket') : setColor('red'), paddingHorizontal : 3, paddingVertical : 1, borderWidth : 1, borderColor : setColor('subscribeticket'), borderRadius : 4}}>
+                                                //     <Text style={setFont('300', 13, 'white', 'Light')}>
+                                                //         {Numeral(perf).format('0.00%')}
+                                                //     </Text>
+                                                // </View>
                                             : null
                                             }
                                         </View>
@@ -158,8 +160,8 @@ export default function FLUnderlyingDetail({initialValue, getAllUndelyings, upda
                                                         onPress={() => {
                                                             let udls = [...currentUDLs];
                                                             if (isSelected) {
-                                                                const indexUdl = udls.indexOf(item['ticker']);
-                                                                if (index > -1) {
+                                                                let indexUdl = udls.indexOf(item['ticker']);
+                                                                if (indexUdl > -1) {
                                                                     udls.splice(indexUdl, 1);
                                                                 }
                                                             } else {
@@ -178,8 +180,9 @@ export default function FLUnderlyingDetail({initialValue, getAllUndelyings, upda
                             if (udlBySector.length > 0) {
                                 return (
                                     
-                                    <View key={s} style={{ borderWidth : 0, justifyContent : 'center', padding : 5}}>
+                                    <View key={s} style={{ borderWidth : 0, justifyContent : 'center', padding : 5, borderWidth : 0}}>
                                         <View style={{
+                                            flexDirection : 'row',
                                             borderBottomColor: setColor('borderFL'),
                                             paddingLeft: 0,
                                             borderBottomWidth: 0,
@@ -190,9 +193,57 @@ export default function FLUnderlyingDetail({initialValue, getAllUndelyings, upda
                                             paddingBottom : 4,
                                         
                                         }}>
-                                            <View style={{padding : 5, borderWidth : 0, borderRadius : 10, borderColor: setColor('subscribeBlue'), justifyContent : 'center', alignItems : 'flex-start'}}>
-                                                <Text style={setFont('400', 18, setColor(''), 'Bold')}>{s.toUpperCase()}</Text> 
+                                            <View style={{flex : 0.8, padding : 5, borderWidth : 0, borderRadius : 10, borderColor: setColor('subscribeBlue'), justifyContent : 'center', alignItems : 'flex-start'}}>
+                                                <Text style={setFont('400', 18, setColor(''), 'Bold')} numberOfLines={1}>{s.toUpperCase()}</Text> 
                                             </View>
+                                            <TouchableOpacity style={{flex : 0.2, justifyContent : 'center', alignItems : 'flex-end', paddingLeft : 20}}
+                                                        onPress={() => {
+                                                            let udls = [...currentUDLs];
+                                                            var toAdd = true;
+                                                            if (sectorSelectedList.includes(s)) {//le secteur est deja selectionné
+                                                                //on le  suprime de la liste
+                                                                toAdd = false;
+                                                                var currentSectorSelectedList = sectorSelectedList;
+                                                                let indexSector = currentSectorSelectedList.indexOf(s);
+                                                                if (indexSector > -1) {
+                                                                    currentSectorSelectedList.splice(indexSector, 1);
+                                                                }
+                                                                setSectorSelectedList(currentSectorSelectedList);
+
+                                                            } else {
+                                                                var currentSectorSelectedList = sectorSelectedList;
+                                                                currentSectorSelectedList.push(s);
+                                                                setSectorSelectedList(currentSectorSelectedList);
+                                                            }
+                                                            udlBySector.forEach((udl) => {
+                                                                let isSelected = currentUDLs.includes(udl['ticker']);
+                                                                if (isSelected) {
+                                                                    if (toAdd === false){
+                                                                        //on retire le sous-jacent
+                                                                        let indexUdl = udls.indexOf(udl['ticker']);
+                                                                        if (indexUdl > -1) {
+                                                                            udls.splice(indexUdl, 1);
+ 
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    if (toAdd === true){
+                                                                        //on ajoute le sous-jacent
+                                                                        let indexUdl = udls.indexOf(udl['ticker']);
+                                                                        if (indexUdl === -1) {
+                                                                            udls.push(udl['ticker']);
+ 
+                                                                        }
+                                                                    }
+                                                                }
+                                                                
+                                                            });
+                                                            setCurrentUDLs(udls);
+                                                            updateValue("underlying", udls ,udls.toString().replace(/,/g,'\n'));
+                                                        }}
+                                        >
+                                            <MaterialCommunityIcons name={sectorSelectedList.includes(s) ?  'checkbox-marked-circle' : 'check'} size={sectorSelectedList.includes(s) ? 25 : 20} color={sectorSelectedList.includes(s) ? setColor('') : 'lightgray'}/>
+                                        </TouchableOpacity>
                                         </View>
                                         {udlsRender}
     
@@ -234,7 +285,7 @@ export default function FLUnderlyingDetail({initialValue, getAllUndelyings, upda
                 </View>
                 <View style={{marginTop : 10, borderTopWidth : 0}}>
                         <Text style={setFont('400', 14, 'black', 'Regular')}>
-                        Illustration
+                        {/* Illustration */}
                         </Text>
     
                 </View>

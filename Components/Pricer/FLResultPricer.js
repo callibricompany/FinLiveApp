@@ -47,7 +47,7 @@ class FLResultPricer extends React.PureComponent {
       }
       this.optimizer = this.props.navigation.getParam('optimizer', 'CPN');
       // console.log(this.bestProducts);
-      // console.log(this.optimizer);
+      console.log(this.optimizer);
       this.state = {
       
       };

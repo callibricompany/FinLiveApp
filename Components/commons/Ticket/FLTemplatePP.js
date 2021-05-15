@@ -467,7 +467,7 @@ class FLTemplatePP extends React.Component {
     return (
             <TouchableOpacity style={{borderWidth : 0}}
                               onPress={() => {
-                                this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
+                                this.props.navigation.navigate('FLTicketDetail' , {
                                   ticket: this.ticket,
                                   //ticketType: TICKET_TYPE.PSCREATION
                                 })
@@ -635,7 +635,7 @@ class FLTemplatePP extends React.Component {
             <TouchableOpacity style={{borderWidth : 0}}
                               onPress={() => {
                                 
-                                this.props.navigation.navigate((this.props.hasOwnProperty('source') && this.props.source === 'Home') ? 'FLTicketDetailHome' : 'FLTicketDetailTicket', {
+                                this.props.navigation.navigate('FLTicketDetail' , {
                                   ticket: this.ticket,
                                   //ticketType: TICKET_TYPE.PSCREATION
                                 })

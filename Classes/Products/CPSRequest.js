@@ -542,10 +542,10 @@ export class CPSRequest extends CRequest {
       this.product.underlying.isActivated ? criteria['underlying'] = this.product.underlying.value : null;
       criteria['optimizer'] = this.product.optimizer.value;
       criteria['levelAutocall'] =   this.product.autocallLevel.value;
-      criteria['freqAutocall'] =  this.product.freq.isActivated ? this.product.freq.value : "3M";
+      criteria['freqAutocall'] =  this.product.freq.isActivated ? this.product.freq.value : "1Y";
       criteria['noCallNbPeriod'] =  this.product.nncp.isActivated ? this.product.nncp.value : 12;
       criteria['coupon'] =  this.product.coupon.value;
-      criteria['maturity'] =  this.product.maturity.isActivated ? this.product.maturity.value : ['10Y'];
+      criteria['maturity'] =  this.product.maturity.isActivated ? this.product.maturity.value : ['8Y'];
       criteria['typeAirbag'] =  this.product.typeAirbag.value;
       //type de placement
       criteria['typeAuction'] =  this.product.typeAuction.value;

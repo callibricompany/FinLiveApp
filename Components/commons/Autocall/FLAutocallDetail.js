@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, ScrollView, Text, View, Animated, StyleSheet, KeyboardAvoidingView, Dimensions, TouchableOpacity, TextInput, StatusBar, Modal, Keyboard, FlatList, ClippingRectangle } from "react-native";
+import { Image, Alert, Text, View, Animated, StyleSheet, KeyboardAvoidingView, Dimensions, TouchableOpacity, TextInput, StatusBar, Modal, Keyboard, FlatList, ClippingRectangle } from "react-native";
 var _ = require('lodash');
 import { NavigationActions } from 'react-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -16,6 +16,10 @@ import { setFont, setColor , globalStyle  } from '../../../Styles/globalStyle';
 import { ifIphoneX, isIphoneX, ifAndroid, isAndroid, sizeByDevice, currencyFormatDE, isEqual, getConstant } from '../../../Utils';
 import { interpolateColorFromGradient } from '../../../Utils/color';
 
+import TermSheetAutocallAirbag from '../../../charts/products/TermSheetAutocallAirbag';
+import TermSheetPhoenixMem from '../../../charts/products/TermSheetPhoenixMem';
+import TermSheetPhoenix from '../../../charts/products/TermSheetPhoenix';
+
 import FLAnimatedSVG from '../FLAnimatedSVG';
 import Accordion from 'react-native-collapsible/Accordion';
 
@@ -29,7 +33,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import { CAutocall2 } from '../../../Classes/Products/CAutocall2';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { reprice , saveProduct } from '../../../API/APIAWS';
+import { reprice , saveProduct, getAllCharities } from '../../../API/APIAWS';
 
 
 import Numeral from 'numeral'
@@ -49,6 +53,8 @@ import { FLCallable } from "./FLCallable";
 import { FLCoupons } from "./FLCoupons";
 import { FLPDI } from "./FLPDI";
 import { FLDocuments } from "./FLDocuments";
+import { FLProba } from './FLProba';
+import FLFollowingAutocall from './FLFollowingAutocall';
 
 
 
@@ -62,8 +68,12 @@ class FLAutocallDetail extends React.Component {
     // this.autocall =  this.props.navigation.getParam('autocall', '...');
     //this.autocall = this.props.autocall;
     //this.isEditable = typeof this.props.isEditable !== 'undefined' ? this.props.isEditable : true,
-    this.autocall =  this.props.navigation.getParam('autocall', '...');
+    this.autocall =  this.props.navigation.getParam('autocall');
+    
     this.isEditable =  this.props.navigation.getParam('isEditable', true);
+    this.toSave =  this.props.navigation.getParam('toSave', true);
+    this.showPerf =  this.props.navigation.getParam('showPerf', false);
+
     console.log("UNIQUE ID : " + this.autocall.getUniqueId());
     
     this.state = { 
@@ -91,13 +101,15 @@ class FLAutocallDetail extends React.Component {
         showModalDescription : false,
         description : '',
         isAutomatique : true,
-       
+	   
+		repriceNeeded : false,
         isLoadingCreationTicket : false,
         isLoadingUpdatePrice : false,
         messageUpdatePrice : '',
         toto : true,
 
     };
+    //console.log(this.autocall.getAutocallDatas('AUTOCALL'));
 
     //this.viewabilityConfig = { itemVisiblePercentThreshold: 40 }
 
@@ -107,6 +119,8 @@ class FLAutocallDetail extends React.Component {
     this.keyboardDidHide = this.keyboardDidHide.bind(this);
     this.keyboardDidShow = this.keyboardDidShow.bind(this);
 
+	this.underlyings = [];
+	this.allCharities = [];
     this._constructMenu();
 
   }
@@ -114,6 +128,18 @@ class FLAutocallDetail extends React.Component {
  _constructMenu() {
 
     this.descProduct = [];
+
+    if (this.showPerf) { 
+      this.descProduct.push({
+          key : 'FOLLOWED',
+          iconName : 'finance',
+          iconFamily : 'MaterialCommunityIcons',
+          level : 1, 
+          title: 'Performance',
+          body: ''
+        });
+    }
+
     this.descProduct.push({
       key : 'ISSUER',
       iconName : 'bank-transfer-out', //'handshake-o',
@@ -128,7 +154,7 @@ class FLAutocallDetail extends React.Component {
           key : 'CC',
           iconName : 'margin',
           iconFamily : 'MaterialCommunityIcons',
-          level : 2, 
+          level : 1, 
           title: 'Rémunération',
           body: ''
         });
@@ -136,11 +162,11 @@ class FLAutocallDetail extends React.Component {
 
     this.descProduct.push({
       key : 'PAYOFF',
-      iconName : 'calculator',
-      iconFamily : 'SimpleLineIcons',
+      iconName : 'ticket-percent',
+      iconFamily : 'MaterialCommunityIcons',
       level : 1, 
       title: 'Payoff',
-      body: "Découvrez le comportement de votre produit en fonction de l'évoltion du sous-jacent. "
+      body: "Découvrez le comportement de votre produit en fonction de l'évolution du sous-jacent. "
     });
     this.descProduct.push({
         key : 'STRIKE',
@@ -149,7 +175,7 @@ class FLAutocallDetail extends React.Component {
         // iconName : 'dot-circle-o',
         // iconFamily : 'FontAwesome',
         level : 2, 
-        title: 'Détermination des dates de constations initiales',
+        title: 'Constatations initiale et finale',
         body: ''
     });
     if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT') {
@@ -192,8 +218,26 @@ class FLAutocallDetail extends React.Component {
         title: 'Documents',
         body: ''
       });
-    }
-
+	}
+	if (this.autocall.getFromPricing('STATS') !== -1) {
+		this.descProduct.push({
+		key : 'STATS',
+		iconName : 'dice',
+		iconFamily : 'FontAwesome5',
+		level : 1, 
+		title: 'Statistiques',
+		body: ''
+		});
+	}
+    this.descProduct.push({
+		key : 'SCENARIO',
+		iconName : 'random',
+		iconFamily : 'FontAwesome5',
+		level : 1, 
+		title: 'Scénarii',
+		body: ''
+	  });
+    
     this.descProduct.push( {
       key : 'EMPTY_SECTION',
       iconName : '',
@@ -202,9 +246,6 @@ class FLAutocallDetail extends React.Component {
       title: '',
       body: ''
     });
-
-
-
  }
 
 
@@ -225,10 +266,15 @@ class FLAutocallDetail extends React.Component {
     Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
 
     //on enregistre le produit au cas ou il ne le soit pas
-    if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT') {
+    if (this.autocall.getProductType() === 'STRUCTURED_PRODUCT' && this.toSave) {
       var resp = await saveProduct(this.props.firebase, this.autocall.getProductJSON());
       this.autocall = new CAutocall2(resp);
-    }
+	}
+	
+	this.allCharities = this.props.allCharities; 
+	//console.log(this.allCharities);
+
+    this.underlyings = await this.props.getAllUndelyings();
 
   }
   componentWillUnmount() {
@@ -260,17 +306,51 @@ class FLAutocallDetail extends React.Component {
       this.setState({ toto : !this.state.toto }, () => console.log(this.autocall.getProductJSON()));
   }
 
+  //_reprice
+  _reprice() {
+	this.setState({ isLoadingUpdatePrice : true, messageUpdatePrice : 'Raffraichissement du prix indicatif'});
+
+	// var str = JSON.stringify(this.autocallResult.getProductJSON()['PRICINGS'], null, 2);
+	// console.log(str);
+	// this.setState({isLoadingUpdatePrice : false, messageUpdatePrice : '', repriceNeeded : false});
+	// return;
+	reprice(this.props.firebase, this.autocallResult.getProductJSON(), this.autocall.getProductJSON())
+	.then((data) => {
+	  //console.log(data);
+
+	  this.autocall = new CAutocall2(data);
+	  this.autocallResult = null;
+	  this.setState({isLoadingUpdatePrice : false, messageUpdatePrice : '', repriceNeeded : false});
+	  
+	})
+	.catch(error => {
+	  console.log("ERREUR recupération du  prix: " + error);
+	  
+	  this.setState({ isLoadingUpdatePrice : false, messageUpdatePrice : ''});
+	  setTimeout(() => {
+		Alert.alert(
+		  'Erreur',
+		  'Le repricing ne présente pas de solution',
+		  [{text: 'OK', onPress: () => console.log("ok")}],
+		  {cancelable: false},
+		);
+	  }, 1000);
+	});
+  }
+
   //une modif a été faite il faut recalculer
   _updateProduct=(id, value, valueLabel, needToRecalculate=true) => {
-
+	console.log(id + "  :  "+value+"  :  "+valueLabel +  "    " + needToRecalculate);
     if (needToRecalculate) {
         // let request = new CPSRequest();
         // request.setRequestFromCAutocall(this.autocall);
-        console.log(id + "  :  "+value+"  :  "+valueLabel);
-        // request.setCriteria(id, value, valueLabel);
-        //this.autocallResult = Object.assign(Object.create(Object.getPrototypeOf(this.autocall)), this.autocall);
-        
-        this.autocallResult = _.cloneDeep(this.autocall);
+		//console.log(id + "  :  "+value+"  :  "+valueLabel);
+		if (this.autocallResult == null) {
+			// request.setCriteria(id, value, valueLabel);
+			//this.autocallResult = Object.assign(Object.create(Object.getPrototypeOf(this.autocall)), this.autocall);
+			
+			this.autocallResult = _.cloneDeep(this.autocall);
+		}
         switch(id) {
           case 'typeAuction' :
               this.autocallResult.setAuctionType(value);
@@ -278,31 +358,45 @@ class FLAutocallDetail extends React.Component {
           case 'nominal' :
               this.autocallResult.setNominal(value);
               break;
+          case 'UF' :
+              this.autocallResult.setUF(value);
+              break;
+          case 'UFAssoc' :
+              this.autocallResult.setUFAssoc(value);
+              break;
+              
           default : break;
         }
 
-        this.setState({ isLoadingUpdatePrice : true, messageUpdatePrice : 'Raffraichissement du prix indicatif'});
-        reprice(this.props.firebase, this.autocallResult.getProductJSON(), this.autocall.getProductJSON())
-        .then((data) => {
-          //console.log(data);
-          console.log("===================================");
-          this.autocall = new CAutocall2(data);
-          this.setState({isLoadingUpdatePrice : false, messageUpdatePrice : ''});
-          
-        })
-        .catch(error => {
-          console.log("ERREUR recupération du  prix: " + error);
-          alert('ERREUR calcul des prix', '' + error);
-          this.setState({ isLoadingUpdatePrice : false, messageUpdatePrice : ''});
-        });
+		this.setState({ repriceNeeded : true });
+
     } else {
       switch(id) {
+        case 'typeAuction' :
+            this.autocall.setAuctionType(value);
+            break;
+        case 'nominal' :
+            this.autocall.setNominal(value);
+            break;
         case 'UF' :
-            this.autocall.setUF(value);
+			this.autocall.setUF(value);
+			if (this.autocallResult != null) {
+				this.autocallResult.setUF(value);
+			}
             break;
-        case 'UFAssoc' :   
-            this.autocall.setUFAssoc(value);
-            break;
+		case 'UFAssoc' :   
+			this.autocall.setUFAssoc(value);
+			if (this.autocallResult != null) {
+				this.autocallResult.setUFAssoc(value);
+			}
+			break;
+		case 'UFAssocCode' :   
+			this.autocall.setCharity(value);
+			if (this.autocallResult != null) {
+				this.autocallResult.setCharity(value);
+			}
+			break;
+			
         case 'issuingDate' : 
             this.autocall.setIssuingDate(value);
           break;
@@ -315,14 +409,15 @@ class FLAutocallDetail extends React.Component {
             
         default : break;
       }
-    }
+	}
+	//console.log(this.autocall.getAllPricing())
   }
 
 
 
   //render des sections de la flatlist
-  renderPage = rowData => {
-    const item = rowData.item;
+  renderPage = ({item, index}) => {
+    const itemData = item;
     //console.log(item);
     let body = <Text style={{
                   flex: 1,
@@ -330,18 +425,19 @@ class FLAutocallDetail extends React.Component {
                   color: '#606060',
                   lineHeight: 24,
                 }}>
-                  {item.body}
+                  {itemData.body}
                 </Text>;
-    switch(item.key) {
+    switch(itemData.key) {
       case 'ISSUER' : 
           body = <FLIssuer  codeAuction={this.autocall.getAuctionType()} 
                             isEditable={this.state.showButtonsToTrade ? false :  this.isEditable} 
                             issueDate={this.autocall.getIssueDate()}
                             endIssueDate={this.autocall.getEndIssueDate()}
                             notionnal={this.autocall.getNominal()}
+                            isin={this.autocall.getISIN()}
                             updateProduct={this._updateProduct} 
                             currency={this.autocall.getCurrency()}
-                            typeProduct={this.autocall.getProductType()}
+							typeProduct={this.autocall.getProductType()}
                   />;
           break;
       case 'CC' : 
@@ -351,15 +447,15 @@ class FLAutocallDetail extends React.Component {
                             nominal={this.autocall.getNominal()}
                             currency={this.autocall.getCurrency()}
                             company={this.props.user.getCompany()}
-                            updateProduct={this._updateProduct} 
+							updateProduct={this._updateProduct} 
+							charities={this.allCharities}
+							selectedCharity={this.autocall.getCharity()}
                   />;
           break;
       case 'STRIKE' : 
           body = <FLStrike  isEditable={(this.isEditable && this.autocall.getProductType() === 'STRUCTURED_PRODUCT')} 
-                            strikedate={this.autocall.getStrikingDate()}
                             updateProduct={this._updateProduct}
-                            maximumDate={this.autocall.getIssueDate()}
-                            minimumDate={new Date(Date.now())}
+                            autocall={this.autocall}
                   />;
           break;
       case 'CALLABLE' : 
@@ -389,7 +485,34 @@ class FLAutocallDetail extends React.Component {
           break;  
       case 'EMPTY_SECTION' : 
           body = <View style={{ height: 150}}/>;
-          break;         
+          break;    
+      case 'FOLLOWED' :
+          body = <FLFollowingAutocall autocall={this.autocall} underlyings={this.underlyings} />;
+          break;
+      case 'STATS' :
+		  body = <FLProba autocall={this.autocall} />;
+          break;
+      case 'Sdshjshghsgdhsgd' :
+          body = <TouchableOpacity style={{marginLeft : 100, marginRight : getConstant('width')*0.05,  backgroundColor : setColor('subscribeBlue'),  borderColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 5, padding : 5, justifyContent : 'flex-end', justifyContent : 'flex-end'}}
+                            onPress={() => this.props.navigation.navigate('FLTermSheetDescription', { autocall : this.autocall })} 
+                >
+                    <Text style={[setFont('300',14,'white', 'Regular'), {textAlign : 'center'}]}>{String("scénarii possibles").toUpperCase()} >></Text>
+                  </TouchableOpacity>;
+          break;
+	  case 'SCENARIO' :
+        	var request = new CPSRequest() 
+			request.setRequestFromCAutocall(this.autocall);
+			var  typeAutocall = this.autocall.getProductCode();
+    		if (typeAutocall === 'AUTOCALL_INCREMENTAL') {
+				body = <TermSheetAutocallAirbag request={request} disable={true}/> ; 
+			} else if (typeAutocall === 'PHOENIX') {
+				body = <TermSheetPhoenix request={request} disable={true}/> ;
+			} else if (typeAutocall === 'PHOENIX_MEMORY') {
+				body  = <TermSheetPhoenixMem request={request} disable={true}/> ;
+			} else  {
+				body = <View />;
+			}
+			break;
       default : 
           body = <Text style={{
                     flex: 1,
@@ -397,7 +520,7 @@ class FLAutocallDetail extends React.Component {
                     color: '#606060',
                     lineHeight: 24,
                   }}>
-                    {item.body}
+                    {itemData.body}
                   </Text>;
           break;
     }
@@ -405,19 +528,19 @@ class FLAutocallDetail extends React.Component {
     let icon = <View />;
     switch(item.iconFamily) {
       case 'FontAwesome5' :
-        icon = <FontAwesome5 name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
+        icon = <FontAwesome5 name={itemData.iconName}  size={itemData.level === 1 ? 30 : 25} color={'black'}/>;
         break;
       case 'FontAwesome' :
-        icon = <FontAwesome name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
+        icon = <FontAwesome name={itemData.iconName}  size={itemData.level === 1 ? 30 : 25} color={'black'}/>;
         break;
       case 'Ionicons' :
-        icon = <Ionicons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
+        icon = <Ionicons name={itemData.iconName}  size={itemData.level === 1 ? 30 : 25} color={'black'}/>;
         break;
       case 'SimpleLineIcons' :
-          icon = <SimpleLineIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
+          icon = <SimpleLineIcons name={itemData.iconName}  size={itemData.level === 1 ? 30 : 25} color={'black'}/>;
           break;   
       case 'MaterialCommunityIcons' :
-          icon = <MaterialCommunityIcons name={item.iconName}  size={item.level === 1 ? 30 : 25} color={'black'}/>;
+          icon = <MaterialCommunityIcons name={itemData.iconName}  size={itemData.level === 1 ? 30 : 25} color={'black'}/>;
           break;          
           
       default : 
@@ -426,6 +549,15 @@ class FLAutocallDetail extends React.Component {
     }
     return (
       <View style={{flex : 1, paddingBottom : 55}}>
+	  {index === 0 && this.autocall.getProductType() === 'STRUCTURED_PRODUCT' && !this.showPerf && this.isEditable
+	  	?
+			<View style={{marginBottom : 20, paddingRight : getConstant('width')*0.05}}>
+				<Text style={setFont('200', 10, 'gray')}>
+					Le prix affiché est calculé par le moteur FinLive sur les données de marché du {this.autocall.getFromPricing('DATAS_DATE') === -1 ?  Moment(this.autocall.getFromPricing('PRICING_DATE'), 'YYYYMMDD_HHmmss').format('ll') :  Moment(this.autocall.getFromPricing('DATAS_DATE'), 'YYYYMMDD').format('ll')}. il est indicatif et ne peut engager la responsabilté de FinLive quant aux prix obtenus chez le émetteurs.
+				</Text>
+			</View>
+		: null
+	  }
         {item.level === 2
          ?
             <View style={{opacity: this.state.isLoadingUpdatePrice ? 0.2 : 1}}>
@@ -434,14 +566,14 @@ class FLAutocallDetail extends React.Component {
                         {icon}
                     </View>
                     <View style={{alignItems: 'flex-start', justifyContent : 'center', paddingLeft : 10}}>
-                      <Text style={setFont('600', item.level === 1 ? 24 : 14, setColor('darkBlue'), 'Regular')}>{item.title}</Text>
+                      <Text style={setFont('600', itemData.level === 1 ? 24 : 14, setColor('darkBlue'), 'Regular')}>{itemData.title}</Text>
                     </View>
                 </View>
                
                 {body}
             </View>
           :           
-            <View style={{}}><Text style={[setFont('600', item.level === 1 ? 24 : 14, setColor('darkBlue'), 'Regular'), {paddingBottom: 16}]}>{item.title}</Text>
+            <View style={{}}><Text style={[setFont('600', itemData.level === 1 ? 24 : 14, setColor('darkBlue'), 'Regular'), {paddingBottom: 16}]}>{itemData.title}</Text>
               {body}
             </View>
         }
@@ -626,7 +758,7 @@ class FLAutocallDetail extends React.Component {
     return (
       <Animated.View  style={{position : 'absolute',top: getConstant('height')-220-this.state.keyboardHeight - (isAndroid() ? 30 : 0), right : 20,  marginLeft : 10, zIndex: 10, backgroundColor:'transparent', transform: [{ translateY: this.state.scrollOffset }]}}>
 
-            <TouchableOpacity style ={{ flexDirection: 'row',  borderWidth : 1, height: 40,  borderColor: setColor('darkblue'), borderRadius: 20, marginLeft : 10, marginRight : 0,  backgroundColor: setColor('darkblue'), marginBottom : 15, justifyContent : 'space-between'}}
+            <TouchableOpacity style ={{ flexDirection: 'row',  borderWidth : 1, height: 40,  borderColor: setColor('subscribeBlue'), borderRadius: 20, marginLeft : 10, marginRight : 0,  backgroundColor: setColor('subscribeBlue'), marginBottom : 15, justifyContent : 'space-between'}}
                             onPress={() => {
                               this.setState({ showButtonsToTrade : !this.state.showButtonsToTrade });
                               this.props.navigation.navigate('FLAutocallDetailBroadcastPP', {
@@ -643,7 +775,7 @@ class FLAutocallDetail extends React.Component {
 
             </TouchableOpacity>
 
-            <TouchableOpacity style ={{  flexDirection: 'row',  borderWidth : 1, height: 40,  borderColor: setColor('darkblue'), borderRadius: 20, marginLeft : 10, marginRight : 0,  backgroundColor: setColor('darkblue'), justifyContent : 'space-between'}}
+            <TouchableOpacity style ={{  flexDirection: 'row',  borderWidth : 1, height: 40,  borderColor: setColor('subscribeBlue'), borderRadius: 20, marginLeft : 10, marginRight : 0,  backgroundColor: setColor('subscribeBlue'), justifyContent : 'space-between'}}
                             onPress={() => {
                                 if(this.state.nominal === 0) {
                                   alert("Renseigner un nominal avant de demander une cotation");
@@ -719,7 +851,7 @@ class FLAutocallDetail extends React.Component {
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingUpdatePrice} text={String(this.state.messageUpdatePrice).toUpperCase()}/>
         
             <View style={{ flexDirection : 'row', marginTop : getConstant('statusBar')-(isIphoneX() ? 45 : isAndroid() ? 30 : 20) ,height: 40 + getConstant('statusBar'), width : getConstant('width'), paddingLeft : 10, backgroundColor: setColor(''), paddingTop : isAndroid() ? 10 : isIphoneX() ? 40 : 20, alignItems : 'center', justifyContent: 'space-around', opacity: this.state.isLoadingUpdatePrice ? 0.2 : 1}} >
-                            <TouchableOpacity style={{ flex: 0.2, flexDirection : 'row', borderWidth: 0, padding : 5}}
+                            <TouchableOpacity style={{ flex: 0.15, flexDirection : 'row', borderWidth: 0, padding : 5}}
                                                 onPress={() => this.props.navigation.goBack()}
                             >
                                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -727,15 +859,15 @@ class FLAutocallDetail extends React.Component {
                                     </View>
                   
                             </TouchableOpacity>
-                            <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}} >
-                              <Text style={setFont('400', 18, 'white', 'Regular')}>
+                            <View style={{flex: 0.7, alignItems: 'center', justifyContent: 'center'}} >
+                              <Text style={[setFont('400', this.isEditable ? 18 : 14, 'white', 'Regular'), {textAlign : 'center'}]} numberOfLines={this.isEditable ? 1 : 2}>
                                 {this.isEditable
                                 ? "Nouveau produit"
-                                : this.autocall.getProductName() 
+                                : this.autocall.getShortName()
                                 }
                               </Text>
                             </View>
-                            <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'flex-end', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
+                            <View style={{flex: 0.15, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'flex-end', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
                                     <FLModalDropdown
                                     //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                     //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
@@ -844,8 +976,45 @@ class FLAutocallDetail extends React.Component {
                    
                             </View>
             </View>
-            <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center', marginLeft : 0}}>
-                <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false/*this.isEditable*/} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
+            <View style={{flexDirection: 'row',   width : getConstant('width'), justifyContent : 'space-between', alignItems : 'center', marginLeft : 0, backgroundColor: setColor('background')}}>
+
+				<View style={{flex : 1, flexDirection: 'column', justifyContent: 'center' , alignItems : 'center', paddingTop: 3, paddingBottom: 3}}>
+						<Text style={setFont('400', 20, setColor('darkBlue'), 'Regular')}>
+                                    {this.autocall.getProductName()} {Moment(this.autocall.getIssueDate()).from(Moment(this.autocall.getEndIssueDate()),true)}
+                        </Text>
+						<Text style={setFont('400', 13, setColor('darkBlue'), 'Light')}>
+                                {this.autocall.getFullUnderlyingName()}
+                        </Text>
+				</View>
+				<View style={{  borderWidth: 0, marginRight : getConstant('width')*0.05}}>
+				{
+					this.state.repriceNeeded
+					?
+						<TouchableOpacity style={{padding : 2,paddingHorizontal : 20,  borderWidth : 1, alignItems: 'center', justifyContent: 'center', backgroundColor : setColor('subscribeBlue'), borderColor : setColor('subscribeBlue'), borderRadius : 5}}
+											onPress={() => {
+												this._reprice();
+											}}
+						>
+							<Text style={setFont('400', 16, 'white', 'Bold')} numberOfLines={1}>        
+								Rafraîchir
+							</Text> 
+						</TouchableOpacity>
+					:
+						<View style={{padding : 5, borderWidth : 0, alignItems: 'center', justifyContent: 'center'}}>
+							<Text style={setFont('400', 24, setColor('FLGreen'), 'Bold')} numberOfLines={1}>        
+								{ Numeral(this.autocall.getCoupon()).format('0.00%')} <Text style={setFont('200', 12, setColor('FLGreen'))}>p.a.
+							</Text></Text>   
+						</View>
+				}
+					{/* <View style={{borderWidth : 2,alignItems: 'center', justifyContent: 'center'}}>
+						<Text style={setFont('200', 12, 'gray')}>
+							{Moment(this.autocall.getFromPricing('VALIDITY_DATE'), 'YYYYMMDD_HHmmss').format('lll')}
+						</Text>
+					</View> */}
+				</View>
+				
+
+                {/* <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_HEADER_MEDIUM_TEMPLATE} isEditable={false} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} /> */}
             </View>
             {/* <View style={{  width : getConstant('width'), justifyContent : 'center', alignItems : 'center'}}>
                 <FLTemplateAutocall autocall={this.autocall} templateType={TEMPLATE_TYPE.AUTOCALL_DETAIL_FULL_TEMPLATE} isEditable={this.isEditable} source={'Home'} callbackUpdate={this._updateAutocall} nominal={this.state.finalNominal} screenWidth={1} />
@@ -871,6 +1040,7 @@ class FLAutocallDetail extends React.Component {
                           sectionContainerStyle={{marginTop : 10 }}
                           keyExtractor={item => item.title}
                           touchableComponent={(props) => <TouchableOpacity {...props} />}
+                          //renderAsFlatList={true}
                       />
 
 
@@ -894,7 +1064,7 @@ class FLAutocallDetail extends React.Component {
             </View>
             
             {this.state.showButtonsToTrade ? this._renderButtonsTotrade() : null}     
-            {(/*this.state.finalNominal === -1 && */this.isEditable) ? this._renderButtonTotrade() : null}
+            {(/*this.state.finalNominal === -1 && */this.isEditable && !this.state.repriceNeeded) ? this._renderButtonTotrade() : null}
       </View>
     );
   }

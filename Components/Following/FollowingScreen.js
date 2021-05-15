@@ -28,8 +28,8 @@ import 'numeral/locales/fr'
 import Moment from 'moment';
 
 import { WebView } from 'react-native-webview';
-import { FollowingAutocallTemplate } from './FollowingAutocallTemplate';
-import { FollowingDemandeGenerale } from './FollowingDemandeGenerale';
+import FollowingAutocallTemplate  from './FollowingAutocallTemplate';
+import FollowingDemandeGenerale  from './FollowingDemandeGenerale';
 
 const NAVBAR_HEIGHT = 45;
 
@@ -78,6 +78,7 @@ class FollowingScreen extends React.Component {
 			productNameAddProduct : '',
 			productCommentAddProduct : '',
 			filesToUpload : [],
+			isErrorLoading : false
 		};
 	
 		
@@ -112,11 +113,25 @@ class FollowingScreen extends React.Component {
 		this._offsetValue = value;
 		});
 
-		this.underlyings = await this.props.getAllUndelyings();
-		var tickets = await getAllTicket(this.props.firebase, 'FOLLOWEDTICKETS');
+		this._loadFromServer();
+	}
 
-		this.setState({ productsFollowed : tickets['userTickets'], isLoading : false});
-
+	async _loadFromServer() {
+		try {
+			this.underlyings = await this.props.getAllUndelyings();
+			var tickets = await getAllTicket(this.props.firebase, 'FOLLOWEDTICKETS');
+			this.setState({ productsFollowed : tickets['userTickets'], isLoading : false, isErrorLoading : false});
+		} catch(error) {
+			this.setState({ isLoading : false,  isErrorLoading : true});
+			setTimeout(() => {
+				Alert.alert(
+					'Erreur',
+					'Impossible de récupérer les produits suivis',
+					[{text: 'OK', onPress: () => console.log("ok")}],
+					{cancelable: false},
+				);
+				}, 1000);
+		}
 	}
 
 
@@ -316,10 +331,8 @@ class FollowingScreen extends React.Component {
 									
 															//let t = new CWorkflowTicket(data);
 															//this.props.addTicket(t);
-															console.log("TICKET AJOUTE");
-															//this.setState({ isLoadingCreationTicket : false }, () => {
-															//	this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
-															//})
+															console.log("TICKET DEMANDE GENERALE FOLLOWED AJOUTE");
+
 														})
 														.catch(error => {
 															alert("Impossible d'envoyer la demande. Veuillez réessayer plus tard.")
@@ -327,7 +340,12 @@ class FollowingScreen extends React.Component {
 															//this.setState({ messageToShow : String('Erreur création demande de prix').toUpperCase()})
 															setTimeout(()=> { 
 																this.setState({ isLoadingCreationTicket : false, messageToShow : ''});
-																	//this.props.navigation.goBack();
+																Alert.alert(
+																	'Erreur',
+																	'Impossible de créer la demande',
+																	[{text: 'OK', onPress: () => console.log("ok")}],
+																	{cancelable: false},
+																);
 																}, 4000);	
 														});
 													}}
@@ -343,8 +361,7 @@ class FollowingScreen extends React.Component {
 	}
 
 
-
-	render() {
+	_renderHeader() {
 		const { clampedScroll } = this.state;
 
 		//console.log("RENDER :");
@@ -366,7 +383,175 @@ class FollowingScreen extends React.Component {
 		outputRange: [0, -getConstant('statusBar')],
 		extrapolate: 'clamp',
 		});
+		return (
+				<Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
+							
+							<Animated.View style={{
+									display: 'flex',
+									backgroundColor: setColor(''),
+									//borderRadius: 3,
+									borderWidth:0,
+									opacity: navbarOpacity,
+									height: 45,
+									marginTop: 0,
+									width: getConstant('width')*1,
+									alignSelf: 'center',
+									justifyContent: 'center',
+									alignItems: 'center'
+									}}> 
+									<View style={{flex: 1, height: 45, borderWidth: 0, width: getConstant('width')*0.925,flexDirection: 'row'}}>   
+									<View style={{flex:0.2, borderWidth : 0, height : 45}} />
+										<View style={{flex:0.6, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
+										<TouchableOpacity onPress={() => {
+													console.log("qsjhfjhdfjd");
+										}}>
+											<Text style={setFont('400', 18, 'white', 'Regular')}>
+												Vos produits suivis
+											</Text>    
+										</TouchableOpacity>
+										</View>   
 
+										<TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
+											onPress={() => {
+											this.props.navigation.setParams({ hideBottomTabBar : true});
+											this.setState ({ showModalTitle : !this.state.showModalTitle });
+
+												Animated.parallel([
+												Animated.timing(
+													this.state.positionLeft,
+														{
+														toValue: 0,
+														duration : 1000,
+														easing: Easing.elastic(),
+														speed : 1,
+														useNativeDriver: true,
+														}
+												),
+												]).start(() => {
+												//force le render avec un changement de state dont on se fiche 
+												//this.setState ({ showModalTitle : !this.state.showModalTitle });
+											});
+												
+												if (this.inputSearch !== null && this.inputSearch !== undefined) {
+												this.inputSearch.focus();
+												}
+											
+
+											}}>  
+											<MaterialIcons
+												name='search' 
+												size={25} 
+												color='white'
+											/>
+										</TouchableOpacity>
+										<TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
+															onPress={() => {
+															this.setState({ showAddProductModal :true});
+															}}> 
+											<MaterialCommunityIcons
+												name='plus' 
+												size={25} 
+												style={{color : 'white'}}
+											/>
+										</TouchableOpacity>
+										
+									</View>
+									<Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',transform: [{ translateX: this.state.positionLeft }], height: 45}}>
+										<View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', borderWidth : 1}}>
+											<TouchableOpacity onPress={() => {
+														//this.setState ({ showModalTitle : !this.state.showModalTitle });
+														//console.log("SCROLL Y : "+ JSON.stringify(animation.scrollY));
+														
+														
+															Animated.parallel([
+															Animated.timing(
+																this.state.positionLeft,
+																	{
+																	toValue: getConstant('width'),
+																	duration : 1000,
+																	easing: Easing.elastic(),
+																	speed : 1,
+																	useNativeDriver: true,
+																	}
+															),
+																/*Animated.timing(
+																this.state.categoryHeight,
+																{
+																	toValue: 45,
+																	duration : 1000,
+																	easing: Easing.elastic(),
+																	speed : 1
+																}
+																)  */
+															]).start(() => {
+																//force le render avec un changement de state dont on se fiche 
+																this.setState ({ showModalTitle : !this.state.showModalTitle });
+																this.props.navigation.setParams({ hideBottomTabBar : false});
+															});
+
+															if (this.inputSearch !== null && this.inputSearch !== undefined) {
+															this.inputSearch.blur();
+															}
+															this.searchText = '';
+															//this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, '');
+												}}>  
+													<MaterialIcons
+														name='arrow-back' 
+														size={22} 
+														color='lightgray'
+														style={{paddingLeft: 20}}
+														/>
+												</TouchableOpacity>
+										</View>
+										<View style={{flex: 0.9}}>
+											<TextInput 
+												style={styles.inputText}
+												placeholder={'Filtre ...'}
+												placeholderTextColor={'#999'}        
+												underlineColorAndroid={'#fff'}
+												autoCorrect={false}
+												//editable={false}
+												onSubmitEditing={() => {
+													this.props.navigation.setParams({ hideBottomTabBar : false});
+													//this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
+												}}
+												ref={(inputSearch) => {
+													//if (this.inputSearch !== null && this.inputSearch !== undefined) {
+													this.inputSearch = inputSearch;
+													//inputSearch.focus();
+												//  }
+												}}
+												onChangeText={(text) => this.searchText = text}
+												/>
+											</View>
+									</Animated.View>                    
+								</Animated.View>
+							</Animated.View>
+		);
+	}
+
+	render() {
+
+
+
+		if (this.state.isErrorLoading) {
+			return (
+				<SafeAreaView style={{ backgroundColor: setColor('')}}>
+					
+					<View style={{height: getConstant('height'), width: getConstant('width'), backgroundColor : setColor('background'), justifyContent: 'center', alignItems: 'center'}}>
+						{this._renderHeader()}
+						<TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', padding : 10, borderRadius : 5, backgroundColor: setColor('subscribeBlue')}}
+										onPress={() => {
+											this.setState({isErrorLoading : false, isLoading : true} , () => this._loadFromServer());
+										}}
+						>
+								<Text style={setFont('400', 16, 'white', 'Regular')}>Essayer à nouveau</Text>
+						</TouchableOpacity>
+					</View>
+					
+				</SafeAreaView>
+			);
+		}
 
 		if (this.state.isLoading) {
 		return (
@@ -398,196 +583,58 @@ class FollowingScreen extends React.Component {
             <FLAnimatedSVG name={'robotBlink'} visible={this.state.isLoadingCreationTicket} text={"Création d'un produit à monitorer"}/>
       
 
-			<AnimatedFlatList
-				style={{  backgroundColor: setColor('background')}}
-				contentContainerStyle={{alignItems : 'center', marginTop :   NAVBAR_HEIGHT}}
-				data={this.state.productsFollowed}
-				extraData={this.state.productsFollowed}
-				keyExtractor={(item) => item.id+""}
-				renderItem={({item, id}) => {
-					switch(item.type) {
-						case 'Demande Générale' :
-							let ticket = new CFollowedTicket(item);
-							return (
-								<View style={{marginTop : id === 0 ? 0 : 10}}>
-									<FollowingDemandeGenerale ticket={ticket} />
-								</View>
-							);
-							//return <View />;
-						case 'Produit structuré' :
-							if (item.PRODUCT && item.PRODUCT !== '') {
-								let autocall = new CAutocall2(item.PRODUCT);
-								return (
+
+
+					<AnimatedFlatList
+						style={{  backgroundColor: setColor('background')}}
+						contentContainerStyle={{alignItems : 'center', marginTop :   NAVBAR_HEIGHT}}
+						data={this.state.productsFollowed}
+						extraData={this.state.productsFollowed}
+						keyExtractor={(item) => item.id+""}
+						renderItem={({item, id}) => {
+							switch(item.type) {
+								case 'Demande Générale' :
+									let ticket = new CFollowedTicket(item);
+									return (
 										<View style={{marginTop : id === 0 ? 0 : 10}}>
-											<FollowingAutocallTemplate autocall={autocall} underlyings={this.underlyings}/>
+											<FollowingDemandeGenerale ticket={ticket} />
 										</View>
-								);
+									);
+									//return <View />;
+								case 'Produit structuré' :
+									if (item.PRODUCT && item.PRODUCT !== '') {
+										let autocall = new CAutocall2(item.PRODUCT);
+										return (
+												<View style={{marginTop : id === 0 ? 0 : 10}}>
+													<FollowingAutocallTemplate autocall={autocall} underlyings={this.underlyings} navigation={this.props.navigation} />
+												</View>
+										);
+									}
+									break;
+								default : 
+									break;
 							}
-							break;
-						default : 
-							break;
-					}
-				}}
-				horizontal={false}
-				scrollEventThrottle={1}
-				//extraData={this.state.allNotificationsCount}
-				onMomentumScrollBegin={this._onMomentumScrollBegin}
-				onMomentumScrollEnd={this._onMomentumScrollEnd}
-				onScrollEndDrag={this._onScrollEndDrag}
-				onScroll={Animated.event(
-				[{ nativeEvent: { contentOffset: { y: this.state.scrollAnim } } }],
-				{ useNativeDriver: true },
-				)}
-				ListFooterComponent={() => {
-					return (
-						<View style={{height : 150, justifyContent: 'center', alignItems: 'center'}} />
-					);
-				}}
-			/>
-
-			<Animated.View style={[styles.navbar, { transform: [{ translateY: navbarTranslate }] }]}>
+						}}
+						horizontal={false}
+						scrollEventThrottle={1}
+						//extraData={this.state.allNotificationsCount}
+						onMomentumScrollBegin={this._onMomentumScrollBegin}
+						onMomentumScrollEnd={this._onMomentumScrollEnd}
+						onScrollEndDrag={this._onScrollEndDrag}
+						onScroll={Animated.event(
+						[{ nativeEvent: { contentOffset: { y: this.state.scrollAnim } } }],
+						{ useNativeDriver: true },
+						)}
+						ListFooterComponent={() => {
+							return (
+								<View style={{height : 150, justifyContent: 'center', alignItems: 'center'}} />
+							);
+						}}
+					/>
 			
-			<Animated.View style={{
-					display: 'flex',
-					backgroundColor: setColor(''),
-					//borderRadius: 3,
-					borderWidth:0,
-					opacity: navbarOpacity,
-					height: 45,
-					marginTop: 0,
-					width: getConstant('width')*1,
-					alignSelf: 'center',
-					justifyContent: 'center',
-					alignItems: 'center'
-					}}> 
-					<View style={{flex: 1, height: 45, borderWidth: 0, width: getConstant('width')*0.925,flexDirection: 'row'}}>   
-					<View style={{flex:0.2, borderWidth : 0, height : 45}} />
-						<View style={{flex:0.6, borderWidth: 0, height: 45,justifyContent: 'center', alignItems: 'center'}}>
-						<TouchableOpacity onPress={() => {
-									console.log("qsjhfjhdfjd");
-						}}>
-							<Text style={setFont('400', 18, 'white', 'Regular')}>
-								Vos produits suivis
-							</Text>    
-						</TouchableOpacity>
-						</View>   
 
-						<TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
-							onPress={() => {
-							this.props.navigation.setParams({ hideBottomTabBar : true});
-							this.setState ({ showModalTitle : !this.state.showModalTitle });
+			{this._renderHeader()}
 
-								Animated.parallel([
-								Animated.timing(
-									this.state.positionLeft,
-										{
-										toValue: 0,
-										duration : 1000,
-										easing: Easing.elastic(),
-										speed : 1,
-										useNativeDriver: true,
-										}
-								),
-								]).start(() => {
-								//force le render avec un changement de state dont on se fiche 
-								//this.setState ({ showModalTitle : !this.state.showModalTitle });
-							});
-								
-								if (this.inputSearch !== null && this.inputSearch !== undefined) {
-								this.inputSearch.focus();
-								}
-							
-
-							}}>  
-							<MaterialIcons
-								name='search' 
-								size={25} 
-								color='white'
-							/>
-						</TouchableOpacity>
-						<TouchableOpacity style={{ flex:0.1, height: 45, borderWidth: 0,justifyContent: 'center', alignItems: 'center'}}
-											onPress={() => {
-											this.setState({ showAddProductModal :true});
-											}}> 
-							<MaterialCommunityIcons
-								name='plus' 
-								size={25} 
-								style={{color : 'white'}}
-							/>
-						</TouchableOpacity>
-						
-					</View>
-					<Animated.View style={{flexDirection:'row', top: 0, width: getConstant('width'), backgroundColor: 'white',transform: [{ translateX: this.state.positionLeft }], height: 45}}>
-						<View style={{flex: 0.1, justifyContent: 'center', alignItems: 'center', borderWidth : 1}}>
-							<TouchableOpacity onPress={() => {
-										//this.setState ({ showModalTitle : !this.state.showModalTitle });
-										//console.log("SCROLL Y : "+ JSON.stringify(animation.scrollY));
-										
-										
-											Animated.parallel([
-											Animated.timing(
-												this.state.positionLeft,
-													{
-													toValue: getConstant('width'),
-													duration : 1000,
-													easing: Easing.elastic(),
-													speed : 1,
-													useNativeDriver: true,
-													}
-											),
-												/*Animated.timing(
-												this.state.categoryHeight,
-												{
-													toValue: 45,
-													duration : 1000,
-													easing: Easing.elastic(),
-													speed : 1
-												}
-												)  */
-											]).start(() => {
-												//force le render avec un changement de state dont on se fiche 
-												this.setState ({ showModalTitle : !this.state.showModalTitle });
-												this.props.navigation.setParams({ hideBottomTabBar : false});
-											});
-
-											if (this.inputSearch !== null && this.inputSearch !== undefined) {
-											this.inputSearch.blur();
-											}
-											this.searchText = '';
-											//this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, '');
-								}}>  
-									<MaterialIcons
-										name='arrow-back' 
-										size={22} 
-										color='lightgray'
-										style={{paddingLeft: 20}}
-										/>
-								</TouchableOpacity>
-						</View>
-						<View style={{flex: 0.9}}>
-							<TextInput 
-								style={styles.inputText}
-								placeholder={'Filtre ...'}
-								placeholderTextColor={'#999'}        
-								underlineColorAndroid={'#fff'}
-								autoCorrect={false}
-								//editable={false}
-								onSubmitEditing={() => {
-									this.props.navigation.setParams({ hideBottomTabBar : false});
-									//this.props.filterUpdated(this.state.selectedCategory, this.state.selectedSubCategory, this.searchText);
-								}}
-								ref={(inputSearch) => {
-									//if (this.inputSearch !== null && this.inputSearch !== undefined) {
-									this.inputSearch = inputSearch;
-									//inputSearch.focus();
-								//  }
-								}}
-								onChangeText={(text) => this.searchText = text}
-								/>
-							</View>
-					</Animated.View>                    
-				</Animated.View>
-			</Animated.View>
 		</View>
 		</SafeAreaView>
 		);

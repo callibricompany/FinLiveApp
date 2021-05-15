@@ -144,7 +144,7 @@ class FLNotifications extends React.PureComponent {
                               }
                               if (ticket != null) {
                                 this.setState({ isLoading : false });
-                                  this.props.navigation.navigate('FLTicketDetailHome', {
+                                  this.props.navigation.navigate('FLTicketDetail', {
                                     ticket: ticket,
                                     //ticketType: TICKET_TYPE.PSCREATION
                                   })

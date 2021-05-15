@@ -195,6 +195,8 @@ class PricerScreen extends React.Component {
     //optimzer = 'CC'  --> c'est la marge qui est recherchée le coupon étant minipimé
     let optimizer = 'CPN';
     if (this.request.isActivated('UF') === true && this.request.isActivated('coupon') === true) {
+      alert("Fonctionnalité prochainement disponible");
+      return;
       optimizer = 'BOTH';
     }
     else if (this.request.isActivated('coupon') === true) {
@@ -204,9 +206,10 @@ class PricerScreen extends React.Component {
       optimizer = 'CPN';
     } 
     else {
-      alert("Veillez activer au moins une condition : MARGE ou COUPON PER ANNUM")
+      alert("Veillez activer au moins une condition : MARGE ou COUPON PER ANNUM");
       return;
     }
+
 
     //this.state.isLoading === false ? this.setState({ isLoading: true }) : null;
     this.setState({ isLoading: true , bottomPanelPosition : SNAP_POINTS_FROM_TOP[2]}) ;
@@ -230,7 +233,7 @@ class PricerScreen extends React.Component {
           this.props.navigation.navigate('FLResultPricer', {
           //bestProducts: this.bestProducts,
           bestProducts: data,
-          //optimizer 
+          optimizer 
           //ticketType: TICKET_TYPE.PSCREATION
         })
       });
@@ -659,7 +662,7 @@ _renderTiles() {
 
 _renderCalculateButton(position='right') {
   return (
-    <TouchableOpacity style ={{  position: "absolute" , top : sizeByDevice(80, 20, 80) - 70, left : position==='right' ? (0.9*getConstant('width')-50) : (0.9*getConstant('width')-50) , height: 70, width: 70, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius: 35, padding : 10, backgroundColor: setColor('subscribeBlue')}}
+    <TouchableOpacity style ={{  position: "absolute" , top : sizeByDevice(80, 80, 80) - 70, left : position==='right' ? (0.9*getConstant('width')-50) : (0.9*getConstant('width')-50) , height: 70, width: 70, flexDirection: 'column',  borderWidth : 1, borderColor: setColor('subscribeBlue'), borderRadius: 35, padding : 10, backgroundColor: setColor('subscribeBlue')}}
           onPress={() => {
             this.calculateProducts();
           }}  
@@ -692,8 +695,8 @@ render() {
     
     
     return (
-      <View style={{flex:1, height: getConstant('height')  , opacity : (this.state.showModalDropdown) ? 0.3 : 1}}> 
-          <View style={{flex:1, borderWidth:0, justifyContent: 'space-between', marginTop:  isAndroid() ? 0 : getConstant('statusBar'), backgroundColor : setColor('background')}}>
+      <View style={{flex:1, height: getConstant('height')  , opacity : (this.state.showModalDropdown ) ? 0.3 : 1}}> 
+          <View style={{flex:1, borderWidth:0, justifyContent: 'space-between', marginTop:  isAndroid() ? 0 : getConstant('statusBar'), backgroundColor : setColor('background'), opacity : this.state.bottomPanelPosition !== SNAP_POINTS_FROM_TOP[2] ? 0.2 : 1}}>
             <View style={{width : 0.9*getConstant('width'), marginTop : 10, justifyContent: 'space-between', marginLeft : 0.05*getConstant('width') + 5, alignItems: 'stretch', flexDirection: 'row'}}>
                 <View style={{ height: 70, flexDirection : 'row', justifyContent : 'center', alignItems :  'center', borderWidth : 0}}>
                       <TextInput 

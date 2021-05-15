@@ -678,6 +678,7 @@ componentWillUnmount() {
 
    _renderContentUnderlying =  (content, index, isActive, sections) => {
     //console.log("EST ACTIF : " + isActive);
+    console.log(this.user);
     switch(content.code) {
         case 'USERDATA' :
               return (

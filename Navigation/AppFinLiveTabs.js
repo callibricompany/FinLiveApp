@@ -6,7 +6,6 @@ import HomeScreen from '../Components/Home/HomeScreen';
 import NewsList from '../Components/Home/NewsList';
 import NewsDetail from '../Components/Home/NewsDetail';
 import NewsDetailWeb from '../Components/Home/NewsDetailWeb';
-import FLTicketDetailHome from '../Components/Home/FLTicketDetailHome';
 import FLAutocallDetail from '../Components/commons/Autocall/FLAutocallDetail';
 import FLAutocallDetailTrade from '../Components/commons/Autocall/FLAutocallDetailTrade';
 import FLAutocallDetailBroadcastPP from '../Components/commons/Autocall/FLAutocallDetailBroadcastPP';
@@ -17,7 +16,6 @@ import FLNotifications from '../Components/commons/FLNotifications';
 import PricerScreen from '../Components/Pricer/PricerScreen'
 import FLResultPricer from '../Components/Pricer/FLResultPricer'
 import FLAutocallDetailPricer from '../Components/Pricer/FLAutocallDetailPricer';
-import FLTicketDetailTicket from '../Components/Ticket/FLTicketDetailTicket';
 import FLAutocallDetailTicket from '../Components/Ticket/FLAutocallDetailTicket';
 
 import FLCouponMinDetailAndroid from '../Components/Pricer/description/FLCouponMinDetailAndroid';
@@ -35,6 +33,7 @@ import FLTicketDetail from '../Components/commons/Ticket/FLTicketDetail';
 import {FLAddFriendOnBroadcast} from '../Components/commons/Ticket/FLAddFriendOnBroadcast';
 
 import FollowingScreen from '../Components/Following/FollowingScreen';
+import FLTermSheetDescription from '../Components/commons/FLTermSheetDescription';
 
 import AdminScreen from '../Components/Admin/AdminScreen';
 import AdminUser from '../Components/Admin/AdminUser';
@@ -101,8 +100,8 @@ function labelStyle (focused, tintColor) {
     FLSRPDetail: {
       screen : FLSRPDetail
     },
-    FLTicketDetailHome: {
-      screen : FLTicketDetailHome
+    FLTicketDetail: {
+      screen : FLTicketDetail
     },
     FLAutocallDetailTrade: {
       screen : FLAutocallDetailTrade
@@ -118,6 +117,12 @@ function labelStyle (focused, tintColor) {
     },
     FLNotifications: {
       screen : FLNotifications
+    },
+    FLTermSheetDescription:{
+      screen: FLTermSheetDescription,
+      navigationOptions: {
+        header : null
+    }
     },
 
   }, 
@@ -160,15 +165,18 @@ function labelStyle (focused, tintColor) {
     FLAutocallDetailBroadcastPP: {
       screen : FLAutocallDetailBroadcastPP
     },
+    FLTermSheetDescription:{
+      screen: FLTermSheetDescription,
+      navigationOptions: {
+        header : null
+    }
+    },
   })
   
   //Ecran ticket
   const TicketScreenStack = createStackNavigator({
       Tickets: {
         screen: TicketScreen,
-      },
-      FLTicketDetailTicket : {
-        screen : FLTicketDetailTicket
       },
       FLTicketDetail : {
         screen : FLTicketDetail
@@ -190,10 +198,15 @@ function labelStyle (focused, tintColor) {
   const FollowingScreenStack = createStackNavigator({
     Following: {
       screen: FollowingScreen,
+    },
+    FLTermSheetDescription:{
+      screen: FLTermSheetDescription,
       navigationOptions: {
-        title: 'Suivi',
-
-      }
+        header : null
+    }
+    },
+    FLAutocallDetail : {
+      screen : FLAutocallDetail
     },
 
     })
@@ -360,7 +373,7 @@ function labelStyle (focused, tintColor) {
     //console.log("PASSE PAR ROUTE HOME");
     //console.log(navigation);
     //console.log(routes[index].routeName);
-    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetailHome'
+    if(routes[index].routeName === 'Home' || routes[index].routeName === 'FLSRPDetail' || routes[index].routeName === 'FLTicketDetail'
     || routes[index].routeName === 'FLAutocallDetail'  || routes[index].routeName === 'FLAutocallDetailTrade'   || routes[index].routeName === 'FLAutocallDetailBroadcastPP'
     || routes[index].routeName === 'FLAutocallDetailBroadcastFriends') {
       if (typeof routes[index].params !== 'undefined') {
@@ -412,7 +425,7 @@ function labelStyle (focused, tintColor) {
     let badgeCount = 0
     
     
-    if(routes[index].routeName === 'Tickets' || routes[index].routeName === 'FLTicketDetailTicket' ){
+    if(routes[index].routeName === 'Tickets' || routes[index].routeName === 'FLTicketDetail' ){
       
       if (typeof routes[index].params !== 'undefined') {
         if (routes[index].params.hasOwnProperty('hideBottomTabBar')) {

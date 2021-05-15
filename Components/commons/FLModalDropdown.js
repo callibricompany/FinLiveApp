@@ -24,6 +24,7 @@ import {
 import PropTypes from 'prop-types';
 
 
+
 const TOUCHABLE_ELEMENTS = [
   'TouchableHighlight',
   'TouchableOpacity',
@@ -101,7 +102,7 @@ export default class FLModalDropdown extends React.Component {
     }
     this._nextValue = null;
     this._nextIndex = null;
-
+	
     this.setState({
       loading: !options,
       buttonText,
@@ -129,9 +130,17 @@ export default class FLModalDropdown extends React.Component {
 
   show() {
     this._updatePosition(() => {
+		//console.log("SHOW SHOW SHOW SHOW SHOW SHOW SHOW : " + this.props.defaultIndex);
       this.setState({
         showDropdown: true
-      });
+      }, () => {
+		/*if (this.props.defaultIndex !== -1 && !this.state.loading) {
+			this.flatListRef.scrollToIndex({
+			  animated: true,
+			  index: this.props.defaultIndex ,
+			});
+		}*/
+	});
     });
   }
 
@@ -284,18 +293,32 @@ export default class FLModalDropdown extends React.Component {
   _renderDropdown() {
     const {scrollEnabled, showsVerticalScrollIndicator, keyboardShouldPersistTaps, options} = this.props;
     const Separator = <View style={styles.separator} />
+
     return (
       <FlatList
-        scrollEnabled={scrollEnabled}
-        style={styles.list}
-        // dataSource={this._dataSource}
-        ItemSeparatorComponent={this._renderSeparator}
-        data={options}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderRow}
-        automaticallyAdjustContentInsets={false}
-        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+			ref={(ref) => { this.flatListRef = ref; }}
+			initialScrollIndex={this.props.defaultIndex}
+			initialNumToRender={100}
+			onScrollToIndexFailed={info => {
+				const wait = new Promise(resolve => setTimeout(resolve, 500));
+				wait.then(() => {
+					this.flatListRef.current.scrollToIndex({ index: this.props.defaultIndex, animated: true });
+				});
+			  }}
+			scrollEnabled={scrollEnabled}
+			getItemLayout={(data, index) => (
+				//{length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
+				{ length: 38, offset: 38 * index, index }
+			  )}
+			style={styles.list}
+			// dataSource={this._dataSource}
+			ItemSeparatorComponent={this._renderSeparator}
+			data={options}
+			keyExtractor={this._keyExtractor}
+			renderItem={this._renderRow}
+			automaticallyAdjustContentInsets={false}
+			showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+			keyboardShouldPersistTaps={keyboardShouldPersistTaps}
       />
     );
   }

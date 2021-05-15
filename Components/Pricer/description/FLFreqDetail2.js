@@ -67,7 +67,7 @@ export class FLFreqDetail2 extends React.Component{
                                 hasPadding={true}
                                 ref={(ref) => this.firstSwitch = ref}
                                 options={[
-                                    { label: "Quotidiens", value: "1D", customIcon: null},   
+                                    { label: "Quotidiens", value: "1D", customIcon: null, backgroundColor : 'gray'},   
                                     { label: "Mensuels", value: "1M", customIcon: null}, 
                                     { label: "Bimestriels", value: "2M", customIcon: null}, 
 

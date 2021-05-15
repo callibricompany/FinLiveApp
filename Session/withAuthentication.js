@@ -10,7 +10,7 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
-import { getUserAllInfoAPI, getTicket, getAllUsers, setFavorite, getClientCount, getUnderlyings} from "../API/APIAWS";
+import { getUserAllInfoAPI, getTicket, getAllUsers, setFavorite, getClientCount, getUnderlyings, getAllCharities} from "../API/APIAWS";
 
 
 import { isAndroid , isEqual } from '../Utils'; 
@@ -66,7 +66,8 @@ const withAuthentication = Component => {
         //users
         users : [],
     
-
+        //charities
+        allCharities : [],
 
         //ape publique issu de srp
         apeSRP : [],
@@ -103,6 +104,7 @@ const withAuthentication = Component => {
       this.lastRequestDateUnderlyings = {};
       this.underlyings = {};
       
+
 
     }
 
@@ -143,9 +145,7 @@ const withAuthentication = Component => {
             }
           );
 
-          //recupération de tous les sous-jacents
-		  this.getAllUndelyings();
-		  this.getAllUndelyings("INTERPOLATED_PS");
+
       } 
       catch(error) {
         console.log("ERREUR RECUP DATABASE INFO USER : ");
@@ -192,7 +192,7 @@ const withAuthentication = Component => {
               souscriptionsTickets.push(t);
               this.setState({ souscriptionsTickets }, () => {
                 if (t.isMine(CUsers.ME)) {
-                  NavigationService.navigate('FLTicketDetailTicket' , {
+                  NavigationService.navigate('FLTicketDetail' , {
                     ticket: t,
                   });
                 }
@@ -394,6 +394,13 @@ const withAuthentication = Component => {
       //chargement de tous les users
       this.setState({ users : new CUsers( await getAllUsers(this.props.firebase), this.state.authUser.uid) });
       
+      //recupération de tous les sous-jacents
+      this.getAllUndelyings();
+      this.getAllUndelyings("INTERPOLATED_PS");
+      
+      //recuperation des charity
+      this.setState({ allCharities : await getAllCharities(this.props.firebase) }), () => console.log("CHARITY OK");
+
       //chargement du nombre de clients
       this.updateClientCount();
 
@@ -547,8 +554,8 @@ const withAuthentication = Component => {
 
 
     ////////////////////////////////////////
-    //           TICKETS
-    //  ajoute un ticket des qu'il est crée 
+    //           UNDERLYINGS
+    //  retourne  al liste des sous-jacents
     ////////////////////////////////////////
     async getAllUndelyings(type = "ALL", field='') {
    
@@ -612,8 +619,9 @@ const withAuthentication = Component => {
 			console.log(error);
 			return [];
 		}
+	}
+	
 
-    }
 
     componentWillUnmount() {
     	console.log("withAUTHENTICATION : Appel this.listener() ");

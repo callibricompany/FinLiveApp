@@ -30,7 +30,7 @@ export class FLProductDetail extends React.Component{
             case 'AUTOCALL_INCREMENTAL' :
                 //return <TermSheetAutocall request={this.props.request}/> 
                 //if (this.props.request.getValue('degressiveStep')  === 0) {
-                    return <TermSheetAutocallAirbag request={this.props.request}/> 
+                    return <TermSheetAutocallAirbag request={this.props.request} disable={true}/> 
                 //} else {
                 //    return <DegressivityBarrier request={this.props.request}/> 
                 //}

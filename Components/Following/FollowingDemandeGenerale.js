@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native';
+import {StyleSheet, Text, View, Dimensions, Linking, TouchableHighlight, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native';
 
 import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
@@ -15,7 +15,7 @@ import Moment from 'moment';
 import 'numeral/locales/fr';
 
 
-export function FollowingDemandeGenerale ({ticket}) {
+export default function FollowingDemandeGenerale ({ticket}) {
 
         
         useEffect(() => {
@@ -79,30 +79,40 @@ export function FollowingDemandeGenerale ({ticket}) {
                         </View>
                     } */}
                 </View> 
-                <View style={{ marginBottom : ticket.getStatus() === 2 ? 10 : 0, paddingHorizontal : 20, justifyContent : 'flex-end', alignItems : 'flex-end'}}>
+                <View style={{ marginBottom : 10, paddingHorizontal : 20, justifyContent : 'flex-end', alignItems : 'flex-end'}}>
                     <View style={{flexDirection : 'row',}}>
                         <View style={{ paddingHorizontal : 5, paddingVertical : 2}}>
                             <Text style={setFont('400', 12,  'black', 'Regular')}>
-                                Statut de la demande :
+                                
                             </Text>
                         </View>
-                        <View style={{backgroundColor : ticket.getStatus() === 2 ? 'green' : 'red', paddingHorizontal : 5, paddingVertical : 2, borderRadius : 2, borderWidth : 1, borderColor : ticket.getStatus() === 2 ? 'green' : 'red'}}>
+                        <View style={{borderColorColor : ticket.getStatus() === 2 ? 'green' : 'red', paddingHorizontal : 5, paddingVertical : 2, borderRadius : 5, borderWidth : 1, borderColor : ticket.getStatus() === 2 ? 'green' : 'red'}}>
                             
                                 {ticket.getStatus() === 2 
                                     ?  
-                                        <Text style={setFont('400', 12,  'white', 'Regular')}>
+                                        <Text style={setFont('400', 12,  'green', 'Regular')}>
                                             {ticket.getStatusName()} 
                                         </Text>
                                     :
-                                        <Text style={setFont('400', 12,  'white', 'Regular')}>
-                                            en attente
-                                        </Text>
+                                        <TouchableOpacity onPress={() => {
+                                                if (isAndroid()) {
+                                                    NativeModules.UIMailLauncher.launchMailApp(); // UIMailLauncher is the 
+                                               
+                                                } else {
+                                                    Linking.openURL('message:0')
+                                                }
+                                            }}
+                                        >
+                                            <Text style={setFont('400', 12,  'red', 'Regular')}>
+                                                un email vous a été envoyé
+                                            </Text>
+                                        </TouchableOpacity>
                                 }
 
                         </View>
 
                     </View>
-                    {ticket.getStatus() !== 2
+                    {/* {ticket.getStatus() !== 2
                     ?
                         <View style={{ marginBottom : 10, paddingHorizontal : 0, justifyContent : 'flex-end', alignItems : 'flex-end',  borderWidth : 0}}>
                                 <Text style={setFont('400', 12,  'black', 'Regular')}>
@@ -110,7 +120,7 @@ export function FollowingDemandeGenerale ({ticket}) {
                                 </Text>
                         </View>
                     : null
-                    }
+                    } */}
                 </View>
             </View>
 

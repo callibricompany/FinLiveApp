@@ -65,7 +65,13 @@ class Firebase {
     return new Promise(
       (resolve, reject) => {
         this.auth.createUserWithEmailAndPassword(email, password).then((user) => {
-          resolve(user);
+          user.user.sendEmailVerification().then(function() {
+            console.log("Email de validation envoyé");
+            resolve(user);
+          }).catch(function(error) {
+            reject(error);
+          });
+          
         }, function(error) {
           reject(error);
         });
@@ -178,6 +184,8 @@ class Firebase {
       //console.log("SUSCRIBE RIGHTS : " + this.unsuscribreUserRights);
       if (authUser) {
           var idTokenUser = '';
+          //console.log("AUTHUSER EMAIL VERIF : " + authUser.emailVerified);
+          var emailVerified = authUser.emailVerified;
           //recuperation idToken
           this.doGetIdToken()
           .then(token => {
@@ -226,6 +234,7 @@ class Firebase {
                         company = (typeof doc.data().company !== 'undefined') ? doc.data().company : '';
                         organization = (typeof doc.data().organization !== 'undefined') ? doc.data().organization : '';
                         phone = (typeof doc.data().phone !== 'undefined') ? doc.data().phone : '';
+
                       }    
                       
                       
@@ -240,7 +249,8 @@ class Firebase {
                         organization: organization,
                         phone: phone,
                         roles : roles,
-                        idToken : idTokenUser
+                        idToken : idTokenUser,
+                        emailVerified 
                       };
                       //console.log("USER :  ", authUser.email);
 

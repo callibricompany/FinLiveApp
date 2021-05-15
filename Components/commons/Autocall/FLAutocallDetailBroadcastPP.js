@@ -551,7 +551,7 @@ _setFriends(friends) {
                                           this.props.addTicket(t);
                                           console.log("TICKET AJOUTE");
                                           this.setState({ isLoadingCreationTicket : false }, () => {
-                                            this.props.navigation.navigate('FLTicketDetailTicket', {ticket : t});
+                                            this.props.navigation.navigate('FLTicketDetail', {ticket : t, isJustCreated : true});
                                           })
                                       } else {
                                         console.log("ERREUR CREATION TICKET: " + error);

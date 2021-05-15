@@ -180,11 +180,21 @@ class TabHome extends React.PureComponent {
 
               //chargement des produits structurés les plus demandés
               try {
-                var dataFeatured = await getMostPricedPS(this.props.firebase)
-                //console.log(JSON.stringify(dataFeatured));
-                var autocallArray = [];
-                dataFeatured.forEach((autocall) => autocallArray.push(new CAutocall2(autocall)))
-                this.setState({ filteredFeaturedProducts : autocallArray });
+				var dataFeatured = await getMostPricedPS(this.props.firebase)
+				//console.log(JSON.stringify(dataFeatured));
+				var autocallArray = [];
+				dataFeatured.forEach((autocall) => {
+					var autocallFeatured = new CAutocall2(autocall);
+					var totalUF = autocallFeatured.getTotalUF();
+					totalUF = Math.round(totalUF*1000)/1000;
+					autocallFeatured.setUF(totalUF);
+					autocallFeatured.setUFAssoc(0);
+					// console.log("TOTAL Assoc : " + totalUF);
+					// console.log("UF : " + autocallFeatured.getFromPricing("UF"));
+					// console.log("UFAssoc : " + autocallFeatured.getFromPricing("UFAssoc"));
+					autocallArray.push(autocallFeatured);
+				});
+				this.setState({ filteredFeaturedProducts : autocallArray });
               }
               catch(error) {
                 console.log("ERREUR recup prix les plus demandés " + error);

@@ -23,8 +23,8 @@ import React from 'react';
 import { withFirebase } from '../../Database';
 import { withNavigation } from 'react-navigation';
 import { withAuthorization } from '../../Session';
-
-import { ifIphoneX, getConstant } from '../../Utils/';
+import { withUser } from '../../Session/withAuthentication';
+import { ifIphoneX, getConstant, isAndroid, sizeByDevice } from '../../Utils/';
 
 import { compose, hoistStatics } from 'recompose';
 
@@ -39,17 +39,14 @@ import { setFont, setColor } from '../../Styles/globalStyle';
 
 
 
-const Login2 = () => (
-    
-    <LoginForm />
- 
-);
+
 
 class LoginFormBase extends React.Component {
 
   constructor(props){
     super(props);
     // We have the same props as in our signup.js file and they serve the same purposes.
+    this.emailVerified = this.props.navigation.getParam('emailVerified', false);
     this.state = {
       loading: false,
       email: '',
@@ -93,11 +90,11 @@ class LoginFormBase extends React.Component {
         
         this.props.firebase.isHeAdmin(authUser.user).then((userData) => {
             //console.log("RETOUR TEST ADMIN : " + data.admin);
-            if (!userData.validated) {
-              this.props.navigation.navigate('WaitingRoom'); 
-            } else {
+            //if (!userData.validated) {
+            //  this.props.navigation.navigate('WaitingRoom'); 
+            //} else {
               userData.admin ? this.props.navigation.navigate('AppAdmin') : this.props.navigation.navigate('App');
-            }
+            //}
             return true;
         })
         .catch((error) => {
@@ -146,14 +143,14 @@ class LoginFormBase extends React.Component {
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{width: getConstant('width')*0.9, marginLeft:0.05*getConstant('width'), height: getConstant('height'), flexDirection: 'column', justifyContent:'center',alignItems: 'center', borderWidth: 0}}>
-          <View style={{flex :0.35, marginTop : ifIphoneX(45, 10), zIndex: 99}}>
+          <View style={{flex :0.35, marginTop : sizeByDevice(45, 10, 0), zIndex: 99, borderWidth :0}}>
             <Image
               source={logoImg}
               style={{  opacity: this.state.isOnFocus ? 0.1 : 0.3,
                         //position: "absolute",
                         width: getConstant('width'),
                         height: getConstant('height')*0.35,
-                        resizeMode: 'cover'
+                        resizeMode: 'contain'
                 }}
               resizeMode="contain"
             />
@@ -175,6 +172,7 @@ class LoginFormBase extends React.Component {
                           keyboardType='email-address'
                           clearButtonMode="always"
                           placeholder={"Adresse mail"} 
+                          
                           blurOnSubmit={ false }
                           onBlur={() => {
                             //console.log(this.state.email);
@@ -193,7 +191,7 @@ class LoginFormBase extends React.Component {
                           ref={ input => {
                             this.inputs['email'] = input;
                           }}
-                          style={setFont('400', 14, 'black', 'Regular')}
+                          //style={setFont('400', 14, 'black', 'Regular')}
                         />
                         
                   </View>
@@ -228,26 +226,25 @@ class LoginFormBase extends React.Component {
                 </View>
             
                 <TouchableOpacity  
-                  style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}
+                  style={{backgroundColor : setColor(), justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 10}}
                   onPress={this.login}
                   >
-                      <Text style={[setFont('600', 22, 'white', 'Bold'), {padding: 5}]}>SE CONNECTER</Text>
+                      <Text style={[setFont('600', 18, 'white', 'Regular'), {padding: 5}]}>Connexion</Text>
+                </TouchableOpacity>
+                <TouchableOpacity  
+                  style={{borderColor : setColor(''), justifyContent:'center', alignItems: 'center', marginTop: 15, borderRadius: 10, borderWidth : 1}}
+                  onPress={this.goToRegister}
+                  >
+                      <Text style={[setFont('600', 18, setColor(''), 'Regular'), {padding: 5}]}>Créer un compte</Text>
+                </TouchableOpacity>
+                <TouchableOpacity  
+                  style={{borderColor : setColor(''), justifyContent:'center', alignItems: 'center', marginTop: 15, borderRadius: 10, borderWidth : 1}}
+                  onPress={this.goToPasswordRecovery}
+                  >
+                      <Text style={[setFont('600', 18, setColor(''), 'Regular'), {padding: 5}]}>Mot de passe oublié</Text>
                 </TouchableOpacity>
           
-                <View  style={{flexDirection: 'row', justifyContent:'center', alignItems: 'center', marginTop: 30, borderRadius: 4}}>
-                  <TouchableOpacity   
-                      style={{width: 0.45*getConstant('width'), justifyContent:'center',marginRight: 5, height : 50}}
-                      onPress={this.goToRegister}
-                  >
-                        <Text style={styles.text_button}>Créer un compte</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                      style={{width: 0.45*getConstant('width'),  justifyContent:'center', marginLeft: 5, height : 50}}
-                      onPress={this.goToPasswordRecovery}
-                  >
-                          <Text style={styles.text_button}>Identifiants{'\n'}perdus</Text>
-                  </TouchableOpacity>
-                </View>
+
             </ScrollView>
             </KeyboardAvoidingView>
         </View>
@@ -269,35 +266,17 @@ const styles = StyleSheet.create({
       justifyContent:'center',
       backgroundColor: '#F5FCFF',
     },
-    text: {
-        color: 'aquamarine',
-        fontWeight: 'bold',
-        backgroundColor: 'transparent',
-        marginTop: 20,
-        fontSize: 40,
-      },
 
-    text_button: {
-            color: 'black',
-            backgroundColor: 'transparent',
-            alignItems:'center',
-            justifyContent:'center',
-            textAlign:'center',
-            fontSize: 14,
-          },
   });
 
   const condition = authUser => !!authUser;
-//const LoginForm = withNavigation(withFirebase(LoginFormBase));
-const LoginForm = withNavigation(withFirebase(LoginFormBase));
-export default Login2;
-export { LoginForm };
 
-
-const composed = compose(
-  //withNavigation,
-  //withFirebase,
-  withAuthorization,
+  const composedPricerScreen = compose(
+   withAuthorization(condition),
+    withUser,
+    withNavigation,
+  );
   
- );
+  //export default HomeScreen;
+  export default hoistStatics(composedPricerScreen)(LoginFormBase);
 

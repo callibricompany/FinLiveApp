@@ -320,6 +320,7 @@ export class CAutocall2 extends CStructuredProduct {
   getAutocallDatas(formula) {
     
     let datas = [];
+    let today = new Date(Date.now());
     if (this.product.hasOwnProperty("PAYMENTS")) {
         let pdates = this.product["PAYMENTS"];
 
@@ -329,11 +330,17 @@ export class CAutocall2 extends CStructuredProduct {
                 p['PAYOFF'].forEach((payoff) => {
                     if (payoff.hasOwnProperty('FORMULA') && payoff.hasOwnProperty('LEVEL') && payoff.hasOwnProperty('OBSERVATIONS') && payoff.hasOwnProperty('COUPON') && payoff['FORMULA'] === formula) {
                         let maxKeyNumber = 0;
+                        let minKeyNumber = 99999;
                         Object.keys(payoff['OBSERVATIONS']).forEach((k) => {
                             Number(k) > maxKeyNumber ? maxKeyNumber = Number(k) : null;
+                            Number(k) < minKeyNumber ? minKeyNumber = Number(k) : null;
                         });
 
                         obj["date"]  = this.getObservationDate(maxKeyNumber);
+                        obj["perf"] = 1;
+                        if (obj["date"] < today) { //il faut calculer la perf
+                          obj["perf"] = getPerformance(payoff['OBSERVATIONS']);
+                        }
                         obj["coupon"] = payoff['COUPON'];
                         obj["level"] = payoff['LEVEL'];
                         obj["payments"] =  Moment(p['DATES_STRING'], 'YYYYMMDD_HHmmss').toDate();
@@ -344,17 +351,43 @@ export class CAutocall2 extends CStructuredProduct {
             //paymentDates.push(Moment(p['DATES_STRING'], 'YYYYMMDD').toDate());                
         })
     }  
-    
+    if (Object.keys(datas).length > 0) {
+      datas.sort((a, b) => a['date'] - b['date']);
+    }
     return datas;
   }
 
-  //retourne la prochaine date de d'évéenement
-  getNextEventDate() {
+  //check if is already closed
+  isAlreadyCalled() {
+    var called = false;
 
+    var datas = this.getAutocallDatas('AUTOCALL');
+    datas.forEach((data) => {
+      if (data['perf'] > data['level']) {
+        called = true;
+      }
+
+    });
+    return called;
   }
 
-  getNextAutocallDate() {
-    
+  //check if is already closed
+  getDataFromCalled () {
+    var dataCalled = {};
+
+    var datas = this.getAutocallDatas('AUTOCALL');
+    var found = false;
+    datas.forEach((data) => {
+
+      if (!found) {
+        if (data['perf'] >= data['level']) {
+          found = true;
+          dataCalled = data;
+        }
+      }
+    });
+    return dataCalled;
   }
+
   
 }

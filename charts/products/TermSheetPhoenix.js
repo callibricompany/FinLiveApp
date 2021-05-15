@@ -10,18 +10,19 @@ import {
 import PositiveScenarioGlobPhoenix from './ScenarioGlob/PositiveScenarioGlobPhoenix'
 import NegativeScenarioGlobPhoenix from './ScenarioGlob/NegativeScenarioGlobPhoenix'
 import MedianScenarioGlobPhoenix from './ScenarioGlob/MedianScenarioGlobPhoenix'
+import Numeral from 'numeral';
+import 'numeral/locales/fr';
 
 export default function TermSheetPhoenix({request}) {
-  let coupon  = 5;
+  let coupon  = request.getValue('coupon') === 0 ? 0.05 : request.getValue('coupon');
   let ymin = 40;
-  ymax = 130;
-  xmax = 10;
-  let barr_capital = request.getValue('barrierPDI') * 100;
-  let barr_anticipe = request.getValue('autocallLevel') * 100;
-  let barr_coupon = request.getValue('barrierPhoenix') * 100;
+  var ymax = 130;
+  var xmax = 10;
+  let barr_capital = request.getValue('barrierPDI') ;
+  let barr_anticipe = request.getValue('autocallLevel') ;
+  let barr_coupon = request.getValue('barrierPhoenix') ;
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+    <View>
         <View style={styles.container}>
           <View style={styles.container}>
             <Text style={{ fontSize: 30, paddingTop: 5 }}>Phoenix</Text>
@@ -34,9 +35,9 @@ export default function TermSheetPhoenix({request}) {
             au cadre d’investissement.
             </Text>
             <Text style={{ paddingBottom: 15 }}>
-              Exemple avec un produit à maturité {xmax} ans, une observation annuelle du sous-jacent, un coupon de {coupon}%, une barrière de coupon de {
-                barr_coupon}% du niveau initial du sous-jacent, une barrière de rappel automatique anticipé de {barr_anticipe}% du niveau initial du
-              sous-jacent, et une barrière de protection (observée à l’échéance) de {barr_capital}% du niveau initial du sous-jacent.
+              Exemple avec un produit à maturité {xmax} ans, une observation annuelle du sous-jacent, un coupon de {Numeral(coupon).format("0.00%")}, une barrière de coupon de {
+                Numeral(barr_coupon).format("0.00%")} du niveau initial du sous-jacent, une barrière de rappel automatique anticipé de {Numeral(barr_anticipe).format("0.00%")} du niveau initial du
+              sous-jacent, et une barrière de protection (observée à l’échéance) de {Numeral(barr_capital).format("0.00%")} du niveau initial du sous-jacent.
             </Text>
           </View>
 
@@ -71,8 +72,7 @@ export default function TermSheetPhoenix({request}) {
           />
 
         </View>
-      </ScrollView>
-    </SafeAreaView >
+      </View>
   );
 }
 

@@ -5,7 +5,7 @@ import moment from 'moment';
 export class CFinancialProduct extends CProduct2 {
   constructor(financialproduct, source='products') {
     super(financialproduct, source); 
-    this.isinCode = '';
+
     this.issuer = '';
     this.distributor = '';
   }
@@ -32,10 +32,11 @@ export class CFinancialProduct extends CProduct2 {
   getCurrency() {
       return this.product.hasOwnProperty("CURRENCY") ? this.product["CURRENCY"] : 'EUR';
   }
-  
-  //revoie l'isin
-  getISIN() {
-    return this.isinCode;
+
+  //retourne la liste des sous jacent sous forme de dict
+  getUnderlyingsList() {
+    return this.product.hasOwnProperty("UNDERLYINGS_LIST") ? this.product["UNDERLYINGS_LIST"] : {};
   }
+  
 
 }

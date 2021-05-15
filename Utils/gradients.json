@@ -2255,7 +2255,6 @@
         "name": "Rastafari",
         "colors": [
             "#1E9600",
-            "#FFF200",
             "#FF0000"
         ]
     },
@@ -2738,6 +2737,13 @@
         "colors": [
             "#5980AB",
             "#00B6FF"
+        ]
+    },
+    {
+        "name": "Finlive_stats_bar",
+        "colors": [
+            "#f0f8ff",
+            "#9BB0CB"
         ]
     }
 ]

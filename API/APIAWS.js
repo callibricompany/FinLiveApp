@@ -1,5 +1,7 @@
 // API/TMDBApi.js
 import axios from 'axios';
+import { getContentTypeFromExtension } from '../Utils/index';
+
 export const URL_AWS = "http://99.80.211.255:8080"
 //var fs = require('fs');
 
@@ -26,12 +28,13 @@ export function ssCreateUser (idToken, email, name, firstName, phone, independan
       'Content-Type': 'application/json; charset=utf-8',
       'Accept': 'application/json',
       'bearer' : idToken
-    }
+    },
+    timeout : 2000
   };
-
+ console.log(userIdentity);
   return new Promise(
     (resolve, reject) => {
-      axios.post(URL_AWS + '/createUser', userIdentity, axiosConfig)
+      axios.post(URL_AWS + '/user', userIdentity, axiosConfig)
       .then((response) => {
         console.log("Succes : " + response);
         resolve(response)
@@ -255,7 +258,8 @@ export function getAllTicket (firebase, filter='') {
             headers :{
               //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
               'bearer'      : token,
-            }
+            },
+            timeout : 10000,
           };
           
           axios.get(URL_AWS + '/' + pathToCall, axiosConfig)
@@ -351,10 +355,13 @@ export function createTicket (firebase, product, files=[]) {
 
   });
 
+  
   if (files.length > 0 ) {
     for (var i = 0; i < files.length; i++) {
         //formData.append('fileinput', fs.createReadStream(files[i].path),files[i].originalname);
-        form.append('fileinput', {uri: files[i].uri, name: files[i].name});
+        //type: 'image/jpeg',  // <-  Did you miss that one?
+        var fileExtension = files[i].name.split('.').pop();
+        form.append('fileinput', {uri: files[i].uri, name: files[i].name, type: getContentTypeFromExtension(fileExtension)});
       }
   }
 
@@ -792,11 +799,14 @@ export function searchProducts (firebase, criteria, toSave=true) {
           axios.post(URL_AWS + '/price', criteria, axiosConfig)
           .then((response) => {
             //console.log("Succes demande prix : " + response.data.length);
-            //console.log(response.data);
-            console.log("Nbre de produits recus : " + response.data.length);
+            if (response.data === 'Error') {
+              reject("Probleme");
+            } else {
+              console.log("Nbre de produits recus : " + response.data.length);
 
-            resolve(response.data)
-            //res.render('pages/register',{email: email, isConnected: isConnected});
+              resolve(response.data)
+              //res.render('pages/register',{email: email, isConnected: isConnected});
+            }
           })
           .catch(function (error) {
             console.log("Erreur requete prix aws : " + error);
@@ -828,7 +838,9 @@ export function searchProducts (firebase, criteria, toSave=true) {
       dataToSend['ORIGIN'] = productOrigin;
       dataToSend['TARGET'] = product;
       var response = await axios.post(URL_AWS + '/reprice', dataToSend, axiosConfig);
-
+      if (response.data === "Error") {
+        return await Promise.reject("Error");
+      }
       return await Promise.resolve(response.data);
     }
     catch(err) {
@@ -922,6 +934,32 @@ export async function getProduct (firebase, idProduct) {
     // catches errors both in fetch and response.json
     return await Promise.reject(err);
   }
+  
+}
+
+
+/**************************************
+   PRODUIT : lecture
+*/
+export async function getAllCharities (firebase) {
+
+	try {
+		var token = await firebase.doGetIdToken();
+
+		var axiosConfig = {
+		headers :{
+			'bearer'      : token,
+		}
+		};
+
+		var response = await axios.get(URL_AWS + '/usercharity', axiosConfig)
+
+		return await Promise.resolve(response.data);
+	}
+	catch(err) {
+		// catches errors both in fetch and response.json
+		return await Promise.reject(err);
+	}
   
 }
 

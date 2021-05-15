@@ -1,6 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Numeral from 'numeral';
+import Moment from 'moment';
+import 'numeral/locales/fr';
 
 export default function PositiveScenario(
     {   remb,
@@ -50,7 +53,7 @@ export default function PositiveScenario(
             </View>
             <View>
                 <Text style={{ fontSize: 16, color: 'midnightblue', fontWeight: 'bold' }}>
-                    L’investisseur ne reçoit que la hausse partielle du sous-jacent: 100% + coupon ({coupon}%) multiplié par l'année de rappel (1) du fait du plafonnement du gain:
+                    L’investisseur ne reçoit que la hausse partielle du sous-jacent: 100% + coupon ({Numeral(coupon).format("0.00%")}) multiplié par l'année de rappel (1) du fait du plafonnement du gain:
               </Text>
             </View>
             <View style={{
@@ -58,9 +61,9 @@ export default function PositiveScenario(
                 paddingHorizontal: 10, borderRadius: 7, marginVertical: 10
             }}>
                 <Text style={{ fontSize: 15, color: 'gold', fontWeight: 'bold' }}>
-                    ➔ Remboursement final de {100 + coupon}%</Text>
+                    ➔ Remboursement final de {Numeral(1 + coupon).format("0.00%")}</Text>
                 <Text style={{ fontSize: 15, color: 'white', fontWeight: 'bold' }}>
-                    Retour sur investissement annualisé {coupon}%</Text>
+                    Retour sur investissement annualisé {Numeral(coupon).format("0.00%")}</Text>
             </View>
         </>
     )

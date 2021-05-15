@@ -66,7 +66,9 @@ class FLTicketDetail extends React.Component {
     super(props);
 
 
-    this.ticket= this.props.ticket;
+    //this.ticket= this.props.ticket;
+    this.ticket =  this.props.navigation.getParam('ticket');
+    
     
     this.autocall = null;
     //console.log("Constructeur ticket");
@@ -130,8 +132,18 @@ class FLTicketDetail extends React.Component {
 
    //shared amount 
    this.sharedAmount = 0;
+
+    //supression du menu bas
+   this.props.navigation.setParams({ hideBottomTabBar : true });
   }
 
+  static navigationOptions = ({ navigation }) => {
+
+    return ({
+      header : null,
+    }
+    );
+}
   // compopnentdidmount
   async componentDidMount() {
 
@@ -1428,7 +1440,10 @@ class FLTicketDetail extends React.Component {
               <View style={{flexDirection : 'row', paddingLeft : 10, backgroundColor: setColor('granny'), paddingTop: isAndroid() ?  0 : getConstant('statusBar'), padding : 5, alignItems: 'flex-start',justifyContent: 'space-between'}}>
                       {this._renderModalDrawnerPriority()}
                       <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', padding : 5}}
-                                        onPress={() => this.props.navigation.goBack()}
+                                        onPress={() => {
+                                          let isJustCreated = this.props.navigation.getParam('isJustCreated', false);
+                                          isJustCreated ? this.props.navigation.popToTop() : this.props.navigation.goBack();
+                                        }}
                       >
                            <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                       </TouchableOpacity>
