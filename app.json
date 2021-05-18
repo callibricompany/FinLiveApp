@@ -43,6 +43,9 @@
     "notification": {
       "icon": "./assets/LogoSquare96.png",
       "color": "#deff00"
+    },
+    "android": {
+      "package": "FinLive.com"
     }
   }
 }

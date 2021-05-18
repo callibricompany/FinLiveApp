@@ -851,6 +851,37 @@ export function searchProducts (firebase, criteria, toSave=true) {
   }
 
 /**************************************
+   PRODUIT STRUCTURE RECUPERE LES PROBAS
+*/
+export async function getProductProbabilities (firebase, product) {
+
+  try {
+    var token = await firebase.doGetIdToken();
+
+    var axiosConfig = {
+      headers :{
+        //'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json; charset=utf-8',
+        //'Content-Type' : `multipart/form-data; boundary=${form._boundary}`,
+        'Accept'      : 'application/json',
+        'bearer'      : token,
+      }
+    };
+
+    var response = await axios.post(URL_AWS + '/getProductProbabilities', product, axiosConfig);
+    console.log("PRODUCT PROBA OK ");
+    //console.log(response.data);
+    return await Promise.resolve(response.data);
+  }
+  catch(err) {
+    // catches errors both in fetch and response.json
+    console.log("ERREUR PRODUCT PROBA : " + err);
+    return await Promise.reject(err);
+  }
+  
+}
+
+/**************************************
    PRODUIT STRUCTURE SAUVE LE PRODUIT 
 */
 export async function saveProduct (firebase, product) {

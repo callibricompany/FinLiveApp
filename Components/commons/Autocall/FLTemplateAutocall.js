@@ -282,7 +282,7 @@ _calculateProbas() {
 	if (this.stats !== - 1) {
 		//console.log(this.stats);
 		//determination des stats
-		console.log(this.stats);
+
 		let autocall = Math.round(100 * this.stats['STATS_AUTOCALL'], 0)
 		let digit = Math.max(0, Math.round(100 * this.stats['STATS_DIGIT'], 0));
 		let pdi = 0;
@@ -572,7 +572,7 @@ _renderHeaderMediumTemplate(showArrow = true) {
                           }
                     </TouchableOpacity> */}
                   </View>
-				  <View style={{ flex : flexSize, borderWidth: 0}}>
+				  <View style={{ flex : 0.8, borderWidth: 0}}>
 						<View style={{padding : 5, borderWidth : 0, alignItems: 'center', justifyContent: 'center'}}>
 							<Text style={setFont('400', 24, setColor('FLGreen'), 'Bold')} numberOfLines={1}>        
 								{ Numeral(this.autocallResult.getCoupon()).format('0.00%')} <Text style={setFont('200', 12, setColor('FLGreen'))}>p.a.
@@ -587,7 +587,7 @@ _renderHeaderMediumTemplate(showArrow = true) {
 					</View>  
                   {showArrow
                       ?
-                        <View style={{flex : 0.1, justifyContent: 'center', alignItems: 'center', marginRight : 5, borderWidth : 0}}> 
+                        <View style={{flex : 0.2, justifyContent: 'center', alignItems: 'center', marginRight : 5, borderWidth : 0}}> 
                             <MaterialCommunityIcons name={'fast-forward'} size={30} color={'gray'}/>
                         </View>
                       : null
@@ -1807,7 +1807,7 @@ _renderAutocallFullTemplate2() {
 							<View style={{ backgroundColor : setColor(''), borderColor : setColor(''), borderWidth : 1, height : 8, width : 8, borderRadius : 4}}/>
 							<View style={{flex : 0.8, borderWidth : 0, paddingLeft : 10, }}>
 								<Text style={setFont('200', 12, 'gray')} numberOfLines={1}>
-									rappel
+									gain
 								</Text>
 							</View>
 						</View>
@@ -1817,7 +1817,7 @@ _renderAutocallFullTemplate2() {
 								<View style={{ backgroundColor : setColor('subscribeBlue'), borderColor : setColor('subscribeBlue'), borderWidth : 1, height : 8, width : 8, borderRadius : 4}}/>
 								<View style={{flex : 0.8, borderWidth : 0, paddingLeft : 10, }}>
 									<Text style={setFont('200', 12, 'gray')} numberOfLines={1}>
-										coupons
+										gain
 									</Text>
 								</View>
 							</View>
@@ -1827,7 +1827,7 @@ _renderAutocallFullTemplate2() {
 							<View style={{ backgroundColor : setColor('lightBlue'), borderColor : setColor('lightBlue'), borderWidth : 1, height : 8, width : 8, borderRadius : 4}}/>
 							<View style={{flex : 0.8, borderWidth : 0, paddingLeft : 10, }}>
 								<Text style={setFont('200', 12, 'gray')} numberOfLines={1}>
-									pair
+									capital
 								</Text>
 							</View>
 						</View>
@@ -1835,7 +1835,7 @@ _renderAutocallFullTemplate2() {
 							<View style={{ backgroundColor : 'aliceblue', borderColor : 'aliceblue', borderWidth : 1, height : 8, width : 8, borderRadius : 4}}/>
 							<View style={{flex : 0.8, borderWidth : 0, paddingLeft : 10, }}>
 								<Text style={setFont('200', 12, 'gray')} numberOfLines={1}>
-									capital
+									perte
 								</Text>
 							</View>
 						</View>

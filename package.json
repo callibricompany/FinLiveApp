@@ -48,7 +48,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-horizontal-stacked-bar-chart": "^8.15.2",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.0.tar.gz",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.0.tar.gz",
     "react-native-action-sheet": "^2.2.0",
     "react-native-alert-async": "git+https://github.com/slorber/react-native-alert-async.git",
     "react-native-collapse-view": "^1.0.0",

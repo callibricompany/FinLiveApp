@@ -230,23 +230,29 @@ class FLTicketDetail extends React.Component {
   }
 
   _processUptadedTicket(ticket) {
-              //console.log(ticket);
-              // let t = new CWorkflowTicket(ticket);
-              // this.ticket.setObject(t.getObject());
-              let isShared = this.ticket.isShared();
-              // console.log("process ticket : isShared : "+ isShared);
-              this.ticket = isShared ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket);
-              this.ticket.setProduct(this.autocall);
-              this.dealineTicket = Moment(this.ticket.getFrDueBy()).fromNow();
-              
-              //on supprime la notification
-              this.props.removeNotification('TICKET', this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId());
+			//console.log(ticket);
+			// let t = new CWorkflowTicket(ticket);
+			// this.ticket.setObject(t.getObject());
+			let isShared = this.ticket.isShared();
+			// console.log("process ticket : isShared : "+ isShared);
+			if (this.ticket.isFollowed()) {
+					
+			} else {
+				this.ticket = isShared ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket);
+				this.ticket.setProduct(this.autocall);
+				this.dealineTicket = Moment(this.ticket.getFrDueBy()).fromNow();
+				
 
-              //isShared ? this._updateConversations() : this._updateConversation();
-              this.setState({ isLoading : false });
-              this._updateConversations();
+			}
+			//on supprime la notification
+			this.props.removeNotification('TICKET', this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId());
+			//isShared ? this._updateConversations() : this._updateConversation();
+			this.setState({ isLoading : false });
+			this._updateConversations();
 
-              this.initializeTimers();
+			if (!this.ticket.isFollowed()) {
+				this.initializeTimers();
+			}
               
   }
 
@@ -1330,6 +1336,10 @@ class FLTicketDetail extends React.Component {
                       
                   </View>
             );
+        } else if (this.ticket.isFollowed()) {
+          return (
+            <View><Text>En construction</Text></View>
+          );
         } else {
           return this._renderDetail();
 
@@ -1448,9 +1458,15 @@ class FLTicketDetail extends React.Component {
                            <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                       </TouchableOpacity>
                       <View style={{flex: 0.7, justifyContent: 'center', alignItems: 'center'}}>
+					  {this.ticket.isFollowed()
+					  ?
+					  	<Text style={setFont('300', 16, 'white', 'Regular')}>Bonjour</Text>
+					  :
+					  	<View>
                            <Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()} {this.ticket.isShared() ? 'partagé' : null}</Text>
                            <Text style={setFont('300', 12, 'white' )} numberOfLines={1}>{this.ticket.getTicketType()} - {this.ticket.isShared() ? (currencyFormatDE(this.sharedAmount) + " / " + currencyFormatDE(this.ticket.getBroadcastAmount())) : currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()}</Text>
-                           
+						</View>
+					  }    
                       </View>
                       <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.025*getConstant('width')}}>
 

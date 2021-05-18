@@ -13,7 +13,7 @@ export class  CFollowedTicket extends CTicket {
   }
 
   //si le ticket est encore en demande génrale
-  isFollowingAcived() {
+  isFollowingActivated() {
       return this.getType() !== 'Demande Générale';
   }
 

@@ -13,6 +13,7 @@ import { getConstant, currencyFormatDE, isAndroid, dateDiffInDays } from '../../
 import { interpolateColorFromGradient } from '../../Utils/color';
 
 import { FLTimelineAutocall } from '../commons/Autocall/FLTimelineAutocall';
+import { CAutocall2 } from '../../Classes/Products/CAutocall2';
 
 import Numeral from 'numeral';
 import Moment from 'moment';
@@ -21,8 +22,9 @@ import 'numeral/locales/fr';
 
 
 
-export default function FollowingAutocallTemplate ({autocall, underlyings, navigation}) {
+export default function FollowingAutocallTemplate ({ticket, underlyings, navigation}) {
 
+        var autocall = new CAutocall2(ticket.getProduct());
         var spotLevels = {};
         //recuperation des spots
         var strikingLevels = autocall.getStrikingLevels();
@@ -172,7 +174,7 @@ export default function FollowingAutocallTemplate ({autocall, underlyings, navig
                     <View style={{marginBottom : 10, padding : 5, borderRadius : 10, margin : 5, justifyContent : 'center', alignItems : 'center', borderWidth :  2, borderColor : color,  backgroundColor :  'white'}}>
             
                         <Text style={setFont('200',  14,  color, 'Bold')}>
-                            {String(nextEventType).toUpperCase()} :  {Moment(nextEventDate).format('ll')} ({Moment(nextEventDate).fromNow()})
+                            {String(nextEventType).toUpperCase()} :  {Moment(nextEventDate).format('ll')} <Text style={setFont('200',  12,  color, 'Regular')}>{Moment(nextEventDate).fromNow()}</Text>
                         </Text>
 
                     </View>

@@ -4,8 +4,8 @@ import { View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native
 import { CWorkflowTicket } from "../Classes/Tickets/CWorkflowTicket";
 import NavigationService from '../Navigation/NavigationService';
 import { setColor, setFont } from '../Styles/globalStyle';
-import { Notifications } from 'expo';
-//import * as Notifications from 'expo-notifications';
+//import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import { getTicket , deleteNotification } from "../API/APIAWS";
 import { withFirebase } from '../Database/';
 import { isAndroid, getConstant } from "../Utils";

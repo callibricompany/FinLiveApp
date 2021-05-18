@@ -238,14 +238,61 @@ export class CTicket  {
         return text.replace(urlRegex, function(url) {
             return '<a href="' + url + '">' + url + '</a>';
         });
-    }
+	}
+	
+	//ajoute les fichiers aux files array
+	_addFileFromAttachement(attachments) {
+		attachments.map((conver, index) => {
+  
+			if (conver.content_type === 'application/octet-stream') {
+			  let cType = getContentTypeFromExtension(conver.name.split('.').pop());
+			  if (cType !== 'none') {
+				//console.log(cType);
+				conver.content_type = cType;
+				
+			  } else {
+				conver.type = 'DIVERS';
+			  }
+			} else {
+			  switch(conver.content_type) {
+				case 'application/pdf' : 
+				  conver.type = 'PDF';
+				  break;
+				case 'application/msword' :
+				  conver.type = 'WORD';
+				  break;
+				case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
+				  conver.type = 'WORD';
+				  break;
+				case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
+				  conver.type = 'EXCEL';
+				  break;
+				case 'application/vnd.ms-excel' :
+				  conver.type = 'EXCEL';
+				  break;                      
+				default :
+				  conver.type = conver.content_type;
+				  break;
+			  }
+			 
+			}
+			
+			
+			this.files.push(conver);
+			//return conver;
+		  });
+	}
     //retourne tous les fichiers liés au ticket
     getFiles() {
 
       let id = 10000000;
       //on charge tous les fichiers de toutes les conversations
       this.files = [];
+	  
+	  //on ajoute les fichiers du ticket
+	  this._addFileFromAttachement(this.ticket['attachments']);
 
+	  //on ajoute les fichiers des conversations
       this.conversations.forEach((conv) => {
         let conversation = conv['conversation'];
         conversation.forEach((c) => {
@@ -253,102 +300,103 @@ export class CTicket  {
             //console.log(c);
             //on verie les ifchiers attachés
             if (c.hasOwnProperty('attachments') && c['attachments'].length > 0) {
-              c['attachments'].map((conver, index) => {
+				this._addFileFromAttachement(c['attachments']);
+            //   c['attachments'].map((conver, index) => {
   
-                if (conver.content_type === 'application/octet-stream') {
-                  let cType = getContentTypeFromExtension(conver.name.split('.').pop());
-                  if (cType !== 'none') {
-                    //console.log(cType);
-                    conver.content_type = cType;
+            //     if (conver.content_type === 'application/octet-stream') {
+            //       let cType = getContentTypeFromExtension(conver.name.split('.').pop());
+            //       if (cType !== 'none') {
+            //         //console.log(cType);
+            //         conver.content_type = cType;
                     
-                  } else {
-                    conver.type = 'DIVERS';
-                  }
-                } else {
-                  switch(conver.content_type) {
-                    case 'application/pdf' : 
-                      conver.type = 'PDF';
-                      break;
-                    case 'application/msword' :
-                      conver.type = 'WORD';
-                      break;
-                    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
-                      conver.type = 'WORD';
-                      break;
-                    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
-                      conver.type = 'EXCEL';
-                      break;
-                    case 'application/vnd.ms-excel' :
-                      conver.type = 'EXCEL';
-                      break;                      
-                    default :
-                      conver.type = conver.content_type;
-                      break;
-                  }
+            //       } else {
+            //         conver.type = 'DIVERS';
+            //       }
+            //     } else {
+            //       switch(conver.content_type) {
+            //         case 'application/pdf' : 
+            //           conver.type = 'PDF';
+            //           break;
+            //         case 'application/msword' :
+            //           conver.type = 'WORD';
+            //           break;
+            //         case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
+            //           conver.type = 'WORD';
+            //           break;
+            //         case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
+            //           conver.type = 'EXCEL';
+            //           break;
+            //         case 'application/vnd.ms-excel' :
+            //           conver.type = 'EXCEL';
+            //           break;                      
+            //         default :
+            //           conver.type = conver.content_type;
+            //           break;
+            //       }
                  
-                }
+            //     }
                 
                 
-                this.files.push(conver);
-                //return conver;
-              });
+            //     this.files.push(conver);
+            //     //return conver;
+            //   });
               //console.log(c['attachments']);
               
             }
           } else if (c.source === 2 || c.source === 15) {
             //console.log(c);
-            if (c.body.includes("href=")){
+				if (c.body.includes("href=")){
 
-                //   "content_type": "application/pdf",
-              //   "created_at": "2020-07-27T07:32:11Z",
-              //   "id": 2043131326963,
-              //   "name": "Mark-To-Model Validation of ECO5E Index.pdf",
-              //   "size": 589006,
-              //   "type": "PDF",
-              // }
-              let url = c.body.match(urlRegex);
-              if (url != null && url.length > 0) {
-                let conver = {}
+						//   "content_type": "application/pdf",
+					//   "created_at": "2020-07-27T07:32:11Z",
+					//   "id": 2043131326963,
+					//   "name": "Mark-To-Model Validation of ECO5E Index.pdf",
+					//   "size": 589006,
+					//   "type": "PDF",
+					// }
+					let url = c.body.match(urlRegex);
+					if (url != null && url.length > 0) {
+						let conver = {}
 
-                conver['attachment_url'] = url;
-                conver['content_type'] = "application/octet-stream";
-                conver['created_at'] = c.created_at;
-                conver['updated_at'] = c.updated_at;
-                conver['size'] = 0;
-                conver['name'] = "unknown.";
-                conver['type'] = "unknown";
-                conver['id'] = id;
-                id = id + 1;
-                if (url[0].includes(".pdf")) {
-                  conver['type'] = "PDF";
-                  conver['content_type'] = "application/pdf";
-                }
-                if(c.body.includes("TermSheet indicative")) {
-                  conver['name'] = "TermSheet indicative.";
-                }
-                
-                var http = new XMLHttpRequest();
-                http.open('HEAD', url[0], true); // true = Asynchronous
-                http.onreadystatechange = function() {
-                    if (this.readyState == this.DONE) {
-                        if (this.status === 200) {
-                            fileSize = this.getResponseHeader('content-length');
-                            conver['size'] = fileSize;
-                            console.log('fileSize = ' + fileSize);
-                            //
-                            // ok here is the only place in the code where we have our request result and file size ...
-                            // the problem is that here we are in the middle of anonymous function nested into another function and it does not look pretty
-                            // this stupid ASYNC pattern makes me hate Javascript even more than I already hate it :)
-                            //
-                            //
-                        }
-                    }
-                };
-                http.send();
+						conver['attachment_url'] = url;
+						conver['content_type'] = "application/octet-stream";
+						conver['created_at'] = c.created_at;
+						conver['updated_at'] = c.updated_at;
+						conver['size'] = 0;
+						conver['name'] = "unknown.";
+						conver['type'] = "unknown";
+						conver['id'] = id;
+						id = id + 1;
+						if (url[0].includes(".pdf")) {
+						conver['type'] = "PDF";
+						conver['content_type'] = "application/pdf";
+						}
+						if(c.body.includes("TermSheet indicative")) {
+						conver['name'] = "TermSheet indicative.";
+						}
+						
+						var http = new XMLHttpRequest();
+						http.open('HEAD', url[0], true); // true = Asynchronous
+						http.onreadystatechange = function() {
+							if (this.readyState == this.DONE) {
+								if (this.status === 200) {
+									fileSize = this.getResponseHeader('content-length');
+									conver['size'] = fileSize;
+									console.log('fileSize = ' + fileSize);
+									//
+									// ok here is the only place in the code where we have our request result and file size ...
+									// the problem is that here we are in the middle of anonymous function nested into another function and it does not look pretty
+									// this stupid ASYNC pattern makes me hate Javascript even more than I already hate it :)
+									//
+									//
+								}
+							}
+						};
+						http.send();
 
-                this.files.push(conver);
-              }
-            }
+						this.files.push(conver);
+					}
+				}
           } 
 
         });
@@ -513,10 +561,21 @@ export class CTicket  {
 
 
     isShared() {
-      
-      return this.ticket['custom_fields']['cf_ps_shared'] === null ? false : this.ticket['custom_fields']['cf_ps_shared'];
+		if (this.ticket['custom_fields'].hasOwnProperty('cf_ps_shared')) {
+		  return this.ticket['custom_fields']['cf_ps_shared'];
+		} else {
+			return false;
+		}
     }
 
+    isFollowed() {
+      if (this.ticket['custom_fields'].hasOwnProperty('cf_followed')) {
+		  //console.log("EST SUIVI (#"+ this.ticket.getId() +") : " + this.ticket['custom_fields']['cf_followed']);
+		  return this.ticket['custom_fields']['cf_followed'];
+	  } else {
+		  return false;
+	  }
+    }
 
     getCampaign(){
       //console.log(this.ticket['custom_fields']['cf_cpg_choice']);

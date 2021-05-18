@@ -208,6 +208,9 @@ function labelStyle (focused, tintColor) {
     FLAutocallDetail : {
       screen : FLAutocallDetail
     },
+    FLTicketDetail : {
+      screen : FLTicketDetail
+    },
 
     })
 

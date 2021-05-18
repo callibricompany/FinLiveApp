@@ -596,17 +596,23 @@ class FollowingScreen extends React.Component {
 								case 'Demande Générale' :
 									let ticket = new CFollowedTicket(item);
 									return (
-										<View style={{marginTop : id === 0 ? 0 : 10}}>
+										<TouchableOpacity style={{marginTop : id === 0 ? 0 : 10}}
+															onPress={() => {
+																this.props.navigation.navigate('FLTicketDetail', {ticket});
+															}}
+										>
 											<FollowingDemandeGenerale ticket={ticket} />
-										</View>
+										</TouchableOpacity>
 									);
 									//return <View />;
 								case 'Produit structuré' :
 									if (item.PRODUCT && item.PRODUCT !== '') {
-										let autocall = new CAutocall2(item.PRODUCT);
+										let ticket = new CFollowedTicket(item);
+										ticket.setProduct(item.PRODUCT);
+										
 										return (
 												<View style={{marginTop : id === 0 ? 0 : 10}}>
-													<FollowingAutocallTemplate autocall={autocall} underlyings={this.underlyings} navigation={this.props.navigation} />
+													<FollowingAutocallTemplate ticket={ticket} underlyings={this.underlyings} navigation={this.props.navigation} />
 												</View>
 										);
 									}

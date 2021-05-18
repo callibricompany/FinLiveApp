@@ -33,7 +33,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import { CAutocall2 } from '../../../Classes/Products/CAutocall2';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { reprice , saveProduct, getAllCharities } from '../../../API/APIAWS';
+import { reprice , saveProduct, getAllCharities, getProductProbabilities } from '../../../API/APIAWS';
 
 
 import Numeral from 'numeral'
@@ -121,7 +121,9 @@ class FLAutocallDetail extends React.Component {
 
 	this.underlyings = [];
 	this.allCharities = [];
-    this._constructMenu();
+	this._constructMenu();
+	
+	this.probabilities = [];
 
   }
 
@@ -274,7 +276,12 @@ class FLAutocallDetail extends React.Component {
 	this.allCharities = this.props.allCharities; 
 	//console.log(this.allCharities);
 
-    this.underlyings = await this.props.getAllUndelyings();
+	this.underlyings = await this.props.getAllUndelyings();
+	
+	// this.probabilities =  await getProductProbabilities(this.props.firebase, this.autocall.getProductJSON());
+	// console.log("PROBABILITIESS   : ");
+	// console.log(this.probabilities);
+	// console.log("--------------------   FIN  -----------------------");
 
   }
   componentWillUnmount() {
