@@ -20,7 +20,6 @@ import { CPSRequest } from '../../Classes/Products/CPSRequest';
 
 import FLModalDropdown from '../commons/FLModalDropdown';
 
-import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import SwitchSelector from "react-native-switch-selector";
 import Numeral from 'numeral';
 import 'numeral/locales/fr';
@@ -59,13 +58,6 @@ import { FLCouponMinDetail } from './description/FLCouponMinDetail';
 import logo from '../../assets/LogoWithoutText.png';
 import logo_gray from '../../assets/LogoWithoutTex_gray.png';
 import logo_white from '../../assets/LogoWithoutTex_white.png';
-import Animated from 'react-native-reanimated';
-
-
-
-
-
-
 
 
 
@@ -124,7 +116,8 @@ class PricerScreen extends React.Component {
 
 
   static navigationOptions = {
-    header: null
+    //header: null
+    headerShown: false
   }
 
   //au chargemnt de la page recupération des meilleurs resultats
@@ -681,13 +674,16 @@ _renderCalculateButton(position='right') {
 render() {
     if (this.state.isLoading) {
           return (
-            <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 300}}>
-              <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} scalesPageToFit={false}
-                startInLoadingState={true}
-                //renderLoading={() => <RobotBlink width={120} height={120} />}
-                />
-              
-              <Text>{this.state.messageLoading}</Text>
+            <View style={{justifyContent: 'flex-start', alignItems: 'center', padding : 10, backgroundColor:'white', flex : 1}}>
+              <View style={{flex : 0.6}}>
+                <WebView source={{uri: URL_AWS + '/svg?page=robotFlash'}} style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} scalesPageToFit={false}
+                  startInLoadingState={true}
+                  //renderLoading={() => <RobotBlink width={120} height={120} />}
+                  />
+              </View>
+              <View>
+                <Text>{this.state.messageLoading}</Text>
+              </View>
             </View>
           );
     }

@@ -10,9 +10,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 
 import Accordion from 'react-native-collapsible/Accordion';
-import ActionSheet from 'react-native-action-sheet';
 
-import AlertAsync from 'react-native-alert-async';
 
 import { withFirebase } from '../../Database';
 import { withUser } from '../../Session/withAuthentication';
@@ -109,7 +107,7 @@ setFriendSections() {
 
 static navigationOptions = ({ navigation }) => {
     return ({
-      header : null,
+			headerShown : false
     }
     );
 }
@@ -355,7 +353,7 @@ componentWillUnmount() {
                                                 }}
                             >
                                 
-                                    <Ionicons name={'ios-arrow-round-back'} size={25} color={'white'}/>
+                                    <Ionicons name={'md-arrow-back'} size={25} color={'white'}/>
                 
                             </TouchableOpacity>
                             <View style={{flex : 0.6, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>

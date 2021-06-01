@@ -21,7 +21,6 @@ import 'numeral/locales/fr';
 
 
 
-
 export default function FollowingAutocallTemplate ({ticket, underlyings, navigation}) {
 
         var autocall = new CAutocall2(ticket.getProduct());
@@ -95,20 +94,22 @@ export default function FollowingAutocallTemplate ({ticket, underlyings, navigat
         }
         
         let color = interpolateColorFromGradient('Rastafari', Math.round(100*colourGradient/100));
+       
         
         useEffect(() => {
             //console.log("MAXIMUM DATE CHANGED : " + props.maximumDate);
+            //console.log(ticket.getPriority());
         }, []);
  
   
 		return (
 
             <View style={{width : getConstant('width')*0.95, flexDirection: 'column', justifyContent: 'flex-start', marginTop : 10, backgroundColor: 'white',
-                                    shadowColor: 'rgb(75, 89, 101)',
+                                    shadowColor: ticket.getPriority().color, //'red', //'rgb(75, 89, 101)',
                                     shadowOffset: { width: 0, height: 2 },
                                     shadowOpacity: 0.9,
-                                    borderWidth :  isAndroid() ? 1 : 1,
-                                    borderColor : isAndroid ? 'lightgray' : 'white',
+                                    borderWidth :   1,
+                                    borderColor : isAndroid() ? ticket.getPriority().color : 'white',
                                     //borderTopLeftRadius: 15,
                                     borderRadius: 10,
                                     height : 210,
@@ -123,10 +124,10 @@ export default function FollowingAutocallTemplate ({ticket, underlyings, navigat
                 <View style={{flexDirection : 'row', justifyContent : 'space-between'}}>
                     <View style={{justifyContent : 'flex-start', alignItems: 'flex-start',   paddingHorizontal : 10, borderWidth : 0, marginTop : 2}}>
                             <Text style={setFont('400', 12, 'gray', 'Regular')} numberOfLines={1}>
-                                ISIN : {autocall.getISIN()}FR0012444252667
+                                ISIN : {autocall.getISIN()}
                             </Text>
                     </View>
-                    <View style={{justifyContent : 'flex-end', alignItems: 'center',   paddingHorizontal : 10, borderWidth : 0, marginTop : 2}}>
+                    <View style={{justifyContent : 'flex-end', alignItems: 'center',   paddingHorizontal : 15, borderWidth : 0, marginTop : 2}}>
                             <Text style={setFont('400', 12, 'gray', 'Regular')} numberOfLines={1}>
                                 Nominal : {currencyFormatDE(autocall.getNominal())} {autocall.getCurrency()}
                             </Text>
@@ -164,7 +165,7 @@ export default function FollowingAutocallTemplate ({ticket, underlyings, navigat
                 </View> */}
                 <TouchableOpacity   onPress={() => {
                                         //NavigationService.navigate('FLAutocallDetail', { autocall : autocall, isEditable : false, toSave : false});
-                                        navigation.navigate('FLAutocallDetail', { autocall : autocall, isEditable : false, toSave : false, showPerf : true});
+                                        navigation.navigate('FLAutocallDetail', { autocall : autocall, isEditable : false, toSave : false, showPerf : true, ticket });
                                     }}
                 >
                     <View style={{flexDirection : 'row', marginLeft : 0, marginRight : 0, marginTop : 30, height : 70, borderWidth : 0}}>

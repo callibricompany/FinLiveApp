@@ -101,7 +101,7 @@ const ProfileClientDetail = ({ navigation }) => {
                               >
                               <View style={{ flex : 0.2, flexDirection : 'row', alignItems : 'center', justifyContent : 'flex-start', borderWidth : 0}}>
                                   
-                                      <Ionicons name={'ios-arrow-round-back'} size={25} color={'white'}/>
+                                      <Ionicons name={'md-arrow-back'} size={25} color={'white'}/>
                   
                               </View>
                               <View style={{flex : 0.6, borderWidth: 0, alignItems : 'center', justifyContent : 'center'}}>

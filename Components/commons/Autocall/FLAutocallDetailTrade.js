@@ -98,7 +98,7 @@ class FLAutocallDetailTrade extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return ({
-      header : null,
+      headerShown : false
     }
     );
  }

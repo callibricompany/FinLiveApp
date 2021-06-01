@@ -1,12 +1,13 @@
 import React from "react";
-import { View, Text } from 'react-native'; 
+import { View, Platform } from 'react-native'; 
 import AuthUserContext from "./context";
 import { withFirebase } from "../Database";
 import * as Network from 'expo-network';
 import  Constants  from "expo-constants";
 import * as Application from 'expo-application';
 import * as Device from 'expo-device';
-import { Notifications } from 'expo';
+//import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import NavigationService from '../Navigation/NavigationService';
 import { getAPIIP } from '../API/APINetwork';
@@ -53,6 +54,7 @@ const withAuthentication = Component => {
         setCurrentFocusedObject : (type , id) => this.props.setCurrentFocusedObject(type, id),
         getNotifications : (type , id) => this.props.getNotifications(type, id),
         idFocused : this.props.idFocused,
+
 
 
         //tickets
@@ -235,6 +237,8 @@ const withAuthentication = Component => {
 
       } 
 
+
+
       //console.log("RECEIVE PROPS HOME : " + props.notificationList.length );
       this.setState({ allNotificationsCount : props.hasOwnProperty('notificationList')  ? props.notificationList.length : 0, idFocused : props.idFocused });
     }
@@ -299,21 +303,41 @@ const withAuthentication = Component => {
 
     //enregistrement du device pour notifications
     async  _recordDeviceForNoticiation() {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        //alert('Failed to get push token for push notification!');
+        return;
+      }
+
+
+      //const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
       // only asks if permissions have not already been determined, because
       // iOS won't necessarily prompt the user a second time.
       // On Android, permissions are granted on app installation, so
       // `askAsync` will never prompt the user
     
       // Stop here if the user did not grant permissions
-      if (status !== 'granted') {
+      //if (status !== 'granted') {
         //alert('No notification permissions!');
-        return;
-      }
+        //return;
+      //}
     
       // Get the token that identifies this device
-      let token = await Notifications.getExpoPushTokenAsync();
-
+      //let token = await Notifications.getExpoPushTokenAsync();
+      let token= (await Notifications.getExpoPushTokenAsync()).data;
+      // if (Platform.OS === 'android') {
+      //   Notifications.setNotificationChannelAsync('default', {
+      //     name: 'default',
+      //     importance: Notifications.AndroidImportance.MAX,
+      //     vibrationPattern: [0, 250, 250, 250],
+      //     lightColor: '#FF231F7C',
+      //   });
+      // }
       return token;
 
     }
@@ -359,7 +383,7 @@ const withAuthentication = Component => {
       let d = {};
       d['deviceId'] = isAndroid() ? Application.androidId : await Application.getIosIdForVendorAsync();
       d['expoVersion'] = Constants.expoVersion;
-      d['installationId'] =Constants.installationId;
+      //d['installationId'] =Constants.installationId;
       d['deviceName'] =Constants.deviceName;
       d['isDevice'] =Constants.isDevice;
       //d['deviceId'] =Constants.deviceId;

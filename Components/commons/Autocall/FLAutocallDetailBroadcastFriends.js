@@ -86,7 +86,8 @@ class FLAutocallDetailBroadcastFriends extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return ({
-      header : null,
+      headerShown : false
+
     }
     );
  }

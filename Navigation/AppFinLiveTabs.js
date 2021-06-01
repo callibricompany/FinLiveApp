@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
+//import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import HomeScreen from '../Components/Home/HomeScreen';
 import NewsList from '../Components/Home/NewsList';
@@ -40,7 +41,8 @@ import AdminUser from '../Components/Admin/AdminUser';
 
 import FontAwesomeI from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIconsI from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Icon } from 'native-base';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 import { setFont, setColor} from '../Styles/globalStyle';
 
@@ -121,7 +123,7 @@ function labelStyle (focused, tintColor) {
     FLTermSheetDescription:{
       screen: FLTermSheetDescription,
       navigationOptions: {
-        header : null
+			headerShown : false
     }
     },
 
@@ -168,7 +170,7 @@ function labelStyle (focused, tintColor) {
     FLTermSheetDescription:{
       screen: FLTermSheetDescription,
       navigationOptions: {
-        header : null
+        headerShown : false
     }
     },
   })
@@ -202,7 +204,7 @@ function labelStyle (focused, tintColor) {
     FLTermSheetDescription:{
       screen: FLTermSheetDescription,
       navigationOptions: {
-        header : null
+        headerShown : false
     }
     },
     FLAutocallDetail : {
@@ -228,31 +230,31 @@ function labelStyle (focused, tintColor) {
       ProfileScreenIssuer : {
         screen: ProfileScreenIssuer,
         navigationOptions: {
-            header : null
+          headerShown : false
         }
       },
       ProfileScreenFriends : {
         screen: ProfileScreenFriends,
         navigationOptions: {
-            header : null
+          headerShown : false
         }
       },
       ProfileScreenDashboard : {
         screen: ProfileScreenDashboard,
         navigationOptions: {
-            header : null
+          headerShown : false
         }
       },
       ProfileScreenClientsList: {
         screen : ProfileScreenClientsList,
         navigationOptions: {
-          header : null
+          headerShown : false
        },
       },
       ProfileClientDetail: {
         screen : ProfileClientDetail,
         navigationOptions: {
-          header : null
+          headerShown : false
        },
       },
 
@@ -282,44 +284,6 @@ function labelStyle (focused, tintColor) {
       },
       Following: {
         screen: FollowingScreenStack,
-        navigationOptions: {
-    
-          tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
-            return (
-            //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
-            <View
-            style={{
-                borderWidth:0,
-                //borderColor:'rgba(0,0,0,0.2)',
-                alignItems:'center',
-                justifyContent:'center',
-                width:40,
-                height:40,
-                backgroundColor:tintColor,
-                borderRadius:50,
-              }}
-          >
-              {/* <MaterialCommunityIconsI
-                  name='radio-tower'
-                  size={30}
-                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-              />*/}
-                 <Icon 
-                      size={30}
-                      name='ios-podium' 
-                      style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
-                    />
-              </View>
-            );
-          },
-          tabBarLabel: ({ focused, tintColor }) => {
-            return (
-              <View style={{alignItems:'center', justifyContent:'center'}}>
-              <Text style={labelStyle(focused,tintColor)}>Suivi</Text>
-              </View>
-            );
-            }
-        }
       },
       Profil: {
         screen: ProfilScreenStack,
@@ -559,6 +523,55 @@ function labelStyle (focused, tintColor) {
           
         keyboardHidesTabBar: true,
         tabBarVisible
+    }
+  }
+
+  TABS['Following'].navigationOptions = ({ navigation }) => {
+    const { state: { routes, index } } = navigation;
+	let tabBarVisible = true;
+	
+    if(routes[index].routeName === 'FLTicketDetail'  || routes[index].routeName === 'FLAutocallDetail'){
+      if (typeof routes[index].params !== 'undefined') {
+          tabBarVisible = !routes[index].params['hideBottomTabBar'];
+      }
+    }
+    return {
+
+      tabBarIcon:  ({ focused, tintColor }) => { // On définit le rendu de nos icônes par les images récemment ajoutés au projet
+        return (
+        //<FontAwesomeI name='user-o' size={30} style={styles.icon}/> 
+        <View
+        style={{
+            borderWidth:0,
+            //borderColor:'rgba(0,0,0,0.2)',
+            alignItems:'center',
+            justifyContent:'center',
+            width:40,
+            height:40,
+            backgroundColor:tintColor,
+            borderRadius:50,
+          }}
+      >
+             <Ionicons 
+                  size={30}
+                  name='ios-podium' 
+                  style={focused ? { color: tabIconFocused } : { color: tabIconNonFocused }}
+                />
+          </View>
+        );
+      },
+      tabBarLabel: ({ focused, tintColor }) => {
+			return (
+			<View style={{alignItems:'center', justifyContent:'center'}}>
+			<Text style={labelStyle(focused,tintColor)}>Suivi</Text>
+			</View>
+			);
+        },
+        //tabBarVisible: false,
+          
+        keyboardHidesTabBar: true,
+        tabBarVisible
+      
     }
   }
 

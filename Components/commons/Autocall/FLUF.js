@@ -166,15 +166,23 @@ export function FLUF (props) {
                                     //defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
                                     options={charities}
                                     //ref={component => this._dropdown['options'] = component}
-                                    disabled={false}
+                                    disabled={isLocked}
                             >
                                 <View style={{flexDirection : 'row', justifyContent : 'flex-start', alignItems : 'flex-start'}}>
+                                {!isLocked || selectedCharity !== ""
+                                ?
                                     <View>
                                         <Text style={setFont('200', 12, 'gray')}>{selectedCharity === "" ? "Selectionnez une association ..." : selectedCharity.data.name}</Text>
                                     </View>
-                                    <View>
-                                        <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: 'gray'}}/>
-                                    </View>
+                                    : null
+                                }
+                                    {!isLocked
+                                    ?
+                                        <View>
+                                            <MaterialCommunityIcons name={"menu-down-outline"}  size={16} style={{color: 'gray'}}/>
+                                        </View>
+                                    : null
+                                    }
                                 </View>
                              
                         </FLModalDropdown>

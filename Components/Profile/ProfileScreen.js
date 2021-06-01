@@ -23,14 +23,13 @@ import { isIphoneX, getConstant, isAndroid } from '../../Utils';
 import { interpolateColorFromGradient } from '../../Utils/color';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
+//import * as Permissions from 'expo-permissions';
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
 import FLModalDropdown from '../commons/FLModalDropdown';
 
 import { CUser } from '../../Classes/CUser';
-import { Row } from 'native-base';
-import { set } from 'react-native-reanimated';
+
 
 class ProfileScreen extends React.Component {
 
@@ -54,7 +53,7 @@ class ProfileScreen extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     return ({
-      header : null,
+			headerShown : false
     }
     );
 }

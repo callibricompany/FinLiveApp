@@ -24,7 +24,7 @@ class FLAutocallDetailTicket extends React.Component {
     static navigationOptions = ({ navigation }) => {
 
       return ({
-        header : null,
+			headerShown : false
       }
       );
   }

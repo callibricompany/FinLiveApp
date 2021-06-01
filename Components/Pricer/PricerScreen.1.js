@@ -20,7 +20,6 @@ import { CPSRequest } from '../../Classes/Products/CPSRequest';
 
 import FLModalDropdown from '../commons/FLModalDropdown';
 
-import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import SwitchSelector from "react-native-switch-selector";
 import Numeral from 'numeral';
 import 'numeral/locales/fr';
@@ -58,7 +57,7 @@ import { FLCouponMinDetail } from './description/FLCouponMinDetail';
 import logo from '../../assets/LogoWithoutText.png';
 import logo_gray from '../../assets/LogoWithoutTex_gray.png';
 import logo_white from '../../assets/LogoWithoutTex_white.png';
-import Animated from 'react-native-reanimated';
+
 
 
 
@@ -124,7 +123,8 @@ class PricerScreen extends React.Component {
 
 
   static navigationOptions = {
-    header: null
+    //header: null
+    headerShown: false
   }
 
   //au chargemnt de la page recupération des meilleurs resultats

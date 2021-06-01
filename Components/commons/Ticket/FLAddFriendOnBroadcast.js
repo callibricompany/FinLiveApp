@@ -7,7 +7,7 @@ import Moment from 'moment';
 
 import { GiftedChat, Send, InputToolbar, Composer, Message, Bubble, MessageImage} from 'react-native-gifted-chat';
 import Lightbox from 'react-native-lightbox';
-import HTML from 'react-native-render-html';
+
 import { WebView } from 'react-native-webview';
 import * as WebBrowser from 'expo-web-browser';
 

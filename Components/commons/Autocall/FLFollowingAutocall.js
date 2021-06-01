@@ -110,7 +110,7 @@ function renderEvent(event, currentPerf) {
     );
 }
 
-export default function FLFollowingAutocall ({autocall, underlyings}) {
+export default function FLFollowingAutocall ({autocall, underlyings, ticket}) {
 
         var spotLevels = {};
         //recuperation des spots
@@ -236,10 +236,8 @@ export default function FLFollowingAutocall ({autocall, underlyings}) {
                             {String(nextEventType).toUpperCase()} :  {Moment(nextEventDate).format('ll')} ({Moment(nextEventDate).fromNow()})
                         </Text>
                     </View> */}
-                    <View>
-                        <View>
-
-                        </View>
+                    <View style={{marginTop : 5, borderWidth : 1, height : 10, width : 10, borderRadius : 5, backgroundColor : ticket.getPriority().color, borderColor : ticket.getPriority().color}}>
+                       
                     </View>
 
 			</View>

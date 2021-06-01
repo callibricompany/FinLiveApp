@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions,Text,SafeAreaView,Platform, StatusBar, Animated, KeyboardAvoidingView} from 'react-native'
-import { Thumbnail, Toast, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
@@ -76,14 +75,11 @@ const initialLayout = {
        
         //console.log("HOME SCREEN : "+JSON.stringify(navigation));
         return ({
-          header : null,
+          headerShown: false
         }
         );
     }
 
-    /*static navigationOptions = {
-      header: null
-    }*/
     componentDidMount() {
       if (!isAndroid()) {
         this._navListener = this.props.navigation.addListener('didFocus', () => {
@@ -273,7 +269,7 @@ const initialLayout = {
       if (!this.state.isServerOk) {
             //this.props.navigation.setParams({ hideBottomTabBar : false });
             return (
-              <View style={{flex : 1, alignItems: 'center'}}>
+              <View style={{flex : 1, alignItems: 'center', backgroundColor : 'white'}}>
                   <View style={{flex : 0.7, justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white'}}>
                     <RobotBlink width={120} height={120} />
                     <Text style={setFont('400', 18)}>Problème de connexion</Text>

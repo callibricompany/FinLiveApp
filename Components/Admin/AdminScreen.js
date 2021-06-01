@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Animated, Image, TextInput, TouchableOpacity, Dimensions, StatusBar, 
         StyleSheet, Easing, View, Text, FlatList, SafeAreaView } from 'react-native';
-import { Icon } from 'native-base';
+
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
@@ -74,7 +74,7 @@ class AdminScreen extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
       return ({
-        header : null,
+        headerShown : false
       }
       );
   }

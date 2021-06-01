@@ -30,8 +30,9 @@ import FLTemplateAutocall from './Autocall/FLTemplateAutocall';
 
 
 import * as TEMPLATE_TYPE from '../../constants/template'
-import { CAutocall } from '../../Classes/Products/CAutocall';
+import { CAutocall2 } from '../../Classes/Products/CAutocall2';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { CFollowedTicket } from '../../Classes/Tickets/CFollowedTicket';
 
 
 
@@ -55,7 +56,8 @@ class FLNotifications extends React.PureComponent {
     
 
     static navigationOptions = {
-      header: null
+      //header: null
+      headerShown: false
     }
 
     UNSAFE_componentWillReceiveProps(props) {
@@ -125,15 +127,34 @@ class FLNotifications extends React.PureComponent {
       return (
         <TouchableOpacity style={{flexDirection : 'row', width : getConstant('width'), height : 60, backgroundColor: 'white', justifyContent :'space-between', marginTop : 10}}
                           onPress={() => {
+                            console.log(item);
+                 
                             this.setState({ isLoading : true });
+
                             getTicket(this.props.firebase, item.id)
                             .then((t) => {
                               let ticket = null;
                               switch(t.type) {
+                                case "Demande Générale" :
+                                  
+                                  if (t.custom_fields && t.custom_fields.cf_followed != null && t.custom_fields.cf_followed) {
+                                    console.log("Followed : "+t.id);
+                                    ticket = new CFollowedTicket(t);
+                                  }
+    
+                                  break;
                                 case "Produit structuré" :
-                                  console.log("Workflow : "+t.id);
-                                  //console.log(t);
-                                  ticket = new CWorkflowTicket(t);
+                                  if (t.custom_fields && t.custom_fields.cf_followed != null && t.custom_fields.cf_followed) {
+                                    console.log("Followed : "+t.id);
+                                    ticket = new CFollowedTicket(t);
+                                    var  autocall = new CAutocall2(ticket.getProduct());
+                                    this.props.navigation.navigate('FLAutocallDetail', { autocall , isEditable : false, toSave : false, showPerf : true, ticket });
+                                    return;
+    
+                                  } else {
+                                    console.log("Workflow : "+t.id);
+                                    ticket = new CWorkflowTicket(t);
+                                  }
                                   break;
                                 case "Souscription" :
                                   console.log("Souscription : "+t.id);
@@ -143,16 +164,21 @@ class FLNotifications extends React.PureComponent {
                                   break;
                               }
                               if (ticket != null) {
-                                this.setState({ isLoading : false });
+                                  this.setState({ isLoading : false });
+                                  var tab = 0;
+                                  if (item.subType === 'MESSAGE') {
+                                    tab = 1;
+                                  }
                                   this.props.navigation.navigate('FLTicketDetail', {
                                     ticket: ticket,
-                                    //ticketType: TICKET_TYPE.PSCREATION
+                                    tab
                                   })
                               }
+                              this.setState({ isLoading : false });
                             })
                             .catch((error) => {
                               alert(error);
-                              this.setState({ isLoading : true });
+                              this.setState({ isLoading : false });
                             });
                  
                           }}

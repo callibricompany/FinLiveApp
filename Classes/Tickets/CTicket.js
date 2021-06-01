@@ -29,9 +29,7 @@ export class CTicket  {
     constructor(ticket) {
       //super(ticket);
       this.ticket = ticket;
-      
-      //statut FD
-      //this.status = CTicket.STATUS().filter(({id}) => id === this.ticket.status)[0];
+    
 
       //manage product on ticket 
       this.product = null;
@@ -206,6 +204,10 @@ export class CTicket  {
       //on enregistre les conversations et on les trie
       //console.log(conversations);
       this.conversations = conversations;
+    }
+
+    addConversation(conversation) {
+      this.conversations.push(conversation);
     }
 
     getConversations() {
@@ -630,8 +632,33 @@ export class CTicket  {
       return this.ticket.status;
     }
     getStatusName() {
-      let statusNb = this.getStatus();
-      var statusArray = CTicket.STATUS().filter(({id}) => id === statusNb)[0];
+      // http://99.80.211.255:8080/synchroticket
+      //       STATUS	VALUE
+      //Open	                  2
+      //Pending	                3
+      //Resolved	              4
+      //Closed	                5
+      //Waiting for customer    6
+      //Traded                  7
+
+      //var statusArray = CTicket.STATUS().filter(({id}) => id === statusNb)[0];
+      switch(this.getStatus()) {
+        case 2 : 
+          return 'En cours';
+        case 3 : 
+          return 'En attente';
+        case 4 : 
+          return 'Résolu';
+        case 5 : 
+          return 'Fermé';
+        case 6 : 
+          return 'En attente client';
+        case 7 : 
+		  return 'Traité';
+		default : 
+			return '';
+
+      }
       return statusArray.name;
     }
 
@@ -674,68 +701,68 @@ export class CTicket  {
 
 
        
-   static STATUS () {
-    let data = [
-     {
-       "name": "????",
-       "id": 0,
-       "color" : "goldenrod"
-     },
-     {
-       "name": "????",
-       "id": 1,
-       "color" : "mediumaquamarine"
-     },
-     {
-       "name": "En cours", //ouvert
-       "id": 2,
-       "color" : "transparent"
-     },
-     {
-       "name": "Pending",
-       "id": 3,
-       "color" : "gainsboro"
-     },
-     {
-       "name": "Résolu",
-       "id": 4,
-       "color" : "khaki"
-     },
-     {
-       "name": "Fermé",
-       "id": 5,
-       "color" : "linen"
-     },
-     {
-       "name": "Attente client",
-       "id": 6,
-       "color" : "linen"
-     },
-     {
-       "name": "Traded",
-       "id": 7,
-       "color" : "linen"
-     }
-   ];
-   return data;
-  }
+  //  static STATUS () {
+  //   let data = [
+  //    {
+  //      "name": "????",
+  //      "id": 0,
+  //      "color" : "goldenrod"
+  //    },
+  //    {
+  //      "name": "????",
+  //      "id": 1,
+  //      "color" : "mediumaquamarine"
+  //    },
+  //    {
+  //      "name": "En cours", //ouvert
+  //      "id": 2,
+  //      "color" : "transparent"
+  //    },
+  //    {
+  //      "name": "Pending",
+  //      "id": 3,
+  //      "color" : "gainsboro"
+  //    },
+  //    {
+  //      "name": "Résolu",
+  //      "id": 4,
+  //      "color" : "khaki"
+  //    },
+  //    {
+  //      "name": "Fermé",
+  //      "id": 5,
+  //      "color" : "linen"
+  //    },
+  //    {
+  //      "name": "Attente client",
+  //      "id": 6,
+  //      "color" : "linen"
+  //    },
+  //    {
+  //      "name": "Traded",
+  //      "id": 7,
+  //      "color" : "linen"
+  //    }
+  //  ];
+  //  return data;
+  // }
 
   static PRIORITY () {
     let data = [
      {
        "name": "Faible",
        "id": 1,
-       "color" : "green"
+       "color" : "green", 
      },
      {
        "name": "Normale",
        "id": 2,
-       "color" : setColor(''),
+       "color" : "blue",
      },
      {
        "name": "Accélérée",
        "id": 3,
-       "color" : "pink"
+       "color" : "orange"
      },
      {
        "name": "Urgente",

@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
-
 
 import { FLSlider2 } from '../../../Components/commons/FLSlider2';
 

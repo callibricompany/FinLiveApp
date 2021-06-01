@@ -116,7 +116,7 @@ class FLSRPDetail extends React.Component {
   static navigationOptions = ({ navigation }) => {
 
       return ({
-        header : null,
+			headerShown : false
       }
       );
   }

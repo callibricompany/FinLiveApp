@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Dimensions, ImageBackground, Image, StatusBar} from 'react-native';
-import { Button } from 'native-base';
-import { Svg } from "expo";
+
 
 import bgSrc from '../../assets/LogoWithText.png';
 import { getConstant } from '../../Utils';

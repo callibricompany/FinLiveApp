@@ -2,8 +2,6 @@ import React from 'react'
 import { InteractionManager, YellowBox, ImageBackground, StyleSheet, Platform, Dimensions} from 'react-native'
 import * as Font from 'expo-font';
 
-import getTheme from './native-base-theme/components'
-import material from './native-base-theme/variables/commonColor'
 
 import NotificationProvider from './Session/NotificationProvider'
 import Firebase, { FirebaseContext } from './Database';

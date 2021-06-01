@@ -18,6 +18,8 @@ import {
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
+import FontAwesome5  from 'react-native-vector-icons/FontAwesome5';
+
 import logoImg from '../../assets/LogoWithoutText.png'
 import React from 'react';
 import ButtonSubmit from './ButtonSubmit'
@@ -657,7 +659,7 @@ class RegisterFormBase extends React.Component {
 
                 <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
                   <View style={{padding : 5, width : 35}}>
-                        <Ionicons name="ios-unlock" style={{color : setColor('lightBlue')}} size={25}/>
+                        <FontAwesome5 name="unlock-alt" style={{color : setColor('lightBlue')}} size={25}/>
                   </View>
                   <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
                     <TextInput
@@ -686,8 +688,8 @@ class RegisterFormBase extends React.Component {
                 </View>
 
                 <View style={{flexDirection: 'row', borderBottomWidth: 1, borderBottomColor : setColor('gray')}}>
-                  <View style={{padding : 5, width : 35}}>
-                        <Ionicons name="ios-unlock" style={{color : setColor('lightBlue')}} size={25}/>
+                  <View style={{padding : 5, width : 35,height : 35}}>
+                  {/* <FontAwesome5 name="unlock-alt" style={{color : setColor('lightBlue')}} size={25}/> */}
                   </View>
                   <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-evenly', paddingLeft: 5}}>
                     <TextInput

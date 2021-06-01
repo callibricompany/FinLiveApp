@@ -571,7 +571,7 @@ export function createreply (firebase, message) {
 //    TICKET
 //    retourne un ticket unique
 ///////////////////////////
-export function getTicket (firebase, idTicket) {
+export function getTicket (firebase, idTicket, toto="") {
   return new Promise(
     (resolve, reject) => {
 
@@ -588,6 +588,7 @@ export function getTicket (firebase, idTicket) {
           axios.get(URL_AWS + '/getTicket/'+ idTicket,  axiosConfig)
           .then((response) => {
             //console.log(response.data);
+            console.log("GET TICKET OK : " + toto);
             resolve(response.data)
           })
           .catch(function (error) {

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import SwitchSelector from "react-native-switch-selector";
 
 import Feather from 'react-native-vector-icons/Feather';

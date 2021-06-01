@@ -156,7 +156,7 @@ function renderComposer(props, currentConversation) {
 
 
 
-export function FLChat ({isFocused, ticket, firebase, isLoading }) {
+export function FLChat ({isFocused, ticket, firebase, isLoading, hasSpoken }) {
    
         const [currentConversationIndex, setCurrentConversationIndex] = useState(0);
         const [currentConversation, setCurrentConversation] = useState(ticket.getConversations()[0]);
@@ -194,7 +194,7 @@ export function FLChat ({isFocused, ticket, firebase, isLoading }) {
         }, [isFocused, isLoading]);
 
 
-        const onSend = useCallback((newMessages, idTicket) => {
+        const onSend = useCallback((newMessages, idTicket, hasSpoken) => {
 
 
             //createReply({ ticketId: 232, body: '<B>|Pierre via App|:</B> Je pense que j en veux.' }, 'undefined').then(val => {console.log(val)}).catch(err => {console.log(err)});
@@ -213,13 +213,16 @@ export function FLChat ({isFocused, ticket, firebase, isLoading }) {
             createreply(firebase, mess)
             .then((data) => {
               console.log("SUCCES ENVOIE DU MESSAGE : " + mess['body']);
+              
             })
             .catch(error => {
                 console.log("Erreur ENVOIE DU MESSAGE : " + error);
             });
         
             console.log(mess);
-            setMessages(prevMessages => [...newMessages, ...prevMessages])
+            hasSpoken(true, prevMessages => [...newMessages, ...prevMessages]);
+            setMessages(prevMessages => [...newMessages, ...prevMessages]);
+            
         }, [])
 
         // console.log("REQUESTER ID : " + ticket.getRequesterId());
@@ -294,10 +297,10 @@ export function FLChat ({isFocused, ticket, firebase, isLoading }) {
                         </View> 
                 : null
                 }
-                <View style={{flex: 1, borderWidth : 0, backgroundColor: 'whitesmoke', opacity : isLoading ? 0.3 : 1 }}>
+                <View style={{flex: 1, borderWidth : 0, backgroundColor: 'whitesmoke', opacity : isLoading ? 1 : 1 }}>
                     <GiftedChat
                         messages={messages}
-                        onSend={messages => onSend(messages, currentTicketId)}
+                        onSend={messages => onSend(messages, currentTicketId, hasSpoken)}
                         placeholder={"Tapez votre message ..."}
                         keyboardShouldPersistTaps={'never'}
                         //locale={'fr-fr'}

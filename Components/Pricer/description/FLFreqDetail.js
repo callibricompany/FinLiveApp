@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+//import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 import Feather from 'react-native-vector-icons/Feather';
 
@@ -64,7 +64,7 @@ export class FLFreqDetail extends React.Component{
               </View>
               <View style={{flexDirection: 'row'}}>
                 <View style={{flex : 0.45, alignItems:'center', backgroundColor: 'white'}}>               
-                    <RadioForm
+                    {/* <RadioForm
                           formHorizontal={false}
                           animation={true}
                         >
@@ -107,7 +107,7 @@ export class FLFreqDetail extends React.Component{
                               </RadioButton>
                             );
                           })}                  
-                    </RadioForm> 
+                    </RadioForm>  */}
                 </View>
                 <View style={{flex : 0.1, alignItems:'center'}}>
                   

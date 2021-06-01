@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback} from 'react-native';
 
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+//import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 
 import { globalStyle, setFont } from '../../../Styles/globalStyle'
@@ -44,7 +44,7 @@ export class FLAuctionDetail extends React.Component{
              
 
                     
-                    <RadioForm
+                    {/* <RadioForm
                           formHorizontal={false}
                           animation={true}
                         >
@@ -87,7 +87,7 @@ export class FLAuctionDetail extends React.Component{
                               </RadioButton>
                             );
                           })}                  
-                    </RadioForm> 
+                    </RadioForm>  */}
                 </View>
             </View>
         );

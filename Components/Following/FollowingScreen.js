@@ -2,7 +2,7 @@ import React from 'react';
 //qfggtg
 import { Animated, Modal, TextInput, TouchableOpacity, ScrollView, StatusBar, Dimensions, 
         StyleSheet, Easing, View, Text, FlatList, SafeAreaView, Alert } from 'react-native';
-import { Icon } from 'native-base';
+
 
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
@@ -13,8 +13,8 @@ import { withNavigation } from 'react-navigation';
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
-import { isAndroid, ifAndroid, currencyFormatDE , getConstant } from '../../Utils';
-import { URL_AWS, getProduct, createTicket, getAllTicket} from '../../API/APIAWS';
+import { isAndroid, ifAndroid, currencyFormatDE , getConstant, isEqual } from '../../Utils';
+import { URL_AWS, getProduct, createTicket, getAllTicket, getTicket } from '../../API/APIAWS';
 
 import { CAutocall2 } from '../../Classes/Products/CAutocall2';
 import { CFollowedTicket } from '../../Classes/Tickets/CFollowedTicket';
@@ -93,7 +93,7 @@ class FollowingScreen extends React.Component {
 
 	static navigationOptions = ({ navigation }) => {
 		return ({
-			header : null,
+			headerShown : false
 		}
 		);
 	}
@@ -134,6 +134,50 @@ class FollowingScreen extends React.Component {
 		}
 	}
 
+	async UNSAFE_componentWillReceiveProps(props) {
+		//on checke les notifications et on recharge eventuellement
+		if (!isEqual(props.allNotificationsCount, this.props.allNotificationsCount)) {
+			var allTickets = this.state.productsFollowed;
+			var allTicketsUpdated = [];
+			let i = 0;
+
+			for (const ticket of allTickets) {
+				//console.log("est Notifié " +  ticket.id + " : " + this.props.isNotified('TICKET', ticket.id));
+				if (this.props.isNotified('TICKET', ticket.id) || this.props.isNotified('FOLLOWED', ticket.id)) {
+					//il faut le recharger
+					allTicketsUpdated.push(await getTicket(this.props.firebase, ticket.id));
+				} else {
+					allTicketsUpdated.push(ticket);
+				}
+
+			}
+			this.setState({ productsFollowed : allTicketsUpdated });
+
+
+
+		}
+	}
+
+	async _onBackOnScreen(hasSpoken, ticketToUpdate) {
+		
+		if (!hasSpoken) {
+			return;
+		}
+		var allTickets = this.state.productsFollowed;
+		var allTicketsUpdated = [];
+		let i = 0;
+		for (const ticket of allTickets) {
+			if (ticket.id === ticketToUpdate.getId()) {
+				//il faut le recharger
+				allTicketsUpdated.push(await getTicket(this.props.firebase, ticketToUpdate.getId()));
+				
+			} else {
+				allTicketsUpdated.push(ticket);
+			}
+		}
+		//await Promise.all(allTicketsUpdated);
+		this.setState({ productsFollowed : allTicketsUpdated });
+	}
 
 	componentWillUnmount() {
 		this.state.scrollAnim.removeAllListeners();
@@ -556,20 +600,23 @@ class FollowingScreen extends React.Component {
 		if (this.state.isLoading) {
 		return (
 
-
-			<View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', height : 300}}>
-			<WebView  originWhitelist={['*']} 
-						source={{uri: URL_AWS + '/svg?page=robotFlash'}} 
-						style={{  width : 150, height : 100, marginTop: isAndroid() ? -60 : -70, marginLeft : -50}} 
-						scalesPageToFit={true}
-						showsHorizontalScrollIndicator={false}
-						showsVerticalScrollIndicator={false}
-						startInLoadingState={true}
-						//renderLoading={() => <RobotBlink width={120} height={120} />}
-				/>
-			
-			
-			</View>
+			<SafeAreaView style={{flex : 1, backgroundColor: setColor('')}}>
+				<View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', flex : 1}}>
+					{this._renderHeader()}
+					<View style={{height : 300, backgroundColor : 'pink'}}>
+						<WebView  originWhitelist={['*']} 
+							source={{uri: URL_AWS + '/svg?page=robotFlash'}} 
+							style={{  width : 150,  marginTop: 0, marginLeft : -50, borderWidth : 0}} 
+							scalesPageToFit={true}
+							showsHorizontalScrollIndicator={false}
+							showsVerticalScrollIndicator={false}
+							startInLoadingState={true}
+							//renderLoading={() => <RobotBlink width={120} height={120} />}
+						/>
+					</View>
+				
+				</View>
+			</SafeAreaView>
 		);
 		}
 
@@ -598,17 +645,20 @@ class FollowingScreen extends React.Component {
 									return (
 										<TouchableOpacity style={{marginTop : id === 0 ? 0 : 10}}
 															onPress={() => {
-																this.props.navigation.navigate('FLTicketDetail', {ticket});
+																this.props.navigation.navigate('FLTicketDetail', {
+																	ticket,
+																	onGoBack : (hasSpoken) => this._onBackOnScreen(hasSpoken, ticket)
+																});
 															}}
 										>
-											<FollowingDemandeGenerale ticket={ticket} />
+											<FollowingDemandeGenerale ticketClass={ticket}  />
 										</TouchableOpacity>
 									);
 									//return <View />;
 								case 'Produit structuré' :
 									if (item.PRODUCT && item.PRODUCT !== '') {
 										let ticket = new CFollowedTicket(item);
-										ticket.setProduct(item.PRODUCT);
+										//ticket.setProduct(item.PRODUCT);
 										
 										return (
 												<View style={{marginTop : id === 0 ? 0 : 10}}>

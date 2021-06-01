@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, SafeAreaView, ScrollView, Text, TouchableOpacity, Image, Share, WebView} from 'react-native'
-import { Title, Icon, Container, Card, Content, CardItem, Left, Body, Thumbnail, Button} from 'native-base'
-//import { WebView } from 'react-native-webview';
+
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
@@ -39,14 +39,14 @@ class NewsDetailWeb extends React.Component {
       header: (
         <SafeAreaView style={globalStyle.header_safeviewarea}>
           <TouchableOpacity style={globalStyle.header_left_view} onPress={() => navigation.goBack()}>
-            <Icon name='md-arrow-back' style={globalStyle.header_icon} />
+            <Ionicons name='md-arrow-back' style={globalStyle.header_icon} />
           </TouchableOpacity>
           <View style={globalStyle.header_center_view} >
-            <Title style={globalStyle.header_center_text_medium}>{item.source.name}</Title>
+            <Text style={globalStyle.header_center_text_medium}>{item.source.name}</Text>
           </View>
           <View style={globalStyle.header_right_view} >
           <TouchableOpacity onPress={() => params.shareNews()}>
-            <Icon name='ios-share' style={globalStyle.header_icon} />
+            <Ionicons name='ios-share' style={globalStyle.header_icon} />
            </TouchableOpacity>
           </View>
         </SafeAreaView>

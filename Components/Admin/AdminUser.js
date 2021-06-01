@@ -1,11 +1,13 @@
 import React from 'react'
 import { View, SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, Dimensions, Switch, Alert, KeyboardAvoidingView} from 'react-native'
-import { Icon, Button, Input} from 'native-base'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Moment from 'moment';
 import localization from 'moment/locale/fr'
 
 import { globalStyle } from '../../Styles/globalStyle'
 import { FontAwesome } from '@expo/vector-icons';
+
+
 
 
 import { setColor, setFont } from '../../Styles/globalStyle';
@@ -66,7 +68,7 @@ class AdminUser extends React.Component {
           {/*<View style={[globalStyle.header_left_view, {flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}]} >*/}
           <View style={globalStyle.header_left_view} >
               <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.goBack()}>
-                <Icon name='ios-arrow-round-back' size={40} style={[globalStyle.header_icon, {paddingLeft : 10}]} />
+                <MaterialCommunityIcons name='arrow-left' size={40} style={[globalStyle.header_icon, {paddingLeft : 10}]} />
               </TouchableOpacity>
               {/*<TouchableOpacity onPress={() => alert("Prochainement clone de l'opé")}>
                 <FontAwesome name="clone" size={25} style={globalStyle.header_icon}/> 

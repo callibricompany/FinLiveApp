@@ -33,7 +33,7 @@ import { compose, hoistStatics } from 'recompose';
 
 import { CAutocall2 } from '../../../Classes/Products/CAutocall2';
 import { CPSRequest } from '../../../Classes/Products/CPSRequest';
-import { reprice , saveProduct, getAllCharities, getProductProbabilities } from '../../../API/APIAWS';
+import { reprice , saveProduct, getTicket, getProductProbabilities } from '../../../API/APIAWS';
 
 
 import Numeral from 'numeral'
@@ -55,6 +55,7 @@ import { FLPDI } from "./FLPDI";
 import { FLDocuments } from "./FLDocuments";
 import { FLProba } from './FLProba';
 import FLFollowingAutocall from './FLFollowingAutocall';
+import { CFollowedTicket } from "../../../Classes/Tickets/CFollowedTicket";
 
 
 
@@ -102,7 +103,7 @@ class FLAutocallDetail extends React.Component {
         description : '',
         isAutomatique : true,
 	   
-		repriceNeeded : false,
+		    repriceNeeded : false,
         isLoadingCreationTicket : false,
         isLoadingUpdatePrice : false,
         messageUpdatePrice : '',
@@ -123,7 +124,13 @@ class FLAutocallDetail extends React.Component {
 	this.allCharities = [];
 	this._constructMenu();
 	
-	this.probabilities = [];
+  this.probabilities = [];
+
+  this.ticket = this.props.navigation.getParam('ticket', '');
+    if (this.ticket !=='')  {
+      this.props.removeNotification('FOLLOWED', this.ticket.getId());
+      this.props.setCurrentFocusedObject('FOLLOWED', this.ticket.getId());
+    }
 
   }
 
@@ -240,23 +247,42 @@ class FLAutocallDetail extends React.Component {
 		body: ''
 	  });
     
-    this.descProduct.push( {
-      key : 'EMPTY_SECTION',
-      iconName : '',
-      iconFamily : '',
-      level : 1, 
-      title: '',
-      body: ''
-    });
+    // this.descProduct.push( {
+    //   key : 'EMPTY_SECTION',
+    //   iconName : '',
+    //   iconFamily : '',
+    //   level : 1, 
+    //   title: '',
+    //   body: ''
+    // });
  }
 
 
   static navigationOptions = ({ navigation }) => {
     return ({
-      header : null,
+	  headerShown : false
     }
     );
  }
+
+   //component rcceved props
+   async UNSAFE_componentWillReceiveProps(props) {
+    //console.log("RECEPTION DES PROPS TICKETS : " + props.allNotificationsCount );
+    //quelque chose a bougé sur le ticket on verifie s'il a été notifié
+    //console.log("EST NOTIFIE AUTOCALL : " + this.props.isNotified('FOLLOWED', this.autocall.getUniqueId()));
+    //console.log("CSouscriptionTicket :" +(this.ticket instanceof CSouscriptionTicket));
+    
+    if (this.ticket !=='')  {
+      if (this.props.isNotified('FOLLOWED', this.ticket.getId())) {
+        this.props.removeNotification('FOLLOWED', this.ticket.getId());
+        var t = await getTicket(this.props.firebase, this.ticket.getId());
+        if (t.PRODUCT && t.PRODUCT !== '') {
+          this.ticket = new CFollowedTicket(t);
+          this.autocall = new CAutocall2(this.ticket.getProduct());
+        }
+      }
+    }
+  }
 
   async componentDidMount() {
     if (!isAndroid()) {
@@ -290,6 +316,8 @@ class FLAutocallDetail extends React.Component {
     }
     Keyboard.removeListener('keyboardDidShow');
     Keyboard.removeListener('keyboardDidHide');
+
+    this.props.setCurrentFocusedObject('', '');
   }
   
   keyboardDidHide() {
@@ -494,7 +522,7 @@ class FLAutocallDetail extends React.Component {
           body = <View style={{ height: 150}}/>;
           break;    
       case 'FOLLOWED' :
-          body = <FLFollowingAutocall autocall={this.autocall} underlyings={this.underlyings} />;
+          body = <FLFollowingAutocall autocall={this.autocall} underlyings={this.underlyings} ticket={this.ticket}/>;
           break;
       case 'STATS' :
 		  body = <FLProba autocall={this.autocall} />;
@@ -637,15 +665,23 @@ class FLAutocallDetail extends React.Component {
   //gestion des icones a gauche (partie 1/2)
   _renderHeaderLeftMenu = (content, index, isActive, sections) => {
     //console.log(content);
-    //calcul de l'index equivalent dans flatlist
-    let flatListIndex = this.descProduct.indexOf(content);
-    if (flatListIndex === -1) { flatListIndex = index }
+	//calcul de l'index equivalent dans flatlist
+	let mainSections = this.descProduct.filter(({ level }) => level === 1);
+	//console.log(mainSections);
+    let flatListIndex = mainSections.indexOf(content);
+    //if (flatListIndex === -1) { flatListIndex = index }
+	if (this.state.activeSections.length === 1 && this.state.activeSections[0] ===  flatListIndex) {
+		isActive = true;
+	}
 
-    let color = interpolateColorFromGradient('Cool Sky', Math.round(100*index/sections.length));
-    //let color = setColor('');
-    //if (isActive) { color = setColor('darkBlue')}
-
-    //creation de l'icone
+    //let color = interpolateColorFromGradient('Cool Sky', Math.round(100*index/sections.length));
+    let color = setColor('');
+	//if (isActive) { color = setColor('darkBlue')}
+	//console.log(isActive + " : " + sections.length);
+	//creation de l'icone
+	// console.log(this.state.activeSections);
+	// console.log(flatListIndex);
+	// console.log(content);
     let icon = <View />;
     switch(content.iconFamily) {
       case 'FontAwesome5' :
@@ -669,8 +705,9 @@ class FLAutocallDetail extends React.Component {
     return (
          <TouchableOpacity style={{height : 46, width : 46,   borderWidth : isActive ? 1 : 0, borderRadius : 23,  borderColor : color, alignItems: 'center', justifyContent: 'space-around', backgroundColor : isActive ? color: null}} 
                         onPress={() => {
-                          this.setState({ activeSections : [index] });
-                          this.flatListRef.scrollToIndex({animated: true, index: flatListIndex});
+						  let indexToSelect = this.descProduct.indexOf(content);
+                          this.setState({ activeSections : [indexToSelect] });
+                          this.flatListRef.scrollToIndex({animated: true, index: indexToSelect});
                         }}                
                   >
                   {icon}
@@ -875,111 +912,115 @@ class FLAutocallDetail extends React.Component {
                               </Text>
                             </View>
                             <View style={{flex: 0.15, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'flex-end', borderWidth: 0, marginRight: 0.05*getConstant('width')}}>
-                                    <FLModalDropdown
-                                    //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
-                                    //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
-                                    dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
-                                    dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
-                                    onSelect={(index, value) => {
-                                                      if(value === 'Clone' && this.autocall.getProductType() === 'STRUCTURED_PRODUCT') {
-                                                          let r = new CPSRequest();
-                                                            r.setRequestFromCAutocall(this.autocall);
-                                                            this.props.navigation.dispatch(NavigationActions.navigate({
-                                                                routeName: 'Pricer',
-                                                                action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
-                                                            }));
-                                                      }
-                                    }}
-                                    onDropdownWillShow={() => this.setState({ showModalDropdown : true })}
-                                    onDropdownWillHide={() => this.setState({ showModalDropdown : false })}
-                                    adjustFrame={(f) => {
-                                      return {
-                                        width: getConstant('width')/2,
-                                        height: Math.min(getConstant('height')/3, dataOptions.length * 40),
-                                        left : f.left,
-                                        right : f.right,
-                                        top: f.top,
-                                        borderWidth : 1,
-                                        borderColor : 'gray',
-                                        borderRadius : 3
-                                      }
-                                    }}
-                                    renderRow={(option, index, isSelected) => {
-                                      switch(option) {
-                                        case 'Shadow' :
-                                              
-                                              return (
-                                                  <View style={{flexDirection : 'row', height: 40}}>
-                                                      <View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                          <Text style={setFont('500', 14, 'black', 'Regular')}>Mode shadow</Text>
-                                                      </View>
-                                                      <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
-                                                                        onPress={() => {
-                                                                          // let optimi = this.state.hideCC ? this.state.optimizer : 'CPN';
-                                                                          this.setState({ hideCC : !this.state.hideCC }, () => {
-                                                                              this._constructMenu();
-                                                                              this.setState({ toto : !this.state.toto });
-                                                                          });
-                                                                        }}
-                                                      >
-                                                          <FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={25} style={{color: 'black'}}/> 
-                                                      </TouchableOpacity>
-                                                  </View>
-                                              );
-                                        case 'Clone' :
-                                              let color = this.autocall.getProductType() === 'STRUCTURED_PRODUCT' ? 'black' : 'lightgray';
-                                                return (
-                                                      <View style={{height: 40, flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                          <Text style={setFont('500', 14, color, 'Regular')}>Cloner</Text>
-                                                      </View>
+							{!this.showPerf 
+							?
+												<FLModalDropdown
+												//pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
+												//textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
+												dropdownTextStyle={setFont('500', 16, 'gray', 'Regular')}
+												dropdownTextHighlightStyle={setFont('500', 16, this.stdColor, 'Bold')}
+												onSelect={(index, value) => {
+																if(value === 'Clone' && this.autocall.getProductType() === 'STRUCTURED_PRODUCT') {
+																	let r = new CPSRequest();
+																		r.setRequestFromCAutocall(this.autocall);
+																		this.props.navigation.dispatch(NavigationActions.navigate({
+																			routeName: 'Pricer',
+																			action: NavigationActions.navigate({ routeName: 'PricerEvaluate' , params : {request : r}} ),
+																		}));
+																}
+												}}
+												onDropdownWillShow={() => this.setState({ showModalDropdown : true })}
+												onDropdownWillHide={() => this.setState({ showModalDropdown : false })}
+												adjustFrame={(f) => {
+												return {
+													width: getConstant('width')/2,
+													height: Math.min(getConstant('height')/3, dataOptions.length * 40),
+													left : f.left,
+													right : f.right,
+													top: f.top,
+													borderWidth : 1,
+													borderColor : 'gray',
+													borderRadius : 3
+												}
+												}}
+												renderRow={(option, index, isSelected) => {
+												switch(option) {
+													case 'Shadow' :
+														
+														return (
+															<View style={{flexDirection : 'row', height: 40}}>
+																<View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+																	<Text style={setFont('500', 14, 'black', 'Regular')}>Mode shadow</Text>
+																</View>
+																<TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+																					onPress={() => {
+																					// let optimi = this.state.hideCC ? this.state.optimizer : 'CPN';
+																					this.setState({ hideCC : !this.state.hideCC }, () => {
+																						this._constructMenu();
+																						this.setState({ toto : !this.state.toto });
+																					});
+																					}}
+																>
+																	<FontAwesome name={this.state.hideCC ? "toggle-on" : "toggle-off"}  size={25} style={{color: 'black'}}/> 
+																</TouchableOpacity>
+															</View>
+														);
+													case 'Clone' :
+														let color = this.autocall.getProductType() === 'STRUCTURED_PRODUCT' ? 'black' : 'lightgray';
+															return (
+																<View style={{height: 40, flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+																	<Text style={setFont('500', 14, color, 'Regular')}>Cloner</Text>
+																</View>
 
-                                                );
-                                  
-                                        case 'Favorite' :
-                                              return (
-                                                  <View style={{flexDirection : 'row', height: 40}}>
-                                                    <TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
-                                                                        onPress={() => {
-                                                                          this.autocall.setFavorite(!this.autocall.isFavorite());
-                                                                          this.setState({ toto : !this.autocall.toto });                   
-                                                                          this.props.setFavorite(this.autocall.getProductJSON())
-                                                                          .then((autocall) => {          
-                                                                            this.autocall = new CAutocall2(autocall);
-                                                                            //this.setState({ toto : !this.state.toto });
-                                                                          })
-                                                                          .catch((error) => {
-                                                                            this.autocall.setFavorite(!this.autocall.isFavorite());       
-                                                                            this.setState({ toto : !this.autocall.toto });     
-                                                                            console.log("Erreur de mise en favori : " + error);
-                                                                          });             
- 
-                                                                        }}
-                                                      >
-                                                         <MaterialCommunityIcons name={!this.autocall.isFavorite() ? "heart-outline" : "heart"} size={20} color={setColor('light')}/>
-                                                      </TouchableOpacity>
-                                                      <View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                          <Text style={setFont('500', 14, 'black', 'Regular')}>Favori</Text>
-                                                      </View>
-                                                  </View>
-                                              );
-                                        default : 
-                                                return (
-                                                  <View style={{paddingLeft : 4, paddingRight : 4, height: 40, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                                    <Text style={setFont('500', 16, 'gray', 'Regular')}>{option}</Text>
-                                                  </View>
-                                              );
-                                      }
-          
-                                    }}
-                                    //defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
-                                    options={dataOptions}
-                                    //ref={component => this._dropdown['options'] = component}
-                                    disabled={false}
-                  >
-                      <View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
-                        <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
-                      </View>
-                  </FLModalDropdown>
+															);
+											
+													case 'Favorite' :
+														return (
+															<View style={{flexDirection : 'row', height: 40}}>
+																<TouchableOpacity style={{paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}
+																					onPress={() => {
+																					this.autocall.setFavorite(!this.autocall.isFavorite());
+																					this.setState({ toto : !this.autocall.toto });                   
+																					this.props.setFavorite(this.autocall.getProductJSON())
+																					.then((autocall) => {          
+																						this.autocall = new CAutocall2(autocall);
+																						//this.setState({ toto : !this.state.toto });
+																					})
+																					.catch((error) => {
+																						this.autocall.setFavorite(!this.autocall.isFavorite());       
+																						this.setState({ toto : !this.autocall.toto });     
+																						console.log("Erreur de mise en favori : " + error);
+																					});             
+			
+																					}}
+																>
+																	<MaterialCommunityIcons name={!this.autocall.isFavorite() ? "heart-outline" : "heart"} size={20} color={setColor('light')}/>
+																</TouchableOpacity>
+																<View style={{flex : 0.8, paddingLeft : 4, paddingRight : 4, justifyContent: 'center', alignItems: 'flex-start'}}>
+																	<Text style={setFont('500', 14, 'black', 'Regular')}>Favori</Text>
+																</View>
+															</View>
+														);
+													default : 
+															return (
+															<View style={{paddingLeft : 4, paddingRight : 4, height: 40, justifyContent: 'center', alignItems: 'flex-start'}}>
+																<Text style={setFont('500', 16, 'gray', 'Regular')}>{option}</Text>
+															</View>
+														);
+												}
+					
+												}}
+												//defaultIndex={dataOptions.indexOf(this.autocallResult.getProductTypeName())}
+												options={dataOptions}
+												//ref={component => this._dropdown['options'] = component}
+												disabled={false}
+									>
+										<View style={{ borderWidth : 0, width : 0.1*getConstant('width'),  height: 40, justifyContent: 'center', alignItems: 'center'}}>
+											<MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
+										</View>
+									</FLModalDropdown>
+							: null
+							}
                    
                             </View>
             </View>
@@ -1040,10 +1081,11 @@ class FLAutocallDetail extends React.Component {
                           //renderFooter={this._renderFooterUnderlying}
                           renderContent={this._renderContentLeftMenu}
                           expandMultiple={false}
-                          onChange={(activeSections) => {
-                              this.setState( { activeSections : activeSections });
-                              this.flatListRef.scrollToIndex({animated: true, index: activeSections[0]});
-                          }}
+                        //   onChange={(activeSections) => {
+						// 	  console.log("onChange : "  + activeSections);
+                        //       this.setState( { activeSections : activeSections });
+                        //       this.flatListRef.scrollToIndex({animated: true, index: activeSections[0]});
+                        //   }}
                           sectionContainerStyle={{marginTop : 10 }}
                           keyExtractor={item => item.title}
                           touchableComponent={(props) => <TouchableOpacity {...props} />}
@@ -1057,17 +1099,18 @@ class FLAutocallDetail extends React.Component {
                 </View>
                 <View style={{flex : 1, backgroundColor : setColor('background')}}>
                     <View style={{height : 20, backgroundColor : 'white', borderWidth : 1, borderColor: 'white', borderTopLeftRadius : 20}} />
-                    <FlatList
-                      style={{ flexGrow: 1, backgroundColor : 'white', paddingLeft : 15}}
-                      ref={(ref) => { this.flatListRef = ref; }}
-                      data={this.descProduct}
-                      renderItem={this.renderPage}
-                      onViewableItemsChanged={this.onViewableItemsChanged}
-                      viewabilityConfig={{ viewAreaCoveragePercentThreshold: 40, minimumViewTime : 500 }}
-                      keyExtractor={item => item.key}
-                    />
+						<FlatList
+						style={{ flexGrow: 1, backgroundColor : 'white', paddingLeft : 15}}
+						ref={(ref) => { this.flatListRef = ref; }}
+						data={this.descProduct}
+						renderItem={this.renderPage}
+						onViewableItemsChanged={this.onViewableItemsChanged}
+						viewabilityConfig={{ viewAreaCoveragePercentThreshold: 40, minimumViewTime : 500 }}
+						keyExtractor={item => item.key}
+						/>
 
                   </View>
+				  <View style={{height  : 150}} />
             </View>
             
             {this.state.showButtonsToTrade ? this._renderButtonsTotrade() : null}     

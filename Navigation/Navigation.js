@@ -1,7 +1,8 @@
 //carte de l'application
 import React from 'react'
 import { StyleSheet, View, Text, Platform } from 'react-native'
-import { createStackNavigator, createSwitchNavigator, createAppContainer, createBottomTabNavigator } from 'react-navigation'
+import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import AuthLoadingScreen from '../Components/Login/AuthLoadingScreen'
 import SplashScreen from '../Components/Login/SplashScreen'

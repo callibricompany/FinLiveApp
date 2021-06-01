@@ -38,8 +38,7 @@ import { CPSRequest } from '../../../Classes/Products/CPSRequest';
 import FLModalDropdown from '../FLModalDropdown';
 
 import { VictoryGroup, VictoryChart, VictoryBar, VictoryAxis, VictoryStack, VictoryLabel, VictoryScatter, VictoryLegend , VictoryPie, VictoryContainer} from "victory-native";
-import {Svg, G } from 'react-native-svg';
-import { createIconSetFromFontello } from 'react-native-vector-icons';
+
 
 import Moment from 'moment';
 

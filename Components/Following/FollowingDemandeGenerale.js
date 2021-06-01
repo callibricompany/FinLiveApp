@@ -5,7 +5,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import SwitchSelector from "react-native-switch-selector";
 
 
-
+import { getTicket } from '../../API/APIAWS';
 import { globalStyle, setFont, setColor} from '../../Styles/globalStyle'
 import { getConstant, currencyFormatDE, isAndroid } from '../../Utils';
 
@@ -13,14 +13,30 @@ import { getConstant, currencyFormatDE, isAndroid } from '../../Utils';
 import Numeral from 'numeral';
 import Moment from 'moment';
 import 'numeral/locales/fr';
+import { CFollowedTicket } from '../../Classes/Tickets/CFollowedTicket';
 
 
-export default function FollowingDemandeGenerale ({ticket}) {
 
-        
+export default function FollowingDemandeGenerale ({ticketClass}) {
+
+        const [ticket, setTicket] = useState(ticketClass);
         useEffect(() => {
-            //console.log("MAXIMUM DATE CHANGED : " + props.maximumDate);
-        }, []);
+            // async function fetchMyTicket(idTicket) {
+            //     var ticketJSON = await getTicket(firebase, idTicket);
+            //     setTicket(new CFollowedTicket(ticketJSON));
+            // }
+          
+            
+            // var idTicket = ticket.getId();
+            // if (isNotified('TICKET', idTicket)) {
+            //     console.log("ATTENTION on recharge : " + ticket.getSubject() + " #" + idTicket);
+            //     fetchMyTicket(idTicket)
+            // }
+            setTicket(ticketClass);
+            
+        }, [ticketClass]);
+
+ 
 
 		return (
 
@@ -40,7 +56,7 @@ export default function FollowingDemandeGenerale ({ticket}) {
 
                     <View style={{ustifyContent: 'center', alignItems : 'center', marginTop : 5, paddingHorizontal : 30, borderWidth :  0, paddingTop : 5}}>
                             <Text style={[setFont('400', 16,  'black', 'Regular'), {textAlign : 'center'}]}>
-                                Suivi de produit demandé
+                                Suivi de produit en cours d'intégration dans le système FinLive
                             </Text>
                     </View>
                     <View style={{ustifyContent: 'center', alignItems : 'flex-start', marginTop : 5, paddingLeft : 10, borderWidth :  0, paddingTop : 5}}>
@@ -94,19 +110,19 @@ export default function FollowingDemandeGenerale ({ticket}) {
                                             {ticket.getStatusName()} 
                                         </Text>
                                     :
-                                        <TouchableOpacity onPress={() => {
-                                                if (isAndroid()) {
-                                                    NativeModules.UIMailLauncher.launchMailApp(); // UIMailLauncher is the 
+                                        // <TouchableOpacity onPress={() => {
+                                        //         if (isAndroid()) {
+                                        //             NativeModules.UIMailLauncher.launchMailApp(); // UIMailLauncher is the 
                                                
-                                                } else {
-                                                    Linking.openURL('message:0')
-                                                }
-                                            }}
-                                        >
+                                        //         } else {
+                                        //             Linking.openURL('message:0')
+                                        //         }
+                                        //     }}
+                                        // >
                                             <Text style={setFont('400', 12,  'red', 'Regular')}>
-                                                un email vous a été envoyé
+                                                un message vous a été envoyé
                                             </Text>
-                                        </TouchableOpacity>
+                                        // </TouchableOpacity>
                                 }
 
                         </View>

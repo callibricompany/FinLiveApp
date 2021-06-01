@@ -3,7 +3,6 @@
 import { CStructuredProduct } from "./CStructuredProduct";
 import Moment from 'moment';
 import FREQUENCYLIST from "../../Data/frequencyList.json";
-import { DeckSwiper } from "native-base";
 
 
 

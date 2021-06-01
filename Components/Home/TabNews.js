@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, ActivityIndicator, TouchableOpacity, Text, FlatList} from 'react-native'; 
-import { Thumbnail, Toast, Spinner, Input, Container, Header, Title, Left, Icon, Right, Button, Body, Content, Card, CardItem }  from "native-base";
+import { View, ActivityIndicator, TouchableOpacity, Text, FlatList, Image} from 'react-native'; 
+
 
 
 import { getNews } from '../../API/APINews';
@@ -92,7 +92,7 @@ class TabNews extends React.PureComponent {
             <View style={{ backgroundColor:'white',flexDirection: 'row', justifyContent: 'space-evenly', width: getConstant('width')*0.475, height: 130, borderWidth: 1, borderColor:'lightgray'}}>
                 <View style={{flex:1, flexWrap: "wrap",justifyContent: 'center', alignItems: 'center'}}>
                     <View style={{flex:5, justifyContent: 'center', flexWrap: 'wrap'}}>
-                        <Thumbnail source={imageUri.length!=0?{uri: imageUri}: null} />
+                        <Image source={imageUri.length!=0?{uri: imageUri}: null} />
                     </View>
                     <View style={{flex:1, flexWrap: 'wrap', justifyContent: 'flex-end', paddingLeft: 5, paddingRight: 5}}>
                     <Text >{item.source.name}</Text>

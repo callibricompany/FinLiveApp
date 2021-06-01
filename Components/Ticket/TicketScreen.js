@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Animated, Image, TextInput, TouchableOpacity,ImageBackground, StatusBar, Dimensions, 
         StyleSheet, Easing, View, Text, FlatList, SafeAreaView, Modal, Alert} from 'react-native';
-import { Icon } from 'native-base';
+
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { globalStyle, setFont, setColor } from '../../Styles/globalStyle'
@@ -124,7 +124,8 @@ class TicketScreen extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
       return ({
-        header : null,
+        headerShown : false
+
       }
       );
   }

@@ -56,6 +56,7 @@ import { CWorkflowTicket } from '../../../Classes/Tickets/CWorkflowTicket';
 import { CSouscriptionTicket } from '../../../Classes/Tickets/CSouscriptionTicket';
 import { CUser } from '../../../Classes/CUser';
 import { FLUF } from "../Autocall/FLUF";
+import { CFollowedTicket } from '../../../Classes/Tickets/CFollowedTicket';
 
 
 
@@ -116,7 +117,11 @@ class FLTicketDetail extends React.Component {
         { key: 'ACTIVITY', title: 'Activité' },
         { key: 'DOCUMENTS', title: 'Docs' },
         //{ key: 'TEST', title: 'Test' },
-      ]
+	  ],
+
+	  hasSpoken : false,
+	  
+
     }
 
     // console.log(Moment(new Date(1590938100000)).format('llll'));
@@ -135,21 +140,26 @@ class FLTicketDetail extends React.Component {
 
     //supression du menu bas
    this.props.navigation.setParams({ hideBottomTabBar : true });
+
+
   }
 
   static navigationOptions = ({ navigation }) => {
 
     return ({
-      header : null,
+		headerShown : false
     }
     );
 }
   // compopnentdidmount
   async componentDidMount() {
 
+
+
     if (!isAndroid()) {
       this._navListener = this.props.navigation.addListener('didFocus', () => {
-        StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
+		//StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
+		StatusBar.setBarStyle('light-content');
       });
     }
 
@@ -173,13 +183,22 @@ class FLTicketDetail extends React.Component {
     this.props.removeNotification('TICKET', this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId());
     this.props.setCurrentFocusedObject('TICKET', this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId());
 
+    //va directement sur l'onglet necessaire
+    var tabToGo = this.props.navigation.getParam('tab', 0);
+    if (tabToGo !== 0) {
+      this.setState({
+        currentTab: this.state.routes[tabToGo].key,
+        index : tabToGo
+        });
+    }
+
   }
 
   //component rcceved props
   UNSAFE_componentWillReceiveProps(props) {
     //console.log("RECEPTION DES PROPS TICKETS : " + props.allNotificationsCount );
     //quelque chose a bougé sur le ticket on verifie s'il a été notifié
-    //console.log("EST NOTIFIE : " + this.props.isNotified('TICKET', this.ticket.getId()));
+    console.log("EST NOTIFIE : " + this.props.isNotified('TICKET', this.ticket.getId()));
     //console.log("CSouscriptionTicket :" +(this.ticket instanceof CSouscriptionTicket));
     if (this.props.isNotified('TICKET', this.ticket.isShared() ? this.ticket.getSouscriptionId() : this.ticket.getId())) {
       //on recharhge les tickets et les coversations
@@ -236,7 +255,7 @@ class FLTicketDetail extends React.Component {
 			let isShared = this.ticket.isShared();
 			// console.log("process ticket : isShared : "+ isShared);
 			if (this.ticket.isFollowed()) {
-					
+				this.ticket = new CFollowedTicket(ticket);
 			} else {
 				this.ticket = isShared ? new CSouscriptionTicket(ticket) :  new CWorkflowTicket(ticket);
 				this.ticket.setProduct(this.autocall);
@@ -345,20 +364,21 @@ class FLTicketDetail extends React.Component {
     // this.intervalTimer[1] = null;
     // this.intervalTimer[2]= null;
     // this.intervalTimerFirstDueBy = null;
-
+	console.log("componentWillUnmount 1");
     clearInterval(this.intervalTimer[0]);
     clearInterval(this.intervalTimer[1]);
     clearInterval(this.intervalTimer[2]);
     clearInterval(this.intervalTimerFirstDueBy);
-
+	console.log("componentWillUnmount 2");
     //on enleve le focus sur ticket
     this.props.setCurrentFocusedObject('', '');
-
+	console.log("componentWillUnmount 3");
     if (!isAndroid()) {
       this._navListener.remove();
     }
     Keyboard.removeListener('keyboardDidShow');
-    Keyboard.removeListener('keyboardDidHide');
+	Keyboard.removeListener('keyboardDidHide');
+	console.log("componentWillUnmount 4");
   }
   
   keyboardDidHide() {
@@ -1221,7 +1241,8 @@ class FLTicketDetail extends React.Component {
                                               onPress={() => {
                                                 //console.log(item);
                                                 this.setState({ categoryFilesToShow : item });
-                                              }}
+											  }}
+											  //key={item}
                             >
                               <Text style={setFont('300', 12, this.state.categoryFilesToShow === item ? 'white' : 'black', this.state.categoryFilesToShow === item ? 'Bold' : 'Regular')}>{item}</Text>
                             </TouchableOpacity>
@@ -1303,6 +1324,7 @@ class FLTicketDetail extends React.Component {
 
   );
 
+
   _renderScene = ({ route }) => {
 
     switch (route.key) {
@@ -1311,11 +1333,29 @@ class FLTicketDetail extends React.Component {
       case 'CONVERSATION' :
         //return this._renderConversation();
         return <FLChat 
-                      ticket={this.ticket} 
-                      isFocused={this.state.currentTab === 'CONVERSATION'} 
-                      isLoading={this.state.isConversationLoading} 
-                      firebase={this.props.firebase} 
-                      users={this.props.users}       
+					ticket={this.ticket} 
+					isFocused={this.state.currentTab === 'CONVERSATION'} 
+					isLoading={this.state.isConversationLoading} 
+					firebase={this.props.firebase} 
+					users={this.props.users}    
+					hasSpoken={(hasSpoken, conv) => {
+						if (this.ticket.isFollowed() && this.ticket.getType() == 'Demande Générale' && hasSpoken) {
+							this.ticket.setStatus(2);
+
+							// var productcharacmodif = {
+							// 	priority: s.id,
+							// 	idTicket: this.ticket.getId()
+							// };
+							  
+							// ssModifyTicket(this.props.firebase, productcharacmodif);
+
+							this.setState({hasSpoken});
+						}
+						if (hasSpoken) {
+							//this.ticket.setConversations(conv);
+							//this._updateConversations();
+						}
+					}}   
               />
       case 'DETAIL':
         //on verifie de quel type de tickets il s'agit et l'état du ticket
@@ -1338,7 +1378,41 @@ class FLTicketDetail extends React.Component {
             );
         } else if (this.ticket.isFollowed()) {
           return (
-            <View><Text>En construction</Text></View>
+			<View style={{marginTop : 20}}>
+				<View style={{ustifyContent: 'center', alignItems : 'flex-start', marginTop : 5, paddingLeft : 10, borderWidth :  0, paddingTop : 0}}>
+						<Text style={setFont('400', 14,  'gray', 'Regular')}>
+							{this.ticket.getDescription()}
+						</Text>
+				</View>
+
+				<View style={{justifyContent: 'center', alignItems : 'flex-start', marginTop : 5, paddingLeft : 10, borderWidth :  0, paddingTop : 5}}>
+						<Text style={setFont('400', 16,  'black', 'Regular')}>
+							Date de la demande : {Moment(this.ticket.getCreationDate()).format('lll')}
+						</Text>
+				</View>
+				<View style={{justifyContent: 'center', alignItems : 'flex-start', marginTop : 5, paddingLeft : 10, borderWidth :  0, paddingTop : 5}}>
+                            
+							{this.ticket.getStatus() === 2 
+								?  
+									<Text style={setFont('400', 14,  'green', 'Bold')}>
+										{this.ticket.getStatusName()} 
+									</Text>
+							:
+								<TouchableOpacity 	style={{backgroundColor: 'red',padding  :  10,  borderWidth : 1, borderColor : 'red', borderRadius : 10}}
+													onPress={() => {
+														this.setState({
+															currentTab: this.state.routes[1].key,
+															index : 1
+														  });
+													}}
+								>
+									<Text style={setFont('400', 14,  'white', 'Bold')}>
+										En attente d'une réponse  de votre part
+									</Text>
+								</TouchableOpacity>
+							}
+				</View>
+			</View>
           );
         } else {
           return this._renderDetail();
@@ -1353,6 +1427,11 @@ class FLTicketDetail extends React.Component {
 
 
   _handleIndexChange = index => {
+	console.log("CHANGEMENT INDEX : " + this.state.currentTab +  "     : " + this.state.hasSpoken);
+	if (this.state.currentTab === 'CONVERSATION' && this.state.hasSpoken) {
+		this._updateConversations();
+		this.setState({ hasSpoken : false });
+	}
     this.setState({
       currentTab: this.state.routes[index].key,
       index
@@ -1445,31 +1524,43 @@ class FLTicketDetail extends React.Component {
       let dataOptions = (this.ticket.isShared() && this.ticket.isMine(this.props.user) && this.ticket.isCancellable()) ? ['PRIORITY', 'PRODUCT', 'CANCEL', 'ADDFRIEND'] : ['PRIORITY', 'PRODUCT', 'CANCEL'];
 
       return(
-            <View style={{flex:1, flexDirection : 'column', height: getConstant('height'), opacity: (this.state.showModalDrawnerPriority || this.state.isLoading) ? 0.3 : 1}}> 
+            <View style={{flex:1, flexDirection : 'column', height: getConstant('height'), opacity: ((this.state.showModalDrawnerPriority || this.state.isLoading) && this.state.currentTab !== 'CONVERSATION') ? 0.3 : 1}}> 
              
-              <View style={{flexDirection : 'row', paddingLeft : 10, backgroundColor: setColor('granny'), paddingTop: isAndroid() ?  0 : getConstant('statusBar'), padding : 5, alignItems: 'flex-start',justifyContent: 'space-between'}}>
+              <View style={{flexDirection : 'row',  backgroundColor: setColor(''), paddingTop: isAndroid() ?  0 : getConstant('statusBar'),  alignItems: 'center',justifyContent: 'space-between'}}>
                       {this._renderModalDrawnerPriority()}
                       <TouchableOpacity style={{flex: 0.2, justifyContent: 'center', alignItems: 'flex-start', padding : 5}}
                                         onPress={() => {
                                           let isJustCreated = this.props.navigation.getParam('isJustCreated', false);
-                                          isJustCreated ? this.props.navigation.popToTop() : this.props.navigation.goBack();
+                                          if (isJustCreated) {
+                                            this.props.navigation.popToTop();
+                                          } else {
+											console.log(this.state.hasSpoken);
+											if (this.ticket.isFollowed() && this.ticket.getType() == 'Demande Générale' && this.state.hasSpoken) {
+												this.props.navigation.state.params.onGoBack(true);
+											//	this.props.navigation.navigate('Following');
+											} 
+											this.props.navigation.goBack();
+											
+                                          } 
                                         }}
                       >
                            <Ionicons name={'md-arrow-back'}  size={25} style={{color: 'white'}}/>
                       </TouchableOpacity>
-                      <View style={{flex: 0.7, justifyContent: 'center', alignItems: 'center'}}>
+                      <View style={{flex: 0.7, justifyContent: 'center', alignItems: 'center', borderWidth : 0}}>
 					  {this.ticket.isFollowed()
-					  ?
-					  	<Text style={setFont('300', 16, 'white', 'Regular')}>Bonjour</Text>
+					  ?<View style={{borderWidth : 0, justifyContent : 'center', alignItems : 'center', paddingHorizontal : 5}}>
+					  		<Text style={[setFont('300', 16, 'white', 'Regular'), {textAlign : 'center'}]}>Suivi de produit en cours d'intégration</Text>
+						</View>
 					  :
-					  	<View>
-                           <Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()} {this.ticket.isShared() ? 'partagé' : null}</Text>
+					  	<View style={{borderWidth : 0, justifyContent : 'center', alignItems : 'center', paddingHorizontal : 5}}>
+                           	<Text style={setFont('300', 16, 'white', 'Regular')}>{this.ticket.getWorkflowName()} {this.ticket.isShared() ? 'partagé' : null}</Text>
                            <Text style={setFont('300', 12, 'white' )} numberOfLines={1}>{this.ticket.getTicketType()} - {this.ticket.isShared() ? (currencyFormatDE(this.sharedAmount) + " / " + currencyFormatDE(this.ticket.getBroadcastAmount())) : currencyFormatDE(this.ticket.getNominal())} {this.ticket.getCurrency()}</Text>
 						</View>
 					  }    
                       </View>
                       <View style={{flex: 0.2, flexDirection : 'row', justifyContent: 'flex-end', alignItems: 'center', borderWidth: 0, marginRight: 0.025*getConstant('width')}}>
-
+					  {!this.ticket.isFollowed()
+					  	?
                                   <FLModalDropdown
                                                 //pickerStyle={{width: 160, height: 160, backgroundColor: 'red'}}
                                                 //textStyle={[setFont('500', 16, (this.request.isUpdated('barrierPhoenix')) ? setColor('subscribeBlue') : this.stdLightColor, 'Bold'), {textAlign: 'center'}]}
@@ -1605,10 +1696,12 @@ class FLTicketDetail extends React.Component {
                                     <MaterialCommunityIcons name={'dots-vertical'} size={30} style={{color: 'white'}}/>
                                   </View>
                               </FLModalDropdown>
-                      </View>
+					 	: null
+						} 
+					  </View>
               </View>
-              <View style={{ paddingRight : 10, paddingLeft : 10, paddingBottom : 10,backgroundColor: setColor('granny'), alignItems: 'center',justifyContent: 'center'}}>
-                  <Text style={[setFont('300', 18, 'white' ), {textAlign:'center'}]}>{this.ticket.getSubject()}</Text>
+              <View style={{ paddingHorizontal : 15, paddingVertical : 5,backgroundColor: setColor('background'), alignItems: 'center',justifyContent: 'center'}}>
+                  <Text style={[setFont('300', 18, 'black', 'Regular' ), {textAlign:'center'}]}>{this.ticket.getSubject()}</Text>
               </View>
               {this.ticket.isClosed() 
               ?

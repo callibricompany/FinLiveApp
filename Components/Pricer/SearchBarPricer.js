@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Icon, Button } from 'native-base'
+
 import { ifIphoneX, ifAndroid, sizeByDevice , getConstant } from '../../Utils';
 import {
   View,
@@ -82,7 +82,7 @@ export default class SearchBarPricer extends React.Component {
                                 console.log("test");
                         }}>
                          <Text style={[setFont('300', 18, 'white'), {paddingLeft : 15}]}>
-                          Toto {this._getLabelText(this.state.title)}
+                           {this._getLabelText(this.state.title)}
                          </Text>    
                         </TouchableOpacity>
                     </View>  
