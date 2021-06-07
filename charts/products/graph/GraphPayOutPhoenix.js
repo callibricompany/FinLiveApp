@@ -6,13 +6,17 @@ import {
 } from "victory-native";
 
 import genAxisX from '../function/genAxisX';
+import { getConstant } from '../../../Utils';
+import Numeral from 'numeral';
 
-import { Dimensions } from "react-native";
-const screenWidth = 0.95 * Dimensions.get("window").width;
 
 export default function GraphPayOutPhoenix({ end_under, coupon, ymin, ymax,
     xmax, barr_capital, barr_anticipe,
-    barr_coupon, data }) {
+    barr_coupon, data , width}) {
+    if (width == null) {
+        width = 1;
+    }
+    const screenWidth = 0.95 * width * getConstant('width');
 
     let dataRandom = data.dataRandom;
     let nLastPoint = data.nLastPoint;
@@ -223,16 +227,16 @@ export default function GraphPayOutPhoenix({ end_under, coupon, ymin, ymax,
                             x: remboursement.x, y: remboursement.y, symbol: "star", size: 5
                         }
                     ]}
-                    labels={({ datum }) => (end_under < 100 || nLastPoint > xmax / 2 ? "Remboursement final:" + datum.y + "%   " :
-                        "    Remboursement final:" + datum.y + "%")}
-                    labelComponent={
-                        <VictoryLabel
-                            verticalAnchor={() => ("middle")}
-                            textAnchor={() => (end_under < 100 || nLastPoint > xmax / 2 ? "end" : "start")}
-                            dx={() => (remboursement.y >= 100 && remboursement.x == xmax ? 35 : 0)} // 35 : 0
-                            dy={() => (remboursement.y >= 100 && remboursement.x == xmax ? -20 : 0)} // -20 : 0
-                        />
-                    }
+                    // labels={({ datum }) => (end_under < 100 || nLastPoint > xmax / 2 ? "Remboursement final:" + datum.y + "%   " :
+                    //     "    Remboursement final:" + datum.y + "%")}
+                    // labelComponent={
+                    //     <VictoryLabel
+                    //         verticalAnchor={() => ("middle")}
+                    //         textAnchor={() => (end_under < 100 || nLastPoint > xmax / 2 ? "end" : "start")}
+                    //         dx={() => (remboursement.y >= 100 && remboursement.x == xmax ? 35 : 0)} // 35 : 0
+                    //         dy={() => (remboursement.y >= 100 && remboursement.x == xmax ? -20 : 0)} // -20 : 0
+                    //     />
+                    // }
                 />
             </VictoryChart>
         </View>

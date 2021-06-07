@@ -131,7 +131,10 @@ class NotificationProvider extends React.Component {
 
       //this._notificationSubscription = Notifications.addListener(this._handleNotification);
       this._notificationSubscription = Notifications.addNotificationReceivedListener(response=> this._handleNotification(response, 'received'));
-      this._notificationResponse = Notifications.addNotificationResponseReceivedListener(response => this._handleNotification(response, 'selected'));
+      this._notificationResponse = Notifications.addNotificationResponseReceivedListener(response => {
+		  //console.log(response);
+		  this._handleNotification(response.notification, 'selected')
+	  });
       
               
     }
@@ -291,10 +294,8 @@ class NotificationProvider extends React.Component {
   //gestion de la reception des notifications
   _handleNotification (notification_new, source)  {
     //console.log(notification_new);
-    
-    //console.log("Notification recu : "+notification.origin);
-    //console.log(notification.content.data.event);
 	var notification = notification_new.request;
+
 	//console.log("NOTIF RECUE FOCUSED : " + this.state.typeFocused + "   : " + this.state.idFocused + "#" + notification.content.data.id);
     switch(notification.content.data.type) {
         case 'TICKET' : 
@@ -396,8 +397,26 @@ class NotificationProvider extends React.Component {
                       //});
                   } else if (source == 'selected') { //origin === selected  -> l'appli est en background il y a donc eu click sur la notification native du telephone / on va directement sur le ticket
                       let localnotificationId = notification.identifier;
-                      isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
-                      NavigationService.navigate('Following');
+					  isAndroid() ? Notifications.dismissNotificationAsync(localnotificationId) : null;
+					  getTicket(this.props.firebase, notification.content.data.id)
+					  .then((t) => {
+						  if (t.custom_fields && t.custom_fields.cf_followed != null && t.custom_fields.cf_followed) {
+							  var ticket = new CFollowedTicket(t);
+							  var  autocall = new CAutocall2(ticket.getProduct());
+							  
+							  NavigationService.navigate('FLAutocallDetail', { autocall , isEditable : false, toSave : false, showPerf : true, ticket });
+		
+
+						  } else {
+							NavigationService.navigate('Following');
+						  }
+					  })
+					  .catch((error) => {
+						  alert(error);
+						  this.setState({ isLoading : false });
+						  NavigationService.navigate('Following');
+					  });
+                      
                   }    
                 }   else {
                           let localnotificationId = notification.identifier;

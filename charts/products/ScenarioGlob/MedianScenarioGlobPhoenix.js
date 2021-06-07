@@ -15,17 +15,18 @@ import IRR from '../function/IRR';
 import MedianScenarioPhoenix from '../Scenario/MedianScenarioPhoenix'
 import WrapperGraphPayOutPhoenix from '../wrapperGraph/WrapperGraphPayOutPhoenix'
 
-export default function MedianScenarioGlobPhoenix({
-    coupon,
-    ymin,
-    ymax,
-    xmax,
-    barr_capital,
-    barr_anticipe,
-    barr_coupon,
-}) {
+export default function MedianScenarioGlobPhoenix(props) {
+    var coupon = props.coupon;
+    var ymin = props.ymin;
+    var ymax = props.ymax;
+    var xmax = props.xmax;
+    var barr_capital = props.barr_capital * 100;
+    var barr_anticipe = props.barr_anticipe * 100;
+    var barr_coupon = props.barr_coupon * 100;
 
-    const [scenarioNeutre, setScenarioNeutre] = useState(getRandomInt(61, 90));
+    var width_ratio = props.hasOwnProperty('width') ? props.width : 1;
+
+    const [scenarioNeutre, setScenarioNeutre] = useState(getRandomInt(barr_capital*1.1, 0.97*barr_coupon));
     const [data, setData] = useState({
            tri: 0,
            flux: [-100,100],
@@ -59,7 +60,7 @@ export default function MedianScenarioGlobPhoenix({
       }, [ scenarioNeutre ]);
 
     function newScenarioNeutre() {
-        let newValue = getRandomInt(61, 90);
+        let newValue = getRandomInt(barr_capital*1.1, 0.97*barr_coupon);
         setScenarioNeutre(newValue);
     }
 
@@ -87,7 +88,17 @@ export default function MedianScenarioGlobPhoenix({
                 barr_anticipe={barr_anticipe}
                 barr_coupon={barr_coupon}
                 data={data}
+                width={width_ratio}
             />
+            <View style={{
+                backgroundColor: 'darkgrey', fontSize: 15, paddingVertical: 5,
+                paddingHorizontal: 10, borderRadius: 7, marginVertical: 10, marginRight : 5
+            }}>
+                <Text style={{ fontSize: 15, color: 'gold', fontWeight: 'bold' }}>
+                    ➔ Remboursement final de {data.remboursement.y}%</Text>
+                <Text style={{ fontSize: 13, color: 'white' }}>
+                    Retour sur investissement annualisé {(data.tri * 100).toFixed(1)}%</Text>
+            </View>
         </View>
     )
 

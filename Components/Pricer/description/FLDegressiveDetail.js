@@ -70,7 +70,7 @@ export class FLDegressiveDetail extends React.Component{
                         <SwitchSelector
                                 initial={this.state.barrier}
                                 onPress={obj => {
-                                  this.props.updateValue("typeAirbag", obj.value, obj.label);
+                                  this.props.updateValue("degressiveStep", obj.value, obj.label);
                                   this.setState({ barrier : obj.value });
                                 }}
                                 textColor={setColor('lightBlue')} 

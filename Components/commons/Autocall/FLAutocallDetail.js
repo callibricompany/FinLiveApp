@@ -75,7 +75,7 @@ class FLAutocallDetail extends React.Component {
     this.toSave =  this.props.navigation.getParam('toSave', true);
     this.showPerf =  this.props.navigation.getParam('showPerf', false);
 
-    console.log("UNIQUE ID : " + this.autocall.getUniqueId());
+    //console.log("UNIQUE ID : " + this.autocall.getUniqueId());
     
     this.state = { 
 
@@ -110,7 +110,7 @@ class FLAutocallDetail extends React.Component {
         toto : true,
 
     };
-    //console.log(this.autocall.getAutocallDatas('AUTOCALL'));
+
 
     //this.viewabilityConfig = { itemVisiblePercentThreshold: 40 }
 
@@ -287,7 +287,7 @@ class FLAutocallDetail extends React.Component {
   async componentDidMount() {
     if (!isAndroid()) {
       this._navListener = this.props.navigation.addListener('didFocus', () => {
-        StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'dark-content');
+        StatusBar.setBarStyle(Platform.OS === 'Android' ? 'light-content' : 'light-content');
       });
     }
     Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
@@ -338,7 +338,7 @@ class FLAutocallDetail extends React.Component {
   _updateAutocall=(autocall) => {
       this.autocall = autocall;
       this._constructMenu();
-      this.setState({ toto : !this.state.toto }, () => console.log(this.autocall.getProductJSON()));
+      this.setState({ toto : !this.state.toto }, /*() => console.log(this.autocall.getProductJSON())*/);
   }
 
   //_reprice
@@ -449,7 +449,7 @@ class FLAutocallDetail extends React.Component {
   }
 
 
-
+ 
   //render des sections de la flatlist
   renderPage = ({item, index}) => {
     const itemData = item;
@@ -499,7 +499,7 @@ class FLAutocallDetail extends React.Component {
                   />;
           break;
       case 'COUPON' : 
-          body = <FLCoupons   phoenixDatas = {this.autocall.getAutocallDatas('DIGIT')}
+          body = <FLCoupons   phoenixDatas = {this.autocall.getAutocallDatas(this.autocall.isMemory() ? 'DIGIT_MEMORY' : 'DIGIT')}
                               isMemory={this.autocall.isMemory()}
                               updateProduct={this._updateProduct} 
                   />;
@@ -527,23 +527,23 @@ class FLAutocallDetail extends React.Component {
       case 'STATS' :
 		  body = <FLProba autocall={this.autocall} />;
           break;
-      case 'Sdshjshghsgdhsgd' :
-          body = <TouchableOpacity style={{marginLeft : 100, marginRight : getConstant('width')*0.05,  backgroundColor : setColor('subscribeBlue'),  borderColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 5, padding : 5, justifyContent : 'flex-end', justifyContent : 'flex-end'}}
-                            onPress={() => this.props.navigation.navigate('FLTermSheetDescription', { autocall : this.autocall })} 
-                >
-                    <Text style={[setFont('300',14,'white', 'Regular'), {textAlign : 'center'}]}>{String("scénarii possibles").toUpperCase()} >></Text>
-                  </TouchableOpacity>;
-          break;
+      // case 'Sdshjshghsgdhsgd' :
+      //     body = <TouchableOpacity style={{marginLeft : 100, marginRight : getConstant('width')*0.05,  backgroundColor : setColor('subscribeBlue'),  borderColor : setColor('subscribeBlue'), borderWidth : 1, borderRadius : 5, padding : 5, justifyContent : 'flex-end', justifyContent : 'flex-end'}}
+      //                       onPress={() => this.props.navigation.navigate('FLTermSheetDescription', { autocall : this.autocall })} 
+      //           >
+      //               <Text style={[setFont('300',14,'white', 'Regular'), {textAlign : 'center'}]}>{String("scénarii possibles").toUpperCase()} >></Text>
+      //             </TouchableOpacity>;
+      //     break;
 	  case 'SCENARIO' :
         	var request = new CPSRequest() 
 			request.setRequestFromCAutocall(this.autocall);
 			var  typeAutocall = this.autocall.getProductCode();
     		if (typeAutocall === 'AUTOCALL_INCREMENTAL') {
-				body = <TermSheetAutocallAirbag request={request} disable={true}/> ; 
+				body = <TermSheetAutocallAirbag request={request} disable={true} width={0.825} labels={false} xmax={this.autocall.getMaturityInYears()}/> ; 
 			} else if (typeAutocall === 'PHOENIX') {
-				body = <TermSheetPhoenix request={request} disable={true}/> ;
+				body = <TermSheetPhoenix request={request} disable={true} width={0.825} labels={false} xmax={this.autocall.getMaturityInYears()}/> ;
 			} else if (typeAutocall === 'PHOENIX_MEMORY') {
-				body  = <TermSheetPhoenixMem request={request} disable={true}/> ;
+				body  = <TermSheetPhoenixMem request={request} disable={true} width={0.825} labels={false} xmax={this.autocall.getMaturityInYears()}/> ;
 			} else  {
 				body = <View />;
 			}

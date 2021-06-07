@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import GraphPayOutPhoenixMem from '../graph/GraphPayOutPhoenixMem'
 
+
 export default function WrapperGraphPayOutPhoenix({remb,
   coupon,
   ymin,
@@ -15,8 +16,9 @@ export default function WrapperGraphPayOutPhoenix({remb,
   barr_anticipe,
   barr_coupon,
   data,
+  width
   }) {
-
+    //console.log("WIDTH : " + width);
   return (
     <View style={styles.container}>
       <GraphPayOutPhoenixMem
@@ -29,6 +31,7 @@ export default function WrapperGraphPayOutPhoenix({remb,
         barr_anticipe={barr_anticipe}
         barr_coupon={barr_coupon}
         data={data}
+        width={width}
       />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={styles.dashedLineRed} />
@@ -62,6 +65,7 @@ const styles = StyleSheet.create({
   container: {
     alignContent: 'flex-start',
     alignItems: 'flex-start',
+    marginTop : 20
   },
   dashedLineRed: {
     width: 50,

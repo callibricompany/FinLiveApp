@@ -9,7 +9,6 @@ import { globalStyle , setColor, setFont} from '../../Styles/globalStyle'
   
 import { withAuthorization } from '../../Session';
 import { withNavigation } from 'react-navigation';
-
 import { withUser } from '../../Session/withAuthentication';
 import { compose, hoistStatics } from 'recompose';
 
@@ -113,6 +112,8 @@ class FollowingScreen extends React.Component {
 		this._offsetValue = value;
 		});
 
+
+
 		this._loadFromServer();
 	}
 
@@ -156,6 +157,7 @@ class FollowingScreen extends React.Component {
 
 
 		}
+
 	}
 
 	async _onBackOnScreen(hasSpoken, ticketToUpdate) {
@@ -745,7 +747,7 @@ const condition = authUser => !!authUser;
 const composedPricerScreen = compose(
  withAuthorization(condition),
   withUser,
-  withNavigation,
+  withNavigation
 );
 
 //export default HomeScreen;

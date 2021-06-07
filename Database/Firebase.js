@@ -45,6 +45,7 @@ class Firebase {
     constructor() {
       try {
         app.initializeApp(config);
+        app.firestore().settings({ experimentalForceLongPolling: true });
       }
       catch (error){
         console.log('ERREUR FIREBASE : '+error);

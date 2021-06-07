@@ -62,7 +62,7 @@ class ProfileScreen extends React.Component {
 
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content' );
-      console.log("Je suis focusé");
+
       this.props.updateClientCount();
     });
 

@@ -46,6 +46,7 @@
     "react-navigation-stack": "^2.10.4",
     "react-navigation-tabs": "^2.11.1",
     "recompose": "^0.30.0",
+    "rn-range-slider": "^2.0.4",
     "victory-native": "^35.3.3"
   },
   "devDependencies": {

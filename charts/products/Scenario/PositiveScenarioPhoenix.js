@@ -1,6 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { setFont, setColor } from '../../../Styles/globalStyle';
+import Numeral from 'numeral';
+
 
 export default function PositiveScenario(
     {   remb,
@@ -18,25 +21,27 @@ export default function PositiveScenario(
     return (
         <>
             <View style={{
-                borderColor: 'midnightblue', borderWidth: 1, paddingVertical: 10,
-                paddingHorizontal: 10, marginVertical: 10
+                borderColor: 'midnightblue', borderWidth: 0, marginTop: 20, marginBottom : 5
             }}>
-                <Text style={{ fontSize: 20, color: 'midnightblue' }}>Scénario favorable:</Text>
+                <Text style={setFont('400', 18, setColor(''), 'Bold')}>Scénario favorable:</Text>
             </View>
             <View style={{}}>
-                <Text style={{ fontSize: 16, color: 'midnightblue' }}>
-                    hausse du sous-jacent en année 1, mise en évidence du plafonnement du gain.
+            <Text style={setFont('300', 14, setColor(''), 'Regular')}>
+                    Hausse du sous-jacent en année 1, mise en évidence du plafonnement du gain.
                   </Text>
             </View>
             <View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ width: 300, }}>
-                        <Text style={{ fontSize: 16, color: 'dimgrey', textDecorationLine: 'underline', }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' , marginTop : 10}}>
+                    <View style={{ flex : 1}}>
+                        <Text style={[setFont('300', 14, 'gray', 'Regular'), {textDecorationLine: 'underline', }]}>
                             Exemple:
                   </Text>
-                        <Text style={{ fontSize: 16, color: 'dimgrey' }}>
+                  <Text style={setFont('300', 12, 'gray', 'Regular')}>
                             Hausse de {remb - 100}% du sous jacent
                   </Text>
+                  <Text style={setFont('300', 12, 'gray', 'Regular')}>
+                    L’investisseur ne reçoit que la hausse partielle du sous-jacent: 100% + coupon ({Numeral(coupon).format('0.00%')}) du fait du plafonnement du gain:
+              </Text>
                     </View>
                     <View style={{ justifyContent: 'center' }}>
                         <TouchableOpacity style={{
@@ -48,20 +53,8 @@ export default function PositiveScenario(
                     </View>
                 </View>
             </View>
-            <View>
-                <Text style={{ fontSize: 16, color: 'midnightblue', fontWeight: 'bold' }}>
-                    L’investisseur ne reçoit que la hausse partielle du sous-jacent: 100% + coupon ({coupon}%) du fait du plafonnement du gain:
-              </Text>
-            </View>
-            <View style={{
-                backgroundColor: 'green', fontSize: 15, paddingVertical: 5,
-                paddingHorizontal: 10, borderRadius: 7, marginVertical: 10
-            }}>
-                <Text style={{ fontSize: 15, color: 'gold', fontWeight: 'bold' }}>
-                    ➔ Remboursement final de {100 + coupon}%</Text>
-                <Text style={{ fontSize: 15, color: 'white', fontWeight: 'bold' }}>
-                    Retour sur investissement annualisé {coupon}%</Text>
-            </View>
+
+
         </>
     )
 

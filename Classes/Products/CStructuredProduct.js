@@ -258,6 +258,33 @@ export class CStructuredProduct extends CFinancialProduct {
         return Math.round(nbMonths);
     }
 
+    //renvoie la maturité du produit en mois
+    getRemainingYears() {
+        let nbYears = 0;
+
+        let obsDates = this.getObservationDates();
+        if (obsDates.length > 0) {
+            let d = Moment(new Date(Math.max(...obsDates)));
+            let dNow = Moment(new Date(Date.now()));
+            nbYears = Moment.duration(d.diff(dNow)).asYears();
+        }
+
+        return Math.round(nbYears);
+    }
+
+    getMaturityInYears() {
+        let nbYears = 0;
+
+        let obsDates = this.getObservationDates();
+        if (obsDates.length > 0) {
+            let d = Moment(new Date(Math.max(...obsDates)));
+            let dNow = Moment(this.getStrikingDate());
+            nbYears = Moment.duration(d.diff(dNow)).asYears();
+        }
+
+        return Math.round(nbYears);
+    }
+
     getIssueDate() {
         let dateIssuing = new Date(Date.now());
         if (this.product.hasOwnProperty('DATE_START_ISSUING')) {

@@ -14,7 +14,8 @@ export default function WrapperGraphPayOut({remb,
   barr_capital,
   barr_anticipe, 
   xrel,
-  airbag}) {
+  airbag,
+  width}) {
 
   return (
     <View style={styles.container}>
@@ -28,6 +29,7 @@ export default function WrapperGraphPayOut({remb,
         barr_anticipe={barr_anticipe}
         xrel={xrel}
         airbag={airbag}
+        width={width}
       />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={styles.dashedLineRed} />
@@ -55,6 +57,7 @@ const styles = StyleSheet.create({
   container: {
     alignContent: 'flex-start',
     alignItems: 'flex-start',
+    marginTop : 20
   },
   dashedLineRed: {
     width: 50,

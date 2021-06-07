@@ -10,11 +10,15 @@ import genCoupon from '../function/genCoupon';
 import genAxisX from '../function/genAxisX';
 import genRemb from '../function/genRemb';
 
-import { Dimensions } from "react-native";
-const screenWidth = 0.95 * Dimensions.get("window").width;
+import { getConstant } from '../../../Utils';
+import Numeral from 'numeral';
 
-export default function GraphPayOutAirbag({ end_under, coupon, ymin, ymax, xmax, barr_capital, barr_anticipe, xrel, airbag }) {
+export default function GraphPayOutAirbag({ end_under, coupon, ymin, ymax, xmax, barr_capital, barr_anticipe, xrel, airbag, width }) {
 
+    if (width == null) {
+        width = 1;
+    }
+    const screenWidth = 0.95 * width * getConstant('width');
     const dataRandom = generePath(xmax, end_under, xrel);
     const nLastPoint = dataRandom[dataRandom.length-1].x
 
@@ -215,16 +219,16 @@ export default function GraphPayOutAirbag({ end_under, coupon, ymin, ymax, xmax,
                             x: remboursement.x, y: remboursement.y, symbol: "star", size: 5
                         }
                     ]}
-                    labels={({ datum }) => (end_under < 100 || nLastPoint > xmax/2 ? "Remboursement final:" + datum.y + "%   " :
-                        "    Remboursement final:" + datum.y + "%")}
-                    labelComponent={
-                        <VictoryLabel
-                            verticalAnchor={() => ("middle")}
-                            textAnchor={() => (end_under < 100 || nLastPoint > xmax / 2 ? "end" : "start")}
-                            dx={() => (remboursement.y === 100 ? 35 : 0)}
-                            dy={() => (remboursement.y === 100 ? -20 : 0)}
-                        />
-                    }
+                    // labels={({ datum }) => (end_under < 100 || nLastPoint > xmax/2 ? "Remboursement final:" + datum.y + "%   " :
+                    //     "    Remboursement final:" + datum.y + "%")}
+                    // labelComponent={
+                    //     <VictoryLabel
+                    //         verticalAnchor={() => ("middle")}
+                    //         textAnchor={() => (end_under < 100 || nLastPoint > xmax / 2 ? "end" : "start")}
+                    //         dx={() => (remboursement.y === 100 ? 35 : 0)}
+                    //         dy={() => (remboursement.y === 100 ? -20 : 0)}
+                    //     />
+                    // }
                 />
             </VictoryChart>
         </View>

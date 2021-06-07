@@ -8,8 +8,8 @@ import { getConstant, isAndroid } from '../../Utils';
 
 import NavigationService from '../../Navigation/NavigationService';
 
-import { FLBadge } from '../commons/FLBadge'
- 
+import { WebView } from 'react-native-webview';
+ import { URL_AWS } from '../../API/APIAWS';
 
 import RobotBlink from "../../assets/svg/robotBlink.svg";
 
@@ -261,9 +261,26 @@ const initialLayout = {
 
       if (this.state.isLoading) {
         return (
-              <View style={{flex : 1, justifyContent: 'center', alignItems: 'center'}}>
-                    <ActivityIndicator size='large' />
+              // <View style={{flex : 1, justifyContent: 'center', alignItems: 'center'}}>
+              //       <ActivityIndicator size='large' />
+              // </View>
+              <SafeAreaView style={{flex : 1, backgroundColor: 'white'}}>
+              <View style={{justifyContent: 'center', alignItems: 'center', padding : 10, backgroundColor:'white', flex : 1}}>
+                {this._renderHeader()}
+                <View style={{height : 100, backgroundColor : 'pink'}}>
+                  <WebView  originWhitelist={['*']} 
+                    source={{uri: URL_AWS + '/svg?page=robotFlash'}} 
+                    style={{  width : 150,  marginTop: 0, marginLeft : -50, borderWidth : 0}} 
+                    scalesPageToFit={true}
+                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
+                    startInLoadingState={true}
+                    //renderLoading={() => <RobotBlink width={120} height={120} />}
+                  />
+                </View>
+              
               </View>
+            </SafeAreaView>
         );
       }
       if (!this.state.isServerOk) {

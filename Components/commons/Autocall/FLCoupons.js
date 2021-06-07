@@ -19,7 +19,6 @@ import { PropTypes } from 'victory-native';
 
 
 
-
 export function FLCoupons ({phoenixDatas, isMemory, updateProduct}) {
 
     let alreadyBreaked = false;

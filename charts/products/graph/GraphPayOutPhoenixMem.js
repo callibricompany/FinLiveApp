@@ -7,17 +7,22 @@ import {
 
 import genAxisX from '../function/genAxisX';
 
-import { Dimensions } from "react-native";
-const screenWidth = 0.95 * Dimensions.get("window").width;
+import { getConstant } from '../../../Utils';
+import Numeral from 'numeral';
+
 
 export default function GraphPayOutPhoenixMem({ end_under, coupon, ymin, ymax,
     xmax, barr_capital, barr_anticipe,
-    barr_coupon, data }) {
+    barr_coupon, data , width}) {
+    if (width == null) {
+        width = 1;
+    }
+    const screenWidth = 0.95 * width * getConstant('width');
 
     let dataRandom = data.dataRandom;
     let nLastPoint = data.nLastPoint;
     let remboursement = data.remboursement;
-    
+
     let dataStack = [];
     for (var i = 1; i < xmax + 1; i++) {
         dataStack.push({ x: i, y: 100 });
@@ -37,7 +42,7 @@ export default function GraphPayOutPhoenixMem({ end_under, coupon, ymin, ymax,
     const axisX = genAxisX(xmax);
 
     return (
-        <View style={styles.container} >
+        <View style={{}} >
             <VictoryChart
                 width={screenWidth}
                 height={250}
@@ -256,7 +261,7 @@ export default function GraphPayOutPhoenixMem({ end_under, coupon, ymin, ymax,
                             strokeWidth: 2
                         },
                         labels: {
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: 'bold',
                             fill: "#f0c200"
                         }
@@ -266,16 +271,16 @@ export default function GraphPayOutPhoenixMem({ end_under, coupon, ymin, ymax,
                             x: remboursement.x, y: remboursement.y, symbol: "star", size: 5
                         }
                     ]}
-                    labels={({ datum }) => (end_under < 100 || nLastPoint > xmax / 2 ? "Remboursement final:" + datum.y + "%   " :
-                        "    Remboursement final:" + datum.y + "%")}
-                    labelComponent={
-                        <VictoryLabel
-                            verticalAnchor={() => ("middle")}
-                            textAnchor={() => (end_under < 100 || nLastPoint > xmax / 2 ? "end" : "start")}
-                            dx={() => (remboursement.y >= 100 && remboursement.x == xmax ? 35 : 0)} // 35 : 0
-                            dy={() => (remboursement.y >= 100 && remboursement.x == xmax ? -20 : 0)} // -20 : 0
-                        />
-                    }
+                    // labels={({ datum }) => (end_under < 100 || nLastPoint > xmax / 2 ? "Remboursement final : " + Numeral(datum.y/100).format('0.00%') :
+                    //     "    Remboursement final:" + Numeral(datum.y/100).format('0.00%'))}
+                    // labelComponent={
+                    //     <VictoryLabel
+                    //         verticalAnchor={() => ("middle")}
+                    //         textAnchor={() => (end_under < 100 || nLastPoint > xmax / 2 ? "end" : "start")}
+                    //         dx={() => (remboursement.y >= 100 && remboursement.x == xmax ? 35 : 0)} // 35 : 0
+                    //         dy={() => (remboursement.y >= 100 && remboursement.x == xmax ? -20 : -190)} // -20 : 0
+                    //     />
+                    // }
                 />
             </VictoryChart>
         </View>
@@ -283,7 +288,3 @@ export default function GraphPayOutPhoenixMem({ end_under, coupon, ymin, ymax,
 
 }
 
-const styles = StyleSheet.create({
-    container: {
-    }
-});

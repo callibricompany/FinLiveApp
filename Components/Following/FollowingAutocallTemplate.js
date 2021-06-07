@@ -93,7 +93,8 @@ export default function FollowingAutocallTemplate ({ticket, underlyings, navigat
             
         }
         
-        let color = interpolateColorFromGradient('Rastafari', Math.round(100*colourGradient/100));
+        //let color = interpolateColorFromGradient('Rastafari', Math.round(100*colourGradient/100));
+        let color = ticket.getPriority().color;
        
         
         useEffect(() => {
